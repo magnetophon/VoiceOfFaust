@@ -3,13 +3,37 @@ import ("maxmsp.lib");
 import ("effect.lib");
 minline=3; //minimum line time in ms
 analizerQ=7; //Q of the analizer bp filters
-analizerFreq(audio) = audio:component("../PitchTracker/PitchTracker.dsp"); //detect the pitch
+analizerFreq(audio) = audio:PitchTracker; //detect the pitch
 
 pafBottom=hslider("bottom", 1, 0.5, 7, 0.001):smooth(0.999)<:_,_:*; //0.25 to 49 logarithmicly
 pafTop=hslider("top", 8, 1, 10, 0.01):smooth(0.999)<:_,_:*;//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 pafFreq(audio)= analizerFreq(audio):min(200):max(50):vbargraph("freq", 0, 1000);
 //pafFreq=hslider("pafFreq", 10, 5, 20, 0.001):smooth(0.999)<:_,_:*;
 pafIndex=hslider("pafIndex", 25, 1, 100, 1):smooth(0.999);
+
+
+
+//-----------------------------------------------
+// Universal Pitch Tracker (a periods measurement)
+//-----------------------------------------------
+
+import("math.lib") ;
+import("filter.lib");
+SH(trig,x) = (*(1 - trig) + x * trig) ~_;
+a = hslider("n cycles", 1, 1, 100, 1) ;
+
+
+Pitch(a,x) = a * SR / max(M,1) - a * SR * (M == 0)
+with { 
+      U = (x' < 0) & (x >= 0) ;
+      V = +(U) ~ %(int(a)) ;
+      W = U & (V == a) ;
+      N = (+(1) : *(1 - W)) ~_;
+      M = SH(N == 0, N' + 1) ;
+};
+
+PitchTracker = dcblockerat(80) : (lowpass(1) : Pitch(a)) ~ max(100) ;
+
 
 /*
 bellcurve =rdtable(199,curve,_)
