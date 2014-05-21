@@ -1,18 +1,35 @@
+declare name 		"VocSynth";
+declare version 	"1.0";
+declare author 		"Bart Brouns";
+declare license 	"GNU 3.0";
+declare copyright 	"(c) Bart Brouns 2014";
+
+//-----------------------------------------------
+// imports
+//-----------------------------------------------
+
 import ("oscillator.lib");
 import ("maxmsp.lib");
 import ("effect.lib");
-minline=3; //minimum line time in ms
-analizerQ=7; //Q of the analizer bp filters
+
+//-----------------------------------------------
+// contants
+//-----------------------------------------------
+
+
+minline			= 3;		// minimum line time in ms
+analizerQ		= 7; 		// Q of the analizer bp filters
+MinInputPitch	= 61.7354; 	// lowest note is a B1
+MaxInputPitch	= 987.767;	// highest note is a B5
 
 
 //-----------------------------------------------
 // the GUI
 //-----------------------------------------------
 
-pafBottom=hslider("bottom", 1, 0.5, 7, 0.001):smooth(0.999)<:_,_:*; //0.25 to 49 logarithmicly
-pafTop=hslider("top", 8, 1, 10, 0.01):smooth(0.999)<:_,_:*;//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-pafFreq(audio)= analizerFreq(audio):min(200):max(50):vbargraph("freq", 0, 1000);
-pafIndex=hslider("pafIndex", 25, 1, 100, 1):smooth(0.999);
+pafBottom	= hslider("bottom",		1, 0.5, 7, 0.01):smooth(0.999)<:_,_:*;	//0.25 to 49 logarithmicly
+pafTop		= hslider("top",		8.5, 1, 10, 0.01):smooth(0.999)<:_,_:*;	//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+pafIndex	= hslider("pafIndex",	25, 1, 100, 1):smooth(0.999);
 
 
 
@@ -33,42 +50,18 @@ with {
       M = SH(N == 0, N' + 1) ;
 };
 
-PitchTracker = dcblockerat(80) : (lowpass(1) : Pitch(a)) ~ max(100) ;
+PitchTracker(audio) = audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2);
+//:max(100) )
+//analizerFreq(audio) = audio:PitchTracker; //detect the pitch
 
-analizerFreq(audio) = audio:PitchTracker; //detect the pitch
+//:min(200):max(50)
 
-
-
-//-----------------------------------------------
-// PAF oscilator
-//-----------------------------------------------
-
-/*
-bellcurve =rdtable(199,curve,_)
-with {
-	curve= (((_-100)/25)<:(_*_)*-1);
-	};
-*/
-bellcurve = (((_-100)/25)<:(_*_)*-1);
-
-pafFund(freq)= lf_sawpos(freq);
-sampleAndHold(sample) = select2((sample!=0):int) ~ _;
-wrap=_<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
-centerWrap(c,f) = line (c, 300):sampleAndHold(f)<:wrap;
-centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
-cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
-bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*line (i, 12))+100:bellcurve;
-
-//paf(c,f,i,v)= pafFund:resonbp(c*pafFreq,analizerQ,1) * line (v, minline);
-paf(c,f,i,v)= (((cos12(c,f))*bell(f,i)) * line (v, minline));
 
 
 //-----------------------------------------------
-// the vocoder 
+// the vocoder analiser
 //-----------------------------------------------
 
-
-pafCenters=     par(i,16,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
 analizerCenters(freq)=par(i,16,  (pow((pow((128   /0.853553) ,1/15)),i)*0.853553 )*freq);
 bandEnv(freq)=resonbp(freq:min(20000),analizerQ,1):amp_follower_ud(0.01,0.01);  
 analizers(audio,freq1,freq2,freq3,freq4,freq5,freq6,freq7,freq8,freq9,freq10,freq11,freq12,freq13,freq14,freq15,freq16)=
@@ -94,6 +87,39 @@ bandEnv(freq16)
 ;
 analizer(audio,freq)=(analizerCenters(freq)):analizers(audio);
 
+//-----------------------------------------------
+// PAF oscilator
+//-----------------------------------------------
+
+//pafFreq(audio)= PitchTracker(audio):hbargraph("freq", 0, 700);
+pafFreq(audio)= PitchTracker(audio):min(200):max(50):vbargraph("freq", 0, 1000);
+/*
+bellcurve =rdtable(199,curve,_)
+with {
+	curve= (((_-100)/25)<:(_*_)*-1);
+	};
+*/
+bellcurve = (((_-100)/25)<:(_*_)*-1);
+
+pafFund(freq)= lf_sawpos(freq);
+sampleAndHold(sample) = select2((sample!=0):int) ~ _;
+wrap=_<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
+centerWrap(c,f) = line (c, 300):sampleAndHold(f)<:wrap;
+centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
+cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
+bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*line (i, 12))+100:bellcurve;
+
+//use this to get a normal vocoder:
+//paf(c,f,i,v)= pafFund:resonbp(c*pafFreq,analizerQ,1) * line (v, minline);
+
+paf(c,f,i,v)= (((cos12(c,f))*bell(f,i)) * line (v, minline));
+
+
+//-----------------------------------------------
+// the paf vocoder synthesis
+//-----------------------------------------------
+
+pafCenters=     par(i,16,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
 pafOscs(pafCenter1,pafCenter2,pafCenter3,pafCenter4,pafCenter5,pafCenter6,pafCenter7,pafCenter8,pafCenter9,pafCenter10,pafCenter11,pafCenter12,pafCenter13,pafCenter14,pafCenter15,pafCenter16,pafVol1,pafVol2,pafVol3,pafVol4,pafVol5,pafVol6,pafVol7,pafVol8,pafVol9,pafVol10,pafVol11,pafVol12,pafVol13,pafVol14,pafVol15,pafVol16,Fund)=
 paf(pafCenter1,Fund,pafIndex,pafVol1),
 paf(pafCenter2,Fund,pafIndex,pafVol2),
@@ -113,10 +139,16 @@ paf(pafCenter15,Fund,pafIndex,pafVol15),
 paf(pafCenter16,Fund,pafIndex,pafVol16)
 ;
 
-//this should be process:
+//this is process:
 pafvocoder(audio,freq)=(pafCenters,analizer(audio,freq),pafFund(freq)):pafOscs:>_<:_,_;
-process(audio) = pafvocoder(audio,pafFreq(audio));
+process(audio) =pafvocoder(audio,pafFreq(audio));
 
+//-----------------------------------------------
+// testing cruft
+//-----------------------------------------------
+
+
+//process = PitchTracker;
 //analizer(audio,pafFreq(audio)):par(i,16, vbargraph("foo", 0, 0.01));
 //analizerCenters(pafFreq(audio)):par(i,16, vbargraph("foo", 0, 20000));
 //
