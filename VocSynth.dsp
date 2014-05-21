@@ -16,9 +16,9 @@ import ("effect.lib");
 // contants
 //-----------------------------------------------
 minline			= 3;		// minimum line time in ms
-analizerQ		= 7; 		// Q of the analizer bp filters
-MinInputPitch	= 61.7354; 	// lowest note is a B1
-MaxInputPitch	= 987.767;	// highest note is a B5
+analizerQ		= 7;		// Q of the analizer bp filters
+MinInputPitch	= 61.7354;	// lowest expected note is a B1
+MaxInputPitch	= 987.767;	// highest expected note is a B5
 
 
 //-----------------------------------------------
@@ -91,15 +91,29 @@ analizer(audio,freq)=(analizerCenters(freq)):analizers(audio);
 // PAF oscilator
 //-----------------------------------------------
 
+
+//curve = (((_-100)/25)<:(_*_)*-1);
+//bellcurve = rdtable(200, curve, int(+(1)  ~ _ : -(1)));
+
 //pafFreq(audio)= PitchTracker(audio):hbargraph("freq", 0, 700);
 pafFreq(audio)= PitchTracker(audio)*pafOctave;
+
+
+bellcurve(x) = int(x):rdtable(belltablesize+1,curve,_)
+with 	{
+		belltablesize 	= 199;
+		curve 	= time:(((_-100)/25)<:(_*_)*-1);
+		};
+
+//bellcurve = (((_-100)/25)<:(_*_)*-1);
+
 /*
 bellcurve =rdtable(199,curve,_)
 with {
 	curve= (((_-100)/25)<:(_*_)*-1);
 	};
 */
-bellcurve = (((_-100)/25)<:(_*_)*-1);
+//bellcurve = (((_-100)/25)<:(_*_)*-1);
 
 pafFund(freq)= lf_sawpos(freq);
 sampleAndHold(sample) = select2((sample!=0):int) ~ _;
@@ -142,7 +156,8 @@ paf(pafCenter16,Fund,pafIndex,pafVol16)
 //this is process:
 pafvocoder(audio,freq)=(pafCenters,analizer(audio,freq),pafFund(freq)):pafOscs:>_<:_,_;
 
-process(audio) =pafvocoder(audio,pafFreq(audio));
+
+process(audio) = pafvocoder(audio,pafFreq(audio));
 
 //-----------------------------------------------
 // testing cruft
