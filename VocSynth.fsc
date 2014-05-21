@@ -1,0 +1,5 @@
+<!DOCTYPE GraphicsSceneFaust>
+<SceneRoot>
+ <Scene sceneHeight="400" viewZoom="7.07106701649974" sceneX="-200" sceneY="-200" sceneWidth="400" viewX="5.798276257929666" viewY="34.08255068685487"/>
+ <Item DomFaustItemRectWidth="100" ItemX="-78.5" ItemY="-31.5" ItemZ="0" file="/home/bart/FaustWorks/VocSynth/VocSynth.dsp" DomFaustItemRectHeight="100"/>
+</SceneRoot>
