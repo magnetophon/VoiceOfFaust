@@ -24,13 +24,17 @@ MaxInputPitch	= 987.767;	// highest expected note is a B5
 //-----------------------------------------------
 // the GUI
 //-----------------------------------------------
-OSConOff	= checkbox("listen for OSC messages");
-OSCpitch	= nentry("pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.000000001); 	// To recieve OSC pitch messages
-
-pafBottom	= hslider("bottom",		1, 0.5, 7, 0.01):smooth(0.999)<:_,_:*;					//0.25 to 49 logarithmicly
-pafTop		= hslider("top",		8.5, 1, 10, 0.01):smooth(0.999)<:_,_:*;					//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-pafIndex	= hslider("pafIndex",	25, 1, 100, 0.01):smooth(0.999);
-pafOctave	= hslider("pafOctave",	0, -2, 2, 1):octaveMultiplier;							//set the octave of paf
+//OSCgroup(x)  = (hgroup("[1]OSC", x));
+OSConOff	= checkbox("[1]listen for OSC messages");
+OSCpitch	= nentry("[2]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0); 	// To recieve OSC pitch messages
+//PAFvocoder	= hgroup("PAFvocoder",
+PAFvocoderGroup(x)  = (vgroup("[3]PAFvocoder", x));
+//PAFvocoderGroup(hslider("[2]thres[unit: dB]"
+pafBottom	= PAFvocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+pafTop		= PAFvocoderGroup(hslider("[2]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+pafIndex	= PAFvocoderGroup(hslider("[3]index",	25, 1, 100, 0):smooth(0.999));
+pafOctave	= PAFvocoderGroup(hslider("[4]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
+pafVolume	= PAFvocoderGroup(hslider("[5]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 
 octaveMultiplier	= _<: (
 			(_==-2) * 0.25,
@@ -60,7 +64,7 @@ with {
 
 PitchTracker(audio) = (OSConOff, internal, osc):select2 
 with	{
-		internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch):vbargraph("freq", MinInputPitch, MaxInputPitch);
+		internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
 		osc = OSCpitch;
 		};
 
@@ -160,7 +164,7 @@ paf(pafCenter16,Fund,pafIndex,pafVol16)
 ;
 
 //this is process:
-pafvocoder(audio,freq)=(pafCenters,analizer(audio,freq),pafFund(freq)):pafOscs:>_<:_,_;
+pafvocoder(audio,freq)=(pafCenters,analizer(audio,freq),pafFund(freq)):pafOscs:>_,pafVolume:*<:_,_;
 
 
 process(audio) = pafvocoder(audio,pafFreq(audio));
