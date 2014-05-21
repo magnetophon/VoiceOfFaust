@@ -15,8 +15,6 @@ import ("effect.lib");
 //-----------------------------------------------
 // contants
 //-----------------------------------------------
-
-
 minline			= 3;		// minimum line time in ms
 analizerQ		= 7; 		// Q of the analizer bp filters
 MinInputPitch	= 61.7354; 	// lowest note is a B1
@@ -26,11 +24,18 @@ MaxInputPitch	= 987.767;	// highest note is a B5
 //-----------------------------------------------
 // the GUI
 //-----------------------------------------------
-
 pafBottom	= hslider("bottom",		1, 0.5, 7, 0.01):smooth(0.999)<:_,_:*;	//0.25 to 49 logarithmicly
 pafTop		= hslider("top",		8.5, 1, 10, 0.01):smooth(0.999)<:_,_:*;	//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-pafIndex	= hslider("pafIndex",	25, 1, 100, 1):smooth(0.999);
+pafIndex	= hslider("pafIndex",	25, 1, 100, 0.01):smooth(0.999);
+pafOctave	= hslider("pafOctave",	0, -2, 2, 1):octaveMultiplier;
 
+octaveMultiplier	= _<: (
+			(_==-2) * 0.25,
+			(_==-1) * 0.5,
+			(_==0),
+			(_==1) * 2,
+			(_==2) * 4
+):>_;
 
 
 //-----------------------------------------------
@@ -50,12 +55,7 @@ with {
       M = SH(N == 0, N' + 1) ;
 };
 
-PitchTracker(audio) = audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2);
-//:max(100) )
-//analizerFreq(audio) = audio:PitchTracker; //detect the pitch
-
-//:min(200):max(50)
-
+PitchTracker(audio) = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch):vbargraph("freq", MinInputPitch, MaxInputPitch);
 
 
 //-----------------------------------------------
@@ -92,7 +92,7 @@ analizer(audio,freq)=(analizerCenters(freq)):analizers(audio);
 //-----------------------------------------------
 
 //pafFreq(audio)= PitchTracker(audio):hbargraph("freq", 0, 700);
-pafFreq(audio)= PitchTracker(audio):min(200):max(50):vbargraph("freq", 0, 1000);
+pafFreq(audio)= PitchTracker(audio)*pafOctave;
 /*
 bellcurve =rdtable(199,curve,_)
 with {
@@ -141,14 +141,13 @@ paf(pafCenter16,Fund,pafIndex,pafVol16)
 
 //this is process:
 pafvocoder(audio,freq)=(pafCenters,analizer(audio,freq),pafFund(freq)):pafOscs:>_<:_,_;
+
 process(audio) =pafvocoder(audio,pafFreq(audio));
 
 //-----------------------------------------------
 // testing cruft
 //-----------------------------------------------
-
-
-//process = PitchTracker;
+//process = pafOctave;//PitchTracker;
 //analizer(audio,pafFreq(audio)):par(i,16, vbargraph("foo", 0, 0.01));
 //analizerCenters(pafFreq(audio)):par(i,16, vbargraph("foo", 0, 20000));
 //
