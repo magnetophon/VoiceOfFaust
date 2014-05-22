@@ -85,7 +85,7 @@ with	{
 // the vocoder analiser
 //-----------------------------------------------
 
-analizerCenters(freq) = VocoderFreqs(0.853553,128);
+analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*));
 bandEnv(freq)=resonbp(freq:min(20000),analizerQ,1):amp_follower_ud(0.01,0.01);  
 analizers(audio,freq1,freq2,freq3,freq4,freq5,freq6,freq7,freq8,freq9,freq10,freq11,freq12,freq13,freq14,freq15,freq16)=
 audio<:
@@ -213,7 +213,7 @@ pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq))
 
 
 
-process(audio) = pafvocoder(audio,pafFreq(audio));
+process(audio) = vocoder(audio,pafFreq(audio));
 //oscFilter(pafFreq(audio),audio, 1);
 //vocoder(audio,pafFreq(audio));
 
