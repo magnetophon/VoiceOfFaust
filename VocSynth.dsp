@@ -1,9 +1,9 @@
 declare name 		"VocSynth";
-declare version 	"1.0";
+declare version 	"0.1";
 declare author 		"Bart Brouns";
 declare license 	"GNU 3.0";
 declare copyright 	"(c) Bart Brouns 2014";
-declare coauthors	"PitchTracker by Tiziano Bole";
+declare coauthors	"PitchTracker by Tiziano Bole, qompander by Katja Vetter";
 
 //-----------------------------------------------
 // imports
@@ -16,10 +16,11 @@ import ("effect.lib");
 //-----------------------------------------------
 // contants
 //-----------------------------------------------
-minline			= 3;		// minimum line time in ms
-analizerQ		= 7;		// Q of the analizer bp filters
-MinInputPitch	= 61.7354;	// lowest expected note is a B1
-MaxInputPitch	= 987.767;	// highest expected note is a B5
+minline				= 3;		// minimum line time in ms
+analizerQ			= 7;		// Q of the analizer bp filters 
+MinInputPitch		= 61.7354;	// lowest expected note is a B1
+MaxInputPitch		= 987.767;	// highest expected note is a B5
+maxTimeWithoutPitch	= 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples)
 
 //-----------------------------------------------
 // the GUI
@@ -62,10 +63,11 @@ with {
       M = SH(N == 0, N' + 1) ;
 };
 
-PitchTracker(audio) = (OSConOff, internal, osc):select2 
+// switch to internal pitchtracker if OSC is silent for too long
+PitchTracker(audio) = (isSameTooLong(OSCpitch,maxTimeWithoutPitch), OSCpitch, internal):select2 
 with	{
 		internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
-		osc = OSCpitch;
+		isSameTooLong(x,time) = (x@time==x);
 		};
 
 //-----------------------------------------------
@@ -163,12 +165,14 @@ paf(pafCenter15,Fund,pafIndex,pafVol15),
 paf(pafCenter16,Fund,pafIndex,pafVol16)
 ;
 
-//this is process:
-pafvocoder(audio,freq)=(pafCenters,analizer(audio,freq),pafFund(freq)):pafOscs:>_,pafVolume:*<:_,_;
 
+qompander = component("../qompander/qompander.dsp");
+
+//this is process:
+pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:>_,pafVolume:*<:_,_;
 
 process(audio) = pafvocoder(audio,pafFreq(audio));
-
+//process = isSameTooLong(OSCpitch,maxTimeWithoutPitch):hbargraph("TST", 0, int(3));
 //-----------------------------------------------
 // testing cruft
 //-----------------------------------------------
