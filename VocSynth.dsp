@@ -86,7 +86,7 @@ with	{
 // master index
 //-----------------------------------------------
 masterIndex(freq)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
-
+fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq)); //choose octaves
 //-----------------------------------------------
 // vocoder analiser
 //-----------------------------------------------
@@ -162,10 +162,7 @@ with {
 // Normal vocoder synthesis
 //-----------------------------------------------
 
-
-//vocoderFreq(audio)= PitchTracker(audio);
-//vocoderFund(freq)= (pafTop * masterIndex(freq)) - floor(pafTop * masterIndex(freq));
-vocoderFund(freq)= (4 * vocoderOctave * masterIndex(freq)) - floor(4 * vocoderOctave * masterIndex(freq));
+vocoderFund(freq)= fund(freq,vocoderOctave);
 vocoderOsc(freq) =   sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
 
 
@@ -199,7 +196,10 @@ vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocode
 //-----------------------------------------------
 
 pafFreq(audio)= PitchTracker(audio)*pafOctave;
-pafFund(freq)= lf_sawpos(freq);
+//pafFund(freq)= lf_sawpos(freq);
+pafFund(freq) = fund(freq,pafOctave);
+
+//pafFund(freq)= (4 * vocoderOctave * masterIndex(freq)) - floor(4 * vocoderOctave * masterIndex(freq));
 
 bellcurve(x) = int(x):rdtable(belltablesize+1,curve,_)
 with 	{
@@ -215,9 +215,6 @@ centerWrap(c,f) = line (c, 300):sampleAndHold(f)<:wrap;
 centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
 cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
 bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*line (i, 12))+100:bellcurve;
-
-//use this to get a normal vocoder:
-//paf(c,f,i,v)= pafFund:resonbp(c*pafFreq,analizerQ,1) * line (v, minline);
 
 paf(c,f,i,v)= (((cos12(c,f))*bell(f,i)) * line (v, minline));
 
@@ -255,7 +252,7 @@ pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq))
 
 
 //process(audio) = vocoderOsc(PitchTracker(audio));
-process(audio) = vocoder(audio:qompander,PitchTracker(audio));
+process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 //sawNws(3,vocoderFund(vocoderFreq(audio)),vocoderFreq(audio));
 //vocoder(audio,vocoderFreq(audio));
 //oscFilter(pafFreq(audio),audio, 1);
