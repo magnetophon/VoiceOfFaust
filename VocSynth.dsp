@@ -28,7 +28,12 @@ maxTimeWithoutPitch	= 2*SR;		// longest time the OSC pitch tracker can be silent
 //-----------------------------------------------
 OSCpitch	= nentry("[1]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0); 	// To recieve OSC pitch messages
 
-vocoderGroup(x)  = (vgroup("[2]vocoder", x));
+subGroup(x)  = (vgroup("[2]sub", x));
+subOctave	= subGroup(hslider("[1]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of sub
+subVolume	= subGroup(hslider("[2]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+
+
+vocoderGroup(x)  = (vgroup("[3]vocoder", x));
 vocoderBottom	= vocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 vocoderTop		= vocoderGroup(hslider("[2]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 vocoderQ		= vocoderGroup(hslider("[3]Q",	1, 0.1, 100, 0):smooth(0.999));
@@ -36,7 +41,7 @@ vocoderOctave	= vocoderGroup(hslider("[4]octave",	0, -2, 2, 1):octaveMultiplier)
 vocoderVolume	= vocoderGroup(hslider("[5]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 vocoderN		= 1;//vocoderGroup(hslider("[6]N",	1, 1, 6, 1));
 
-PAFvocoderGroup(x)  = (vgroup("[3]PAFvocoder", x));
+PAFvocoderGroup(x)  = (vgroup("[4]PAFvocoder", x));
 pafBottom	= PAFvocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 pafTop		= PAFvocoderGroup(hslider("[2]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 pafIndex	= PAFvocoderGroup(hslider("[3]index",	25, 1, 100, 0):smooth(0.999));
@@ -87,6 +92,13 @@ with	{
 //-----------------------------------------------
 masterIndex(freq)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
 fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq)); //choose octaves
+
+//-----------------------------------------------
+// Sub sine
+//-----------------------------------------------
+
+subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1,freq*subOctave));
+subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh*subVolume; 
 //-----------------------------------------------
 // vocoder analiser
 //-----------------------------------------------
@@ -249,14 +261,18 @@ paf(pafCenter16,Fund,pafIndex,pafVol16)
 pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:>_,pafVolume:*<:_,_;
 
 
+//-----------------------------------------------
+// VocSynth
+//-----------------------------------------------
+VocSynth(audio) = 
+subSine(audio:qompander,PitchTracker(audio)),
+vocoder(audio:qompander,PitchTracker(audio)),
+pafvocoder(audio:qompander,PitchTracker(audio))
+:>_;
 
 
-//process(audio) = vocoderOsc(PitchTracker(audio));
-process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
-//sawNws(3,vocoderFund(vocoderFreq(audio)),vocoderFreq(audio));
-//vocoder(audio,vocoderFreq(audio));
-//oscFilter(pafFreq(audio),audio, 1);
-//vocoder(audio,pafFreq(audio));
+process(audio) =  VocSynth(audio)<:_,_;
+//process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
 //-----------------------------------------------
 // testing cruft
