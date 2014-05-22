@@ -3,7 +3,7 @@ declare version 	"0.1";
 declare author 		"Bart Brouns";
 declare license 	"GNU 3.0";
 declare copyright 	"(c) Bart Brouns 2014";
-declare coauthors	"PitchTracker by Tiziano Bole, qompander by Katja Vetter";
+declare coauthors	"PitchTracker by Tiziano Bole, qompander translated from a pd patch by Katja Vetter";
 
 //-----------------------------------------------
 // imports
@@ -12,6 +12,7 @@ declare coauthors	"PitchTracker by Tiziano Bole, qompander by Katja Vetter";
 import ("oscillator.lib");
 import ("maxmsp.lib");
 import ("effect.lib");
+qompander = component("../qompander/qompander.dsp");
 
 //-----------------------------------------------
 // contants
@@ -25,17 +26,26 @@ maxTimeWithoutPitch	= 2*SR;		// longest time the OSC pitch tracker can be silent
 //-----------------------------------------------
 // the GUI
 //-----------------------------------------------
-//OSCgroup(x)  = (hgroup("[1]OSC", x));
-OSConOff	= checkbox("[1]listen for OSC messages");
-OSCpitch	= nentry("[2]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0); 	// To recieve OSC pitch messages
-//PAFvocoder	= hgroup("PAFvocoder",
+OSCpitch	= nentry("[1]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0); 	// To recieve OSC pitch messages
+
+vocoderGroup(x)  = (vgroup("[2]vocoder", x));
+vocoderBottom	= vocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+vocoderTop		= vocoderGroup(hslider("[2]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderQ		= vocoderGroup(hslider("[3]Q",	1, 0.1, 10, 0):smooth(0.999));
+vocoderOctave	= vocoderGroup(hslider("[4]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
+vocoderVolume	= vocoderGroup(hslider("[5]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+
 PAFvocoderGroup(x)  = (vgroup("[3]PAFvocoder", x));
-//PAFvocoderGroup(hslider("[2]thres[unit: dB]"
 pafBottom	= PAFvocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 pafTop		= PAFvocoderGroup(hslider("[2]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 pafIndex	= PAFvocoderGroup(hslider("[3]index",	25, 1, 100, 0):smooth(0.999));
 pafOctave	= PAFvocoderGroup(hslider("[4]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
 pafVolume	= PAFvocoderGroup(hslider("[5]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+
+
+//-----------------------------------------------
+// Some general functions
+//-----------------------------------------------
 
 octaveMultiplier	= _<: (
 			(_==-2) * 0.25,
@@ -45,6 +55,7 @@ octaveMultiplier	= _<: (
 			(_==2) * 4
 ):>_;
 
+VocoderFreqs(bottom,top) =     par(i,16,   pow((pow((top/bottom),1/15)),i)*bottom);
 
 //-----------------------------------------------
 // Universal Pitch Tracker (a periods measurement)
@@ -64,17 +75,17 @@ with {
 };
 
 // switch to internal pitchtracker if OSC is silent for too long
-PitchTracker(audio) = (isSameTooLong(OSCpitch,maxTimeWithoutPitch), OSCpitch, internal):select2 
+PitchTracker(audio) = (isSameTooLong(OSCpitch), OSCpitch, internal):select2 
 with	{
 		internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
-		isSameTooLong(x,time) = (x@time==x);
+		isSameTooLong(x) = (x@maxTimeWithoutPitch==x);
 		};
 
 //-----------------------------------------------
 // the vocoder analiser
 //-----------------------------------------------
 
-analizerCenters(freq)=par(i,16,  (pow((pow((128   /0.853553) ,1/15)),i)*0.853553 )*freq);
+analizerCenters(freq) = VocoderFreqs(0.853553,128);
 bandEnv(freq)=resonbp(freq:min(20000),analizerQ,1):amp_follower_ud(0.01,0.01);  
 analizers(audio,freq1,freq2,freq3,freq4,freq5,freq6,freq7,freq8,freq9,freq10,freq11,freq12,freq13,freq14,freq15,freq16)=
 audio<:
@@ -98,6 +109,35 @@ bandEnv(freq16)
 )
 ;
 analizer(audio,freq)=(analizerCenters(freq)):analizers(audio);
+
+//-----------------------------------------------
+// Normal vocoder synthesis
+//-----------------------------------------------
+
+oscFilter(c,f,v) = f:resonbp(c,vocoderQ,line (v, minline));
+
+oscFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Fund)=
+oscFilter(Center1,Fund,Volume1),
+oscFilter(Center2,Fund,Volume2),
+oscFilter(Center3,Fund,Volume3),
+oscFilter(Center4,Fund,Volume4),
+oscFilter(Center5,Fund,Volume5),
+oscFilter(Center6,Fund,Volume6),
+oscFilter(Center7,Fund,Volume7),
+oscFilter(Center8,Fund,Volume8),
+oscFilter(Center9,Fund,Volume9),
+oscFilter(Center10,Fund,Volume10),
+oscFilter(Center11,Fund,Volume11),
+oscFilter(Center12,Fund,Volume12),
+oscFilter(Center13,Fund,Volume13),
+oscFilter(Center14,Fund,Volume14),
+oscFilter(Center15,Fund,Volume15),
+oscFilter(Center16,Fund,Volume16)
+;
+
+vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq:*));
+
+vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),pafFund(freq)):oscFilterBank:>_,vocoderVolume:*<:_,_;
 
 //-----------------------------------------------
 // PAF oscilator
@@ -145,7 +185,8 @@ paf(c,f,i,v)= (((cos12(c,f))*bell(f,i)) * line (v, minline));
 // the paf vocoder synthesis
 //-----------------------------------------------
 
-pafCenters=     par(i,16,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
+//pafCenters=     par(i,16,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
+pafCenters = VocoderFreqs(pafBottom,pafTop);
 pafOscs(pafCenter1,pafCenter2,pafCenter3,pafCenter4,pafCenter5,pafCenter6,pafCenter7,pafCenter8,pafCenter9,pafCenter10,pafCenter11,pafCenter12,pafCenter13,pafCenter14,pafCenter15,pafCenter16,pafVol1,pafVol2,pafVol3,pafVol4,pafVol5,pafVol6,pafVol7,pafVol8,pafVol9,pafVol10,pafVol11,pafVol12,pafVol13,pafVol14,pafVol15,pafVol16,Fund)=
 paf(pafCenter1,Fund,pafIndex,pafVol1),
 paf(pafCenter2,Fund,pafIndex,pafVol2),
@@ -166,13 +207,16 @@ paf(pafCenter16,Fund,pafIndex,pafVol16)
 ;
 
 
-qompander = component("../qompander/qompander.dsp");
-
 //this is process:
 pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:>_,pafVolume:*<:_,_;
 
+
+
+
 process(audio) = pafvocoder(audio,pafFreq(audio));
-//process = isSameTooLong(OSCpitch,maxTimeWithoutPitch):hbargraph("TST", 0, int(3));
+//oscFilter(pafFreq(audio),audio, 1);
+//vocoder(audio,pafFreq(audio));
+
 //-----------------------------------------------
 // testing cruft
 //-----------------------------------------------
