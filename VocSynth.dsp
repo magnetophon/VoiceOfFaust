@@ -34,7 +34,7 @@ vocoderTop		= vocoderGroup(hslider("[2]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_
 vocoderQ		= vocoderGroup(hslider("[3]Q",	1, 0.1, 100, 0):smooth(0.999));
 vocoderOctave	= vocoderGroup(hslider("[4]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
 vocoderVolume	= vocoderGroup(hslider("[5]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-vocoderN		= 3;//vocoderGroup(hslider("[6]N",	1, 1, 6, 1));
+vocoderN		= 1;//vocoderGroup(hslider("[6]N",	1, 1, 6, 1));
 
 PAFvocoderGroup(x)  = (vgroup("[3]PAFvocoder", x));
 pafBottom	= PAFvocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
@@ -79,11 +79,16 @@ with {
 PitchTracker(audio) = ((isSameTooLong(OSCpitch), OSCpitch, internal):select2) :smooth(0.99)
 with	{
 		internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
-		isSameTooLong(x) = (x@maxTimeWithoutPitch==x); //todo: make a more elaborate version
+		isSameTooLong(x) = (x@maxTimeWithoutPitch==x); //todo: make a more elaborate version, or kill it alltogether
 		};
 
 //-----------------------------------------------
-// the vocoder analiser
+// master index
+//-----------------------------------------------
+masterIndex(freq)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
+
+//-----------------------------------------------
+// vocoder analiser
 //-----------------------------------------------
 
 analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
@@ -111,37 +116,10 @@ bandEnv(freq16)
 ;
 analizer(audio,freq)=(analizerCenters(freq)):analizers(audio);
 
+
 //-----------------------------------------------
-// Normal vocoder synthesis
+// slave oscilators
 //-----------------------------------------------
-
-oscFilter(c,f,v) = f:resonbp(c,vocoderQ,line (v, minline));
-
-oscFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator)=
-oscFilter(Center1,Oscilator,Volume1),
-oscFilter(Center2,Oscilator,Volume2),
-oscFilter(Center3,Oscilator,Volume3),
-oscFilter(Center4,Oscilator,Volume4),
-oscFilter(Center5,Oscilator,Volume5),
-oscFilter(Center6,Oscilator,Volume6),
-oscFilter(Center7,Oscilator,Volume7),
-oscFilter(Center8,Oscilator,Volume8),
-oscFilter(Center9,Oscilator,Volume9),
-oscFilter(Center10,Oscilator,Volume10),
-oscFilter(Center11,Oscilator,Volume11),
-oscFilter(Center12,Oscilator,Volume12),
-oscFilter(Center13,Oscilator,Volume13),
-oscFilter(Center14,Oscilator,Volume14),
-oscFilter(Center15,Oscilator,Volume15),
-oscFilter(Center16,Oscilator,Volume16)
-;
-
-vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq:*:min(SR/2)));
-
-vocoderFreq(audio)= PitchTracker(audio)*vocoderOctave;
-vocoderFund(freq)= lf_sawpos(freq);
-
-vocoderOsc(freq) =   sawNws(vocoderN,vocoderFund(freq),freq);
 
 //---------------- Bandlimited Sawtooth sawN, saw2, ... ------------------
 // METHOD: Differentiated Polynomial Waves (DPW) (for aliasing suppression)
@@ -150,6 +128,8 @@ vocoderOsc(freq) =   sawNws(vocoderN,vocoderFund(freq),freq);
 // Vesa Valimaki, Juhan Nam, Julius Smith, and Jonathan Abel, 
 // IEEE Tr. Acoustics, Speech, and Language Processing (IEEE-ASLP),
 // Vol. 18, no. 5, May 2010.
+
+//todo: research N
 
 // --- sawN for N = 1 to 6 ---
 //ws = waveshaping, so it takes an input saw as index
@@ -176,6 +156,41 @@ with {
   D(5) = diff(5)/720.0;
   gate(N) = *(1@(N)); // delayed step for blanking startup glitch
 };
+
+
+//-----------------------------------------------
+// Normal vocoder synthesis
+//-----------------------------------------------
+
+
+//vocoderFreq(audio)= PitchTracker(audio);
+//vocoderFund(freq)= (pafTop * masterIndex(freq)) - floor(pafTop * masterIndex(freq));
+vocoderFund(freq)= (4 * vocoderOctave * masterIndex(freq)) - floor(4 * vocoderOctave * masterIndex(freq));
+vocoderOsc(freq) =   sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
+
+
+oscFilter(c,f,v) = f:resonbp(c,vocoderQ,line (v, minline));
+
+oscFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator)=
+oscFilter(Center1,Oscilator,Volume1),
+oscFilter(Center2,Oscilator,Volume2),
+oscFilter(Center3,Oscilator,Volume3),
+oscFilter(Center4,Oscilator,Volume4),
+oscFilter(Center5,Oscilator,Volume5),
+oscFilter(Center6,Oscilator,Volume6),
+oscFilter(Center7,Oscilator,Volume7),
+oscFilter(Center8,Oscilator,Volume8),
+oscFilter(Center9,Oscilator,Volume9),
+oscFilter(Center10,Oscilator,Volume10),
+oscFilter(Center11,Oscilator,Volume11),
+oscFilter(Center12,Oscilator,Volume12),
+oscFilter(Center13,Oscilator,Volume13),
+oscFilter(Center14,Oscilator,Volume14),
+oscFilter(Center15,Oscilator,Volume15),
+oscFilter(Center16,Oscilator,Volume16)
+;
+
+vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
 
 vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):oscFilterBank:>_,vocoderVolume:*<:_,_;
 
@@ -208,7 +223,7 @@ paf(c,f,i,v)= (((cos12(c,f))*bell(f,i)) * line (v, minline));
 
 
 //-----------------------------------------------
-// the paf vocoder synthesis
+// PAF vocoder synthesis
 //-----------------------------------------------
 
 //pafCenters=     par(i,16,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
@@ -239,7 +254,8 @@ pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq))
 
 
 
-process(audio) = vocoder(audio,vocoderFreq(audio));
+//process(audio) = vocoderOsc(PitchTracker(audio));
+process(audio) = vocoder(audio:qompander,PitchTracker(audio));
 //sawNws(3,vocoderFund(vocoderFreq(audio)),vocoderFreq(audio));
 //vocoder(audio,vocoderFreq(audio));
 //oscFilter(pafFreq(audio),audio, 1);
