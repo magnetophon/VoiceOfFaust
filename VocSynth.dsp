@@ -41,7 +41,7 @@ vocoderVolume	= vocoderGroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,
 vocoderOctave	= vocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
 vocoderBottom	= vocoderGroup(vslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 vocoderTop		= vocoderGroup(vslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderQ		= vocoderGroup(vslider("[5]Q",	7, 0.1, 100, 0):smooth(0.999));
+vocoderQ		= vocoderGroup(vslider("[5]Q",	7, 0.3, 10, 0)<:(_,_):*:smooth(0.999));			//0.1 to 10 logarithmicly,
 vocoderN		= 1;//vocoderGroup(vslider("[6]N",	1, 1, 6, 1));
 vocoderMix		= vocoderGroup(vslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
 vocoderDetune	= vocoderGroup(vslider("[8]detune",	0, 0, 1, 0):smooth(0.999));
@@ -216,31 +216,35 @@ vocoderOsc(freq) =   supersaw(vocoderN,vocoderFund(freq),freq,vocoderDetune,voco
 //sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
 //
 
-oscFilter(c,f,v) = f:resonbp(c,vocoderQ,line (v, minline));
+volFilter(c,f,v) = f:resonbp(c,vocoderQ,gain)
+with {
+compensate = tanh((1/(vocoderQ:min(1)))/2)*2;
+gain = line (v*compensate, minline);
+};
 
-oscFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator)=
-oscFilter(Center1,Oscilator,Volume1),
-oscFilter(Center2,Oscilator,Volume2),
-oscFilter(Center3,Oscilator,Volume3),
-oscFilter(Center4,Oscilator,Volume4),
-oscFilter(Center5,Oscilator,Volume5),
-oscFilter(Center6,Oscilator,Volume6),
-oscFilter(Center7,Oscilator,Volume7),
-oscFilter(Center8,Oscilator,Volume8),
-oscFilter(Center9,Oscilator,Volume9),
-oscFilter(Center10,Oscilator,Volume10),
-oscFilter(Center11,Oscilator,Volume11),
-oscFilter(Center12,Oscilator,Volume12),
-oscFilter(Center13,Oscilator,Volume13),
-oscFilter(Center14,Oscilator,Volume14),
-oscFilter(Center15,Oscilator,Volume15),
-oscFilter(Center16,Oscilator,Volume16)
+volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator)=
+volFilter(Center1,Oscilator,Volume1),
+volFilter(Center2,Oscilator,Volume2),
+volFilter(Center3,Oscilator,Volume3),
+volFilter(Center4,Oscilator,Volume4),
+volFilter(Center5,Oscilator,Volume5),
+volFilter(Center6,Oscilator,Volume6),
+volFilter(Center7,Oscilator,Volume7),
+volFilter(Center8,Oscilator,Volume8),
+volFilter(Center9,Oscilator,Volume9),
+volFilter(Center10,Oscilator,Volume10),
+volFilter(Center11,Oscilator,Volume11),
+volFilter(Center12,Oscilator,Volume12),
+volFilter(Center13,Oscilator,Volume13),
+volFilter(Center14,Oscilator,Volume14),
+volFilter(Center15,Oscilator,Volume15),
+volFilter(Center16,Oscilator,Volume16)
 ;
 
 
 vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
 
-vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):oscFilterBank:vocoderMixer:par(i, 2, _*vocoderVolume):WidePanner(vocoderWidth);
+vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):volFilterBank:vocoderMixer:par(i, 2, _*vocoderVolume):WidePanner(vocoderWidth);
 
 //-----------------------------------------------
 // PAF oscilator
