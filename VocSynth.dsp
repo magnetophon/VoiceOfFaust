@@ -57,11 +57,35 @@ pafIndex	= PAFvocoderGroup(vslider("[5]index",	25, 1, 100, 0):smooth(0.999));
 pafWidth		= PAFvocoderGroup(vslider("[6]width",		1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 
 FMgroup(x)  = synthsGroup((hgroup("[4]FM", x)));
-FMvolume	= FMgroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-//FMOctave	= FMgroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
-FMdyn		= FMgroup(vslider("[4]dyn",		0, 0, 1, 0):smooth(0.999));
-FMindex		= FMgroup(vslider("[5]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
-FMwidth		= FMgroup(vslider("[6]width",	0, 0, 1, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+FMvolume	= FMgroup(vslider("[01]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+//FMOctave	= FMgroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//not needed, we have all octaves! :)
+
+LLFMgroup(x)  = FMgroup((hgroup("[1]-2 oct", x)));
+FMvolLL		= LLFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+FMindexLL	= LLFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
+FMdynLL		= LLFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
+LFMgroup(x)  = FMgroup((hgroup("[2]-1 oct", x)));
+FMvolL		= LFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+FMindexL	= LFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
+FMdynL		= LFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
+
+mFMgroup(x)  = FMgroup((hgroup("[3]0 oct", x)));
+FMvol		= mFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+FMindex		= mFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
+FMdyn		= mFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
+HFMgroup(x)  = FMgroup((hgroup("[4]+1 oct", x)));
+FMvolH		= HFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+FMindexH	= HFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
+FMdynH		= HFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
+HHFMgroup(x)  = FMgroup((hgroup("[5]+2 oct", x)));
+FMvolHH		= HHFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+FMindexHH	= HHFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
+FMdynHH		= HHFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
 
 
 
@@ -312,15 +336,16 @@ pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq))
 
 
 //-----------------------------------------------
-// VocSynth Combine all the elements
+// VocSynth: Combine all the elements
 //-----------------------------------------------
+SynthsMixer = interleave(2,4):(bus(4):>_),(bus(4):>_);
+
 VocSynth(audio) = 
 (subSine(audio:qompander,PitchTracker(audio)),
 vocoder(audio:qompander,PitchTracker(audio)),
-pafvocoder(audio:qompander,PitchTracker(audio))):
+pafvocoder(audio:qompander,PitchTracker(audio))),
+FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)):
 SynthsMixer;
-
-SynthsMixer = interleave(2,3):(bus(3):>_),(bus(3):>_);
 
 
 //subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
@@ -341,33 +366,26 @@ dynamics(limited, unlimited,dyn) =
 :interleave(2,2):(bus2:>_),(bus2:>_)
 :_*limited,_*unlimited:>_;
 
-ds(dyn) = dyn-0.5:max(0)*2;
-//(((dyn>= 0.5)*dyn-0.5):max(0)*2);
-//todo: HP voc @ 400
 FMvoc(limited, unlimited,freq,vol,index,dyn) = osc((dynamics(limited, unlimited,dyn)*index)+freq)*vol;
 
-//
+FMSynth(limited, unlimited,freq,vol) =
+(
+FMvoc(limited, unlimited,freq*0.25,vol*FMvolLL,FMindexLL,FMdynLL),
+FMvoc(limited, unlimited,freq*0.5,vol*FMvolL,FMindexL,FMdynL),
+FMvoc(limited, unlimited,freq,vol*FMvol,FMindex,FMdyn),
+FMvoc(limited, unlimited,freq*2,vol*FMvolH,FMindexH,FMdynH),
+FMvoc(limited, unlimited,freq*4,vol*FMvolHH,FMindexHH,FMdynHH)
+):>_*FMvolume<:_,_
+;
 
-//process = ds(vslider("dyn", 0, 0, 1, 0)):vbargraph("dyn", 0, 1);
-//process(audio) = dynamics(0, 1,vslider("dyn", 0, 0, 1, 0):smooth(0.999)):vbargraph("dyn", 0, 1);
-process(audio) = FMvoc(audio:extremeLimiter, audio,PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
+//process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio));
+//FMvoc(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
 
-//process(audio) = VocSynth(audio);
+process(audio) = VocSynth(audio);
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
 //-----------------------------------------------
 // testing cruft
 //-----------------------------------------------
-//process = pafOctave;//PitchTracker;
-//analizer(audio,pafFreq(audio)):par(i,16, vbargraph("foo", 0, 0.01));
-//analizerCenters(pafFreq(audio)):par(i,16, vbargraph("foo", 0, 20000));
-//
-//pafvocoder(audio,pafFreq(audio));
-//analizer(audio,pafFreq(audio)):par(i,16, vbargraph("foo", 0, 0.01));
-// paf(pafTop,pafFund(pafFreq(x)),pafIndex,1);
-//pafvocoder<:_,_;
-//analizerCenters(pafFreq(audio)):par(i,16, vbargraph("foo", 0, 1440));
-//paf(pafTop,pafFund,pafIndex,1)<:_,_;
-//analizer:par(i,16, vbargraph("foo", 0, 1));
-//paf(center/10,pafFund,pafIndex,1); // 
+
 
