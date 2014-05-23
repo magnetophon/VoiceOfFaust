@@ -26,32 +26,35 @@ maxTimeWithoutPitch	= 2*SR;		// longest time the OSC pitch tracker can be silent
 //-----------------------------------------------
 // the GUI
 //-----------------------------------------------
-OSCpitch	= nentry("[1]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0); 	// To recieve OSC pitch messages
+OSCpitch	= nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0); 	// To recieve OSC pitch messages
+//qompander = [1]
+synthsGroup(x)  = (hgroup("[2]", x));
 
-subGroup(x)  = (vgroup("[2]sub", x));
-subOctave	= subGroup(hslider("[1]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of sub
-subVolume	= subGroup(hslider("[2]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-
-
-vocoderGroup(x)  = (vgroup("[3]vocoder", x));
-vocoderVolume	= vocoderGroup(hslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-vocoderOctave	= vocoderGroup(hslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
-vocoderBottom	= vocoderGroup(hslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-vocoderTop		= vocoderGroup(hslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderQ		= vocoderGroup(hslider("[5]Q",	1, 0.1, 100, 0):smooth(0.999));
-vocoderN		= 1;//vocoderGroup(hslider("[6]N",	1, 1, 6, 1));
-vocoderMix		= vocoderGroup(hslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
-vocoderDetune	= vocoderGroup(hslider("[8]detune",	0, 0, 1, 0):smooth(0.999));
-vocoderWidth		= vocoderGroup(hslider("[9]width",	1, 0, 2, 0):smooth(0.999));				//wide pan, 0=mono 1=normal 2=full-wide
+subGroup(x)  = synthsGroup((hgroup("[1]sub", x)));
+subVolume	= subGroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+subOctave	= subGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of sub
 
 
-PAFvocoderGroup(x)  = (vgroup("[4]PAFvocoder", x));
-pafVolume	= PAFvocoderGroup(hslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-pafOctave	= PAFvocoderGroup(hslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
-pafBottom	= PAFvocoderGroup(hslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-pafTop		= PAFvocoderGroup(hslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-pafIndex	= PAFvocoderGroup(hslider("[5]index",	25, 1, 100, 0):smooth(0.999));
-pafWidth		= PAFvocoderGroup(hslider("[6]width",		1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+
+vocoderGroup(x) = synthsGroup((hgroup("[2]vocoder", x)));
+vocoderVolume	= vocoderGroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+vocoderOctave	= vocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
+vocoderBottom	= vocoderGroup(vslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+vocoderTop		= vocoderGroup(vslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderQ		= vocoderGroup(vslider("[5]Q",	7, 0.1, 100, 0):smooth(0.999));
+vocoderN		= 1;//vocoderGroup(vslider("[6]N",	1, 1, 6, 1));
+vocoderMix		= vocoderGroup(vslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
+vocoderDetune	= vocoderGroup(vslider("[8]detune",	0, 0, 1, 0):smooth(0.999));
+vocoderWidth		= vocoderGroup(vslider("[9]width",	1, 0, 2, 0):smooth(0.999));				//wide pan, 0=mono 1=normal 2=full-wide
+
+
+PAFvocoderGroup(x)  = synthsGroup((hgroup("[3]PAFvocoder", x)));
+pafVolume	= PAFvocoderGroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+pafOctave	= PAFvocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
+pafBottom	= PAFvocoderGroup(vslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+pafTop		= PAFvocoderGroup(vslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+pafIndex	= PAFvocoderGroup(vslider("[5]index",	25, 1, 100, 0):smooth(0.999));
+pafWidth		= PAFvocoderGroup(vslider("[6]width",		1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 
 //-----------------------------------------------
 // Some general functions
@@ -105,8 +108,8 @@ fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq
 // Sub sine
 //-----------------------------------------------
 
-subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
-subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh*subVolume; 
+subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio)*subVolume:lowpass(1,freq*subOctave))<:_,_;
+subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh; 
 //-----------------------------------------------
 // vocoder analiser
 //-----------------------------------------------
@@ -305,7 +308,13 @@ SynthsMixer;
 
 SynthsMixer = interleave(2,3):(bus(3):>_),(bus(3):>_);
 
-//process = SynthsMixer;
+
+//subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
+//subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh*subVolume; 
+FM(audio,freq)= osc(freq/2+audio* 5000)*subLevel(audio);
+
+
+//process(audio) = FM(audio:qompander,PitchTracker(audio));
 
 process(audio) = VocSynth(audio);
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
