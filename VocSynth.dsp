@@ -40,6 +40,8 @@ vocoderQ		= vocoderGroup(hslider("[3]Q",	1, 0.1, 100, 0):smooth(0.999));
 vocoderOctave	= vocoderGroup(hslider("[4]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
 vocoderVolume	= vocoderGroup(hslider("[5]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 vocoderN		= 1;//vocoderGroup(hslider("[6]N",	1, 1, 6, 1));
+vocoderMix		= vocoderGroup(hslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
+vocoderDetune	= vocoderGroup(hslider("[8]detune",	0, 0, 1, 0):smooth(0.999));
 
 PAFvocoderGroup(x)  = (vgroup("[4]PAFvocoder", x));
 pafBottom	= PAFvocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
@@ -168,15 +170,40 @@ with {
   D(5) = diff(5)/720.0;
   gate(N) = *(1@(N)); // delayed step for blanking startup glitch
 };
+//emulation of a roland supersaw, based on: "How to Emulate the Super Saw" by ADAM SZABO
+//http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf 
+//Implemented in faust by Bart Brouns
 
+supersaw(N,fund,freq,detune,mix) = saws(fund,freq,detuner(detune)):mixer(mix) 
+with {
+detuner (detune) = 
+(((detune*0.2),(detune<0.6)):*),
+((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
+((((detune-0.95)*12+0.4),(detune>0.95)):*)
+:>_;
+//todo: make N the defined val
+N=1;
+saws(fund,freq,det) = 
+sawNws(N,fund,freq),
+sawN(N,(det * -0.110023+1)*freq),
+sawN(N,(det * -0.0628844+1)*freq),
+sawN(N,(det * -0.0195236+1)*freq),
+sawN(N,(det * 0.0199122+1)*freq),
+sawN(N,(det * 0.0621654+1)*freq),
+sawN(N,(det * 0.107452+1)*freq);
+mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
+detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
+mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_;
+};
 
 //-----------------------------------------------
 // Normal vocoder synthesis
 //-----------------------------------------------
 
 vocoderFund(freq)= fund(freq,vocoderOctave);
-vocoderOsc(freq) =   sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
-
+vocoderOsc(freq) =   supersaw(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix);
+//sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
+//
 
 oscFilter(c,f,v) = f:resonbp(c,vocoderQ,line (v, minline));
 
@@ -271,7 +298,7 @@ pafvocoder(audio:qompander,PitchTracker(audio))
 :>_;
 
 
-process(audio) =  VocSynth(audio)<:_,_;
+process(audio) = VocSynth(audio)<:_,_;
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
 //-----------------------------------------------
