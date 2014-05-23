@@ -1,4 +1,4 @@
 VoiceOfFaust
 ============
 
-A translation of Vocsynth into faust
+A translation of VocSynth into faust.
