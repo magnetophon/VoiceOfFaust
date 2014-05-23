@@ -34,22 +34,24 @@ subVolume	= subGroup(hslider("[2]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);		
 
 
 vocoderGroup(x)  = (vgroup("[3]vocoder", x));
-vocoderBottom	= vocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-vocoderTop		= vocoderGroup(hslider("[2]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderQ		= vocoderGroup(hslider("[3]Q",	1, 0.1, 100, 0):smooth(0.999));
-vocoderOctave	= vocoderGroup(hslider("[4]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
-vocoderVolume	= vocoderGroup(hslider("[5]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+vocoderVolume	= vocoderGroup(hslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+vocoderOctave	= vocoderGroup(hslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
+vocoderBottom	= vocoderGroup(hslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+vocoderTop		= vocoderGroup(hslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderQ		= vocoderGroup(hslider("[5]Q",	1, 0.1, 100, 0):smooth(0.999));
 vocoderN		= 1;//vocoderGroup(hslider("[6]N",	1, 1, 6, 1));
 vocoderMix		= vocoderGroup(hslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
 vocoderDetune	= vocoderGroup(hslider("[8]detune",	0, 0, 1, 0):smooth(0.999));
+vocoderWidth		= vocoderGroup(hslider("[9]width",	1, 0, 2, 0):smooth(0.999));				//wide pan, 0=mono 1=normal 2=full-wide
+
 
 PAFvocoderGroup(x)  = (vgroup("[4]PAFvocoder", x));
-pafBottom	= PAFvocoderGroup(hslider("[1]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-pafTop		= PAFvocoderGroup(hslider("[2]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-pafIndex	= PAFvocoderGroup(hslider("[3]index",	25, 1, 100, 0):smooth(0.999));
-pafOctave	= PAFvocoderGroup(hslider("[4]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
-pafVolume	= PAFvocoderGroup(hslider("[5]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-
+pafVolume	= PAFvocoderGroup(hslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+pafOctave	= PAFvocoderGroup(hslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
+pafBottom	= PAFvocoderGroup(hslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+pafTop		= PAFvocoderGroup(hslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+pafIndex	= PAFvocoderGroup(hslider("[5]index",	25, 1, 100, 0):smooth(0.999));
+pafWidth		= PAFvocoderGroup(hslider("[6]width",		1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 
 //-----------------------------------------------
 // Some general functions
@@ -64,6 +66,10 @@ octaveMultiplier	= _<: (
 ):>_;
 
 VocoderFreqs(bottom,top) =     par(i,16,   pow((pow((top/bottom),1/15)),i)*bottom);
+//to make it stereo
+//todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
+WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);
+vocoderMixer = interleave(2,8):((bus(8):>_),(bus(8):>_));
 
 //-----------------------------------------------
 // Universal Pitch Tracker (a periods measurement)
@@ -99,7 +105,7 @@ fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq
 // Sub sine
 //-----------------------------------------------
 
-subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1,freq*subOctave));
+subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
 subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh*subVolume; 
 //-----------------------------------------------
 // vocoder analiser
@@ -172,7 +178,7 @@ with {
 };
 //emulation of a roland supersaw, based on: "How to Emulate the Super Saw" by ADAM SZABO
 //http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf 
-//Implemented in faust by Bart Brouns
+//Implemented in Faust by Bart Brouns
 
 supersaw(N,fund,freq,detune,mix) = saws(fund,freq,detuner(detune)):mixer(mix) 
 with {
@@ -191,8 +197,10 @@ sawN(N,(det * -0.0195236+1)*freq),
 sawN(N,(det * 0.0199122+1)*freq),
 sawN(N,(det * 0.0621654+1)*freq),
 sawN(N,(det * 0.107452+1)*freq);
+
 mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
 detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
+
 mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_;
 };
 
@@ -226,19 +234,17 @@ oscFilter(Center15,Oscilator,Volume15),
 oscFilter(Center16,Oscilator,Volume16)
 ;
 
+
 vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
 
-vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):oscFilterBank:>_,vocoderVolume:*<:_,_;
+vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):oscFilterBank:vocoderMixer:par(i, 2, _*vocoderVolume):WidePanner(vocoderWidth);
 
 //-----------------------------------------------
 // PAF oscilator
 //-----------------------------------------------
 
 pafFreq(audio)= PitchTracker(audio)*pafOctave;
-//pafFund(freq)= lf_sawpos(freq);
 pafFund(freq) = fund(freq,pafOctave);
-
-//pafFund(freq)= (4 * vocoderOctave * masterIndex(freq)) - floor(4 * vocoderOctave * masterIndex(freq));
 
 bellcurve(x) = int(x):rdtable(belltablesize+1,curve,_)
 with 	{
@@ -284,21 +290,24 @@ paf(pafCenter16,Fund,pafIndex,pafVol16)
 ;
 
 
-//this is process:
-pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:>_,pafVolume:*<:_,_;
+pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:vocoderMixer:par(i, 2, _*pafVolume):WidePanner(pafWidth);
+
 
 
 //-----------------------------------------------
-// VocSynth
+// VocSynth Combine all the elements
 //-----------------------------------------------
 VocSynth(audio) = 
-subSine(audio:qompander,PitchTracker(audio)),
+(subSine(audio:qompander,PitchTracker(audio)),
 vocoder(audio:qompander,PitchTracker(audio)),
-pafvocoder(audio:qompander,PitchTracker(audio))
-:>_;
+pafvocoder(audio:qompander,PitchTracker(audio))):
+SynthsMixer;
 
+SynthsMixer = interleave(2,3):(bus(3):>_),(bus(3):>_);
 
-process(audio) = VocSynth(audio)<:_,_;
+//process = SynthsMixer;
+
+process(audio) = VocSynth(audio);
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
 //-----------------------------------------------
