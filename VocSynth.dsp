@@ -56,6 +56,16 @@ pafTop		= PAFvocoderGroup(vslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_)
 pafIndex	= PAFvocoderGroup(vslider("[5]index",	25, 1, 100, 0):smooth(0.999));
 pafWidth		= PAFvocoderGroup(vslider("[6]width",		1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 
+FMgroup(x)  = synthsGroup((hgroup("[4]FM", x)));
+FMvolume	= FMgroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+//FMOctave	= FMgroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
+FMdyn		= FMgroup(vslider("[4]dyn",		0, 0, 1, 0):smooth(0.999));
+FMindex		= FMgroup(vslider("[5]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
+FMwidth		= FMgroup(vslider("[6]width",	0, 0, 1, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+
+
+
+
 //-----------------------------------------------
 // Some general functions
 //-----------------------------------------------
@@ -317,10 +327,32 @@ SynthsMixer = interleave(2,3):(bus(3):>_),(bus(3):>_);
 //subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh*subVolume; 
 FM(audio,freq)= osc(freq/2+audio* 5000)*subLevel(audio);
 
+//compressor_mono(ratio,thresh,att,rel,x)
+extremeLimiter = compressor_mono(100,-54,0.0008,0.002)*70;
 
-//process(audio) = FM(audio:qompander,PitchTracker(audio));
+equalpower = _<:			//3dB equal power curve
+log(_	 * 5.63875+1)/ 1.89292,
+log((1-_)* 5.63875+1)/ 1.89292;
 
-process(audio) = VocSynth(audio);
+//crossfades from no dynamics to normal dynamics to reversed ones
+dynamics(limited, unlimited,dyn) = 
+((dyn*2:min(1):equalpower),
+(dyn-0.5:max(0)*2:equalpower:(_,_*-1):cross(2)))
+:interleave(2,2):(bus2:>_),(bus2:>_)
+:_*limited,_*unlimited:>_;
+
+ds(dyn) = dyn-0.5:max(0)*2;
+//(((dyn>= 0.5)*dyn-0.5):max(0)*2);
+//todo: HP voc @ 400
+FMvoc(limited, unlimited,freq,vol,index,dyn) = osc((dynamics(limited, unlimited,dyn)*index)+freq)*vol;
+
+//
+
+//process = ds(vslider("dyn", 0, 0, 1, 0)):vbargraph("dyn", 0, 1);
+//process(audio) = dynamics(0, 1,vslider("dyn", 0, 0, 1, 0):smooth(0.999)):vbargraph("dyn", 0, 1);
+process(audio) = FMvoc(audio:extremeLimiter, audio,PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
+
+//process(audio) = VocSynth(audio);
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
 //-----------------------------------------------
