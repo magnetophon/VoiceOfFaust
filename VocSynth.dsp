@@ -13,6 +13,8 @@ import ("oscillator.lib");
 import ("maxmsp.lib");
 import ("effect.lib");
 import ("KarplusStrongFX.lib");
+import ("NLFeksFX.lib");
+
 qompander	= component("../qompander/qompander.dsp");
 //KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
@@ -88,6 +90,41 @@ FMindexHH	= HHFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*1
 FMdynHH		= HHFMgroup(vslider("[3]dyn",	0, 0, 1, 0):smooth(0.999));
 
 
+//-----------------------------------------------
+// Karplus Strong as an effect
+//-----------------------------------------------
+//todo: make FX group and routing
+KPgroup(x)	 = synthsGroup((hgroup("[5]Karplus-Strong", x)));
+KPvolume	= KPgroup(vslider("[01]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+
+LLKPgroup(x) = KPgroup((hgroup("[1]-2 oct", x)));
+KPvolLL		= LLKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+KPresonanceLL	= LLKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
+KPdynLL		= LLKPgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
+LKPgroup(x)  = KPgroup((hgroup("[2]-1 oct", x)));
+KPvolL		= LKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+KPresonanceL	= LKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
+KPdynL		= LKPgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
+mKPgroup(x)  = KPgroup((hgroup("[3]0 oct", x)));
+KPvol		= mKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+KPresonance		= mKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
+KPdyn		= mKPgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+  
+HKPgroup(x)  = KPgroup((hgroup("[4]+1 oct", x)));
+KPvolH		= HKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+KPresonanceH	= HKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
+KPdynH		= HKPgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
+HHKPgroup(x)	= KPgroup((hgroup("[5]+2 oct", x)));
+KPvolHH		= HHKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+KPresonanceHH	= HHKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
+KPdynHH		= HHFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+
+tresh = hslider("[1] Threshold [unit:dB] [tooltip: A limiter in the feedback-loop]",
+     0, -60, 60, 0.1);
+
 
 
 
@@ -146,10 +183,12 @@ fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq
 //-----------------------------------------------
 
 subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio)*subVolume:lowpass(1,freq*subOctave))<:_,_;
-subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh; 
+
 //-----------------------------------------------
 // vocoder analiser
 //-----------------------------------------------
+
+subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh; 
 
 analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
 bandEnv(freq)=resonbp(freq,analizerQ,1):amp_follower_ud(0.01,0.01);  
@@ -356,22 +395,28 @@ dynamics(limited, unlimited,dyn) =
 
 FMvoc(limited, unlimited,freq,vol,index,dyn) = osc((dynamics(limited, unlimited,dyn)*index)+freq)*vol;
 
-FMSynth(limited, unlimited,freq,vol) =
+FMSynth(limited, unlimited,freq,gain) =
 (
-FMvoc(limited, unlimited,freq*0.25,vol*FMvolLL,FMindexLL,FMdynLL),
-FMvoc(limited, unlimited,freq*0.5,vol*FMvolL,FMindexL,FMdynL),
-FMvoc(limited, unlimited,freq,vol*FMvol,FMindex,FMdyn),
-FMvoc(limited, unlimited,freq*2,vol*FMvolH,FMindexH,FMdynH),
-FMvoc(limited, unlimited,freq*4,vol*FMvolHH,FMindexHH,FMdynHH)
+FMvoc(limited, unlimited,freq*0.25,gain*FMvolLL,FMindexLL,FMdynLL),
+FMvoc(limited, unlimited,freq*0.5,gain*FMvolL,FMindexL,FMdynL),
+FMvoc(limited, unlimited,freq,gain*FMvol,FMindex,FMdyn),
+FMvoc(limited, unlimited,freq*2,gain*FMvolH,FMindexH,FMdynH),
+FMvoc(limited, unlimited,freq*4,gain*FMvolHH,FMindexHH,FMdynHH)
 ):>_*FMvolume<:_,_
 ;
 
 //-----------------------------------------------
 // Karplus-Strong effect 
 //-----------------------------------------------
-
-
-
+//KarplusStrongFX(x,freq,gain,resonance)
+KarplusBank(audio,freq) = (
+KarplusStrongFX(audio,freq*0.25,KPvolLL,KPresonanceLL),
+KarplusStrongFX(audio,freq*0.5,KPvolL,KPresonanceL),
+KarplusStrongFX(audio,freq,KPvol,KPresonance),
+KarplusStrongFX(audio,freq*2,KPvolH,KPresonanceH),
+KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
+):>_*KPvolume<:_,_
+;
 //-----------------------------------------------
 // VocSynth: Combine all the elements
 //-----------------------------------------------
@@ -384,13 +429,11 @@ pafvocoder(audio:qompander,PitchTracker(audio))),
 FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)):
 SynthsMixer;
 
-
-
 //process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio));
 //FMvoc(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
-
-process(x) = KarplusStrongFX(x,PitchTracker(x));
-// VocSynth(audio):(KarplusStrongFX(_,PitchTracker(audio)),KarplusStrongFX(_,PitchTracker(audio)));
+process(audio) =(audio):stringloop(PitchTracker(audio),tresh);
+//process(audio) = KarplusBank(audio,PitchTracker(audio)/2);
+//process(audio) = VocSynth(audio):stringloop(PitchTracker(audio)/1),stringloop(PitchTracker(audio)/1);
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
 //-----------------------------------------------
