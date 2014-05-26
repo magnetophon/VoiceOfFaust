@@ -1,5 +1,5 @@
 declare name 		"VocSynth";
-declare version 	"0.1";
+declare version 	"0.2";
 declare author 		"Bart Brouns";
 declare license 	"GNU 3.0";
 declare copyright 	"(c) Bart Brouns 2014";
@@ -12,7 +12,9 @@ declare coauthors	"PitchTracker by Tiziano Bole, qompander translated from a pd 
 import ("oscillator.lib");
 import ("maxmsp.lib");
 import ("effect.lib");
-qompander = component("../qompander/qompander.dsp");
+import ("KarplusStrongFX.lib");
+qompander	= component("../qompander/qompander.dsp");
+//KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
 //-----------------------------------------------
 // contants
@@ -21,7 +23,7 @@ minline				= 3;		// minimum line time in ms
 analizerQ			= 7;		// Q of the analizer bp filters 
 MinInputPitch		= 61.7354;	// lowest expected note is a B1
 MaxInputPitch		= 987.767;	// highest expected note is a B5
-maxTimeWithoutPitch	= 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples)
+maxTimeWithoutPitch	= 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
 
 //-----------------------------------------------
 // the GUI
@@ -36,55 +38,54 @@ subOctave	= subGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//s
 
 
 
-vocoderGroup(x) = synthsGroup((hgroup("[2]vocoder", x)));
+vocoderGroup(x) 	= synthsGroup((hgroup("[2]vocoder", x)));
 vocoderVolume	= vocoderGroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 vocoderOctave	= vocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
-vocoderBottom	= vocoderGroup(vslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-vocoderTop		= vocoderGroup(vslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderQ		= vocoderGroup(vslider("[5]Q",	7, 0.3, 10, 0)<:(_,_):*:smooth(0.999));			//0.1 to 10 logarithmicly,
-vocoderN		= 1;//vocoderGroup(vslider("[6]N",	1, 1, 6, 1));
-vocoderMix		= vocoderGroup(vslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
+vocoderBottom	= vocoderGroup(vslider("[3]bottom",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+vocoderTop	= vocoderGroup(vslider("[4]top",	8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderQ	= vocoderGroup(vslider("[5]Q",	7, 0.3, 10, 0)<:(_,_):*:smooth(0.999));			//0.1 to 10 logarithmicly,
+vocoderN	= 1;//vocoderGroup(vslider("[6]N",	1, 1, 6, 1));
+vocoderMix	= vocoderGroup(vslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
 vocoderDetune	= vocoderGroup(vslider("[8]detune",	0, 0, 1, 0):smooth(0.999));
-vocoderWidth		= vocoderGroup(vslider("[9]width",	1, 0, 2, 0):smooth(0.999));				//wide pan, 0=mono 1=normal 2=full-wide
+vocoderWidth	= vocoderGroup(vslider("[9]width",	1, 0, 2, 0):smooth(0.999));				//wide pan, 0=mono 1=normal 2=full-wide
 
 
 PAFvocoderGroup(x)  = synthsGroup((hgroup("[3]PAFvocoder", x)));
 pafVolume	= PAFvocoderGroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 pafOctave	= PAFvocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
-pafBottom	= PAFvocoderGroup(vslider("[3]bottom",		1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+pafBottom	= PAFvocoderGroup(vslider("[3]bottom",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 pafTop		= PAFvocoderGroup(vslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 pafIndex	= PAFvocoderGroup(vslider("[5]index",	25, 1, 100, 0):smooth(0.999));
-pafWidth		= PAFvocoderGroup(vslider("[6]width",		1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+pafWidth	= PAFvocoderGroup(vslider("[6]width",1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 
-FMgroup(x)  = synthsGroup((hgroup("[4]FM", x)));
+FMgroup(x)	 = synthsGroup((hgroup("[4]FM", x)));
 FMvolume	= FMgroup(vslider("[01]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 //FMOctave	= FMgroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//not needed, we have all octaves! :)
 
-LLFMgroup(x)  = FMgroup((hgroup("[1]-2 oct", x)));
-FMvolLL		= LLFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+LLFMgroup(x) = FMgroup((hgroup("[1]-2 oct", x)));
+FMvolLL		= LLFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
 FMindexLL	= LLFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
-FMdynLL		= LLFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+FMdynLL		= LLFMgroup(vslider("[3]dyn",	0, 0, 1, 0):smooth(0.999));
 
 LFMgroup(x)  = FMgroup((hgroup("[2]-1 oct", x)));
-FMvolL		= LFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+FMvolL		= LFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
 FMindexL	= LFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
-FMdynL		= LFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
-
+FMdynL		= LFMgroup(vslider("[3]dyn",	0, 0, 1, 0):smooth(0.999));
 
 mFMgroup(x)  = FMgroup((hgroup("[3]0 oct", x)));
-FMvol		= mFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+FMvol		= mFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
 FMindex		= mFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
-FMdyn		= mFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+FMdyn		= mFMgroup(vslider("[3]dyn",	0, 0, 1, 0):smooth(0.999));
 
 HFMgroup(x)  = FMgroup((hgroup("[4]+1 oct", x)));
-FMvolH		= HFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+FMvolH		= HFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
 FMindexH	= HFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
-FMdynH		= HFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+FMdynH		= HFMgroup(vslider("[3]dyn",	0, 0, 1, 0):smooth(0.999));
 
-HHFMgroup(x)  = FMgroup((hgroup("[5]+2 oct", x)));
-FMvolHH		= HHFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999)); 
+HHFMgroup(x)	= FMgroup((hgroup("[5]+2 oct", x)));
+FMvolHH		= HHFMgroup(vslider("[1]vol",	0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
 FMindexHH	= HHFMgroup(vslider("[2]index",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
-FMdynHH		= HHFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+FMdynHH		= HHFMgroup(vslider("[3]dyn",	0, 0, 1, 0):smooth(0.999));
 
 
 
@@ -126,10 +127,12 @@ with {
 };
 
 // switch to internal pitchtracker if OSC is silent for too long
+//todo: make a more elaborate version, or kill it alltogether
+//for example, make the fidelity be a kill switch
 PitchTracker(audio) = ((isSameTooLong(OSCpitch), OSCpitch, internal):select2) :smooth(0.99)
 with	{
 		internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
-		isSameTooLong(x) = (x@maxTimeWithoutPitch==x); //todo: make a more elaborate version, or kill it alltogether
+		isSameTooLong(x) = (x@maxTimeWithoutPitch==x);
 		};
 
 //-----------------------------------------------
@@ -213,10 +216,11 @@ with {
   D(5) = diff(5)/720.0;
   gate(N) = *(1@(N)); // delayed step for blanking startup glitch
 };
+
+
 //emulation of a roland supersaw, based on: "How to Emulate the Super Saw" by ADAM SZABO
 //http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf 
 //Implemented in Faust by Bart Brouns
-
 supersaw(N,fund,freq,detune,mix) = saws(fund,freq,detuner(detune)):mixer(mix) 
 with {
 detuner (detune) = 
@@ -224,8 +228,6 @@ detuner (detune) =
 ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
 ((((detune-0.95)*12+0.4),(detune>0.95)):*)
 :>_;
-//todo: make N the defined val
-N=1;
 saws(fund,freq,det) = 
 sawNws(N,fund,freq),
 sawN(N,(det * -0.110023+1)*freq),
@@ -252,7 +254,7 @@ vocoderOsc(freq) =   supersaw(vocoderN,vocoderFund(freq),freq,vocoderDetune,voco
 
 volFilter(c,f,v) = f:resonbp(c,vocoderQ,gain)
 with {
-compensate = tanh((1/(vocoderQ:min(1)))/2)*2;
+compensate = (tanh((1/(vocoderQ:min(1)))/2));
 gain = line (v*compensate, minline);
 };
 
@@ -333,23 +335,9 @@ paf(pafCenter16,Fund,pafIndex,pafVol16)
 
 pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:vocoderMixer:par(i, 2, _*pafVolume):WidePanner(pafWidth);
 
-
-
 //-----------------------------------------------
-// VocSynth: Combine all the elements
+// input->FM synth
 //-----------------------------------------------
-SynthsMixer = interleave(2,4):(bus(4):>_),(bus(4):>_);
-
-VocSynth(audio) = 
-(subSine(audio:qompander,PitchTracker(audio)),
-vocoder(audio:qompander,PitchTracker(audio)),
-pafvocoder(audio:qompander,PitchTracker(audio))),
-FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)):
-SynthsMixer;
-
-
-//subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
-//subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh*subVolume; 
 FM(audio,freq)= osc(freq/2+audio* 5000)*subLevel(audio);
 
 //compressor_mono(ratio,thresh,att,rel,x)
@@ -378,10 +366,31 @@ FMvoc(limited, unlimited,freq*4,vol*FMvolHH,FMindexHH,FMdynHH)
 ):>_*FMvolume<:_,_
 ;
 
+//-----------------------------------------------
+// Karplus-Strong effect 
+//-----------------------------------------------
+
+
+
+//-----------------------------------------------
+// VocSynth: Combine all the elements
+//-----------------------------------------------
+SynthsMixer = interleave(2,4):(bus(4):>_),(bus(4):>_);
+
+VocSynth(audio) = 
+(subSine(audio:qompander,PitchTracker(audio)),
+vocoder(audio:qompander,PitchTracker(audio)),
+pafvocoder(audio:qompander,PitchTracker(audio))),
+FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)):
+SynthsMixer;
+
+
+
 //process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio));
 //FMvoc(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
 
-process(audio) = VocSynth(audio);
+process(x) = KarplusStrongFX(x,PitchTracker(x));
+// VocSynth(audio):(KarplusStrongFX(_,PitchTracker(audio)),KarplusStrongFX(_,PitchTracker(audio)));
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
 //-----------------------------------------------
