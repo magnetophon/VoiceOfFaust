@@ -97,33 +97,50 @@ FMdynHH		= HHFMgroup(vslider("[3]dyn",	0, 0, 1, 0):smooth(0.999));
 KPgroup(x)	 = synthsGroup((hgroup("[5]Karplus-Strong", x)));
 KPvolume	= KPgroup(vslider("[01]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 
-LLKPgroup(x) = KPgroup((hgroup("[1]-2 oct", x)));
-KPvolLL		= LLKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-KPresonanceLL	= LLKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
-KPdynLL		= LLKPgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+LLKPgroup(x) = KPgroup((hgroup("[0]-2 oct", x)));
+KPvolLL		= LLKPgroup(vslider("[0]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+typeModLL	= LLKPgroup(nentry("[1]Nonlinear Filter/typeMod",0,0,4,1));
+t60LL		= LLKPgroup(vslider("[2]decaytime_T60", 4, 0, 10, 0.01));  // -60db decay time (sec)
+treshLL		= LLKPgroup(hslider("[3] Threshold [unit:dB] [tooltip: A limiter in the feedback-loop]", 0, -33, 33, 0.1));
+nonLinLL	= LLKPgroup(vslider("[4]Nonlinearity",0,0,1,0.01) : smooth(0.999));
+brightLL 	= LLKPgroup(vslider("[5]brightness", 0.5, 0, 1, 0.01));
+frequencyModLL	= LLKPgroup(vslider("[6]freqMod",1,0,8,0) : smooth(0.999));
 
-LKPgroup(x)  = KPgroup((hgroup("[2]-1 oct", x)));
-KPvolL		= LKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-KPresonanceL	= LKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
-KPdynL		= LKPgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+LKPgroup(x) = KPgroup((hgroup("[1]-1 oct", x)));
+KPvolL		= LKPgroup(vslider("[0]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+typeModL	= LKPgroup(nentry("[1]Nonlinear Filter/typeMod",0,0,4,1));
+t60L		= LKPgroup(vslider("[2]decaytime_T60", 4, 0, 10, 0.01));  // -60db decay time (sec)
+treshL		= LLKPgroup(hslider("[3] Threshold [unit:dB] [tooltip: A limiter in the feedback-loop]", 0, -33, 33, 0.1));
+nonLinL		= LKPgroup(vslider("[4]Nonlinearity",0,0,1,0.01) : smooth(0.999));
+brightL 	= LKPgroup(vslider("[5]brightness", 0.5, 0, 1, 0.01));
+frequencyModL	= LKPgroup(vslider("[6]freqMod",1,0,8,0) : smooth(0.999));
 
-mKPgroup(x)  = KPgroup((hgroup("[3]0 oct", x)));
-KPvol		= mKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-KPresonance		= mKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
-KPdyn		= mKPgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
-  
-HKPgroup(x)  = KPgroup((hgroup("[4]+1 oct", x)));
-KPvolH		= HKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-KPresonanceH	= HKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
-KPdynH		= HKPgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+KPgroup(x)	= KPgroup((hgroup("[2]0 oct", x)));
+KPvol		= KPgroup(vslider("[0]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+typeMod		= KPgroup(nentry("[1]Nonlinear Filter/typeMod",0,0,4,1));
+t60		= KPgroup(vslider("[2]decaytime_T60", 4, 0, 10, 0.01));  // -60db decay time (sec)
+tresh		= LLKPgroup(hslider("[3] Threshold [unit:dB] [tooltip: A limiter in the feedback-loop]", 0, -33, 33, 0.1));
+nonLin		= KPgroup(vslider("[4]Nonlinearity",0,0,1,0.01) : smooth(0.999));
+bright		= KPgroup(vslider("[5]brightness", 0.5, 0, 1, 0.01));
+frequencyMod	= KPgroup(vslider("[6]freqMod",1,0,8,0) : smooth(0.999));
 
-HHKPgroup(x)	= KPgroup((hgroup("[5]+2 oct", x)));
-KPvolHH		= HHKPgroup(vslider("[1]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-KPresonanceHH	= HHKPgroup(vslider("[2]resonance",	0.7, 0, 1, 0):smooth(0.999));
-KPdynHH		= HHFMgroup(vslider("[3]dyn",		0, 0, 1, 0):smooth(0.999));
+HKPgroup(x) = KPgroup((hgroup("[3]+1 oct", x)));
+KPvolH		= HKPgroup(vslider("[0]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+typeModH	= HKPgroup(nentry("[1]Nonlinear Filter/typeMod",0,0,4,1));
+t60H		= HKPgroup(vslider("[2]decaytime_T60", 4, 0, 10, 0.01));  // -60db decay time (sec)
+treshH		= LLKPgroup(hslider("[3] Threshold [unit:dB] [tooltip: A limiter in the feedback-loop]", 0, -33, 33, 0.1));
+nonLinH		= HKPgroup(vslider("[4]Nonlinearity",0,0,1,0.01) : smooth(0.999));
+brightH 	= HKPgroup(vslider("[5]brightness", 0.5, 0, 1, 0.01));
+frequencyModH	= HKPgroup(vslider("[6]freqMod",1,0,8,0) : smooth(0.999));
 
-tresh = hslider("[1] Threshold [unit:dB] [tooltip: A limiter in the feedback-loop]",
-     0, -60, 60, 0.1);
+HHKPgroup(x) = KPgroup((hgroup("[4]+2 oct", x)));
+KPvolHH		= HHKPgroup(vslider("[0]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+typeModHH	= HHKPgroup(nentry("[1]Nonlinear Filter/typeMod",0,0,4,1));
+t60HH		= HHKPgroup(vslider("[2]decaytime_T60", 4, 0, 10, 0.01));  // -60db decay time (sec)
+treshHH		= LLKPgroup(hslider("[3] Threshold [unit:dB] [tooltip: A limiter in the feedback-loop]", 0, -33, 33, 0.1));
+nonLinHH	= HHKPgroup(vslider("[4]Nonlinearity",0,0,1,0.01) : smooth(0.999));
+brightHH 	= HHKPgroup(vslider("[5]brightness", 0.5, 0, 1, 0.01));
+frequencyModHH	= HHKPgroup(vslider("[6]freqMod",1,0,8,0) : smooth(0.999));
 
 
 
@@ -431,13 +448,24 @@ SynthsMixer;
 
 //process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio));
 //FMvoc(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
-process(audio) =(audio):stringloop(PitchTracker(audio),tresh);
+//process(audio) =(audio):stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
 //process(audio) = KarplusBank(audio,PitchTracker(audio)/2);
-//process(audio) = VocSynth(audio):stringloop(PitchTracker(audio)/1),stringloop(PitchTracker(audio)/1);
+process(audio) = VocSynth(audio):
+stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod),
+stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
 //-----------------------------------------------
 // testing cruft
 //-----------------------------------------------
 
+/*
+KPvol		= KPgroup(vslider("[0]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
+typeMod		= KPgroup(nentry("[1]Nonlinear Filter/typeMod",0,0,4,1));
+t60		= KPgroup(vslider("[2]decaytime_T60", 4, 0, 10, 0.01));  // -60db decay time (sec)
+tresh		= LLKPgroup(hslider("[3] Threshold [unit:dB] [tooltip: A limiter in the feedback-loop]", 0, -33, 33, 0.1));
+nonLin		= KPgroup(vslider("[4]Nonlinearity",0,0,1,0.01) : smooth(0.999));
+bright		= KPgroup(vslider("[5]brightness", 0.5, 0, 1, 0.01));
+frequencyMod	= KPgroup(vslider("[6]freqMod",1,0,8,0) : smooth(0.999));
 
+*/
