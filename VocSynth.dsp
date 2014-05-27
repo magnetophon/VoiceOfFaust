@@ -123,7 +123,7 @@ nonLinL		= LKPgroup(vslider("[4]Nonlinearity",0,0,1,0.01) : smooth(0.999));
 brightL 	= LKPgroup(vslider("[5]brightness", 0.5, 0, 1, 0.01));
 frequencyModL	= LKPgroup(vslider("[6]freqMod",1,0,8,0) : smooth(0.999));
 
-MKPgroup(x)	= MKPgroup((hgroup("[3]0 oct", x)));
+MKPgroup(x)	= KPgroup((hgroup("[2]0 oct", x)));
 KPvol		= MKPgroup(vslider("[0]vol",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
 typeMod		= MKPgroup(nentry("[1]Nonlinear Filter/typeMod",0,0,4,1));
 t60		= MKPgroup(vslider("[2]decaytime_T60", 4, 0, 3, 0.01))<:(_,_):*;  // -60db decay time (sec)
@@ -444,13 +444,13 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 ;
 
 //stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod),
-stringloopBank(audio,freq) = (
-stringloop(audio,freq*0.25,typeModLL,t60LL,treshLL,nonLinLL,brightLL,frequencyModLL),
-stringloop(audio,freq*0.5,typeModL,t60L,treshL,nonLinL,brightL,frequencyModL),
-stringloop(audio,freq,typeMod,t60,tresh,nonLin,bright,frequencyMod),
-stringloop(audio,freq*2,typeModH,t60H,treshH,nonLinH,brightH,frequencyModH),
-stringloop(audio,freq*4,typeModHH,t60HH,treshHH,nonLinHH,brightHH,frequencyModHH)
-):>_*KPvolume<:_,_
+stringloopBank(audio,freq) = audio<:(
+stringloop(_,freq*0.25,typeModLL,t60LL,treshLL,nonLinLL,brightLL,frequencyModLL),
+stringloop(_,freq*0.5,typeModL,t60L,treshL,nonLinL,brightL,frequencyModL),
+stringloop(_,freq,typeMod,t60,tresh,nonLin,bright,frequencyMod),
+stringloop(_,freq*2,typeModH,t60H,treshH,nonLinH,brightH,frequencyModH),
+stringloop(_,freq*4,typeModHH,t60HH,treshHH,nonLinHH,brightHH,frequencyModHH)
+):>_*KPvolume
 ;
 
 //-----------------------------------------------
@@ -467,14 +467,15 @@ SynthsMixer;
 
 //process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio));
 //FMvoc(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
-process(audio) =stringloop(audio,PitchTracker(audio),typeMod,2,3,4,5,6.1);
+//process(audio) =stringloop(audio,PitchTracker(audio),typeMod,2,3,4,5,6.1);
 //process(audio) =stringloop(audio,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
 
-/*
-process(audio) = VocSynth(audio):
-stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod),
-stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
-*/
+
+process(audio) = VocSynth(audio):(stringloopBank(_,PitchTracker(audio)),stringloopBank(_,PitchTracker(audio)));
+//process(audio) = VocSynth(audio):(stringloopBank(_,PitchTracker(audio)),stringloopBank(_,PitchTracker(audio)));
+//stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod),
+//stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
+
 
 //process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
 
