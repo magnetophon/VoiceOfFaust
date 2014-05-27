@@ -9,3 +9,4 @@ Currently it consists of:
 * vocoder with a "supersaw"
 * vocoder based on PAF oscilators
 * FM, with modulation by the voice
+* Karplus-Strong used as an effect
