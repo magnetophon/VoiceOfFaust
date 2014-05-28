@@ -27,6 +27,7 @@ analizerQ			= 7;		// Q of the analizer bp filters
 MinInputPitch		= 61.7354;	// lowest expected note is a B1
 MaxInputPitch		= 987.767;	// highest expected note is a B5
 maxTimeWithoutPitch	= 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
+maxTimeWithoutFidelity	= 0.1*SR;	// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
 
 //-----------------------------------------------
 // the GUI
@@ -203,10 +204,13 @@ with {
 // switch to internal pitchtracker if OSC is silent for too long
 //todo: make a more elaborate version, or kill it alltogether
 //for example, make the fidelity be a kill switch
-PitchTracker(audio) = ((isSameTooLong(OSCfidelity), OSCpitch, internal):select2) :smooth(0.99)
+
+PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(0.99)
+//PitchTracker(audio) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
 with	{
 		internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
-		isSameTooLong(x) = (x@maxTimeWithoutPitch==x);
+		OSCpitchIsBad  = (isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity));
+		isSameTooLong(x,time) = (x@time)==x;
 		};
 
 //-----------------------------------------------
