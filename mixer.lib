@@ -1,0 +1,57 @@
+//Make a mixer with nrMonoChan inputs and nrSends outputs per input
+
+declare name 		"Mixer";
+declare version 	"0.2";
+declare author 		"Bart Brouns";
+declare license 	"GNU 3.0";
+declare copyright 	"(c) Bart Brouns 2014";
+declare coauthors	"PitchTracker by Tiziano Bole, qompander translated from a pd patch by Katja Vetter";
+
+//-----------------------------------------------
+// imports
+//-----------------------------------------------
+
+import ("oscillator.lib");
+import ("maxmsp.lib");
+import ("effect.lib");
+
+
+
+
+//make a channel with nrSends outputs.
+//The inputs are: volumes,audio
+monoChannel(nrSends) = (bus(nrSends),(_<:bus(nrSends))):interleave(nrSends,2):par(o,nrSends,_*_);
+
+
+//make a bus with nrMonoChan channels, each having nrSends sends
+//inputs: nrSends volumes followed by nrMonoChan audio inputs
+//outputs: lr,lr,lr
+busWithSends(nrMonoChan,nrSends)= bus(nrMonoChan+nrSends)<:par(i,nrMonoChan,sel(nrMonoChan,nrSends,i)):par(i,nrMonoChan,monoChannel(nrSends)):interleave(nrSends,nrMonoChan)
+with {
+sel(nrMonoChan,nrSends,i) = (par(i,nrSends,_),par(i,nrMonoChan,!),(selector(i+nrSends,nrMonoChan+nrSends)));
+};
+
+
+
+
+//inputs: nrChan paralel versions of:
+//nrSends volumes followed by nrMonoChan audio inputs
+//outputs: l,r, l,r, l,r
+
+//for example: 
+//send1levelChan1,send2levelChan1,send3levelChan1,Chan1L.Chan1R,
+//send1levelChan2,send2levelChan2,send3levelChan2,Chan2L.Chan2R,
+//send1levelChan3,send2levelChan3,send3levelChan3,Chan3L.Chan3R:
+//send1levelChan4,send2levelChan4,send3levelChan4,Chan4L.Chan4R:
+//mixerWithSends(4,2,3)
+//will produce:
+//send1L,send1R.send2L.send2R,send3L.send3R, 
+//carefull; no send4L or send4R will be created, as 4 is the number of inputchannels, not the nr of sends
+mixerWithSends(nrChan,nrMonoChan,nrSends) =
+par(i,nrChan,busWithSends(nrMonoChan,nrSends)):interleave(nrSends*nrMonoChan,nrChan):mix
+with {
+mix=par(i,nrMonoChan*nrSends,(bus(nrChan):>_));
+};
+
+//process = busWithSends(3,5);
+//process = mixerWithSends(2,2,2);
