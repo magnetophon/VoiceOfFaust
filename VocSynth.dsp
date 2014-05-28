@@ -107,9 +107,9 @@ KPgroup(x)	 = FXGroup((vgroup("[0]Karplus-Strong", x)));
 mainKPgroup(x) = KPgroup((hgroup("[1]main", x)));
 KPvolume	= mainKPgroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 KPattack	= mainKPgroup(vslider("[1]attack",	0.01, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-KPdecay		= mainKPgroup(vslider("[2]decay",	0.01, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-KPsustain	= mainKPgroup(vslider("[3]sustain",	0.1, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-KPrelease	= mainKPgroup(vslider("[4]release",	0.01, 0.01, 1, 0):smooth(0.999));			//0 to 1 logarithmicly
+KPdecay		= mainKPgroup(vslider("[2]decay",	0.01, 0.01, 3, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+KPsustain	= mainKPgroup(vslider("[3]sustain",	0.5, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+KPrelease	= mainKPgroup(vslider("[4]release",	0.01, 0.01, 3, 0):smooth(0.999));			//0 to 1 logarithmicly
 
 
 HHKPgroup(x) = KPgroup((hgroup("[2]+2 oct", x)));
@@ -364,7 +364,12 @@ vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocode
 
 pafFreq(audio)= PitchTracker(audio)*pafOctave;
 pafFund(freq) = fund(freq,pafOctave);
+sampleAndHold(sample) = select2((sample!=0):int) ~ _;
 
+
+
+paf(c,f,i,v)= (((cos12(c,f))*bell(f,i)) * line (v, minline))
+with {
 bellcurve(x) = int(x):rdtable(belltablesize+1,curve,_)
 with 	{
 		belltablesize 	= 199;
@@ -373,14 +378,13 @@ with 	{
 
 //bellcurve = (((_-100)/25)<:(_*_)*-1);
 
-sampleAndHold(sample) = select2((sample!=0):int) ~ _;
+
 wrap=_<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
 centerWrap(c,f) = line (c, 300):sampleAndHold(f)<:wrap;
 centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
 cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
 bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*line (i, 12))+100:bellcurve;
-
-paf(c,f,i,v)= (((cos12(c,f))*bell(f,i)) * line (v, minline));
+};
 
 
 //-----------------------------------------------
@@ -459,22 +463,30 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 // a,d,s,r = attack (sec), decay (sec), sustain (percentage of t), release (sec)
 // t       = trigger signal ( >0 for attack, then release is when t back to 0)
 
-//adsr(a,d,s,r,t)
+
 //subLevel(audio)>0.2
 //OSConset
-gate(audio) = ((subLevel(audio)*(subLevel(audio)>0.3))+OSConset):min(1);
-//gate(audio) =(audio)*1;
 
-//(ad(a,d,t)+r):min(1)
-KPadsr(audio) = audio*(adsr(KPattack,KPdecay,KPsustain,KPrelease,gate(audio)):vbargraph("foo", 0, 127));
-//subLevel(audio)>0.2);
+gate(audio) = ((subLevel(audio)*(subLevel(audio)>0.1)*0.9)+(OSConset*(OSCfidelity>0.5))):min(1);
 
-stringloopBank(audio,freq) = KPadsr(audio)<:(
-stringloop(_,freq*0.25,typeModLL,t60LL,treshLL,nonLinLL,brightLL,frequencyModLL),
-stringloop(_,freq*0.5,typeModL,t60L,treshL,nonLinL,brightL,frequencyModL),
-stringloop(_,freq,typeMod,t60,tresh,nonLin,bright,frequencyMod),
-stringloop(_,freq*2,typeModH,t60H,treshH,nonLinH,brightH,frequencyModH),
-stringloop(_,freq*4,typeModHH,t60HH,treshHH,nonLinHH,brightHH,frequencyModHH)
+
+//adsr(a,d,s,r,t)
+KPadsr(audio) = audio*((adsr(KPattack,KPdecay,0,KPrelease,gate(audio))+KPsustain):min(1):vbargraph("adsr", 0, 1));
+Rt60adsr(audio) = (1/KPsustain)*(adsr(KPattack,KPdecay,0,KPrelease,gate(audio))+(KPsustain*subLevel(audio))):min(1):vbargraph("RT60adsr", 0, 1);
+
+stringloopBank(freq,audio) = KPadsr(audio)<:(
+stringloop(_,freq*0.25,typeModLL,t60LL*Rt60adsr(audio),treshLL,nonLinLL,brightLL,frequencyModLL),
+stringloop(_,freq*0.5,typeModL,t60L*Rt60adsr(audio),treshL,nonLinL,brightL,frequencyModL),
+stringloop(_,freq,typeMod,t60*Rt60adsr(audio),tresh,nonLin,bright,frequencyMod),
+stringloop(_,freq*2,typeModH,t60H*Rt60adsr(audio),treshH,nonLinH,brightH,frequencyModH),
+stringloop(_,freq*4,typeModHH,t60HH*Rt60adsr(audio),treshHH,nonLinHH,brightHH,frequencyModHH)
+):>_*KPvolume
+;
+
+tstje(audio,freq) = KPadsr(audio)<:(
+stringloop(_,freq*0.25,typeModLL,t60LL*Rt60adsr(audio),treshLL,nonLinLL,brightLL,frequencyModLL),
+_,
+_
 ):>_*KPvolume
 ;
 
@@ -500,11 +512,12 @@ SynthsMixer;
 
 //adsr(KPattack,KPdecay,KPsustain,KPrelease,button("foo")):vbargraph("foo", 0, 1);
 
-//process(audio) = KPadsr(audio);
+//process(audio) = audio<:(stringloopBank(PitchTracker(audio)));
 
-process(audio) = VocSynth(audio):((_<:stringloopBank(_,PitchTracker(audio))),(_<:stringloopBank(_,PitchTracker(audio))));
+process(audio) = VocSynth(audio):((_<:stringloopBank(PitchTracker(audio))),(_<:stringloopBank(PitchTracker(audio))));
+//process(audio) = audio<:((_<:stringloopBank(_,PitchTracker(audio))),(_<:stringloopBank(_,PitchTracker(audio))));
 
-//process(audio) = PKadsr(audio);
+//process(audio) = audio:stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
 //process(audio) = audio:(stringloopBank(_,PitchTracker(audio)));
 //stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod),
 //stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
