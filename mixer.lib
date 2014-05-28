@@ -39,10 +39,14 @@ sel(nrMonoChan,nrSends,i) = (par(i,nrSends,_),par(i,nrMonoChan,!),(selector(i+nr
 //outputs: l,r, l,r, l,r
 
 //for example: 
-//send1levelChan1,send2levelChan1,send3levelChan1,Chan1L.Chan1R,
-//send1levelChan2,send2levelChan2,send3levelChan2,Chan2L.Chan2R,
-//send1levelChan3,send2levelChan3,send3levelChan3,Chan3L.Chan3R:
-//send1levelChan4,send2levelChan4,send3levelChan4,Chan4L.Chan4R:
+//send1levelChan1,send2levelChan1,send3levelChan1,
+//Chan1L.Chan1R,
+//send1levelChan2,send2levelChan2,send3levelChan2,
+//Chan2L.Chan2R,
+//send1levelChan3,send2levelChan3,send3levelChan3,
+//Chan3L.Chan3R:
+//send1levelChan4,send2levelChan4,send3levelChan4,
+//Chan4L.Chan4R:
 //mixerWithSends(4,2,3)
 //will produce:
 //send1L,send1R.send2L.send2R,send3L.send3R, 
