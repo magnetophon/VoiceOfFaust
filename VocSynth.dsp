@@ -209,7 +209,7 @@ with {
 // switch to internal pitchtracker if OSC is silent for too long
 //todo: make a more elaborate version, or kill it alltogether
 //for example, make the fidelity be a kill switch
-PTsmooth = 0.01*(((OSCfidelity*-1)+1):amp_follower(0.5))+0.997:min(0.9996):max(0.997):vbargraph("PTsmooth", 0.99, 1);
+PTsmooth = 0.01*(((OSCfidelity*-1)+1):amp_follower(0.05))+0.997:min(0.9996):max(0.997):vbargraph("PTsmooth", 0.99, 1);
 
 PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
 //PitchTracker(audio) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
@@ -504,7 +504,7 @@ _
 //-----------------------------------------------
 // VocSynth: Combine all the elements
 //-----------------------------------------------
-SynthsMixer = interleave(2,4):(bus(4):>_),(bus(4):>_);
+//SynthsMixer = interleave(2,4):(bus(4):>_),(bus(4):>_);
 //mixerWithSends(nrChan,nrMonoChan,nrSends)
 VocSynth(audio) = 
 (subVolume,0,
@@ -519,7 +519,7 @@ mixerWithSends(4,2,2):
 (_,_,
 ((_<:stringloopBank(PitchTracker(audio))),(_<:stringloopBank(PitchTracker(audio))))
 :interleave(2,2):par(i,2,(bus(2):>_))
-
+:(dcblocker*0.5:compressor_mono(100,-6,0.008,0.02)),(dcblocker*0.5:compressor_mono(100,-6,0.008,0.02))
 );
 
 //process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio));
