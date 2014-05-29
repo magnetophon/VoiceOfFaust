@@ -57,8 +57,8 @@ vocoderVolume	= vocoderGroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,
 vocoderNLKS	= vocoderGroup(vslider("[1]NL-KS",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
 vocoderOctave	= vocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
 vocoderBottom	= vocoderGroup(vslider("[3]bottom",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-vocoderTop	= vocoderGroup(vslider("[4]top",	8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderQ	= vocoderGroup(vslider("[5]Q",	7, 0.3, 10, 0)<:(_,_):*:smooth(0.999));			//0.1 to 10 logarithmicly,
+vocoderTop	= vocoderGroup(vslider("[4]top",	8.5, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderQ	= vocoderGroup(vslider("[5]Q",	1, 0.3, 7, 0)<:(_,_):*:smooth(0.999));			//0.1 to 49 logarithmicly,
 vocoderN	= 1;//vocoderGroup(vslider("[6]N",	1, 1, 6, 1));
 vocoderMix	= vocoderGroup(vslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
 vocoderDetune	= vocoderGroup(vslider("[8]detune",	0, 0, 1, 0):smooth(0.999));
@@ -70,7 +70,7 @@ pafVolume	= PAFvocoderGroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_
 pafNLKS		= PAFvocoderGroup(vslider("[1]NL-KS",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
 pafOctave	= PAFvocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
 pafBottom	= PAFvocoderGroup(vslider("[3]bottom",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-pafTop		= PAFvocoderGroup(vslider("[4]top",		8.5, 1, 10, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+pafTop		= PAFvocoderGroup(vslider("[4]top",		8.5, 1, 6, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 pafIndex	= PAFvocoderGroup(vslider("[5]index",	25, 1, 100, 0):smooth(0.999));
 pafWidth	= PAFvocoderGroup(vslider("[6]width",1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 
@@ -339,7 +339,7 @@ vocoderOsc(freq) =   supersaw(vocoderN,vocoderFund(freq),freq,vocoderDetune,voco
 //sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
 //
 
-volFilter(c,f,v) = f:resonbp(c,vocoderQ,gain)
+volFilter(c,f,v) = f:resonbp(c:min((SR/2)-10),vocoderQ,gain)
 with {
 compensate = (tanh((1/(vocoderQ:min(1)))/2));
 gain = line (v*compensate, minline);
