@@ -209,8 +209,9 @@ with {
 // switch to internal pitchtracker if OSC is silent for too long
 //todo: make a more elaborate version, or kill it alltogether
 //for example, make the fidelity be a kill switch
+PTsmooth = 0.01*(((OSCfidelity*-1)+1):amp_follower(0.5))+0.997:min(0.9996):max(0.997):vbargraph("PTsmooth", 0.99, 1);
 
-PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(0.99)
+PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
 //PitchTracker(audio) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
 with	{
 		internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
@@ -476,7 +477,7 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 //subLevel(audio)>0.2
 //OSConset
 
-gate(audio) = ((subLevel(audio)*(subLevel(audio)>0.1)*0.9)+(OSConset*(OSCfidelity>0.5))):min(1);
+gate(audio) = ((subLevel(audio)*(subLevel(audio)>0.3)*0.9)+(OSConset*(OSCfidelity>0.5))):min(1);
 
 
 //adsr(a,d,s,r,t)
@@ -533,6 +534,7 @@ mixerWithSends(4,2,2):
 //process(audio) = audio<:(stringloopBank(PitchTracker(audio)));
 
 process(audio) = VocSynth(audio);
+//process = PTsmooth:vbargraph("foo", 0.99, 1);
 //process(audio) = audio<:((_<:stringloopBank(_,PitchTracker(audio))),(_<:stringloopBank(_,PitchTracker(audio))));
 
 //process(audio) = audio:stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
