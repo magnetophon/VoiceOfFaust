@@ -326,7 +326,8 @@ sawN(N,(det * 0.107452+1)*freq);
 mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
 detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
 
-mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_;
+//*-1 to get it into phase with th othes synths
+mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
 };
 
 //-----------------------------------------------
@@ -519,8 +520,18 @@ mixerWithSends(4,2,2):
 (_,_,
 ((_<:stringloopBank(PitchTracker(audio))),(_<:stringloopBank(PitchTracker(audio))))
 :interleave(2,2):par(i,2,(bus(2):>_))
-:(dcblocker*0.5:compressor_mono(100,-6,0.008,0.02)),(dcblocker*0.5:compressor_mono(100,-6,0.008,0.02))
-);
+:stereoLimiter(audio)
+)
+with {
+//is actually dual mono. on purpose; to keep the image in the center.
+stereoLimiter(audio)= 
+(dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)),
+(dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)):
+(compressor_mono(100,-6,0.001,decay*0.5)),
+(compressor_mono(100,-6,0.001,decay*0.5));
+decay = (1/(PitchTracker(audio) * subOctave ));
+}
+;
 
 //process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio));
 //FMvoc(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
