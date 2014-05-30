@@ -1,5 +1,5 @@
 declare name 		"VocSynth";
-declare version 	"0.2";
+declare version 	"0.3";
 declare author 		"Bart Brouns";
 declare license 	"GNU 3.0";
 declare copyright 	"(c) Bart Brouns 2014";
