@@ -209,7 +209,7 @@ with {
 // switch to internal pitchtracker if OSC is silent for too long
 //todo: make a more elaborate version, or kill it alltogether
 //for example, make the fidelity be a kill switch
-PTsmooth = 0.01*(((OSCfidelity*-1)+1):amp_follower(0.05))+0.997:min(0.9996):max(0.997):vbargraph("PTsmooth", 0.99, 1);
+PTsmooth = 0.01*(((OSCfidelity*-1)+1):amp_follower(0.026))+0.997:min(0.9996):max(0.999):vbargraph("[-1]PTsmooth", 0.997, 1);
 
 PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
 //PitchTracker(audio) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
