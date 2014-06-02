@@ -582,20 +582,20 @@ _
 ):>_*KPvolume
 ;
 
-/*
-todo: use this effect:
+
+//todo: use this effect:
 I = hslider("Index of modulation",0,0,5,0.001) ;
 r = hslider("c:m",1,0.1,5,0.001) ;
 
 // modulator:
-del(r,I,x) = x : fdelay3(1 << 17, dt + 1)
+del(fc,r,I,x) = x : fdelay3(1 << 17, dt + 1)
 with {
 k = 8.0 ; // pitch-tracking analyzing cycles number
-fc = PtchPr(k,x) ;
+//fc = PtchPr(k,x) ;
 dt = (0.5 * osci(fc / r) + 0.5) * I / (PI * fc) *SR ;
 };
-process = del(r,I) ;
-*/
+//process = del(r,I) ;
+
 
 //-----------------------------------------------
 // VocSynth: Combine all the elements
@@ -604,24 +604,25 @@ process = del(r,I) ;
 //mixerWithSends(nrChan,nrMonoChan,nrSends)
 nrChan = 5;
 nrMonoChan = 2;
-nrSends = 2;
+nrSends = 3;
 VocSynth(audio) = 
-(subVolume,0,
+(subVolume,0,0,
 subSine(audio:qompander,PitchTracker(audio)),
-vocoderVolume,vocoderNLKS,
+vocoderVolume,vocoderNLKS,1,
 vocoder(audio:qompander,PitchTracker(audio)),
-pafVolume,pafNLKS,
+pafVolume,pafNLKS,1,
 pafvocoder(audio:qompander,PitchTracker(audio)),
-fofVolume,fofNLKS,
+fofVolume,fofNLKS,1,
 fofvocoder(audio:qompander,PitchTracker(audio)),
-FMvolume,fmNLKS,
+FMvolume,fmNLKS,1,
 FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)):
 
 mixerWithSends(nrChan,nrMonoChan,nrSends)
 
 :_,_
 ,((dcblocker<:stringloopBank(PitchTracker(audio))),(dcblocker<:stringloopBank(PitchTracker(audio))))
-:interleave(2,2):par(i,nrSends,(bus(nrMonoChan):>_))
+,del(PitchTracker(audio),r,I),del(PitchTracker(audio),r,I)
+:interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
 //:block  //block out non tonal sounds
 :stereoLimiter(audio) //it needas the original audio (the voice) to calculate the pitch, and with that the decay time.
 )
