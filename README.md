@@ -8,5 +8,6 @@ Currently it consists of:
 * pitch tracker
 * vocoder with a "supersaw"
 * vocoder based on PAF oscilators
+* vocoder based on FOF oscilators
 * FM, with modulation by the voice
 * Karplus-Strong used as an effect
