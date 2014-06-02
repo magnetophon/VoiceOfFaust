@@ -49,16 +49,17 @@ ManualOnset     = OSCgroup(button("[3]trigger")); //button does not seem to reci
 
 subGroup(x)	= synthsGroup((hgroup("[1]sub", x)));
 subVolume	= subGroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-subOctave	= subGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of sub
+subOctave	= subGroup(vslider("[2]octave",	-1, -2, 2, 1):octaveMultiplier);				//set the octave of sub
 
 
 vocoderGroup(x) 	= synthsGroup((hgroup("[2]vocoder", x)));
-vocoderVolume	= vocoderGroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+vocoderVolume	= vocoderGroup(vslider("[0]volume",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 vocoderNLKS	= vocoderGroup(vslider("[1]NL-KS",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
 vocoderOctave	= vocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
 vocoderBottom	= vocoderGroup(vslider("[3]bottom",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 vocoderTop	= vocoderGroup(vslider("[4]top",	8.5, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 vocoderQ	= vocoderGroup(vslider("[5]Q",	1, 0.3, 7, 0)<:(_,_):*:smooth(0.999));			//0.1 to 49 logarithmicly,
+//todo: research
 vocoderN	= 1;//vocoderGroup(vslider("[6]N",	1, 1, 6, 1));
 vocoderMix	= vocoderGroup(vslider("[7]mix",	0, 0, 1, 0));								// is smoothed at the synth
 vocoderDetune	= vocoderGroup(vslider("[8]detune",	0, 0, 1, 0):smooth(0.999));
@@ -66,7 +67,7 @@ vocoderWidth	= vocoderGroup(vslider("[9]width",	1, 0, 2, 0):smooth(0.999));				/
 
 
 PAFvocoderGroup(x)  = synthsGroup((hgroup("[3]PAFvocoder", x)));
-pafVolume	= PAFvocoderGroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+pafVolume	= PAFvocoderGroup(vslider("[0]volume",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 pafNLKS		= PAFvocoderGroup(vslider("[1]NL-KS",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
 pafOctave	= PAFvocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
 pafBottom	= PAFvocoderGroup(vslider("[3]bottom",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
@@ -81,12 +82,13 @@ pafWidth	= PAFvocoderGroup(vslider("[6]width",1, 0, 2, 0):smooth(0.999)); //wide
 fofVocoderGroup(x)  = synthsGroup((hgroup("[4]FOFvocoder", x)));
 fofVolume	= fofVocoderGroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 fofNLKS		= fofVocoderGroup(vslider("[1]NL-KS",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
-fofOctave	= fofVocoderGroup(vslider("[1]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of fof
-fofBottom	= fofVocoderGroup(vslider("[2]bottom",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-fofTop		= fofVocoderGroup(vslider("[3]top",		8.5, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-fofSkirt	= fofVocoderGroup(vslider("[4]skirt", 3, 3, 100, 0)*0.001:smooth(0.999));
-fofDecay	= fofVocoderGroup(vslider("[5]decay", 0, 0, 10, 0):_<:*:smooth(0.999));
-fofWidth	= fofVocoderGroup(vslider("[6]width",1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+fofOctave	= fofVocoderGroup(vslider("[1]octave",	-1, -2, 2, 1):octaveMultiplier);				//set the octave of fof
+fofBottom	= fofVocoderGroup(vslider("[2]bottom",	0.694, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+fofTop		= fofVocoderGroup(vslider("[3]top",	56.192, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+fofSkirt	= fofVocoderGroup(vslider("[4]skirt", 30.359, 3, 100, 0)*0.001:smooth(0.999));
+fofDecay	= fofVocoderGroup(vslider("[5]decay", 3.462, 0, 10, 0):_<:*:smooth(0.999));
+fofPhaseRand	= fofVocoderGroup(vslider("[6]phase rnd", 1, -1, 1, 0):smooth(0.999));
+fofWidth	= fofVocoderGroup(vslider("[7]width",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width = vslider("width", 3, 3, 100, 0)*0.001:smooth(0.999);
 //decay = vslider("decay", 0, 0, 10, 0):_<:*:smooth(0.999);
 //fReso= vslider("fReso", 60, 0, 1270, 0):smooth(0.999);
@@ -134,7 +136,7 @@ FMdynHH		= HHFMgroup(vslider("[3]dyn",	0, 0, 1, 0):smooth(0.999));
 //todo: make FX group and routing
 KPgroup(x)	 = FXGroup((vgroup("[0]Karplus-Strong", x)));
 mainKPgroup(x) = KPgroup((hgroup("[1]main", x)));
-KPvolume	= mainKPgroup(vslider("[0]volume [style:knob]",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+KPvolume	= mainKPgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 KPattack	= mainKPgroup(vslider("[1]attack [style:knob]",	0.01, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 KPdecay		= mainKPgroup(vslider("[2]decay [style:knob]",	0.01, 0.01, 3, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 KPsustain	= mainKPgroup(vslider("[3]sustain [style:knob]",	0.5, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
@@ -232,7 +234,7 @@ with {
 // switch to internal pitchtracker if OSC is silent for too long
 //todo: make a more elaborate version, or kill it alltogether
 //for example, make the fidelity be a kill switch
-//PTsmooth = 0.01*(((OSCfidelity*-1)+1):amp_follower(0.026))+0.997:min(0.9996):max(0.9984):vbargraph("[-1]PTsmooth", 0.997, 1);
+//PTsmooth = 0.1*(((OSCfidelity*-1)+1):amp_follower(0.026))+0.997:min(0.9996):max(0.9984):vbargraph("[-1]PTsmooth", 0.997, 1);
 PTsmooth = 0.9984;
 PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
 //PitchTracker(audio) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
@@ -357,9 +359,20 @@ detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
 mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
 };
 
-//fof is based on work by Xavier Rodet on his CHANT program at IRCAM
+//todo:Window Function Synthesis:
+//see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
+//todo: vector PM osclators
 
-fof(fReso,fund,width,decay,vol) = select2((fund<width),(0.5*(1-cos(PI/width*fund))*exp(-decay*fund)*sin(fReso*fund)),exp(-decay*fund)*sin(fReso*fund))*vol;
+
+//fof is based on work by Xavier Rodet on his CHANT program at IRCAM
+fof(fReso,fund,skirt,decay,phase,vol) = 
+select2((fund<skirt),
+(0.5*(1-cos((PI/skirt)*fund))*exp((-decay/PI)*fund)*sin(fReso*fund+PH)),
+exp((-decay/PI)*fund)*sin(fReso*fund+PH))*vol
+with {
+arc(angle) = angle/360 * 2 * PI;
+PH = arc( sin(fReso*exp((-decay/PI))) / (phase -cos(fReso*exp((-decay/PI))) ));
+};
 
 
 //-----------------------------------------------
@@ -467,26 +480,27 @@ fofFund(freq) = fund(freq,fofOctave);
 
 fofCenters = VocoderFreqs(fofBottom,fofTop);
 fofOscs(fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,fofCenter7,fofCenter8,fofCenter9,fofCenter10,fofCenter11,fofCenter12,fofCenter13,fofCenter14,fofCenter15,fofCenter16,fofVol1,fofVol2,fofVol3,fofVol4,fofVol5,fofVol6,fofVol7,fofVol8,fofVol9,fofVol10,fofVol11,fofVol12,fofVol13,fofVol14,fofVol15,fofVol16,Fund)=
-fof(fofCenter1,Fund,fofSkirt,fofDecay,fofVol1),
-fof(fofCenter2,Fund,fofSkirt,fofDecay,fofVol2),
-fof(fofCenter3,Fund,fofSkirt,fofDecay,fofVol3),
-fof(fofCenter4,Fund,fofSkirt,fofDecay,fofVol4),
-fof(fofCenter5,Fund,fofSkirt,fofDecay,fofVol5),
-fof(fofCenter6,Fund,fofSkirt,fofDecay,fofVol6),
-fof(fofCenter7,Fund,fofSkirt,fofDecay,fofVol7),
-fof(fofCenter8,Fund,fofSkirt,fofDecay,fofVol8),
-fof(fofCenter9,Fund,fofSkirt,fofDecay,fofVol9),
-fof(fofCenter10,Fund,fofSkirt,fofDecay,fofVol10),
-fof(fofCenter11,Fund,fofSkirt,fofDecay,fofVol11),
-fof(fofCenter12,Fund,fofSkirt,fofDecay,fofVol12),
-fof(fofCenter13,Fund,fofSkirt,fofDecay,fofVol13),
-fof(fofCenter14,Fund,fofSkirt,fofDecay,fofVol14),
-fof(fofCenter15,Fund,fofSkirt,fofDecay,fofVol15),
-fof(fofCenter16,Fund,fofSkirt,fofDecay,fofVol16)
+//fof(fofCenter1,Fund,fofSkirt,fofDecay,lfnoise(0.1*1):lowpass(1,2)*fofPhaseRand,fofVol1),
+fof(fofCenter1,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol1),
+fof(fofCenter2,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol2),
+fof(fofCenter3,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol3),
+fof(fofCenter4,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol4),
+fof(fofCenter5,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol5),
+fof(fofCenter6,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol6),
+fof(fofCenter7,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol7),
+fof(fofCenter8,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol8),
+fof(fofCenter9,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol9),
+fof(fofCenter10,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol10),
+fof(fofCenter11,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol11),
+fof(fofCenter12,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol12),
+fof(fofCenter13,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol13),
+fof(fofCenter14,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol14),
+fof(fofCenter15,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol15),
+fof(fofCenter16,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol16)
 ;
 
 
-fofvocoder(audio,freq)=(fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, _):WidePanner(fofWidth);
+fofvocoder(audio,freq)=(fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
 
 //fof(fReso,fund,width,decay,vol)
 
@@ -520,6 +534,8 @@ FMvoc(limited, unlimited,freq*2,gain*FMvolH,FMindexH,FMdynH),
 FMvoc(limited, unlimited,freq*4,gain*FMvolHH,FMindexHH,FMdynHH)
 ):>_<:_,_
 ;
+
+
 
 //-----------------------------------------------
 // Karplus-Strong effect 
@@ -566,11 +582,29 @@ _
 ):>_*KPvolume
 ;
 
+/*
+todo: use this effect:
+I = hslider("Index of modulation",0,0,5,0.001) ;
+r = hslider("c:m",1,0.1,5,0.001) ;
+
+// modulator:
+del(r,I,x) = x : fdelay3(1 << 17, dt + 1)
+with {
+k = 8.0 ; // pitch-tracking analyzing cycles number
+fc = PtchPr(k,x) ;
+dt = (0.5 * osci(fc / r) + 0.5) * I / (PI * fc) *SR ;
+};
+process = del(r,I) ;
+*/
+
 //-----------------------------------------------
 // VocSynth: Combine all the elements
 //-----------------------------------------------
 //SynthsMixer = interleave(2,4):(bus(4):>_),(bus(4):>_);
 //mixerWithSends(nrChan,nrMonoChan,nrSends)
+nrChan = 5;
+nrMonoChan = 2;
+nrSends = 2;
 VocSynth(audio) = 
 (subVolume,0,
 subSine(audio:qompander,PitchTracker(audio)),
@@ -581,15 +615,19 @@ pafvocoder(audio:qompander,PitchTracker(audio)),
 fofVolume,fofNLKS,
 fofvocoder(audio:qompander,PitchTracker(audio)),
 FMvolume,fmNLKS,
-FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio))):
-mixerWithSends(5,2,2):
-(_,_,
-((_<:stringloopBank(PitchTracker(audio))),(_<:stringloopBank(PitchTracker(audio))))
-:interleave(2,2):par(i,2,(bus(2):>_))
-:block:stereoLimiter(audio)
+FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)):
+
+mixerWithSends(nrChan,nrMonoChan,nrSends)
+
+:_,_
+,((dcblocker<:stringloopBank(PitchTracker(audio))),(dcblocker<:stringloopBank(PitchTracker(audio))))
+:interleave(2,2):par(i,nrSends,(bus(nrMonoChan):>_))
+//:block  //block out non tonal sounds
+:stereoLimiter(audio) //it needas the original audio (the voice) to calculate the pitch, and with that the decay time.
 )
 with {
 //is actually dual mono. on purpose; to try and keep the image in the center.
+//todo: make this stereo, and find a better way for  KP-FX to stay centered
 stereoLimiter(audio)= 
 (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)),
 (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)):
@@ -610,7 +648,7 @@ block = par(i,2,(intervalTester(PitchTracker(audio),2,265)*-1+1:smooth(0.999))*_
 //process(audio) =stringloop(audio,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
 
 
-//process(audio) = fof(300,fofFund(PitchTracker(audio)),fofSkirt,fofDecay,1);
+//process(audio) = fof(400,fofFund(PitchTracker(audio)),fofSkirt,fofDecay,fofPhaseRand,1);
 
 //adsr(KPattack,KPdecay,KPsustain,KPrelease,button("foo")):vbargraph("foo", 0, 1);
 
@@ -619,9 +657,12 @@ block = par(i,2,(intervalTester(PitchTracker(audio),2,265)*-1+1:smooth(0.999))*_
 
 
 
-//process(audio) = fofvocoder(audio:qompander,PitchTracker(audio));
-
+//process(audio) = fof(400,fofFund(PitchTracker(audio)),fofSkirt,fofDecay,fofPhaseRand,1):stringloop(_,PitchTracker(audio)*0.5,typeModL,t60L*Rt60adsr(audio),treshL,nonLinL,brightL,frequencyModL);
+//process(audio) = fofvocoder(audio:qompander,PitchTracker(audio)):>min(100):max(-100):stringloop(_,PitchTracker(audio)*0.5,typeModL,t60L*Rt60adsr(audio),treshL,nonLinL,brightL,frequencyModL);
 process(audio) = VocSynth(audio);
+
+
+
 //process = PTsmooth:vbargraph("foo", 0.99, 1);
 //process(audio) = audio<:((_<:stringloopBank(_,PitchTracker(audio))),(_<:stringloopBank(_,PitchTracker(audio))));
 
