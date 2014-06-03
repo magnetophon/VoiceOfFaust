@@ -16,8 +16,9 @@ import ("KarplusStrongFX.lib");
 import ("NLFeksFX.lib");
 import ("mixer.lib");
 
-
-qompander	= component("../qompander/qompander.dsp");
+//when cloning from git, checkout the submodules to get qompander
+//howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
+qompander	= component("qompander/qompander.dsp");
 //KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
 //-----------------------------------------------
@@ -624,6 +625,7 @@ mixerWithSends(nrChan,nrMonoChan,nrSends)
 :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
 //:block  //block out non tonal sounds
 :stereoLimiter(audio) //it needas the original audio (the voice) to calculate the pitch, and with that the decay time.
+:par(i,2,_<:(_, (envelop :(hbargraph("[2][unit:dB][tooltip: output level in dB]", -70, +6)))):attach)
 )
 with {
       nrChan = 5;
@@ -640,8 +642,8 @@ with {
       //isSameTooLong(x,time) = (mem(x))==x:vbargraph("[-2]same", 0, 1);
       same(x,time) =(x@time)==x;
       intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
-
       block = par(i,2,(intervalTester(PitchTracker(audio),2,265)*-1+1:smooth(0.999))*_);
+      envelop	= abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
       }
 ;
 
