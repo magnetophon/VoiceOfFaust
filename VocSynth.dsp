@@ -16,8 +16,9 @@ import ("KarplusStrongFX.lib");
 import ("NLFeksFX.lib");
 import ("mixer.lib");
 
-
-qompander	= component("../qompander/qompander.dsp");
+//when cloning from git, checkout the submodules to get qompander
+//howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
+qompander	= component("qompander/qompander.dsp");
 //KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
 //-----------------------------------------------
@@ -348,26 +349,26 @@ with {
 //Implemented in Faust by Bart Brouns
 supersaw(N,fund,freq,detune,mix) = saws(fund,freq,detuner(detune)):mixer(mix) 
 with {
-detuner (detune) = 
-(((detune*0.2),(detune<0.6)):*),
-((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
-((((detune-0.95)*12+0.4),(detune>0.95)):*)
-:>_;
-saws(fund,freq,det) = 
-sawNws(N,fund,freq),
-sawN(N,(det * -0.110023+1)*freq),
-sawN(N,(det * -0.0628844+1)*freq),
-sawN(N,(det * -0.0195236+1)*freq),
-sawN(N,(det * 0.0199122+1)*freq),
-sawN(N,(det * 0.0621654+1)*freq),
-sawN(N,(det * 0.107452+1)*freq);
+    detuner (detune) = 
+      (((detune*0.2),(detune<0.6)):*),
+      ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
+      ((((detune-0.95)*12+0.4),(detune>0.95)):*)
+      :>_;
+    saws(fund,freq,det) = 
+      sawNws(N,fund,freq),
+      sawN(N,(det * -0.110023+1)*freq),
+      sawN(N,(det * -0.0628844+1)*freq),
+      sawN(N,(det * -0.0195236+1)*freq),
+      sawN(N,(det * 0.0199122+1)*freq),
+      sawN(N,(det * 0.0621654+1)*freq),
+      sawN(N,(det * 0.107452+1)*freq);
 
-mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
-detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
+    mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
+    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
 
-//*-1 to get it into phase with th othes synths
-mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
-};
+    //*-1 to get it into phase with my other synths
+    mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
+    };
 
 //todo:Window Function Synthesis:
 //see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
@@ -624,6 +625,7 @@ mixerWithSends(nrChan,nrMonoChan,nrSends)
 :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
 //:block  //block out non tonal sounds
 :stereoLimiter(audio) //it needas the original audio (the voice) to calculate the pitch, and with that the decay time.
+:par(i,2,_<:(_, (envelop :(hbargraph("[2][unit:dB][tooltip: output level in dB]", -70, +6)))):attach)
 )
 with {
       nrChan = 5;
@@ -640,8 +642,8 @@ with {
       //isSameTooLong(x,time) = (mem(x))==x:vbargraph("[-2]same", 0, 1);
       same(x,time) =(x@time)==x;
       intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
-
       block = par(i,2,(intervalTester(PitchTracker(audio),2,265)*-1+1:smooth(0.999))*_);
+      envelop	= abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
       }
 ;
 
