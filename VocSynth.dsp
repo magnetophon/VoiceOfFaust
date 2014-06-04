@@ -398,7 +398,8 @@ vocoderOsc(freq) =   supersaw(vocoderN,vocoderFund(freq),freq,vocoderDetune,voco
 volFilter(c,f,v) = f:resonbp(c:min((SR/2)-10),vocoderQ,gain)
 with {
 compensate = (tanh((1/(vocoderQ:min(1)))/2));
-gain = line (v*compensate, minline);
+//gain = line (v*compensate, minline);
+gain = (v*compensate):smooth((vslider("-2]smoo",	0, 0, 1, 0)* 0.001)+0.99);
 };
 
 volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator)=
