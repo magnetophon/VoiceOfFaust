@@ -92,8 +92,8 @@ fofpmFX		= fofVocoderGroup(vslider("[2]PM fx",	0, 0, 1, 0):smooth(0.999)<:(_,_):
 fofOctave	= fofVocoderGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);				//set the octave of fof
 fofBottom	= fofVocoderGroup(vslider("[4]bottom",	0.694, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 fofTop		= fofVocoderGroup(vslider("[5]top",	56.192, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-fofSkirt	= fofVocoderGroup(vslider("[6]skirt", 30.359, 3, 100, 0)*0.001:smooth(0.999));
-fofDecay	= fofVocoderGroup(vslider("[7]decay", 3.462, 0, 10, 0):_<:*:smooth(0.999));
+fofSkirt	= fofVocoderGroup(vslider("[6]skirt", 30.359, 3, 500, 0)*0.001:smooth(0.999));
+fofDecay	= fofVocoderGroup(vslider("[7]decay", 3.462, 0, 18, 0):_<:*:smooth(0.999));
 fofPhaseRand	= fofVocoderGroup((vslider("[8]phase rnd", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
 fofWidth	= fofVocoderGroup(vslider("[9]width",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width = vslider("width", 3, 3, 100, 0)*0.001:smooth(0.999);
@@ -202,9 +202,10 @@ frequencyModLL	= LLKPgroup(vslider("[6]freqMod [style:knob]",1,0,8,0) : smooth(0
 // Phase Modulation as an effect
 //-----------------------------------------------
 pmFXgroup(x)	= FXGroup((vgroup("[1]Phase Modulation", x)));
-pmFXvolume	= pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-pmFXi		= pmFXgroup(vslider("[0]Index of modulation[style:knob]",0,0,5,0.001):smooth(0.999) );
-pmFXr		= pmFXgroup(vslider("[1]c:m[style:knob]",1,0.1,5,0.001):smooth(0.999) );
+//pmFXvolume	= pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0)<:(_,_):*:smooth(0.999));			//0 to 1 logarithmicly
+pmFXi		= pmFXgroup(vslider("[1]depth[style:knob]",0,0,2,0):pow(3):smooth(0.999) );
+pmFXr		= pmFXgroup(vslider("[2]freq[style:knob]",1,0.001,5,0):smooth(0.999) );
+PMphase		= pmFXgroup(hslider("[3]phase[style:knob]", 0, 0, 1, 0):pow(3)*0.5:smooth(0.999));
 
 //-----------------------------------------------
 // Some general functions
@@ -594,13 +595,22 @@ stringloop(_,freq*4,typeModHH,t60HH*Rt60adsr(audio),treshHH,nonLinHH,brightHH,fr
 //-----------------------------------------------
 // Phase Modulation as an effect
 //-----------------------------------------------
+//x - floor(x)
+
+PHosci(freq,PH)	= s1 + d * (s2 - s1)
+		with {
+			i = int(phase(freq));
+			d = decimal(phase(freq));
+			PHi = decimal(i/tablesize+PH)*tablesize;
+			s1 = rdtable(tablesize+1,sinwaveform,int(PHi));
+			s2 = rdtable(tablesize+1,sinwaveform,int(PHi+1));};
 
 // modulator:
-pmFX(fc,r,I,x) = x : fdelay3(1 << 17, dt + 1)
+pmFX(fc,r,I,PH,x) = x : fdelay3(1 << 17, dt + 1)
 with {
 k = 8.0 ; // pitch-tracking analyzing cycles number
 //fc = PtchPr(k,x) ;
-dt = (0.5 * osci(fc / r) + 0.5) * I / (PI * fc) *SR ;
+dt = (0.5 * PHosci(fc / r,PH) + 0.5) * I / (PI * fc) *SR ;
 };
 //process = pmFX(r,I) ;
 
@@ -610,6 +620,8 @@ dt = (0.5 * osci(fc / r) + 0.5) * I / (PI * fc) *SR ;
 //-----------------------------------------------
 //SynthsMixer = interleave(2,4):(bus(4):>_),(bus(4):>_);
 //mixerWithSends(nrChan,nrMonoChan,nrSends)
+
+
 
 VocSynth(audio) = 
 (subVolume,0,0,
@@ -627,7 +639,7 @@ mixerWithSends(nrChan,nrMonoChan,nrSends)
 
 :_,_
 ,((dcblocker<:stringloopBank(PitchTracker(audio))),(dcblocker<:stringloopBank(PitchTracker(audio))))
-,pmFX(PitchTracker(audio),pmFXr,pmFXi)*pmFXvolume,pmFX(PitchTracker(audio),pmFXr,pmFXi)*pmFXvolume
+,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase),pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
 :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
 //:block  //block out non tonal sounds
 :stereoLimiter(audio) //it needas the original audio (the voice) to calculate the pitch, and with that the decay time.
@@ -674,7 +686,7 @@ process(audio) = VocSynth(audio);
 
 
 
-//process = PTsmooth:vbargraph("foo", 0.99, 1);
+//process = PHosci(1000,0.5);
 //process(audio) = audio<:((_<:stringloopBank(_,PitchTracker(audio))),(_<:stringloopBank(_,PitchTracker(audio))));
 
 //process(audio) = audio:stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
