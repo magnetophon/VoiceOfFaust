@@ -94,7 +94,7 @@ fofBottom	= fofVocoderGroup(vslider("[4]bottom",	0.694, 0.5, 7, 0):smooth(0.999)
 fofTop		= fofVocoderGroup(vslider("[5]top",	56.192, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 fofSkirt	= fofVocoderGroup(vslider("[6]skirt", 30.359, 3, 100, 0)*0.001:smooth(0.999));
 fofDecay	= fofVocoderGroup(vslider("[7]decay", 3.462, 0, 10, 0):_<:*:smooth(0.999));
-fofPhaseRand	= fofVocoderGroup(vslider("[8]phase rnd", 1, -1, 1, 0):smooth(0.999));
+fofPhaseRand	= fofVocoderGroup((vslider("[8]phase rnd", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
 fofWidth	= fofVocoderGroup(vslider("[9]width",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width = vslider("width", 3, 3, 100, 0)*0.001:smooth(0.999);
 //decay = vslider("decay", 0, 0, 10, 0):_<:*:smooth(0.999);
@@ -275,10 +275,12 @@ subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1
 // vocoder analiser
 //-----------------------------------------------
 
-subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*30:tanh; 
+subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*16:tanh; 
 
 analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
-bandEnv(freq)=resonbp(freq,analizerQ,1):amp_follower_ud(0.01,0.01);  
+//amp_follower_ud params set for minimal distortion
+//also sounds cool to vary between this and 0
+bandEnv(freq)=resonbp(freq,analizerQ,1):amp_follower_ud(0.002,0.004);
 analizers(audio,freq1,freq2,freq3,freq4,freq5,freq6,freq7,freq8,freq9,freq10,freq11,freq12,freq13,freq14,freq15,freq16)=
 audio<:
 (
@@ -374,58 +376,6 @@ with {
 //see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
 //todo: vector PM osclators
 
-
-//fof is based on work by Xavier Rodet on his CHANT program at IRCAM
-fof(fReso,fund,skirt,decay,phase,vol) = 
-select2((fund<skirt),
-(0.5*(1-cos((PI/skirt)*fund))*exp((-decay/PI)*fund)*sin(fReso*fund+PH)),
-exp((-decay/PI)*fund)*sin(fReso*fund+PH))*vol
-with {
-arc(angle) = angle/360 * 2 * PI;
-PH = arc( sin(fReso*exp((-decay/PI))) / (phase -cos(fReso*exp((-decay/PI))) ));
-};
-
-
-//-----------------------------------------------
-// Normal vocoder synthesis
-//-----------------------------------------------
-
-vocoderFund(freq)= fund(freq,vocoderOctave);
-vocoderOsc(freq) =   supersaw(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix);
-//sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
-//
-
-volFilter(c,f,v) = f:resonbp(c:min((SR/2)-10),vocoderQ,gain)
-with {
-compensate = (tanh((1/(vocoderQ:min(1)))/2));
-//gain = line (v*compensate, minline);
-gain = (v*compensate):smooth((vslider("-2]smoo",	0, 0, 1, 0)* 0.001)+0.99);
-};
-
-volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator)=
-volFilter(Center1,Oscilator,Volume1),
-volFilter(Center2,Oscilator,Volume2),
-volFilter(Center3,Oscilator,Volume3),
-volFilter(Center4,Oscilator,Volume4),
-volFilter(Center5,Oscilator,Volume5),
-volFilter(Center6,Oscilator,Volume6),
-volFilter(Center7,Oscilator,Volume7),
-volFilter(Center8,Oscilator,Volume8),
-volFilter(Center9,Oscilator,Volume9),
-volFilter(Center10,Oscilator,Volume10),
-volFilter(Center11,Oscilator,Volume11),
-volFilter(Center12,Oscilator,Volume12),
-volFilter(Center13,Oscilator,Volume13),
-volFilter(Center14,Oscilator,Volume14),
-volFilter(Center15,Oscilator,Volume15),
-volFilter(Center16,Oscilator,Volume16)
-;
-
-
-vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
-
-vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):volFilterBank:vocoderMixer:par(i, 2, _):WidePanner(vocoderWidth);
-
 //-----------------------------------------------
 // PAF oscilator
 //-----------------------------------------------
@@ -453,6 +403,60 @@ centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
 cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
 bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*line (i, 12))+100:bellcurve;
 };
+
+
+//fof is based on work by Xavier Rodet on his CHANT program at IRCAM
+fof(fReso,fund,skirt,decay,phase,vol) = 
+select2((fund<skirt),
+(0.5*(1-cos((PI/skirt)*fund))*exp((-decay/PI)*fund)*sin(fReso*fund+PH)),
+exp((-decay/PI)*fund)*sin(fReso*fund+PH))*vol
+with {
+arc(angle) = angle/360 * 2 * PI;
+//PH = arc( sin(fReso*exp((-decay/PI))) / (phase -cos(fReso*exp((-decay/PI))) ));
+PH = 0;
+};
+
+
+//-----------------------------------------------
+// Normal vocoder synthesis
+//-----------------------------------------------
+
+vocoderFund(freq)= fund(freq,vocoderOctave);
+vocoderOsc(freq) =   supersaw(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix);
+//sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
+//
+
+volFilter(c,f,v) = f:resonbp(c:min((SR/2)-10),vocoderQ,gain)
+with {
+compensate = (tanh((1/(vocoderQ:min(1)))/2));
+//gain = line (v*compensate, minline);
+gain = (v*compensate);
+};
+
+volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator)=
+volFilter(Center1,Oscilator,Volume1),
+volFilter(Center2,Oscilator,Volume2),
+volFilter(Center3,Oscilator,Volume3),
+volFilter(Center4,Oscilator,Volume4),
+volFilter(Center5,Oscilator,Volume5),
+volFilter(Center6,Oscilator,Volume6),
+volFilter(Center7,Oscilator,Volume7),
+volFilter(Center8,Oscilator,Volume8),
+volFilter(Center9,Oscilator,Volume9),
+volFilter(Center10,Oscilator,Volume10),
+volFilter(Center11,Oscilator,Volume11),
+volFilter(Center12,Oscilator,Volume12),
+volFilter(Center13,Oscilator,Volume13),
+volFilter(Center14,Oscilator,Volume14),
+volFilter(Center15,Oscilator,Volume15),
+volFilter(Center16,Oscilator,Volume16)
+;
+
+
+vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
+
+vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):volFilterBank:vocoderMixer:par(i, 2, _):WidePanner(vocoderWidth);
+
 
 
 //-----------------------------------------------
@@ -576,7 +580,7 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 //adsr(a,d,s,r,t)
 //KPadsr(audio) = audio*((adsr(KPattack,KPdecay,0,KPrelease,gate(audio))+KPsustain):min(1):vbargraph("adsr", 0, 1));
 //Rt60adsr(audio) = (1/KPsustain)*(adsr(KPattack,KPdecay,0,KPrelease,gate(audio))+(KPsustain*subLevel(audio))):min(1):vbargraph("RT60adsr", 0, 1);
-Rt60adsr(audio) = tanh(audio:qompander*16:amp_follower(KPrelease)):pow(4);
+Rt60adsr(audio) = tanh(audio:qompander*2:amp_follower(KPrelease)):pow(4);
 
 stringloopBank(freq,audio) = audio<:(
 stringloop(_,freq*0.25,typeModLL,t60LL*Rt60adsr(audio),treshLL,nonLinLL,brightLL,frequencyModLL),
@@ -589,6 +593,7 @@ stringloop(_,freq*4,typeModHH,t60HH*Rt60adsr(audio),treshHH,nonLinHH,brightHH,fr
 
 //-----------------------------------------------
 // Phase Modulation as an effect
+//-----------------------------------------------
 
 // modulator:
 pmFX(fc,r,I,x) = x : fdelay3(1 << 17, dt + 1)
