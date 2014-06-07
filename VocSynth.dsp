@@ -48,9 +48,16 @@ OSCfidelity     = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0));
 OSConset     	= OSCgroup(nentry("[2]onset", 0, 0, 1, 0));
 ManualOnset     = OSCgroup(button("[3]trigger")); //button does not seem to recieve osc
 
+cleanGroup(x)	= synthsGroup((hgroup("[0]clean", x)));
+cleanVolume	= cleanGroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+cleanNLKS	= cleanGroup(vslider("[1]NL-KS",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
+cleanpmFX	= cleanGroup(vslider("[2]PM fx",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
+
 subGroup(x)	= synthsGroup((hgroup("[1]sub", x)));
-subVolume	= subGroup(vslider("[1]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-subOctave	= subGroup(vslider("[2]octave",	-1, -2, 2, 1):octaveMultiplier);				//set the octave of sub
+subVolume	= subGroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+subNLKS		= subGroup(vslider("[1]NL-KS",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
+subpmFX		= subGroup(vslider("[2]PM fx",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
+subOctave	= subGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);				//set the octave of sub
 
 
 vocoderGroup(x) 	= synthsGroup((hgroup("[2]vocoder", x)));
@@ -203,9 +210,9 @@ frequencyModLL	= LLKPgroup(vslider("[6]freqMod [style:knob]",1,0,8,0) : smooth(0
 //-----------------------------------------------
 pmFXgroup(x)	= FXGroup((vgroup("[1]Phase Modulation", x)));
 //pmFXvolume	= pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0)<:(_,_):*:smooth(0.999));			//0 to 1 logarithmicly
-pmFXi		= pmFXgroup(vslider("[1]depth[style:knob]",0,0,2,0):pow(3):smooth(0.999) );
-pmFXr		= pmFXgroup(vslider("[2]freq[style:knob]",1,0.001,5,0):smooth(0.999) );
-PMphase		= pmFXgroup(hslider("[3]phase[style:knob]", 0, 0, 1, 0):pow(3)*0.5:smooth(0.999));
+pmFXi		= pmFXgroup(vslider("[1]depth[style:knob]",1,0,4,0):pow(2):smooth(0.999) );
+pmFXr		= pmFXgroup(vslider("[2]freq[style:knob]",4,0.125,8,0):smooth(0.999) );
+PMphase		= pmFXgroup(hslider("[3]phase[style:knob]", 0.9, 0, 1, 0):pow(3)*0.5:smooth(0.999));
 
 //-----------------------------------------------
 // Some general functions
@@ -276,7 +283,7 @@ subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * (subLevel(audio):lowpass(1
 // vocoder analiser
 //-----------------------------------------------
 
-subLevel(audio) = audio:lowpass(3,300):amp_follower(0.05)*16:tanh; 
+subLevel(audio) = audio:lowpass(3,300):amp_follower(0.03)*6:tanh; 
 
 analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
 //amp_follower_ud params set for minimal distortion
@@ -610,7 +617,7 @@ pmFX(fc,r,I,PH,x) = x : fdelay3(1 << 17, dt + 1)
 with {
 k = 8.0 ; // pitch-tracking analyzing cycles number
 //fc = PtchPr(k,x) ;
-dt = (0.5 * PHosci(fc / r,PH) + 0.5) * I / (PI * fc) *SR ;
+dt = (0.5 * PHosci(fc * r,PH) + 0.5) * I / (PI * fc) *SR ;
 };
 //process = pmFX(r,I) ;
 
@@ -624,7 +631,10 @@ dt = (0.5 * PHosci(fc / r,PH) + 0.5) * I / (PI * fc) *SR ;
 
 
 VocSynth(audio) = 
-(subVolume,0,0,
+(
+cleanVolume,cleanNLKS,cleanpmFX,
+(audio:qompander*2<:_,_),
+subVolume,subNLKS,subpmFX,
 subSine(audio:qompander,PitchTracker(audio)),
 vocoderVolume,vocoderNLKS,vocoderpmFX,
 vocoder(audio:qompander,PitchTracker(audio)),
@@ -646,7 +656,7 @@ mixerWithSends(nrChan,nrMonoChan,nrSends)
 :par(i,2,_<:(_, (envelop :(hbargraph("[2][unit:dB][tooltip: output level in dB]", -70, +6)))):attach)
 )
 with {
-      nrChan = 5;
+      nrChan = 6;
       nrMonoChan = 2;
       nrSends = 3;
       //is actually dual mono. on purpose; to try and keep the image in the center.
