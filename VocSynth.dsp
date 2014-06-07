@@ -107,7 +107,7 @@ fofSkirt	= fofparamsGroup(vslider("[3]skirt[style:knob]", 30.359, 3, 500, 0)*0.0
 fofDecay	= fofparamsGroup(vslider("[4]decay[style:knob]", 3.462, 0, 18, 0):_<:*:smooth(0.999));
 //was used for formant phase:
 //fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
-fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)):pow(3):smooth(0.999));
+fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)):pow(2):smooth(0.999));
 fofWidth	= fofparamsGroup(vslider("[6]width[style:knob]",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width = vslider("width", 3, 3, 100, 0)*0.001:smooth(0.999);
 //decay = vslider("decay", 0, 0, 10, 0):_<:*:smooth(0.999);
@@ -529,23 +529,25 @@ fofOscs(phase,fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,
 
 //this part is to make a different (low)freq modulation for each osc.
 // *lfnoise(decimal(fofRNDfreq*fofCenter1)
+//decimal is so the mod frq stays low
 //"phase*" is to make ir differen left and right.
-fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter1)),fofVol1),
-fof(fofCenter2,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter2)),fofVol2),
-fof(fofCenter3,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter3)),fofVol3),
-fof(fofCenter4,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter4)),fofVol4),
-fof(fofCenter5,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter5)),fofVol5),
-fof(fofCenter6,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter6)),fofVol6),
-fof(fofCenter7,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter7)),fofVol7),
-fof(fofCenter8,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter8)),fofVol8),
-fof(fofCenter9,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter9)),fofVol9),
-fof(fofCenter10,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter10)),fofVol10),
-fof(fofCenter11,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter11)),fofVol11),
-fof(fofCenter12,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter12)),fofVol12),
-fof(fofCenter13,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter13)),fofVol13),
-fof(fofCenter14,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter14)),fofVol14),
-fof(fofCenter15,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter15)),fofVol15),
-fof(fofCenter16,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter16)),fofVol16)
+//max(0.0001) is so the modulation freq doesn't go to 0, because that causes silence and xruns...
+fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter1):max(0.0001)),fofVol1),
+fof(fofCenter2,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter2):max(0.0001)),fofVol2),
+fof(fofCenter3,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter3):max(0.0001)),fofVol3),
+fof(fofCenter4,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter4):max(0.0001)),fofVol4),
+fof(fofCenter5,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter5):max(0.0001)),fofVol5),
+fof(fofCenter6,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter6):max(0.0001)),fofVol6),
+fof(fofCenter7,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter7):max(0.0001)),fofVol7),
+fof(fofCenter8,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter8):max(0.0001)),fofVol8),
+fof(fofCenter9,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter9):max(0.0001)),fofVol9),
+fof(fofCenter10,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter10):max(0.0001)),fofVol10),
+fof(fofCenter11,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter11):max(0.0001)),fofVol11),
+fof(fofCenter12,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter12):max(0.0001)),fofVol12),
+fof(fofCenter13,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter13):max(0.0001)),fofVol13),
+fof(fofCenter14,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter14):max(0.0001)),fofVol14),
+fof(fofCenter15,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter15):max(0.0001)),fofVol15),
+fof(fofCenter16,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter16):max(0.0001)),fofVol16)
 ;
 
 
