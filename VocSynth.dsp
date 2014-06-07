@@ -105,7 +105,9 @@ fofTop		= fofparamsGroup(vslider("[1]top[style:knob]",	56.192, 1, 64, 0):smooth(
 fofBottom	= fofparamsGroup(vslider("[2]bottom[style:knob]",	0.694, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 fofSkirt	= fofparamsGroup(vslider("[3]skirt[style:knob]", 30.359, 3, 500, 0)*0.001:smooth(0.999));
 fofDecay	= fofparamsGroup(vslider("[4]decay[style:knob]", 3.462, 0, 18, 0):_<:*:smooth(0.999));
-fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
+//was used for formant phase:
+//fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
+fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)):pow(3):smooth(0.999));
 fofWidth	= fofparamsGroup(vslider("[6]width[style:knob]",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width = vslider("width", 3, 3, 100, 0)*0.001:smooth(0.999);
 //decay = vslider("decay", 0, 0, 10, 0):_<:*:smooth(0.999);
@@ -424,15 +426,20 @@ cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_
 bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*line (i, 12))+100:bellcurve;
 };
 
-
+//-----------------------------------------------
+// FOF oscilator
+//-----------------------------------------------
 //fof is based on work by Xavier Rodet on his CHANT program at IRCAM
 fof(fReso,fund,skirt,decay,phase,vol) = 
-select2((fund<skirt),
-(0.5*(1-cos((PI/skirt)*fund))*exp((-decay/PI)*fund)*sin(fReso*fund+PH)),
-exp((-decay/PI)*fund)*sin(fReso*fund+PH))*vol
+select2((PHfund<skirt),
+(0.5*(1-cos((PI/skirt)*PHfund))*exp((-decay/PI)*PHfund)*sin(fReso*PHfund+PH)),
+exp((-decay/PI)*PHfund)*sin(fReso*PHfund+PH))*vol
 with {
 arc(angle) = angle/360 * 2 * PI;
+PHfund = decimal(fund+phase);
+//warning: phase is currently being re-used for the fundamentalosc phase, this is the formant phase
 //PH = arc( sin(fReso*exp((-decay/PI))) / (phase -cos(fReso*exp((-decay/PI))) ));
+//sounds cool, but glithes when either the phase or one of the other params is moved, so:
 PH = 0;
 };
 
@@ -513,30 +520,42 @@ pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq))
 
 //fofCenters=     par(i,16,   pow((pow((fofTop/fofBottom),1/15)),i)*fofBottom);
 fofFund(freq) = fund(freq,fofOctave);
+fofRNDfreq = 0.014;
 
 fofCenters = VocoderFreqs(fofBottom,fofTop);
-fofOscs(fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,fofCenter7,fofCenter8,fofCenter9,fofCenter10,fofCenter11,fofCenter12,fofCenter13,fofCenter14,fofCenter15,fofCenter16,fofVol1,fofVol2,fofVol3,fofVol4,fofVol5,fofVol6,fofVol7,fofVol8,fofVol9,fofVol10,fofVol11,fofVol12,fofVol13,fofVol14,fofVol15,fofVol16,Fund)=
-//fof(fofCenter1,Fund,fofSkirt,fofDecay,lfnoise(0.1*1):lowpass(1,2)*fofPhaseRand,fofVol1),
-fof(fofCenter1,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol1),
-fof(fofCenter2,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol2),
-fof(fofCenter3,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol3),
-fof(fofCenter4,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol4),
-fof(fofCenter5,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol5),
-fof(fofCenter6,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol6),
-fof(fofCenter7,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol7),
-fof(fofCenter8,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol8),
-fof(fofCenter9,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol9),
-fof(fofCenter10,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol10),
-fof(fofCenter11,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol11),
-fof(fofCenter12,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol12),
-fof(fofCenter13,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol13),
-fof(fofCenter14,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol14),
-fof(fofCenter15,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol15),
-fof(fofCenter16,Fund,fofSkirt,fofDecay,fofPhaseRand,fofVol16)
+
+fofOscs(phase,fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,fofCenter7,fofCenter8,fofCenter9,fofCenter10,fofCenter11,fofCenter12,fofCenter13,fofCenter14,fofCenter15,fofCenter16,fofVol1,fofVol2,fofVol3,fofVol4,fofVol5,fofVol6,fofVol7,fofVol8,fofVol9,fofVol10,fofVol11,fofVol12,fofVol13,fofVol14,fofVol15,fofVol16,Fund)=
+//fof(fofCenter1,Fund,fofSkirt,fofDecay,lfnoise(0.1*1):lowpass(1,2)*fofPhaseRand*lfnoise(0.03125*fofCenter),fofVol1),
+
+//this part is to make a different (low)freq modulation for each osc.
+// *lfnoise(decimal(fofRNDfreq*fofCenter1)
+//"phase*" is to make ir differen left and right.
+fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter1)),fofVol1),
+fof(fofCenter2,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter2)),fofVol2),
+fof(fofCenter3,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter3)),fofVol3),
+fof(fofCenter4,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter4)),fofVol4),
+fof(fofCenter5,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter5)),fofVol5),
+fof(fofCenter6,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter6)),fofVol6),
+fof(fofCenter7,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter7)),fofVol7),
+fof(fofCenter8,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter8)),fofVol8),
+fof(fofCenter9,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter9)),fofVol9),
+fof(fofCenter10,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter10)),fofVol10),
+fof(fofCenter11,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter11)),fofVol11),
+fof(fofCenter12,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter12)),fofVol12),
+fof(fofCenter13,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter13)),fofVol13),
+fof(fofCenter14,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter14)),fofVol14),
+fof(fofCenter15,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter15)),fofVol15),
+fof(fofCenter16,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter16)),fofVol16)
 ;
 
 
-fofvocoder(audio,freq)=(fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
+//fofvocoder(audio,freq)=(fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
+
+fofvocoder(audio,freq)=
+((fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs(1):>_),
+((fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs(-1):>_)
+;
+
 
 //fof(fReso,fund,width,decay,vol)
 
