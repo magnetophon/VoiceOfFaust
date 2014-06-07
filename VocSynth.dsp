@@ -85,7 +85,7 @@ pafOctave	= PAFvocoderGroup(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);
 
 
 PAFparamsGroup(x)= PAFvocoderGroup((vgroup("[4]parameters", x)));
-pafTop		= PAFparamsGroup(vslider("[1]top[style:knob]",		8.5, 1, 6, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+pafTop		= PAFparamsGroup(vslider("[1]top[style:knob]",		12, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 pafBottom	= PAFparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 pafIndex	= PAFparamsGroup(vslider("[3]index[style:knob]",	25, 1, 100, 0):smooth(0.999));
 pafWidth	= PAFparamsGroup(vslider("[4]width[style:knob]",1, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
@@ -221,7 +221,7 @@ frequencyModLL	= LLKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.9
 pmFXgroup(x)	= FXGroup((vgroup("[1]Phase Modulation", x)));
 //pmFXvolume	= pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0)<:(_,_):*:smooth(0.999));			//0 to 1 logarithmicly
 pmFXi		= pmFXgroup(vslider("[1]depth[style:knob]",1,0,4,0):pow(2):smooth(0.999) );
-pmFXr		= pmFXgroup(vslider("[2]freq[style:knob]",4,0.125,8,0):smooth(0.999) );
+pmFXr		= pmFXgroup(vslider("[2]freq[style:knob]",4,0,8,0):smooth(0.999) );
 PMphase		= pmFXgroup(hslider("[3]phase[style:knob]", 0.9, 0, 1, 0):pow(3)*0.5:smooth(0.999));
 
 //-----------------------------------------------
@@ -660,7 +660,7 @@ FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker
 mixerWithSends(nrChan,nrMonoChan,nrSends)
 
 :_,_
-,((dcblocker<:stringloopBank(PitchTracker(audio))),(dcblocker<:stringloopBank(PitchTracker(audio))))
+,((_<:stringloopBank(PitchTracker(audio))),(_<:stringloopBank(PitchTracker(audio))))
 ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase),pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
 :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
 //:block  //block out non tonal sounds
