@@ -48,7 +48,7 @@ import("effect.lib");   // stereopanner
 
 //compressor_mono(ratio,thresh,att,rel,x)
 
-stringloop(audio,freq,typeModulation,t60,thresh,nonLinearity,B,frequencyMod) = audio : (+ : fdelay4(Pmax, P-2)) ~ (compressor_mono(100,thresh,0.1,30) : loopfilter : NLFM)
+stringloop(audio,freq,typeModulation,t60,thresh,nonLinearity,B,frequencyMod) = audio : (+  : NLFM) ~ (compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter)
 with
 {
 nlfOrder = 6;
