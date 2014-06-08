@@ -1,9 +1,9 @@
 declare name 		"VocSynth";
-declare version 	"0.3";
+declare version 	"0.4";
 declare author 		"Bart Brouns";
 declare license 	"GNU 3.0";
 declare copyright 	"(c) Bart Brouns 2014";
-declare coauthors	"PitchTracker by Tiziano Bole, qompander translated from a pd patch by Katja Vetter";
+declare coauthors	"PitchTracker by Tiziano Bole, qompander translated from a pd patch by Katja Vetter,supersaw by ADAM SZABO";
 
 //-----------------------------------------------
 // imports
@@ -67,14 +67,16 @@ vocoderpmFX	= vocoderGroup(vslider("[2]PM fx",	0, 0, 1, 0):smooth(0.999)<:(_,_):
 vocoderOctave	= vocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
 
 vocoderParamsGroup(x)= vocoderGroup((vgroup("[4]parameters", x)));
-vocoderTop	= vocoderParamsGroup(vslider("[1]top[style:knob]",	8.5, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderTop	= vocoderParamsGroup(vslider("[1]top[style:knob]",	32, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 vocoderBottom	= vocoderParamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
-vocoderQ	= vocoderParamsGroup(vslider("[3]Q[style:knob]",	1, 0.3, 7, 0)<:(_,_):*:smooth(0.999));			//0.1 to 49 logarithmicly,
+vocoderQ	= vocoderParamsGroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0)<:(_,_):*:smooth(0.999));			//0.1 to 49 logarithmicly,
 //todo: research
-vocoderN	= 1;//vocoderParamsGroup(vslider("[6]N[style:knob]",	1, 1, 6, 1));
+vocoderN	= 2;//vocoderParamsGroup(vslider("[6]N[style:knob]",	1, 1, 6, 1));
 vocoderMix	= vocoderParamsGroup(vslider("[4]mix[style:knob]",	0, 0, 1, 0));								// is smoothed at the synth
 vocoderDetune	= vocoderParamsGroup(vslider("[5]detune[style:knob]",	0, 0, 1, 0):smooth(0.999));
-vocoderWidth	= vocoderParamsGroup(vslider("[6]width[style:knob]",	1, 0, 2, 0):smooth(0.999));				//wide pan, 0=mono 1=normal 2=full-wide
+vocoderSawPulse = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob]", 0, 0, 1, 0));
+vocoderDuty	= vocoderParamsGroup(vslider("[7]PW[style:knob]", 0.5, 0.5, 1, 0):min(0.9995));
+vocoderWidth	= vocoderParamsGroup(vslider("[8]width[style:knob]",	1, 0, 2, 0):smooth(0.999));				//wide pan, 0=mono 1=normal 2=full-wide
 
 
 PAFvocoderGroup(x)  = synthsGroup((hgroup("[3]PAFvocoder", x)));
@@ -167,7 +169,7 @@ KPvolume	= mainKPgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0):smooth(0.99
 //KPattack	= mainKPgroup(vslider("[1]attack [style:knob]",	0.01, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 //KPdecay		= mainKPgroup(vslider("[2]decay [style:knob]",	0.01, 0.01, 3, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 //KPsustain	= mainKPgroup(vslider("[3]sustain [style:knob]",	0.5, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-KPrelease	= mainKPgroup(vslider("[4]release [style:knob]",	0, 0.01, 1, 0));			//0 to 1
+KPrelease	= mainKPgroup(vslider("[4]release [style:knob]",	0, 0.01, 1, 0):pow(4)*3);			//0 to 1
 
 
 HHKPgroup(x) = KPgroup((hgroup("[2]+2 oct", x)));
@@ -367,10 +369,9 @@ with {
   gate(N) = *(1@(N)); // delayed step for blanking startup glitch
 };
 
-
 //emulation of a roland supersaw, based on: "How to Emulate the Super Saw" by ADAM SZABO
 //http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf 
-//Implemented in Faust by Bart Brouns
+//ported toFaust by Bart Brouns
 supersaw(N,fund,freq,detune,mix) = saws(fund,freq,detuner(detune)):mixer(mix) 
 with {
     detuner (detune) = 
@@ -386,6 +387,71 @@ with {
       sawN(N,(det * 0.0199122+1)*freq),
       sawN(N,(det * 0.0621654+1)*freq),
       sawN(N,(det * 0.107452+1)*freq);
+
+    mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
+    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
+
+    //*-1 to get it into phase with my other synths
+    mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
+    };
+
+//todo:Window Function Synthesis:
+//see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
+//todo: vector PM osclators
+
+sawpulseNws(N,fund,freq,SawPulse,duty) = diffdel(sawNws(N,fund,freq),del)*compensate with { 
+ // non-interpolated-delay version: diffdel(x,del) = x - x@int(del+0.5);
+ // linearly interpolated delay version (sounds good to me):
+    diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
+ // Third-order Lagrange interpolated-delay version (see filter.lib):
+ // diffdel(x,del) = x - fl.fdelay3(DELPWR2,max(1,min(DELPWR2-2,ddel)));
+ compensate = (((SawPulse*-1)+1)*0.2)+0.8; //compensate volume dif between saw and pulse
+ DELPWR2 = 2048; // Needs to be a power of 2 when fdelay*() used above.
+ delmax = DELPWR2-1; // arbitrary upper limit on diff delay (duty=0.5)
+ SRmax = 96000.0; // assumed upper limit on sampling rate
+ fmin = SRmax / float(2.0*delmax); // 23.4 Hz (audio freqs only)
+ freqC = max(freq,fmin); // clip frequency at lower limit
+ period = (float(ml.SR) / freqC); // actual period
+ ddel = duty * period; // desired delay
+ del = max(0,min(delmax,ddel));
+};
+
+sawpulseN(N,freq,SawPulse,duty) = diffdel(sawN(N,freq),del)*compensate  with { 
+ // non-interpolated-delay version: diffdel(x,del) = x - x@int(del+0.5);
+ // linearly interpolated delay version (sounds good to me):
+    diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
+ // Third-order Lagrange interpolated-delay version (see filter.lib):
+ // diffdel(x,del) = x - fl.fdelay3(DELPWR2,max(1,min(DELPWR2-2,ddel)));
+ compensate = (((SawPulse*-1)+1)*0.2)+0.8; //compensate volume dif between saw and pulse
+ DELPWR2 = 2048; // Needs to be a power of 2 when fdelay*() used above.
+ delmax = DELPWR2-1; // arbitrary upper limit on diff delay (duty=0.5)
+ SRmax = 96000.0; // assumed upper limit on sampling rate
+ fmin = SRmax / float(2.0*delmax); // 23.4 Hz (audio freqs only)
+ freqC = max(freq,fmin); // clip frequency at lower limit
+ period = (float(ml.SR) / freqC); // actual period
+ ddel = duty * period; // desired delay
+ del = max(0,min(delmax,ddel));
+};
+
+
+//emulation of a roland supersaw, based on: "How to Emulate the Super Saw" by ADAM SZABO
+//http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf 
+//ported toFaust by Bart Brouns
+supersawpulse(N,fund,freq,detune,mix,SawPulse,duty) = saws(fund,freq,detuner(detune)):mixer(mix) 
+with {
+    detuner (detune) = 
+      (((detune*0.2),(detune<0.6)):*),
+      ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
+      ((((detune-0.95)*12+0.4),(detune>0.95)):*)
+      :>_;
+    saws(fund,freq,det) = 
+      sawpulseNws(N,fund,freq,SawPulse,duty),
+      sawpulseN(N,(det * -0.110023+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * -0.0628844+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * -0.0195236+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * 0.0199122+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * 0.0621654+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * 0.107452+1)*freq,SawPulse,duty);
 
     mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
     detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
@@ -449,9 +515,9 @@ PH = 0;
 //-----------------------------------------------
 
 vocoderFund(freq)= fund(freq,vocoderOctave);
-vocoderOsc(freq) =   supersaw(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix);
+vocoderOsc(freq) =   supersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty);
 //sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
-//
+//supersawpulse(N,fund,freq,detune,mix,SawPulse,duty)
 
 volFilter(c,f,v) = f:resonbp(c:min((SR/2)-10),vocoderQ,gain)
 with {
@@ -725,12 +791,15 @@ with {
 
 //process(audio) = fof(400,fofFund(PitchTracker(audio)),fofSkirt,fofDecay,fofPhaseRand,1):stringloop(_,PitchTracker(audio)*0.5,typeModL,t60L*Rt60adsr(audio),treshL,nonLinL,brightL,frequencyModL);
 //process(audio) = fofvocoder(audio:qompander,PitchTracker(audio)):>min(100):max(-100):stringloop(_,PitchTracker(audio)*0.5,typeModL,t60L*Rt60adsr(audio),treshL,nonLinL,brightL,frequencyModL);
+
+
+
 process(audio) = VocSynth(audio);
 
 
 
 //process = PHosci(1000,0.5);
-//process(audio) = audio<:((_<:stringloopBank(_,PitchTracker(audio))),(_<:stringloopBank(_,PitchTracker(audio))));
+//process(audio) = audio<:((_:qompander*2<:stringloopBank(PitchTracker(audio))),(_:qompander*2<:stringloopBank(PitchTracker(audio))));
 
 //process(audio) = audio:stringloop(_,PitchTracker(audio)/1,typeMod,t60,tresh,nonLin,bright,frequencyMod);
 //process(audio) = audio:(stringloopBank(_,PitchTracker(audio)));
