@@ -519,11 +519,30 @@ vocoderOsc(freq) =   supersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune
 //sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
 //supersawpulse(N,fund,freq,detune,mix,SawPulse,duty)
 
-volFilter(c,f,v) = f:resonbp(c:min((SR/2)-10),vocoderQ,gain)
+volFilter(c,f,v) = f:resonbp(c:min((SR/2)-10),vocoderQ,v):resonbp(c:min((SR/2)-10),vocoderQ,compensate)
 with {
-compensate = (tanh((1/(vocoderQ:min(1)))/2));
+//compensate for one filter:
+//compensate = (tanh((1/(vocoderQ:min(1)))/2));
+//compensate for two filters:
+//pow(vslider("[-1]comp",	1, 1, 20, 0)):
+//compensate = ((1/(((vocoderQ:min(7))/7):pow(hslider("[-1]comp",	1, 0.001, 1, 0))))-1)*(hslider("[-1]comp",	1, 1, 2000, 0)):hbargraph("[-1]compensate", 0, 99)+1;
+
+//compensate = 1;// ((1/(vocoderQ:min(7)))/7);
+//compensate = (1/(((vocoderQ:min(2))/2)))*((((vocoderQ*0.5:min(1)*-1)+1)*10)+1);
 //gain = line (v*compensate, minline);
-gain = (v*compensate);
+//gain = (v*compensate);
+BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0); //1.766
+BP2 =9.43;//1/hslider("[-1]bp2",	0, 0, 1, 0); //9.43
+FAC1 = 1;//hslider("[-1]fac1",	1, 1, 30, 0);//1
+FAC2 = 1.7;//hslider("[-1]fac2",	1, 1, 30, 0);//1.7
+FAC3 = 4;//hslider("[-1]fac3",	1, 1, 30, 0);//4
+com = 1/(vocoderQ/49);
+compensate = 
+      (((com*FAC1),(com<BP1)):*),
+      ((((com-BP1)*FAC2+FAC1*BP1),((com>=BP1)&(com<=BP2))):*),
+      ((((com-BP2)*FAC3+((BP2-BP1)*FAC2)+FAC1*BP1),(com>BP2)):*)
+      :>_+1;
+
 };
 
 volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator)=
@@ -548,7 +567,7 @@ volFilter(Center16,Oscilator,Volume16)
 
 vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
 
-vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):volFilterBank:vocoderMixer:par(i, 2, _):WidePanner(vocoderWidth);
+vocoder(audio,freq)= (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq)):volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
 
 
 
@@ -674,19 +693,6 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 ;
 
 
-// a,d,s,r = attack (sec), decay (sec), sustain (percentage of t), release (sec)
-// t       = trigger signal ( >0 for attack, then release is when t back to 0)
-
-
-//subLevel(audio)>0.2
-//OSConset
-
-//gate(audio) = ((subLevel(audio)*(subLevel(audio)>0.3)*0.9)+(OSConset*(OSCfidelity>0.5))):min(1);
-
-
-//adsr(a,d,s,r,t)
-//KPadsr(audio) = audio*((adsr(KPattack,KPdecay,0,KPrelease,gate(audio))+KPsustain):min(1):vbargraph("adsr", 0, 1));
-//Rt60adsr(audio) = (1/KPsustain)*(adsr(KPattack,KPdecay,0,KPrelease,gate(audio))+(KPsustain*subLevel(audio))):min(1):vbargraph("RT60adsr", 0, 1);
 Rt60adsr(audio) = tanh(audio:qompander*2:amp_follower(KPrelease)):pow(4);
 
 stringloopBank(freq,audio) = audio<:(
@@ -724,10 +730,8 @@ dt = (0.5 * PHosci(fc * r,PH) + 0.5) * I / (PI * fc) *SR ;
 //-----------------------------------------------
 // VocSynth: Combine all the elements
 //-----------------------------------------------
-//SynthsMixer = interleave(2,4):(bus(4):>_),(bus(4):>_);
+
 //mixerWithSends(nrChan,nrMonoChan,nrSends)
-
-
 
 VocSynth(audio) = 
 (
