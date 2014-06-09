@@ -3,7 +3,7 @@ declare version 	"0.4";
 declare author 		"Bart Brouns";
 declare license 	"GNU 3.0";
 declare copyright 	"(c) Bart Brouns 2014";
-declare coauthors	"PitchTracker by Tiziano Bole, qompander translated from a pd patch by Katja Vetter,supersaw by ADAM SZABO";
+declare credits		"PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the faust library";
 
 //-----------------------------------------------
 // imports
@@ -46,7 +46,8 @@ FXGroup(x)  = tabs(hgroup("[1]effects", x));
 OSCpitch	= OSCgroup(nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0));
 OSCfidelity     = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0));
 OSConset     	= OSCgroup(nentry("[2]onset", 0, 0, 1, 0));
-ManualOnset     = OSCgroup(button("[3]trigger")); //button does not seem to recieve osc
+formant		= OSCgroup(nentry("[3]formant", MinInputPitch, MinInputPitch, 12000, 0));
+ManualOnset     = OSCgroup(button("[4]trigger")); //button does not seem to recieve osc
 
 cleanGroup(x)	= synthsGroup((hgroup("[0]clean", x)));
 cleanVolume	= cleanGroup(vslider("[0]volume",	1, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
@@ -153,6 +154,58 @@ FMvolLL		= LLFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0):smooth(0.99
 FMindexLL	= LLFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0):smooth(0.999)<:(_,_):*:_*15000);
 FMdynLL		= LLFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0):smooth(0.999));
 
+
+//-----------------------------------------------
+// ringmodualtion with emulated Casio CZ oscilators
+//-----------------------------------------------
+
+CZgroup(x)	 = synthsGroup((hgroup("[6]CZ rigmodulator", x)));
+CZvolume	= CZgroup(vslider("[01]volume",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
+CZNLKS		= CZgroup(vslider("[1]NL-KS",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
+CZpmFX		= CZgroup(vslider("[2]PM fx",	0, 0, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1
+//CZOctave	= CZgroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//not needed, we have all octaves! :)
+CZparamsGroup(x)= CZgroup((vgroup("[3]parameters", x)));
+
+
+HHCZparamsGroup(x)	= CZparamsGroup((hgroup("[0]+2 oct", x)));
+CZsquareHH		= HHCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZsquareIxHH		= HHCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseHH		= HHCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseIxHH		= HHCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZresHH			= HHCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0):smooth(0.999));
+CZresMultHH		= HHCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0):smooth(0.999));
+
+HCZparamsGroup(x)  	= CZparamsGroup((hgroup("[1]+1 oct", x)));
+CZsquareH		= HCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZsquareIxH		= HCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseH		= HCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseIxH		= HCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZresH			= HCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0):smooth(0.999));
+CZresMultH		= HCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0):smooth(0.999));
+
+mCZparamsGroup(x) 	 = CZparamsGroup((hgroup("[2]0 oct", x)));
+CZsquareM		= mCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZsquareIxM		= mCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseM		= mCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseIxM		= mCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZresM			= mCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0):smooth(0.999));
+CZresMultM		= mCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0):smooth(0.999));
+
+LCZparamsGroup(x)  	= CZparamsGroup((hgroup("[3]-1 oct", x)));
+CZsquareL		= LCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZsquareIxL		= LCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseL		= LCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseIxL		= LCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZresL			= LCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0):smooth(0.999));
+CZresMultL		= LCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0):smooth(0.999));
+
+LLCZparamsGroup(x) 	= CZparamsGroup((hgroup("[4]-2 oct", x)));
+CZsquareLL		= LLCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZsquareIxLL		= LLCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseLL		= LLCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZpulseIxLL		= LLCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0):smooth(0.999));
+CZresLL			= LLCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0):smooth(0.999));
+CZresMultLL		= LLCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0):smooth(0.999));
 
 
 
@@ -464,20 +517,23 @@ with {
 //see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
 //todo: vector PM osclators
 
+//-----------------------------------------------
+// CZ oscilators by Mike Moser-Booth. ported from pd to faust by Bart Brouns
+//-----------------------------------------------
 
 //index= 0 to 1
-CZsquare(fund, index) =  
+CZsquare(fund, index) =
 (fund>=0.5),
-(decimal((fund*2)+1)<:_-min(_,(-1*_+1)*((index)/(1-index))))
-:+*PI:cos*0.5;
+(decimal((fund*2)+1)<:_-min(_,(-1*_+1)*((INDEX)/(1-INDEX))))
+:+ *PI:cos*0.5
+with {
+INDEX = (index:pow(0.25)) * 0.98;};
 
-CZfreq = vslider("freq", 60, 60, 1270, 0.1);
-CZindexSQ=vslider("index", 0, 0, 1,0);
+CZsinepulse(fund, index) = (min(fund*((0.5-INDEX)/INDEX),(-1*fund+1)*((.5-INDEX)/(1-INDEX)))+fund)*4*PI:cos
+with {
+INDEX = ((index*-0.49)+0.5);};
 
-//index= 0.5 to 0.01
-CZsinepulse(fund, index) = (min(fund*((.5-index)/index),(-1*fund+1)*((.5-index)/(1-index)))+fund)*4*PI:cos;
-
-//res= 0.5 to 64
+//res= 0.5 to 64. this is multiplied by the fundamental pitch
 CZrestrap(fund, res) =  (((-1*(1-fund)):max(-0.5):min(0.5)*2) *  (cos(decimal((fund*(res:max(1)))+1)*2*PI)*-1)+1)+1;
 
 //-----------------------------------------------
@@ -693,6 +749,29 @@ FMvoc(limited, unlimited,freq*4,gain*FMvolHH,FMindexHH,FMdynHH)
 ):>_<:_,_
 ;
 
+//-----------------------------------------------
+// ringmodualtion with emulated Casio CZ oscilators
+//-----------------------------------------------
+
+CZ(fund,freq,square,squareIx,pulse,pulseIx,res,resMult,formant) =
+(CZsquare(fund, squareIx)*square),
+(CZsinepulse(fund, pulseIx)*(-pulse)),
+(CZrestrap(fund, RES)*(-res))
+:>_
+with{
+RES = (formant/freq)* ((resMult:pow(2) * 3.75)+0.25);
+};
+
+CZringMod(audio,freq) =
+(
+CZ(fund(freq,0.25),freq*0.25	,CZsquareLL,CZsquareIxLL,CZpulseLL,CZpulseIxLL,CZresLL,CZresMultLL,formant),
+CZ(fund(freq,0.5),freq*0.5	,CZsquareL,CZsquareIxL,CZpulseL,CZpulseIxL,CZresL,CZresMultL,formant),
+CZ(fund(freq,1),freq		,CZsquareM,CZsquareIxM,CZpulseM,CZpulseIxM,CZresM,CZresMultM,formant),
+CZ(fund(freq,2),freq*2		,CZsquareH,CZsquareIxH,CZpulseH,CZpulseIxH,CZresH,CZresMultH,formant),
+CZ(fund(freq,4),freq*4		,CZsquareHH,CZsquareIxHH,CZpulseHH,CZpulseIxHH,CZresHH,CZresMultHH,formant)
+):>_*audio<:_,_;
+
+
 
 
 //-----------------------------------------------
@@ -753,16 +832,24 @@ VocSynth(audio) =
 (
 cleanVolume,cleanNLKS,cleanpmFX,
 (audio:qompander*2<:_,_),
+
 subVolume,subNLKS,subpmFX,
 subSine(audio:qompander,PitchTracker(audio)),
+
 vocoderVolume,vocoderNLKS,vocoderpmFX,
 vocoder(audio:qompander,PitchTracker(audio)),
+
 pafVolume,pafNLKS,pafpmFX,
 pafvocoder(audio:qompander,PitchTracker(audio)),
+
 fofVolume,fofNLKS,fofpmFX,
 fofvocoder(audio:qompander,PitchTracker(audio)),
+
 FMvolume,fmNLKS,FMpmFX,
-FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)):
+FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)),
+
+CZvolume,CZNLKS,CZpmFX,
+CZringMod(audio:qompander,PitchTracker(audio)):
 
 mixerWithSends(nrChan,nrMonoChan,nrSends)
 
@@ -775,7 +862,7 @@ mixerWithSends(nrChan,nrMonoChan,nrSends)
 :par(i,2,_<:(_, (envelop :(hbargraph("[2][unit:dB][tooltip: output level in dB]", -70, +6)))):attach)
 )
 with {
-      nrChan = 6;
+      nrChan = 7;
       nrMonoChan = 2;
       nrSends = 3;
       //is actually dual mono. on purpose; to try and keep the image in the center.
