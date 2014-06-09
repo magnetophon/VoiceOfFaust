@@ -464,6 +464,22 @@ with {
 //see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
 //todo: vector PM osclators
 
+
+//index= 0 to 1
+CZsquare(fund, index) =  
+(fund>=0.5),
+(decimal((fund*2)+1)<:_-min(_,(-1*_+1)*((index)/(1-index))))
+:+*PI:cos*0.5;
+
+CZfreq = vslider("freq", 60, 60, 1270, 0.1);
+CZindexSQ=vslider("index", 0, 0, 1,0);
+
+//index= 0.5 to 0.01
+CZsinepulse(fund, index) = (min(fund*((.5-index)/index),(-1*fund+1)*((.5-index)/(1-index)))+fund)*4*PI:cos;
+
+//res= 0.5 to 64
+CZrestrap(fund, res) =  (((-1*(1-fund)):max(-0.5):min(0.5)*2) *  (cos(decimal((fund*(res:max(1)))+1)*2*PI)*-1)+1)+1;
+
 //-----------------------------------------------
 // PAF oscilator
 //-----------------------------------------------
