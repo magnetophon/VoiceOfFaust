@@ -46,7 +46,7 @@ FXGroup(x)  = tabs(hgroup("[1]effects", x));
 OSCpitch	= OSCgroup(nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0));
 OSCfidelity     = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0));
 OSConset     	= OSCgroup(nentry("[2]onset", 0, 0, 1, 0));
-formant		= OSCgroup(nentry("[3]formant", MinInputPitch, MinInputPitch, 12000, 0));
+formant		= OSCgroup(nentry("[3]formant", MinInputPitch, MinInputPitch, 12000, 0)):smooth(0.999);
 ManualOnset     = OSCgroup(button("[4]trigger")); //button does not seem to recieve osc
 
 cleanGroup(x)	= synthsGroup((hgroup("[0]clean", x)));
@@ -76,7 +76,7 @@ vocoderN	= 2;//vocoderParamsGroup(vslider("[6]N[style:knob]",	1, 1, 6, 1));
 vocoderMix	= vocoderParamsGroup(vslider("[4]mix[style:knob]",	0, 0, 1, 0));								// is smoothed at the synth
 vocoderDetune	= vocoderParamsGroup(vslider("[5]detune[style:knob]",	0, 0, 1, 0):smooth(0.999));
 vocoderSawPulse = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob]", 0, 0, 1, 0));
-vocoderDuty	= vocoderParamsGroup(vslider("[7]PW[style:knob]", 0.5, 0.5, 1, 0):min(0.9995));
+vocoderDuty	= vocoderParamsGroup(vslider("[7]PW[style:knob]", 0.5, 0.5, 1, 0):min(0.9996));
 vocoderWidth	= vocoderParamsGroup(vslider("[8]width[style:knob]",	1, 0, 2, 0):smooth(0.999));				//wide pan, 0=mono 1=normal 2=full-wide
 
 
