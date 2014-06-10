@@ -345,7 +345,7 @@ fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq
 //-----------------------------------------------
 
 subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * //(subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
-(subLevel(audio))<:_,_;
+(subLevel(audio))*2<:_,_;
 //-----------------------------------------------
 // vocoder analiser
 //-----------------------------------------------
@@ -669,7 +669,7 @@ paf(pafCenter16,Fund,pafIndex,pafVol16)
 ;
 
 
-pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:vocoderMixer:par(i, 2, _):WidePanner(pafWidth);
+pafvocoder(audio,freq)=(pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:vocoderMixer:par(i, 2, _*0.75):WidePanner(pafWidth);
 
 //-----------------------------------------------
 // FOF vocoder synthesis
@@ -711,8 +711,8 @@ fof(fofCenter16,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRND
 //fofvocoder(audio,freq)=(fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
 
 fofvocoder(audio,freq)=
-((fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs(1):>_),
-((fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs(-1):>_)
+((fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs(1):>_*3),
+((fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs(-1):>_*3)
 ;
 
 
@@ -746,7 +746,7 @@ FMvoc(limited, unlimited,freq*0.5,gain*FMvolL,FMindexL,FMdynL),
 FMvoc(limited, unlimited,freq,gain*FMvol,FMindex,FMdyn),
 FMvoc(limited, unlimited,freq*2,gain*FMvolH,FMindexH,FMdynH),
 FMvoc(limited, unlimited,freq*4,gain*FMvolHH,FMindexHH,FMdynHH)
-):>_<:_,_
+):>_*2<:_,_
 ;
 
 //-----------------------------------------------
@@ -769,7 +769,7 @@ CZ(fund(freq,0.5),freq*0.5	,CZsquareL,CZsquareIxL,CZpulseL,CZpulseIxL,CZresL,CZr
 CZ(fund(freq,1),freq		,CZsquareM,CZsquareIxM,CZpulseM,CZpulseIxM,CZresM,CZresMultM,formant),
 CZ(fund(freq,2),freq*2		,CZsquareH,CZsquareIxH,CZpulseH,CZpulseIxH,CZresH,CZresMultH,formant),
 CZ(fund(freq,4),freq*4		,CZsquareHH,CZsquareIxHH,CZpulseHH,CZpulseIxHH,CZresHH,CZresMultHH,formant)
-):>_*audio<:_,_;
+):>_*audio*3<:_,_;
 
 
 
@@ -831,7 +831,7 @@ dt = (0.5 * PHosci(fc * r,PH) + 0.5) * I / (PI * fc) *SR ;
 VocSynth(audio) = 
 (
 cleanVolume,cleanNLKS,cleanpmFX,
-(audio:qompander*2<:_,_),
+(audio:qompander*4<:_,_),
 
 subVolume,subNLKS,subpmFX,
 subSine(audio:qompander,PitchTracker(audio)),
