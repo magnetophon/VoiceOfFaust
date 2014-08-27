@@ -110,7 +110,7 @@ fofSkirt	= fofparamsGroup(vslider("[3]skirt[style:knob]", 30.359, 3, 500, 0)*0.0
 fofDecay	= fofparamsGroup(vslider("[4]decay[style:knob]", 3.462, 0, 18, 0):_<:*:smooth(0.999));
 //was used for formant phase:
 //fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
-fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 0, 0, 1, 0)):pow(2)*200:smooth(0.999));
+fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 0, 0, 1, 0)):pow(2)*400:smooth(0.999));
 fofWidth	= fofparamsGroup(vslider("[6]width[style:knob]",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width = vslider("width", 3, 3, 100, 0)*0.001:smooth(0.999);
 //decay = vslider("decay", 0, 0, 10, 0):_<:*:smooth(0.999);
@@ -707,22 +707,22 @@ fof(fofCenter14,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRND
 fof(fofCenter15,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter15):max(0.0001)),fofVol15),
 fof(fofCenter16,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter16):max(0.0001)),fofVol16)
 */
-fof(fofCenter1,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,0):smooth(tau2pole(8)))),fofVol1),
-fof(fofCenter2,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,1):smooth(tau2pole(8)))),fofVol2),
-fof(fofCenter3,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,2):smooth(tau2pole(8)))),fofVol3),
-fof(fofCenter4,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,3):smooth(tau2pole(8)))),fofVol4),
-fof(fofCenter5,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,4):smooth(tau2pole(8)))),fofVol5),
-fof(fofCenter6,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,5):smooth(tau2pole(8)))),fofVol6),
-fof(fofCenter7,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,6):smooth(tau2pole(8)))),fofVol7),
-fof(fofCenter8,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,7):smooth(tau2pole(8)))),fofVol8),
-fof(fofCenter9,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,8):smooth(tau2pole(8)))),fofVol9),
-fof(fofCenter10,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,9):smooth(tau2pole(8)))),fofVol10),
-fof(fofCenter11,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,10):smooth(tau2pole(8)))),fofVol11),
-fof(fofCenter12,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,11):smooth(tau2pole(8)))),fofVol12),
-fof(fofCenter13,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,12):smooth(tau2pole(8)))),fofVol13),
-fof(fofCenter14,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,13):smooth(tau2pole(8)))),fofVol14),
-fof(fofCenter15,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,14):smooth(tau2pole(8)))),fofVol15),
-fof(fofCenter16,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,15):smooth(tau2pole(8)))),fofVol16)
+fof(fofCenter1,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,0):smooth(tau2pole(32)))),fofVol1),
+fof(fofCenter2,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,1):smooth(tau2pole(32)))),fofVol2),
+fof(fofCenter3,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,2):smooth(tau2pole(32)))),fofVol3),
+fof(fofCenter4,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,3):smooth(tau2pole(32)))),fofVol4),
+fof(fofCenter5,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,4):smooth(tau2pole(32)))),fofVol5),
+fof(fofCenter6,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,5):smooth(tau2pole(32)))),fofVol6),
+fof(fofCenter7,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,6):smooth(tau2pole(32)))),fofVol7),
+fof(fofCenter8,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,7):smooth(tau2pole(32)))),fofVol8),
+fof(fofCenter9,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,8):smooth(tau2pole(32)))),fofVol9),
+fof(fofCenter10,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,9):smooth(tau2pole(32)))),fofVol10),
+fof(fofCenter11,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,10):smooth(tau2pole(32)))),fofVol11),
+fof(fofCenter12,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,11):smooth(tau2pole(32)))),fofVol12),
+fof(fofCenter13,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,12):smooth(tau2pole(32)))),fofVol13),
+fof(fofCenter14,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,13):smooth(tau2pole(32)))),fofVol14),
+fof(fofCenter15,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,14):smooth(tau2pole(32)))),fofVol15),
+fof(fofCenter16,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,15):smooth(tau2pole(32)))),fofVol16)
 
 ;
 
@@ -920,8 +920,8 @@ with {
 
 
 
-//process(audio) = VocSynth(audio);
-process(audio) = fofvocoder(audio:qompander,PitchTracker(audio));
+process(audio) = VocSynth(audio);
+//process(audio) = fofvocoder(audio:qompander,PitchTracker(audio));
 
 
 
