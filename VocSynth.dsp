@@ -104,19 +104,19 @@ fofpmFX		= fofVocoderGroup(vslider("[2]PM fx",	0, 0, 1, 0):smooth(0.999)<:(_,_):
 fofOctave	= fofVocoderGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);				//set the octave of fof
 
 fofparamsGroup(x)= fofVocoderGroup((vgroup("[4]parameters", x)));
-fofTop		= fofparamsGroup(vslider("[1]top[style:knob]",	56.192, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly,
-fofBottom	= fofparamsGroup(vslider("[2]bottom[style:knob]",	0.694, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
+fofTop		= fofparamsGroup(vslider("[1]top[style:knob]",	11.313708, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly,
+fofBottom	= fofparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);			//0.25 to 49 logarithmicly
 //fofSkirt	= fofparamsGroup(vslider("[3]skirt[style:knob]", 30.359, 3, 500, 0)*0.001:smooth(0.999));
 //fofDecay	= fofparamsGroup(vslider("[4]decay[style:knob]", 3.462, 0, 4, 0):pow(4):smooth(0.999));
-fofSkirtTop	= fofparamsGroup(vslider("[3]skirtTop[style:knob]", 5.5, 0.1, 9, 0):pow(4)*0.001:smooth(0.999));
-fofSkirtBottom	= fofparamsGroup(vslider("[4]skirtBottom[style:knob]", 5.5, 0.1, 9, 0):pow(4)*0.001:smooth(0.999));
-fofDecayTop	= fofparamsGroup(vslider("[5]decayTop[style:knob]", 3.462, 0, 4, 0):pow(4):smooth(0.999));
-fofDecayBottom	= fofparamsGroup(vslider("[6]decayBottom[style:knob]", 3.462, 0.001, 4, 0):pow(4):smooth(0.999));
+fofSkirtTop	= fofparamsGroup(vslider("[3]skirtTop[style:knob]", 1.212, 0.1, 9, 0):pow(4)*0.001:smooth(0.999));
+fofSkirtBottom	= fofparamsGroup(vslider("[4]skirtBottom[style:knob]", 3.882, 0.1, 9, 0):pow(4)*0.001:smooth(0.999));
+fofDecayTop	= fofparamsGroup(vslider("[5]decayTop[style:knob]", 3.04, 0, 4, 0):pow(4):smooth(0.999));
+fofDecayBottom	= fofparamsGroup(vslider("[6]decayBottom[style:knob]", 1.681, 0.001, 4, 0):pow(4):smooth(0.999));
 
 //was used for formant phase:
 //fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
-fofPhaseRand	= fofparamsGroup((vslider("[7]phase rnd[style:knob]", 0, 0, 1, 0)):pow(2)*400:smooth(0.999));
-fofWidth	= fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+fofPhaseRand	= fofparamsGroup((vslider("[7]phase rnd[style:knob]", 0.355, 0, 1, 0)):pow(2)*400:smooth(0.999));
+//fofWidth	= fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width = vslider("width", 3, 3, 100, 0)*0.001:smooth(0.999);
 //decay = vslider("decay", 0, 0, 10, 0):_<:*:smooth(0.999);
 //fReso= vslider("fReso", 60, 0, 1270, 0):smooth(0.999);
