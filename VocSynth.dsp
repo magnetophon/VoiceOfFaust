@@ -12,7 +12,7 @@ declare credits		"PitchTracker by Tiziano Bole, qompander by Katja Vetter,supers
 import ("oscillator.lib");
 import ("maxmsp.lib");
 import ("effect.lib");
-import ("KarplusStrongFX.lib");
+//import ("KarplusStrongFX.lib");
 import ("NLFeksFX.lib");
 import ("mixer.lib");
 
@@ -110,7 +110,7 @@ fofSkirt	= fofparamsGroup(vslider("[3]skirt[style:knob]", 30.359, 3, 500, 0)*0.0
 fofDecay	= fofparamsGroup(vslider("[4]decay[style:knob]", 3.462, 0, 18, 0):_<:*:smooth(0.999));
 //was used for formant phase:
 //fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
-fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)):pow(2):smooth(0.999));
+fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 0, 0, 1, 0)):pow(2)*200:smooth(0.999));
 fofWidth	= fofparamsGroup(vslider("[6]width[style:knob]",2, 0, 2, 0):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width = vslider("width", 3, 3, 100, 0)*0.001:smooth(0.999);
 //decay = vslider("decay", 0, 0, 10, 0):_<:*:smooth(0.999);
@@ -689,6 +689,7 @@ fofOscs(phase,fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,
 //decimal is so the mod frq stays low
 //"phase*" is to make ir differen left and right.
 //max(0.0001) is so the modulation freq doesn't go to 0, because that causes silence and xruns...
+/*
 fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter1):max(0.0001)),fofVol1),
 fof(fofCenter2,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter2):max(0.0001)),fofVol2),
 fof(fofCenter3,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter3):max(0.0001)),fofVol3),
@@ -705,6 +706,24 @@ fof(fofCenter13,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRND
 fof(fofCenter14,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter14):max(0.0001)),fofVol14),
 fof(fofCenter15,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter15):max(0.0001)),fofVol15),
 fof(fofCenter16,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*lfnoise(decimal(fofRNDfreq*fofCenter16):max(0.0001)),fofVol16)
+*/
+fof(fofCenter1,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,0):smooth(tau2pole(8)))),fofVol1),
+fof(fofCenter2,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,1):smooth(tau2pole(8)))),fofVol2),
+fof(fofCenter3,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,2):smooth(tau2pole(8)))),fofVol3),
+fof(fofCenter4,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,3):smooth(tau2pole(8)))),fofVol4),
+fof(fofCenter5,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,4):smooth(tau2pole(8)))),fofVol5),
+fof(fofCenter6,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,5):smooth(tau2pole(8)))),fofVol6),
+fof(fofCenter7,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,6):smooth(tau2pole(8)))),fofVol7),
+fof(fofCenter8,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,7):smooth(tau2pole(8)))),fofVol8),
+fof(fofCenter9,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,8):smooth(tau2pole(8)))),fofVol9),
+fof(fofCenter10,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,9):smooth(tau2pole(8)))),fofVol10),
+fof(fofCenter11,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,10):smooth(tau2pole(8)))),fofVol11),
+fof(fofCenter12,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,11):smooth(tau2pole(8)))),fofVol12),
+fof(fofCenter13,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,12):smooth(tau2pole(8)))),fofVol13),
+fof(fofCenter14,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,13):smooth(tau2pole(8)))),fofVol14),
+fof(fofCenter15,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,14):smooth(tau2pole(8)))),fofVol15),
+fof(fofCenter16,Fund,fofSkirt,fofDecay,(phase*fofPhaseRand*(noises(16,15):smooth(tau2pole(8)))),fofVol16)
+
 ;
 
 
@@ -895,13 +914,14 @@ with {
 
 
 
-
-//process(audio) = fof(400,fofFund(PitchTracker(audio)),fofSkirt,fofDecay,fofPhaseRand,1):stringloop(_,PitchTracker(audio)*0.5,typeModL,t60L*Rt60adsr(audio),treshL,nonLinL,brightL,frequencyModL);
+//fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*(noises(16,1):smooth(tau2pole(1))),fofVol1)
+//process(audio) = fof(444,222,fofSkirt,fofDecay,1*fofPhaseRand*(noises(16,1):smooth(tau2pole(1))),1);
 //process(audio) = fofvocoder(audio:qompander,PitchTracker(audio)):>min(100):max(-100):stringloop(_,PitchTracker(audio)*0.5,typeModL,t60L*Rt60adsr(audio),treshL,nonLinL,brightL,frequencyModL);
 
 
 
-process(audio) = VocSynth(audio);
+//process(audio) = VocSynth(audio);
+process(audio) = fofvocoder(audio:qompander,PitchTracker(audio));
 
 
 
