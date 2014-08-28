@@ -110,8 +110,8 @@ fofBottom	= fofparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0):smooth
 //fofDecay	= fofparamsGroup(vslider("[4]decay[style:knob]", 3.462, 0, 4, 0):pow(4):smooth(0.999));
 fofSkirtTop	= fofparamsGroup(vslider("[3]skirtTop[style:knob]", 1.212, 0.1, 9, 0):pow(4)*0.001:smooth(0.999));
 fofSkirtBottom	= fofparamsGroup(vslider("[4]skirtBottom[style:knob]", 3.882, 0.1, 9, 0):pow(4)*0.001:smooth(0.999));
-fofDecayTop	= fofparamsGroup(vslider("[5]decayTop[style:knob]", 3.04, 0, 4, 0):pow(4):smooth(0.999));
-fofDecayBottom	= fofparamsGroup(vslider("[6]decayBottom[style:knob]", 1.681, 0.001, 4, 0):pow(4):smooth(0.999));
+fofDecayTop	= fofparamsGroup(vslider("[5]decayTop[style:knob]", 1.88, 0, 4, 0):pow(4):smooth(0.999));
+fofDecayBottom	= fofparamsGroup(vslider("[6]decayBottom[style:knob]", 1.161, 0.001, 4, 0):pow(4):smooth(0.999));
 
 //was used for formant phase:
 //fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0)*0.014)+0.996:smooth(0.999));
@@ -688,7 +688,7 @@ fofCenters = VocoderFreqs(fofBottom,fofTop);
 fofSkirts = VocoderFreqs(fofSkirtBottom,fofSkirtTop);
 fofDecays = VocoderFreqs(fofDecayBottom,fofDecayTop);
 
-fofOscs(phase,fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,fofCenter7,fofCenter8,fofCenter9,fofCenter10,fofCenter11,fofCenter12,fofCenter13,fofCenter14,fofCenter15,fofCenter16,
+fofOscs(NoiseIx,fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,fofCenter7,fofCenter8,fofCenter9,fofCenter10,fofCenter11,fofCenter12,fofCenter13,fofCenter14,fofCenter15,fofCenter16,
 fofVol1,fofVol2,fofVol3,fofVol4,fofVol5,fofVol6,fofVol7,fofVol8,fofVol9,fofVol10,fofVol11,fofVol12,fofVol13,fofVol14,fofVol15,fofVol16,
 fofSkirt1,fofSkirt2,fofSkirt3,fofSkirt4,fofSkirt5,fofSkirt6,fofSkirt7,fofSkirt8,fofSkirt9,fofSkirt10,fofSkirt11,fofSkirt12,fofSkirt13,fofSkirt14,fofSkirt15,fofSkirt16,
 fofDecay1,fofDecay2,fofDecay3,fofDecay4,fofDecay5,fofDecay6,fofDecay7,fofDecay8,fofDecay9,fofDecay10,fofDecay11,fofDecay12,fofDecay13,fofDecay14,fofDecay15,fofDecay16,
@@ -697,24 +697,24 @@ Fund)=
 
 //this part is to make a different (low)freq modulation for each osc.
 //noises(16,0):smooth(tau2pole(32))
-//"phase*" is to make ir differen left and right.
+//"NoiseIx*" is to make ir differen left and right.
 
-fof(fofCenter1,Fund,fofSkirt1,fofDecay1,(phase*fofPhaseRand*(noises(16,0):smooth(tau2pole(32)))),fofVol1),
-fof(fofCenter2,Fund,fofSkirt2,fofDecay2,(phase*fofPhaseRand*(noises(16,1):smooth(tau2pole(32)))),fofVol2),
-fof(fofCenter3,Fund,fofSkirt3,fofDecay3,(phase*fofPhaseRand*(noises(16,2):smooth(tau2pole(32)))),fofVol3),
-fof(fofCenter4,Fund,fofSkirt4,fofDecay4,(phase*fofPhaseRand*(noises(16,3):smooth(tau2pole(32)))),fofVol4),
-fof(fofCenter5,Fund,fofSkirt5,fofDecay5,(phase*fofPhaseRand*(noises(16,4):smooth(tau2pole(32)))),fofVol5),
-fof(fofCenter6,Fund,fofSkirt6,fofDecay6,(phase*fofPhaseRand*(noises(16,5):smooth(tau2pole(32)))),fofVol6),
-fof(fofCenter7,Fund,fofSkirt7,fofDecay7,(phase*fofPhaseRand*(noises(16,6):smooth(tau2pole(32)))),fofVol7),
-fof(fofCenter8,Fund,fofSkirt8,fofDecay8,(phase*fofPhaseRand*(noises(16,7):smooth(tau2pole(32)))),fofVol8),
-fof(fofCenter9,Fund,fofSkirt9,fofDecay9,(phase*fofPhaseRand*(noises(16,8):smooth(tau2pole(32)))),fofVol9),
-fof(fofCenter10,Fund,fofSkirt10,fofDecay10,(phase*fofPhaseRand*(noises(16,9):smooth(tau2pole(32)))),fofVol10),
-fof(fofCenter11,Fund,fofSkirt11,fofDecay11,(phase*fofPhaseRand*(noises(16,10):smooth(tau2pole(32)))),fofVol11),
-fof(fofCenter12,Fund,fofSkirt12,fofDecay12,(phase*fofPhaseRand*(noises(16,11):smooth(tau2pole(32)))),fofVol12),
-fof(fofCenter13,Fund,fofSkirt13,fofDecay13,(phase*fofPhaseRand*(noises(16,12):smooth(tau2pole(32)))),fofVol13),
-fof(fofCenter14,Fund,fofSkirt14,fofDecay14,(phase*fofPhaseRand*(noises(16,13):smooth(tau2pole(32)))),fofVol14),
-fof(fofCenter15,Fund,fofSkirt15,fofDecay15,(phase*fofPhaseRand*(noises(16,14):smooth(tau2pole(32)))),fofVol15),
-fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(phase*fofPhaseRand*(noises(16,15):smooth(tau2pole(32)))),fofVol16)
+fof(fofCenter1,Fund,fofSkirt1,fofDecay1,(fofPhaseRand*(noises(32,NoiseIx*1-1):smooth(tau2pole(32)))),fofVol1),
+fof(fofCenter2,Fund,fofSkirt2,fofDecay2,(fofPhaseRand*(noises(32,NoiseIx*2-1):smooth(tau2pole(32)))),fofVol2),
+fof(fofCenter3,Fund,fofSkirt3,fofDecay3,(fofPhaseRand*(noises(32,NoiseIx*3-1):smooth(tau2pole(32)))),fofVol3),
+fof(fofCenter4,Fund,fofSkirt4,fofDecay4,(fofPhaseRand*(noises(32,NoiseIx*4-1):smooth(tau2pole(32)))),fofVol4),
+fof(fofCenter5,Fund,fofSkirt5,fofDecay5,(fofPhaseRand*(noises(32,NoiseIx*5-1):smooth(tau2pole(32)))),fofVol5),
+fof(fofCenter6,Fund,fofSkirt6,fofDecay6,(fofPhaseRand*(noises(32,NoiseIx*6-1):smooth(tau2pole(32)))),fofVol6),
+fof(fofCenter7,Fund,fofSkirt7,fofDecay7,(fofPhaseRand*(noises(32,NoiseIx*7-1):smooth(tau2pole(32)))),fofVol7),
+fof(fofCenter8,Fund,fofSkirt8,fofDecay8,(fofPhaseRand*(noises(32,NoiseIx*8-1):smooth(tau2pole(32)))),fofVol8),
+fof(fofCenter9,Fund,fofSkirt9,fofDecay9,(fofPhaseRand*(noises(32,NoiseIx*9-1):smooth(tau2pole(32)))),fofVol9),
+fof(fofCenter10,Fund,fofSkirt10,fofDecay10,(fofPhaseRand*(noises(32,NoiseIx*10-1):smooth(tau2pole(32)))),fofVol10),
+fof(fofCenter11,Fund,fofSkirt11,fofDecay11,(fofPhaseRand*(noises(32,NoiseIx*11-1):smooth(tau2pole(32)))),fofVol11),
+fof(fofCenter12,Fund,fofSkirt12,fofDecay12,(fofPhaseRand*(noises(32,NoiseIx*12-1):smooth(tau2pole(32)))),fofVol12),
+fof(fofCenter13,Fund,fofSkirt13,fofDecay13,(fofPhaseRand*(noises(32,NoiseIx*13-1):smooth(tau2pole(32)))),fofVol13),
+fof(fofCenter14,Fund,fofSkirt14,fofDecay14,(fofPhaseRand*(noises(32,NoiseIx*14-1):smooth(tau2pole(32)))),fofVol14),
+fof(fofCenter15,Fund,fofSkirt15,fofDecay15,(fofPhaseRand*(noises(32,NoiseIx*15-1):smooth(tau2pole(32)))),fofVol15),
+fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(fofPhaseRand*(noises(32,NoiseIx*16-1):smooth(tau2pole(32)))),fofVol16)
 
 ;
 
@@ -723,7 +723,7 @@ fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(phase*fofPhaseRand*(noises(16,15):sm
 
 fofvocoder(audio,freq)=
 ((fofCenters,analizer(audio:qompander,freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(1):>_*3),
-((fofCenters,analizer(audio:qompander,freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(-1):>_*3)
+((fofCenters,analizer(audio:qompander,freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(2):>_*3)
 ;
 
 
