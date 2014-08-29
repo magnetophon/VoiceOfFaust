@@ -811,7 +811,7 @@ KPvocoder(feedback,voice,freq,oct)= (KPcenters(freq,oct),KPanalizer(voice:qompan
 
 //KPvocoder(voice,freq,oct):
 stringloop(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) = 
-audio : (+  : NLFM) ~ ((compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter))
+audio : (+  : NLFM) ~ ((KPvocoder(_,voice,freq,oct):compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter))
 with
 {
 nlfOrder = 16;
