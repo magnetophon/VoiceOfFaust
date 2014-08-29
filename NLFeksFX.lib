@@ -48,10 +48,11 @@ import("effect.lib");   // stereopanner
 
 //compressor_mono(ratio,thresh,att,rel,x)
 
-stringloop(audio,freq,typeModulation,t60,thresh,nonLinearity,B,frequencyMod) = audio : (+  : NLFM) ~ (compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter)
+stringloop(audio,freq,nlfOrder,t60,thresh,nonLinearity,B,frequencyMod) = 
+audio : (+  : NLFM) ~ (compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter)
 with
 {
-nlfOrder = 6;
+nlfOrder = 16;
 P = SR/freq ; // fundamental period in samples
 Pmax = 4096; // maximum P (for delay-line allocation)
 
@@ -71,8 +72,23 @@ loopfilter = dampingfilter2; // or dampingfilter1
 
 
 //nonlinear allpass filter (nonLinearModulator is declared in instrument.lib)
-NLFM =  nonLinearModulator(nonLinearity,1,freq,typeModulation,frequencyMod*freq,nlfOrder);
+NLFM =  MyNonLinearModulator(nonLinearity,1,freq,frequencyMod*freq,nlfOrder);
 }
 ;
+
+MyNonLinearModulator(nonlinearity,env,freq,freqMod,order) = 
+	//theta is modulated by a sine wave
+	_ <: allpassnn(order,(par(i,order,tosc)))
+	with{
+		//which frequency to use for the sine wave oscillator?
+		freqOscMod = freqMod;
+
+		//theta is modulated by a sine wave generator
+		tosc = nonlinearity*PI*osc(freqMod)*env; 
+
+		//incoming signal is sent to the nonlinear passive allpass ladder filter
+		nonLinearFilterOsc = _ <: allpassnn(order,(par(i,order,tosc)));
+	};
+	
 
 //process = filtered_excitation : stringloop : stereo : instrReverb;
