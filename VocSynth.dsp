@@ -226,12 +226,17 @@ KPvolume	= mainKPgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0):smooth(0.99
 //KPattack	= mainKPgroup(vslider("[1]attack [style:knob]",	0.01, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 //KPdecay		= mainKPgroup(vslider("[2]decay [style:knob]",	0.01, 0.01, 3, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
 //KPsustain	= mainKPgroup(vslider("[3]sustain [style:knob]",	0.5, 0.01, 1, 0):smooth(0.999)<:(_,_):*);			//0 to 1 logarithmicly
-KPrelease	= mainKPgroup(vslider("[4]release [style:knob]",	0, 0.01, 1, 0):pow(4)*3);			//0 to 1
+KPrelease	= mainKPgroup(vslider("[1]release [style:knob]",	0, 0.01, 1, 0):pow(4)*3);			//0 to 1
+KPtresh		= mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
+KPvocoderStrength=mainKPgroup(vslider("[3]strength[style:knob]",	0, 0, 1, 0):smooth(0.999));
+KPtop		= mainKPgroup(vslider("[4]top[style:knob]",	32, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+KPbottom	= mainKPgroup(vslider("[5]bottom[style:knob]",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);
+KPvocoderQ	= mainKPgroup(vslider("[6]Q[style:knob]",	2, 0.3, 7, 0)<:(_,_):*:smooth(0.999));			//0.1 to 49 logarithmicly,
 
 
 HHKPgroup(x) = KPgroup((hgroup("[2]+2 oct", x)));
 KPvolHH		= HHKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackHH	= HHKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 22, 0.01))<:(_,_):*;  // -60db decay time (sec)
+feedbackHH	= HHKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*;  // -60db decay time (sec)
 treshHH		= HHKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
 nonLinHH	= HHKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
 brightHH 	= HHKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
@@ -239,7 +244,7 @@ frequencyModHH	= HHKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.9
 
 HKPgroup(x) = KPgroup((hgroup("[3]+1 oct", x)));
 KPvolH		= HKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackH	= HKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 22, 0.01))<:(_,_):*;  // -60db decay time (sec)
+feedbackH	= HKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*;  // -60db decay time (sec)
 treshH		= HKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
 nonLinH		= HKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
 brightH 	= HKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
@@ -247,7 +252,7 @@ frequencyModH	= HKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.999
 
 MKPgroup(x)	= KPgroup((hgroup("[4]0 oct", x)));
 KPvol		= MKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackM	= MKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 22, 0.01))<:(_,_):*;  // -60db decay time (sec)
+feedbackM	= MKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*;  // -60db decay time (sec)
 tresh		= MKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
 nonLin		= MKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
 bright		= MKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
@@ -255,21 +260,17 @@ frequencyMod	= MKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.999)
 
 LKPgroup(x) = KPgroup((hgroup("[5]-1 oct", x)));
 KPvolL		= LKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackL	= LKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 22, 0.01))<:(_,_):*;  // -60db decay time (sec)
+feedbackL	= LKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*;  // -60db decay time (sec)
 treshL		= LKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
 nonLinL		= LKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
 brightL 	= LKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
 frequencyModL	= LKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
-KPtop	= LKPgroup(vslider("[7]top[style:knob]",	32, 1, 64, 0):smooth(0.999)<:(_,_):*);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-KPbottom	= LKPgroup(vslider("[8]bottom[style:knob]",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);
-KPvocoderQ	= LKPgroup(vslider("[9]Q[style:knob]",	2, 0.3, 7, 0)<:(_,_):*:smooth(0.999));			//0.1 to 49 logarithmicly,
-KPvocoderStrength=LKPgroup(vslider("[10]strength[style:knob]",	0, 0, 1, 0):smooth(0.999));
 
 
 
 LLKPgroup(x) = KPgroup((hgroup("[6]-2 oct", x)));
 KPvolLL		= LLKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackLL	= LLKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 22, 0.01))<:(_,_):*<:(_,_):*;  // -60db decay time (sec)
+feedbackLL	= LLKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*<:(_,_):*;  // -60db decay time (sec)
 treshLL		= LLKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
 nonLinLL	= LLKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
 brightLL 	= LLKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
@@ -639,6 +640,32 @@ volFilter(Center15,Oscilator,Volume15,q),
 volFilter(Center16,Oscilator,Volume16,q)
 ;
 
+EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator,q)=
+Oscilator<:
+(
+lowshelf(N,Volume1,Center1),
+peak_eq_cq(Volume2,Center2,q),
+peak_eq_cq(Volume3,Center3,q),
+peak_eq_cq(Volume4,Center4,q),
+peak_eq_cq(Volume5,Center5,q),
+peak_eq_cq(Volume6,Center6,q),
+peak_eq_cq(Volume7,Center7,q),
+peak_eq_cq(Volume8,Center8,q),
+peak_eq_cq(Volume9,Center9,q),
+peak_eq_cq(Volume10,Center10,q),
+peak_eq_cq(Volume11,Center11,q),
+peak_eq_cq(Volume12,Center12,q),
+peak_eq_cq(Volume13,Center13,q),
+peak_eq_cq(Volume14,Center14,q),
+peak_eq_cq(Volume15,Center15,q),
+//peak_eq_cq(Volume16,Center16,q)
+highshelf(N,Volume16,Center16)
+)
+with
+{
+N = 3; //uneven only: 1,3,5
+}
+;
 
 vocoderCenters(freq) = VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
 
@@ -801,10 +828,13 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 
 
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,16, _,freq * oct:*:min(SR/2)));
-KPanalizer(voice,freq) = analizer(voice,freq),par(i,16,1):interleave(16,2):par(i,16,(_*KPvocoderStrength,_*((KPvocoderStrength*-1)+1)):+);
+KPanalizer(voice,freq) = 
+  analizer(voice,freq),par(i,16,1):interleave(16,2)
+    :par(i,16,((_*KPvocoderStrength,_*((KPvocoderStrength*-1)+1)):+
+      :max(0.001):linear2db) );//adapt to eq instead of bandpass
 
 
-KPvocoder(feedback,voice,freq)= (KPcenters(freq,1),KPanalizer(voice,freq),feedback,KPvocoderQ):volFilterBank:>_;
+KPvocoder(feedback,voice,freq)= (KPcenters(freq,1),KPanalizer(voice,freq),feedback,KPvocoderQ):EQbank:>_;
 
 
 //KPvocoder(voice,freq,oct):
@@ -812,8 +842,9 @@ KPvocoder(feedback,voice,freq)= (KPcenters(freq,1),KPanalizer(voice,freq),feedba
 stringloop(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) = 
 audio : (+) ~ (( NLFM : compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter)) : NLFM
 */
+//: compressor_mono(100,thresh,0.1,30) 
 stringloopFBpath(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) = 
-(( NLFM : compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter))
+(( NLFM : fdelay4(Pmax, P-2) : loopfilter))
 with
 {
 nlfOrder = 16;
@@ -871,7 +902,7 @@ stringloopFBpath(_,voice,freq,0.5,feedbackL*feedbackADSR(voice),treshL,nonLinL,b
 stringloopFBpath(_,voice,freq,1,feedbackM*feedbackADSR(voice),tresh,nonLin,bright,frequencyMod),
 stringloopFBpath(_,voice,freq,2,feedbackH*feedbackADSR(voice),treshH,nonLinH,brightH,frequencyModH),
 stringloopFBpath(_,voice,freq,4,feedbackHH*feedbackADSR(voice),treshHH,nonLinHH,brightHH,frequencyModHH)
-):>compressor_mono(100,treshHH,0,30))
+):>compressor_mono(100,KPtresh,0,30))
 :_*KPvolume
 ;
 //stringloopFBpath(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) = 
