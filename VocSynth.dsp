@@ -233,48 +233,40 @@ KPtop		= mainKPgroup(vslider("[4]top[style:knob]",	32, 1, 64, 0):smooth(0.999)<:
 KPbottom	= mainKPgroup(vslider("[5]bottom[style:knob]",	1, 0.5, 7, 0):smooth(0.999)<:(_,_):*);
 KPvocoderQ	= mainKPgroup(vslider("[6]Q[style:knob]",	2, 0.3, 7, 0)<:(_,_):*:smooth(0.999));			//0.1 to 49 logarithmicly,
 
-
 HHKPgroup(x) = KPgroup((hgroup("[2]+2 oct", x)));
 KPvolHH		= HHKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackHH	= HHKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*;  // -60db decay time (sec)
-treshHH		= HHKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
-nonLinHH	= HHKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
-brightHH 	= HHKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
-frequencyModHH	= HHKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+feedbackHH	= HHKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 10, 0.01))<:(_,_):*;  // -60db decay time (sec)
+nonLinHH	= HHKPgroup(vslider("[2]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
+frequencyModHH	= HHKPgroup(vslider("[3]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+phaseHH		= HHKPgroup(vslider("[4]phase[style:knob]", 0.666, 0, 1, 0):pow(3)*0.5:smooth(0.999));
 
 HKPgroup(x) = KPgroup((hgroup("[3]+1 oct", x)));
 KPvolH		= HKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackH	= HKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*;  // -60db decay time (sec)
-treshH		= HKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
-nonLinH		= HKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
-brightH 	= HKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
-frequencyModH	= HKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+feedbackH	= HKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 10, 0.01))<:(_,_):*;  // -60db decay time (sec)
+nonLinH		= HKPgroup(vslider("[2]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
+frequencyModH	= HKPgroup(vslider("[3]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+phaseH		= HKPgroup(vslider("[4]phase[style:knob]", 0.666, 0, 1, 0):pow(3)*0.5:smooth(0.999));
 
 MKPgroup(x)	= KPgroup((hgroup("[4]0 oct", x)));
 KPvol		= MKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackM	= MKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*;  // -60db decay time (sec)
-tresh		= MKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
-nonLin		= MKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
-bright		= MKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
-frequencyMod	= MKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+feedbackM	= MKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 10, 0.01))<:(_,_):*;  // -60db decay time (sec)
+nonLin		= MKPgroup(vslider("[2]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
+frequencyMod	= MKPgroup(vslider("[3]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+phaseM		= MKPgroup(vslider("[4]phase[style:knob]", 0.666, 0, 1, 0):pow(3)*0.5:smooth(0.999));
 
 LKPgroup(x) = KPgroup((hgroup("[5]-1 oct", x)));
 KPvolL		= LKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackL	= LKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*;  // -60db decay time (sec)
-treshL		= LKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
+feedbackL	= LKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 10, 0.01))<:(_,_):*;  // -60db decay time (sec)
 nonLinL		= LKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
-brightL 	= LKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
-frequencyModL	= LKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
-
-
+frequencyModL	= LKPgroup(vslider("[3]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+phaseL		= LKPgroup(vslider("[4]phase[style:knob]", 0.666, 0, 1, 0):pow(3)*0.5:smooth(0.999));
 
 LLKPgroup(x) = KPgroup((hgroup("[6]-2 oct", x)));
 KPvolLL		= LLKPgroup(vslider("[0]vol [style:knob]",		0, 0, 1, 0):smooth(0.999))<:(_,_):*; 
-feedbackLL	= LLKPgroup(vslider("[2]feedback [style:knob]", 0, 0, 30, 0.01))<:(_,_):*<:(_,_):*;  // -60db decay time (sec)
-treshLL		= LLKPgroup(vslider("[3] thres [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
-nonLinLL	= LLKPgroup(vslider("[4]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
-brightLL 	= LLKPgroup(vslider("[5]bright [style:knob]", 0.5, 0, 1, 0.01));
-frequencyModLL	= LLKPgroup(vslider("[6]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+feedbackLL	= LLKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 10, 0.01))<:(_,_):*<:(_,_):*;  // -60db decay time (sec)
+nonLinLL	= LLKPgroup(vslider("[2]nonlin [style:knob]",0,0,1,0.01) : pow(3) : smooth(0.999));
+frequencyModLL	= LLKPgroup(vslider("[3]mFreq [style:knob]",1,0,8,0) : smooth(0.999));
+phaseLL		= LLKPgroup(vslider("[4]phase[style:knob]", 0.666, 0, 1, 0):pow(3)*0.5:smooth(0.999));
 
 //-----------------------------------------------
 // Phase Modulation as an effect
@@ -843,7 +835,7 @@ stringloop(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequency
 audio : (+) ~ (( NLFM : compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter)) : NLFM
 */
 //: compressor_mono(100,thresh,0.1,30) 
-stringloopFBpath(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) = 
+stringloopFBpath(audio, voice, freq, oct,feedback,phase,nonLinearity,frequencyMod) = 
 (( NLFM : fdelay4(Pmax, P-2) : loopfilter))
 with
 {
@@ -860,38 +852,26 @@ dampingfilter1(x) = rho * ((b0 * x) + (b1 * x'));
 h0 = (1.0 + bright)/2; h1 = (1.0 - bright)/4;
 dampingfilter2(x) = rho * (h0 * x' + h1*(x+x''));
 
-loopfilter = dampingfilter2; // or dampingfilter1
+loopfilter = _*rho;//dampingfilter2; // or dampingfilter1
 
 //nonlinear allpass filter (nonLinearModulator is declared in instrument.lib)
-NLFM =  MyNonLinearModulator(nonLinearity,1,freq*oct,frequencyMod*freq*oct);
+NLFM =  MyNonLinearModulator(nonLinearity,frequencyMod*freq*oct,phase);
 
-MyNonLinearModulator(nonlinearity,env,freq,freqMod) = 
+MyNonLinearModulator(nonlinearity,freq,phase) = 
 	//theta is modulated by a sine wave
 	_ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)))
 	with{
-		//which frequency to use for the sine wave oscillator?
-		freqOscMod = freqMod*freq;
-
 		//theta is modulated by a sine wave generator
-		tosc = nonlinearity*PI*osc(freqMod)*env; 
+		tosc = nonlinearity*PI*PHosci(freq,phase);
 
 		//incoming signal is sent to the nonlinear passive allpass ladder filter
-		nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
+		//nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
 	};
 }
 ;
 
 feedbackADSR(audio) = tanh(audio:qompander*2:amp_follower(KPrelease)):pow(4);
 /*
-stringloopBank(freq,voice,audio) = audio<:(
-stringloop(_,voice,freq,0.25,feedbackLL*feedbackADSR(audio),treshLL,nonLinLL,brightLL,frequencyModLL),
-stringloop(_,voice,freq,0.5,feedbackL*feedbackADSR(audio),treshL,nonLinL,brightL,frequencyModL),
-stringloop(_,voice,freq,1,feedbackM*feedbackADSR(audio),tresh,nonLin,bright,frequencyMod),
-stringloop(_,voice,freq,2,feedbackH*feedbackADSR(audio),treshH,nonLinH,brightH,frequencyModH),
-stringloop(_,voice,freq,4,feedbackHH*feedbackADSR(audio),treshHH,nonLinHH,brightHH,frequencyModHH)
-):>_*KPvolume
-;
-*/
 stringloopBank(freq,voice,feedback) = 
 (_+feedback
 :>_)~
@@ -902,7 +882,21 @@ stringloopFBpath(_,voice,freq,0.5,feedbackL*feedbackADSR(voice),treshL,nonLinL,b
 stringloopFBpath(_,voice,freq,1,feedbackM*feedbackADSR(voice),tresh,nonLin,bright,frequencyMod),
 stringloopFBpath(_,voice,freq,2,feedbackH*feedbackADSR(voice),treshH,nonLinH,brightH,frequencyModH),
 stringloopFBpath(_,voice,freq,4,feedbackHH*feedbackADSR(voice),treshHH,nonLinHH,brightHH,frequencyModHH)
-):>compressor_mono(100,KPtresh,0,30))
+):>compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
+:_*KPvolume
+;
+*/
+stringloopBank(freq,voice,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) = 
+(_+feedback
+:>_)~
+(KPvocoder(_,voice,freq)<:(
+//(_<:(
+stringloopFBpath(_,voice,freq,0.25,feedbackLL*feedbackADSR(voice),phaseLL,nonLinLL,frequencyModLL),
+stringloopFBpath(_,voice,freq,0.5,feedbackL*feedbackADSR(voice),phaseL,nonLinL,frequencyModL),
+stringloopFBpath(_,voice,freq,1,feedbackM*feedbackADSR(voice),phase,nonLin,frequencyMod),
+stringloopFBpath(_,voice,freq,2,feedbackH*feedbackADSR(voice),phaseH,nonLinH,frequencyModH),
+stringloopFBpath(_,voice,freq,4,feedbackHH*feedbackADSR(voice),phaseHH,nonLinHH,frequencyModHH)
+):>compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
 :_*KPvolume
 ;
 //stringloopFBpath(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) = 
@@ -973,9 +967,10 @@ mixerWithSends(nrChan,nrMonoChan,nrSends)
 
 :_,_
 ,(
-(_<:stringloopBank(PitchTracker(audio),audio:qompander,_)),
-(_<:stringloopBank(PitchTracker(audio),audio:qompander,_))
+(_<:stringloopBank(PitchTracker(audio),audio:qompander,_,phaseLL,phaseL,phaseM,phaseH,phaseHH)),
+(_<:stringloopBank(PitchTracker(audio),audio:qompander,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH))
 )
+
 ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
 ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
 :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
