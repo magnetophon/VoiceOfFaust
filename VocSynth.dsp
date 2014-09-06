@@ -14,11 +14,21 @@ import ("maxmsp.lib");
 import ("effect.lib");
 //import ("NLFeksFX.lib");
 import ("mixer.lib");
+import ("qompander/qompander.lib");
 
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
-qompander	= component("qompander/qompander.dsp");
+//qompander	= component("qompander/qompander.dsp");
 //KarplusStrongFX		= component("KarplusStrongFX.dsp");
+
+qompanderGroup(x)  = (vgroup("[0] qompander [tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
+factor		= qompanderGroup(hslider("[0] factor[unit::1]",		3, 0.8, 8, 0.01):smooth(0.999));
+threshold	= qompanderGroup(hslider("[1] threshold [unit: dB]",	-40, -96, -20, 0.01):smooth(0.999));
+attack		= qompanderGroup(hslider("[2] attack[unit: ms]",	1, 1, 20, 0.01):smooth(0.999));
+release		= qompanderGroup(hslider("[3] release[unit: ms]",	20, 20, 1000, 0.01):smooth(0.999));
+
+
+
 
 //-----------------------------------------------
 // contants
@@ -297,6 +307,7 @@ VocoderFreqs(bottom,top) =     par(i,16,   pow((pow((top/bottom),1/15)),i)*botto
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
 WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);
 vocoderMixer = interleave(2,8):((bus(8):>_),(bus(8):>_));
+voice(audio) = qompander(audio,factor,threshold,attack,release);
 
 
 //-----------------------------------------------
@@ -344,10 +355,10 @@ fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq
 subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * //(subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
 (subLevel(audio))*2<:_,_;
 //-----------------------------------------------
-// vocoder analiser
+// vocoder analizer
 //-----------------------------------------------
 
-subLevel(audio) = audio:lowpass(3,300):amp_follower_ud(0.003,0.005)*6:tanh;
+subLevel(audio) = voice(audio):lowpass(3,300):amp_follower_ud(0.003,0.005)*6:tanh;
 
 //subLevel(audio) = audio:lowpass(3,300):amp_follower_ud((vslider("up", 0, 0, 1, 0)*0.1),(vslider("down", 0, 0, 1, 0.001)*0.1))*6:tanh;
 
@@ -672,7 +683,7 @@ vocoderCenters(freq) =
     VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
 
 vocoder(audio,freq)=
-    (vocoderCenters(freq),analizer(audio:qompander,freq),vocoderOsc(freq), vocoderQ):volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
+    (vocoderCenters(freq),analizer(voice(audio),freq),vocoderOsc(freq), vocoderQ):volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
 
 
 
@@ -704,7 +715,7 @@ pafCenters =
 
 
 pafvocoder(audio,freq)=
-    (pafCenters,analizer(audio:qompander,freq),pafFund(freq)):pafOscs:vocoderMixer:par(i, 2, _*0.75):WidePanner(pafWidth);
+    (pafCenters,analizer(voice(audio),freq),pafFund(freq)):pafOscs:vocoderMixer:par(i, 2, _*0.75):WidePanner(pafWidth);
 
 //-----------------------------------------------
 // FOF vocoder synthesis
@@ -746,11 +757,11 @@ Fund)=
     ;
 
 
-//fofvocoder(audio,freq)=(fofCenters,analizer(audio:qompander,freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
+//fofvocoder(audio,freq)=(fofCenters,analizer(voice(audio),freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
 
 fofvocoder(audio,freq)=
-    ((fofCenters,analizer(audio:qompander,freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(1):>_*3),
-    ((fofCenters,analizer(audio:qompander,freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(2):>_*3)
+    ((fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(1):>_*3),
+    ((fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(2):>_*3)
     ;
 
 
@@ -807,7 +818,7 @@ CZringMod(audio,freq) =
     CZ(fund(freq,1),freq		,CZsquareM,CZsquareIxM,CZpulseM,CZpulseIxM,CZresM,CZresMultM,formant),
     CZ(fund(freq,2),freq*2		,CZsquareH,CZsquareIxH,CZpulseH,CZpulseIxH,CZresH,CZresMultH,formant),
     CZ(fund(freq,4),freq*4		,CZsquareHH,CZsquareIxHH,CZpulseHH,CZpulseIxHH,CZresHH,CZresMultHH,formant)
-    ):>_*audio*3<:_,_;
+    ):>_*voice(audio)*3<:_,_;
 
 
 
@@ -831,22 +842,22 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 
 
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,16, _,freq * oct:*:min(SR/2)));
-KPanalizer(voice,freq) =
-    analizer(voice,freq)
+KPanalizer(audio,freq) =
+    analizer(audio,freq)
     :par(i,16,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
     :max(0.001):linear2db) );//adapt to eq instead of bandpass
 
 
-KPvocoder(feedback,voice,freq)= (KPcenters(freq,1),KPanalizer(voice,freq),feedback,KPvocoderQ):EQbank:>_;
+KPvocoder(audio,feedback,freq)= (KPcenters(freq,1),KPanalizer(voice(audio),freq),feedback,KPvocoderQ):EQbank:>_;
 
 
-//KPvocoder(voice,freq,oct):
+//KPvocoder(voice(audio),freq,oct):
 /*
-stringloop(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
+stringloop(audio, voice(audio), freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
 audio : (+) ~ (( NLFM : compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter)) : NLFM
 */
 //: compressor_mono(100,thresh,0.1,30)
-stringloopFBpath(audio, voice, freq, oct,feedback,phase,nonLinearity,frequencyMod) =
+stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod) =
     (( NLFM : fdelay4(Pmax, P-2) : loopfilter))
     with {
     nlfOrder = 16;
@@ -879,7 +890,7 @@ stringloopFBpath(audio, voice, freq, oct,feedback,phase,nonLinearity,frequencyMo
         };
     };
 
-feedbackADSR(audio) = tanh(audio:qompander*2:amp_follower(KPrelease)):pow(4);
+feedbackADSR(audio) = tanh(voice(audio)*2:amp_follower(KPrelease)):pow(4);
 
 /*
 stringloopBank(freq,voice,feedback) =
@@ -895,23 +906,45 @@ stringloopFBpath(_,voice,freq,4,feedbackHH*feedbackADSR(voice),treshHH,nonLinHH,
 ):>compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
 :_*KPvolume
 ;
+/*
+(_ + audio
+:>_)~(voco(1)<:(fb(1),fb(2),fb(3),fb(4),fb(5)):>_)
+;
 */
+/*
 
-stringloopBank(freq,voice,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
+stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
     (_+feedback
     :>_)~
-    (KPvocoder(_,voice,freq)<:(
-    //(_<:(
-    stringloopFBpath(_,voice,freq,0.25,feedbackLL*feedbackADSR(voice),phaseLL,nonLinLL,frequencyModLL),
-    stringloopFBpath(_,voice,freq,0.5,feedbackL*feedbackADSR(voice),phaseL,nonLinL,frequencyModL),
-    stringloopFBpath(_,voice,freq,1,feedbackM*feedbackADSR(voice),phase,nonLin,frequencyMod),
-    stringloopFBpath(_,voice,freq,2,feedbackH*feedbackADSR(voice),phaseH,nonLinH,frequencyModH),
-    stringloopFBpath(_,voice,freq,4,feedbackHH*feedbackADSR(voice),phaseHH,nonLinHH,frequencyModHH)
+    (KPvocoder(_,audio,freq)<:(
+//    (_<:(
+    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL),
+    stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL),
+    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod),
+    stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH),
+    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH)
+    ):>compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
+    //:_*KPvolume
+    ;
+    //stringloopFBpath(audio, audio, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
+    //KPvocoder(audio,freq,oct)
+*/
+
+stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
+    (_+feedback
+    :>_)~
+    (KPvocoder(audio,_,freq)<:(
+//    (_<:(
+    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL),
+    stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL),
+    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod),
+    stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH),
+    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH)
     ):>compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
     :_*KPvolume
     ;
-    //stringloopFBpath(audio, voice, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
-    //KPvocoder(voice,freq,oct)
+    //stringloopFBpath(audio, audio, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
+    //KPvocoder(audio,freq,oct)
 
 
 //-----------------------------------------------
@@ -946,32 +979,32 @@ pmFX(fc,r,I,PH,x) = x : fdelay3(1 << 17, dt + 1)
 VocSynth(audio) =
     (
     cleanVolume,cleanNLKS,cleanpmFX,
-    (audio:qompander*4<:_,_),
+    (voice(audio)*4<:_,_),
 
     subVolume,subNLKS,subpmFX,
-    subSine(audio:qompander,PitchTracker(audio)),
+    subSine(audio,PitchTracker(audio)),
 
     vocoderVolume,vocoderNLKS,vocoderpmFX,
-    vocoder(audio:qompander,PitchTracker(audio)),
+    vocoder(audio,PitchTracker(audio)),
 
     pafVolume,pafNLKS,pafpmFX,
-    pafvocoder(audio:qompander,PitchTracker(audio)),
+    pafvocoder(audio,PitchTracker(audio)),
 
     fofVolume,fofNLKS,fofpmFX,
-    fofvocoder(audio:qompander,PitchTracker(audio)),
+    fofvocoder(audio,PitchTracker(audio)),
 
     FMvolume,fmNLKS,FMpmFX,
     FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)),
 
     CZvolume,CZNLKS,CZpmFX,
-    CZringMod(audio:qompander,PitchTracker(audio))
+    CZringMod(audio,PitchTracker(audio))
 
     : mixerWithSends(nrChan,nrMonoChan,nrSends)
 
     :_,_//No effect
 
-    ,(stringloopBank(PitchTracker(audio),audio:qompander,_,phaseLL,phaseL,phaseM,phaseH,phaseHH))
-    ,(stringloopBank(PitchTracker(audio),audio:qompander,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH))
+    ,(stringloopBank(PitchTracker(audio),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH))
+    ,(stringloopBank(PitchTracker(audio),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH))
 
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
@@ -1027,19 +1060,19 @@ process(audio) = VocSynth(audio);
 
 //fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*(noises(16,1):smooth(tau2pole(1))),fofVol1)
 //process(audio) = fof(444,222,fofSkirt,fofDecay,1*fofPhaseRand*(noises(16,1):smooth(tau2pole(1))),1);
-//process(audio) = fofvocoder(audio:qompander,PitchTracker(audio)):>min(100):max(-100):stringloop(_,PitchTracker(audio)*0.5,nlfOrderL,feedbackL*feedbackADSR(audio),treshL,nonLinL,brightL,frequencyModL);
+//process(audio) = fofvocoder(voice,PitchTracker(audio)):>min(100):max(-100):stringloop(_,PitchTracker(audio)*0.5,nlfOrderL,feedbackL*feedbackADSR(audio),treshL,nonLinL,brightL,frequencyModL);
 
 //process(audio) = volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
-//process(audio) = stringloopBank(PitchTracker(audio),audio);
-//process(audio) = KPanalizer(audio,10);
-//process(audio) = KPvocoder(audio,audio:qompander,PitchTracker(audio));
+//process(audio) = (stringloopBank(PitchTracker(audio),audio,audio,phaseLL,phaseL,phaseM,phaseH,phaseHH));
+//process(audio) = stringloopFBpath(1,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL);
+//process(audio) = KPvocoder(audio,voice(audio),PitchTracker(audio));
 
 //process = PHosci(1000,0.5);
-//process(audio) = audio<:((_:qompander*2<:stringloopBank(PitchTracker(audio))),(_:qompander*2<:stringloopBank(PitchTracker(audio))));
+//process(audio) = audio<:((_:qompander(factor,threshold,attack,release)*2<:stringloopBank(PitchTracker(audio))),(_:qompander(factor,threshold,attack,release)*2<:stringloopBank(PitchTracker(audio))));
 
 //process(audio) = audio:stringloop(_,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
 //process(audio) = audio:(stringloopBank(_,PitchTracker(audio)));
 //stringloop(_,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod),
 //stringloop(_,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
 
-//process(audio) = pafvocoder(audio:qompander,PitchTracker(audio));
+//process(audio) = pafvocoder(audio,PitchTracker(audio));
