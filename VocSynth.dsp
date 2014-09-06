@@ -670,8 +670,8 @@ EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,C
     peak_eq_cq(Volume13,Center13,q),
     peak_eq_cq(Volume14,Center14,q),
     peak_eq_cq(Volume15,Center15,q),
-    //peak_eq_cq(Volume16,Center16,q)
-    highshelf(N,Volume16,Center16)
+    peak_eq_cq(Volume16,Center16,q)
+    //highshelf(N,Volume16,Center16)
     )
     with {
         N = 3; //uneven only: 1,3,5
@@ -930,15 +930,16 @@ stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
 
 stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
     (_+feedback
-    :>_)~
-    (KPvocoder(audio,_,freq)<:(
-//    (_<:(
-    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL),
+    <:(    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL),
     stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL),
     stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod),
     stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH),
     stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH)
-    ):>compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
+    )
+    :>KPvocoder(audio,_,freq))~
+    ((
+//    (_<:(
+_):compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
     :_*KPvolume
     ;
     //stringloopFBpath(audio, audio, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
