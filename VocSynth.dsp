@@ -21,15 +21,6 @@ import ("qompander/qompander.lib");
 //qompander	= component("qompander/qompander.dsp");
 //KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
-qompanderGroup(x)  = (vgroup("[0] qompander [tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
-factor		= qompanderGroup(hslider("[0] factor[unit::1]",		3, 0.8, 8, 0.01):smooth(0.999));
-threshold	= qompanderGroup(hslider("[1] threshold [unit: dB]",	-40, -96, -20, 0.01):smooth(0.999));
-attack		= qompanderGroup(hslider("[2] attack[unit: ms]",	1, 1, 20, 0.01):smooth(0.999));
-release		= qompanderGroup(hslider("[3] release[unit: ms]",	20, 20, 1000, 0.01):smooth(0.999));
-
-
-
-
 //-----------------------------------------------
 // contants
 //-----------------------------------------------
@@ -220,15 +211,22 @@ CZresLL            = LLCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0.0
 CZresMultLL        = LLCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
 
+//-----------------------------------------------
+// input compression and expansion
+//-----------------------------------------------
 
-
-
+qompanderGroup(x)  = FXGroup(vgroup("[0]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
+factor		= qompanderGroup(hslider("[0]factor[unit::1][style:knob]",		3, 0.8, 8, 0.01):smooth(0.999));
+threshold	= qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-40, -96, -20, 0.01):smooth(0.999));
+attack		= qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1, 1, 20, 0.01):smooth(0.999));
+release		= qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):smooth(0.999));
 
 //-----------------------------------------------
 // Karplus Strong as an effect
 //-----------------------------------------------
+
 //todo: make FX group and routing
-KPgroup(x)        = FXGroup((vgroup("[0]Karplus-Strong", x)));
+KPgroup(x)        = FXGroup((vgroup("[1]Karplus-Strong", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
 KPrelease         = mainKPgroup(vslider("[1]release [style:knob]",	0, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);         // 0 to 1
@@ -282,7 +280,7 @@ phaseLL        = LLmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):
 //-----------------------------------------------
 // Phase Modulation as an effect
 //-----------------------------------------------
-pmFXgroup(x) = FXGroup((vgroup("[1]Phase Modulation", x)));
+pmFXgroup(x) = FXGroup((vgroup("[2]Phase Modulation", x)));
 // pmFXvolume = pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
 pmFXi        = pmFXgroup(vslider("[1]depth[style:knob]",1,0,4,0.001):pow(2):smooth(0.999) );
 pmFXr        = pmFXgroup(vslider("[2]freq[style:knob]",4,0,8,0.001):smooth(0.999) );
