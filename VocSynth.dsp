@@ -1,9 +1,9 @@
-declare name      "VocSynth                                                                                                                                                                     " ;
-declare version   "0.6                                                                                                                                                                          " ;
-declare author    "Bart Brouns                                                                                                                                                                  " ;
-declare license   "GNU 3.0                                                                                                                                                                      " ;
-declare copyright "(c) Bart Brouns 2014                                                                                                                                                         " ;
-declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the faust library " ;
+declare name      "VocSynth";
+declare version   "0.6";
+declare author    "Bart Brouns";
+declare license   "GNU 3.0";
+declare copyright "(c) Bart Brouns 2014";
+declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the faust library" ;
 
 //-----------------------------------------------
 // imports
@@ -25,11 +25,11 @@ qompander	= component("qompander/qompander.dsp");
 //-----------------------------------------------
 //todo: test or ask about smooth vs line:, efficiency and behaviour
 minline                = 3;		// minimum line time in ms
-analizerQ              = 7;		// Q of the analizer bp filters
 MinInputPitch          = 61.7354;	// lowest expected note is a B1
 MaxInputPitch          = 493.6635;	// highest expected note is a B4
 maxTimeWithoutPitch    = 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
 maxTimeWithoutFidelity = 265*4 ;	// is 4*6ms @ 44100. the time between 4 fid messages
+analizerQ              = 9;//(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999)); //0.1 to 49 logarithmicly,
 vocoderN               = 2;
 PTsmooth               = 0.9984;
 
@@ -50,64 +50,62 @@ OSConset    = OSCgroup(nentry("[2]onset", 0, 0, 1,0.001 ));
 formant     = OSCgroup(nentry("[3]formant", MinInputPitch, MinInputPitch, 12000, 0.001)):smooth(0.999);
 ManualOnset = OSCgroup(button("[4]trigger")); //button does not seem to recieve osc
 
-cleanGroup(x) = synthsGroup((hgroup("[0]clean", x)));
-cleanVolume   = cleanGroup(vslider("[0]volume",	1, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-cleanNLKS     = cleanGroup(vslider("[1]NL-KS",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-cleanpmFX     = cleanGroup(vslider("[2]PM fx",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
+cleanGroup(x) = synthsGroup((vgroup("[0]clean", x)));
+cleanVolume   = cleanGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+cleanNLKS     = cleanGroup(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+cleanpmFX     = cleanGroup(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
 
-subGroup(x)	= synthsGroup((hgroup("[1]sub", x)));
-subVolume	= subGroup(vslider("[0]volume",	1, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-subNLKS		= subGroup(vslider("[1]NL-KS",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-subpmFX		= subGroup(vslider("[2]PM fx",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-subOctave	= subGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);				//set the octave of sub
+subGroup(x) = synthsGroup((vgroup("[1]sub", x)));
+subVolume   = subGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+subNLKS     = subGroup(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+subpmFX     = subGroup(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+subOctave   = subGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of sub
+
+vocoderGroup(x)      = synthsGroup((hgroup("[2]vocoder", x)));
+vocoderGroupLevel(x) = vocoderGroup((vgroup("[0]levels", x)));
+vocoderVolume        = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+vocoderNLKS          = vocoderGroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+vocoderpmFX          = vocoderGroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+vocoderOctave        = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
+
+vocoderParamsGroup(x) = vocoderGroup((vgroup("[1]parameters", x)));
+vocoderTop            = vocoderParamsGroup(vslider("[1]top[style:knob]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderBottom         = vocoderParamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999)); // 0.25 to 49 logarithmicly
+vocoderQ              = vocoderParamsGroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999));     // 0.1 to 49 logarithmicly,
+vocoderMix            = vocoderParamsGroup(vslider("[4]mix[style:knob]",	0, 0, 1, 0.001)); // is smoothed at the synth
+vocoderDetune         = vocoderParamsGroup(vslider("[5]detune[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+vocoderSawPulse       = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob]", 0, 0, 1, 0.001));
+vocoderDuty           = vocoderParamsGroup(vslider("[7]PW[style:knob]", 0.5, 0.5, 1, 0.001):min(0.9996));
+vocoderWidth          = vocoderParamsGroup(vslider("[8]width[style:knob]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                             = mono 1 = normal 2 = full-wide
+
+PAFvocoderGroup(x)      = synthsGroup((hgroup("[3]PAFvocoder", x)));
+PAFvocoderGroupLevel(x) = PAFvocoderGroup((vgroup("[0]levels", x)));
+pafVolume               = PAFvocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+pafNLKS                 = PAFvocoderGroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+pafpmFX                 = PAFvocoderGroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+pafOctave               = PAFvocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of paf
 
 
-vocoderGroup(x) = synthsGroup((hgroup("[2]vocoder", x)));
-vocoderVolume   = vocoderGroup(vslider("[0]volume",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-vocoderNLKS     = vocoderGroup(vslider("[1]NL-KS",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-vocoderpmFX     = vocoderGroup(vslider("[2]PM fx",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-vocoderOctave   = vocoderGroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of vocoder
-
-vocoderParamsGroup(x) = vocoderGroup((vgroup("[4]parameters", x)));
-vocoderTop            = vocoderParamsGroup(vslider("[1]top[style:knob]",	32, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderBottom         = vocoderParamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
-vocoderQ              = vocoderParamsGroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999));			//0.1 to 49 logarithmicly,
-//todo: research
-vocoderMix      = vocoderParamsGroup(vslider("[4]mix[style:knob]",	0, 0, 1, 0.001));								// is smoothed at the synth
-vocoderDetune   = vocoderParamsGroup(vslider("[5]detune[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-vocoderSawPulse = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob]", 0, 0, 1, 0.001));
-vocoderDuty     = vocoderParamsGroup(vslider("[7]PW[style:knob]", 0.5, 0.5, 1, 0.001):min(0.9996));
-vocoderWidth    = vocoderParamsGroup(vslider("[8]width[style:knob]",	1, 0, 2, 0.001):smooth(0.999));				//wide pan, 0                   = mono 1 = normal 2 = full-wide
-
-
-PAFvocoderGroup(x) = synthsGroup((hgroup("[3]PAFvocoder", x)));
-pafVolume          = PAFvocoderGroup(vslider("[0]volume",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-pafNLKS            = PAFvocoderGroup(vslider("[1]NL-KS",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-pafpmFX            = PAFvocoderGroup(vslider("[2]PM fx",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-pafOctave          = PAFvocoderGroup(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);				//set the octave of paf
-
-
-PAFparamsGroup(x) = PAFvocoderGroup((vgroup("[4]parameters", x)));
+PAFparamsGroup(x) = PAFvocoderGroup((vgroup("[1]parameters", x)));
 pafTop            = PAFparamsGroup(vslider("[1]top[style:knob]",		12, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 pafBottom         = PAFparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
 pafIndex          = PAFparamsGroup(vslider("[3]index[style:knob]",	25, 1, 100, 0.001):smooth(0.999));
-pafWidth          = PAFparamsGroup(vslider("[4]width[style:knob]",1, 0, 2, 0.001):smooth(0.999)); //wide pan, 0                                                                          = mono 1 = normal 2 = full-wide
+pafWidth          = PAFparamsGroup(vslider("[4]width[style:knob]",1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                          = mono 1 = normal 2 = full-wide
 
 
 //-----------------------------------------------
 // FOF
 //-----------------------------------------------
 fofVocoderGroup(x) = synthsGroup((hgroup("[4]FOFvocoder", x)));
-fofVolume          = fofVocoderGroup(vslider("[0]volume",	1, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-fofNLKS            = fofVocoderGroup(vslider("[1]NL-KS",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-fofpmFX            = fofVocoderGroup(vslider("[2]PM fx",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-fofOctave          = fofVocoderGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);				//set the octave of fof
+fofVocoderGroupLevel(x) = fofVocoderGroup((vgroup("[0]levels", x)));
+fofVolume          = fofVocoderGroupLevel(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+fofNLKS            = fofVocoderGroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+fofpmFX            = fofVocoderGroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+fofOctave          = fofVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of fof
 
-fofparamsGroup(x) = fofVocoderGroup((vgroup("[4]parameters", x)));
+fofparamsGroup(x) = fofVocoderGroup((vgroup("[1]parameters", x)));
 fofTop            = fofparamsGroup(vslider("[1]top[style:knob]",	11.313708, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly,
 fofBottom         = fofparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
-//fofSkirt        = fofparamsGroup(vslider("[3]skirt[style:knob]", 30.359, 3, 500, 0.001)*0.001:smooth(0.999));
-//fofDecay        = fofparamsGroup(vslider("[4]decay[style:knob]", 3.462, 0, 4, 0.001):pow(4):smooth(0.999));
 fofSkirtTop       = fofparamsGroup(vslider("[3]skirtTop[style:knob]", 1.212, 0.1, 9, 0.001):pow(4)*0.001:smooth(0.999));
 fofSkirtBottom    = fofparamsGroup(vslider("[4]skirtBottom[style:knob]", 3.882, 0.1, 9, 0.001):pow(4)*0.001:smooth(0.999));
 fofDecayTop       = fofparamsGroup(vslider("[5]decayTop[style:knob]", 1.88, 0, 4, 0.001):pow(4):smooth(0.999));
@@ -121,18 +119,17 @@ fofPhaseRand	= fofparamsGroup((vslider("[7]phase rnd[style:knob]", 0.355, 0, 1, 
 //decay = vslider("decay", 0, 0, 10, 0.001):_<:*:smooth(0.999);
 //fReso= vslider("fReso", 60, 0, 1270, 0.001):smooth(0.999);
 
-
-//-----------------------------------------------
+// -----------------------------------------------
 // FM
-//-----------------------------------------------
+// -----------------------------------------------
 
 FMgroup(x)       = synthsGroup((hgroup("[5]FM", x)));
-FMvolume         = FMgroup(vslider("[01]volume",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-fmNLKS           = FMgroup(vslider("[1]NL-KS",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-FMpmFX           = FMgroup(vslider("[2]PM fx",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-//FMOctave       = FMgroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//not needed, we have all octaves! :)
-FMparamsGroup(x) = FMgroup((vgroup("[3]parameters", x)));
+FMgroupLevel(x)  = FMgroup((vgroup("[0]levels", x)));
+FMvolume         = FMgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+fmNLKS           = FMgroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
+FMpmFX           = FMgroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
 
+FMparamsGroup(x) = FMgroup((vgroup("[1]parameters", x)));
 
 HHFMparamsGroup(x) = FMparamsGroup((hgroup("[0]+2 oct", x)));
 FMvolHH            = HHFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -164,12 +161,12 @@ FMdynLL            = LLFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.00
 // ringmodualtion with emulated Casio CZ oscilators
 //-----------------------------------------------
 
-CZgroup(x)       = synthsGroup((hgroup("[6]CZ rigmodulator", x)));
-CZvolume         = CZgroup(vslider("[01]volume",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-CZNLKS           = CZgroup(vslider("[1]NL-KS",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-CZpmFX           = CZgroup(vslider("[2]PM fx",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1
-//CZOctave       = CZgroup(vslider("[2]octave",	0, -2, 2, 1):octaveMultiplier);				//not needed, we have all octaves! :)
-CZparamsGroup(x) = CZgroup((vgroup("[3]parameters", x)));
+CZgroup(x)       = synthsGroup((hgroup("[6]CZ ringmodulator", x)));
+CZgroupLevel(x)  = CZgroup((vgroup("[0]levels", x)));
+CZvolume         = CZgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+CZNLKS           = CZgroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
+CZpmFX           = CZgroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
+CZparamsGroup(x) = CZgroup((vgroup("[1]parameters", x)));
 
 
 HHCZparamsGroup(x) = CZparamsGroup((hgroup("[0]+2 oct", x)));
@@ -223,21 +220,18 @@ CZresMultLL        = LLCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 
 //todo: make FX group and routing
 KPgroup(x)        = FXGroup((vgroup("[0]Karplus-Strong", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
-KPvolume          = mainKPgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-//KPattack        = mainKPgroup(vslider("[1]attack [style:knob]",	0.01, 0.01, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-//KPdecay         = mainKPgroup(vslider("[2]decay [style:knob]",	0.01, 0.01, 3, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-//KPsustain       = mainKPgroup(vslider("[3]sustain [style:knob]",	0.5, 0.01, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
-KPrelease         = mainKPgroup(vslider("[1]release [style:knob]",	0, 0.001, 1, 0.001):pow(4)*3);			//0 to 1
-KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1));
+KPvolume          = mainKPgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+KPrelease         = mainKPgroup(vslider("[1]release [style:knob]",	0, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);         // 0 to 1
+KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1)):smooth(0.999);
 vocoderKPgroup(x) = mainKPgroup((hgroup("[3]vocoder", x)));
 KPvocoderStrength = vocoderKPgroup(vslider("[0]strength[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-KPtop             = vocoderKPgroup(vslider("[1]top[style:knob]",	32, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+KPtop             = vocoderKPgroup(vslider("[1]top[style:knob]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 KPbottom          = vocoderKPgroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));
-KPvocoderQ        = vocoderKPgroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999));			//0.1 to 49 logarithmicly,
+KPvocoderQ        = vocoderKPgroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999)); // 0.1 to 49 logarithmicly,
 
 HHKPgroup(x)   = KPgroup((hgroup("[2]+2 oct", x)));
 KPvolHH        = HHKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackHH     = HHKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999);  // -60db decay time (sec)
+feedbackHH     = HHKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
 HHmodGroup(y)  = HHKPgroup((hgroup("[2]modulation", y)));
 nonLinHH       = HHmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModHH = HHmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
@@ -245,7 +239,7 @@ phaseHH        = HHmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):
 
 HKPgroup(x)   = KPgroup((hgroup("[3]+1 oct", x)));
 KPvolH        = HKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackH     = HKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999);  // -60db decay time (sec)
+feedbackH     = HKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
 HmodGroup(y)  = HKPgroup((hgroup("[2]modulation", y)));
 nonLinH       = HmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModH = HmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
@@ -253,7 +247,7 @@ phaseH        = HmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):po
 
 MKPgroup(x)  = KPgroup((hgroup("[4]0 oct", x)));
 KPvol        = MKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackM    = MKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999);  // -60db decay time (sec)
+feedbackM    = MKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
 MmodGroup(y) = MKPgroup((hgroup("[2]modulation", y)));
 nonLin       = MmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyMod = MmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
@@ -269,7 +263,7 @@ phaseL        = LmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):po
 
 LLKPgroup(x)   = KPgroup((hgroup("[6]-2 oct", x)));
 KPvolLL        = LLKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackLL     = LLKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999);  // -60db decay time (sec)
+feedbackLL     = LLKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
 LLmodGroup(y)  = LLKPgroup((hgroup("[2]modulation", y)));
 nonLinLL       = LLmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModLL = LLmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
@@ -279,7 +273,7 @@ phaseLL        = LLmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):
 // Phase Modulation as an effect
 //-----------------------------------------------
 pmFXgroup(x) = FXGroup((vgroup("[1]Phase Modulation", x)));
-//pmFXvolume = pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));			//0 to 1 logarithmicly
+// pmFXvolume = pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
 pmFXi        = pmFXgroup(vslider("[1]depth[style:knob]",1,0,4,0.001):pow(2):smooth(0.999) );
 pmFXr        = pmFXgroup(vslider("[2]freq[style:knob]",4,0,8,0.001):smooth(0.999) );
 PMphase      = pmFXgroup(hslider("[3]phase[style:knob]", 0.9, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
@@ -310,7 +304,6 @@ vocoderMixer = interleave(2,8):((bus(8):>_),(bus(8):>_));
 //-----------------------------------------------
 
 SH(trig,x) = (*(1 - trig) + x * trig) ~_;
-a = 8.0;// vslider("n cycles", 1, 1, 100, 1) ;
 
 
 Pitch(a,x) = a * SR / max(M,1) - a * SR * (M == 0)
@@ -330,9 +323,8 @@ with  {
 PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
 //PitchTracker(audio) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
 with	{
-        internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(a): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
+        internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(8.0): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
         OSCpitchIsBad  = (isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity));
-        //OSCpitchIsBad  = isSameTooLong(OSCfidelity,1);
         isSameTooLong(x,time) = (x@time)==x;
         same(x,time) =(x@time)==x;
         sames(x,time) = (prod(i,int(time),same(x,i+1)));
@@ -466,32 +458,34 @@ with {
         diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
      // Third-order Lagrange interpolated-delay version (see filter.lib):
      // diffdel(x,del) = x - fl.fdelay3(DELPWR2,max(1,min(DELPWR2-2,ddel)));
-     compensate = (((SawPulse*-1)+1)*0.2)+0.8; //compensate volume dif between saw and pulse
-     DELPWR2 = 2048; // Needs to be a power of 2 when fdelay*() used above.
-     delmax = DELPWR2-1; // arbitrary upper limit on diff delay (duty=0.5)
-     SRmax = 96000.0; // assumed upper limit on sampling rate
-     fmin = SRmax / float(2.0*delmax); // 23.4 Hz (audio freqs only)
-     freqC = max(freq,fmin); // clip frequency at lower limit
-     period = (float(ml.SR) / freqC); // actual period
-     ddel = duty * period; // desired delay
+
+     compensate = (((SawPulse*-1)+1)*0.2)+0.8; // compensate volume dif between saw and pulse
+     DELPWR2 = 2048;                           // Needs to be a power of 2 when fdelay*() used above.
+     delmax = DELPWR2-1;                       // arbitrary upper limit on diff delay (duty=0.5)
+     SRmax = 96000.0;                          // assumed upper limit on sampling rate
+     fmin = SRmax / float(2.0*delmax);         // 23.4 Hz (audio freqs only)
+     freqC = max(freq,fmin);                   // clip frequency at lower limit
+     period = (float(ml.SR) / freqC);          // actual period
+     ddel = duty * period;                     // desired delay
      del = max(0,min(delmax,ddel));
     };
 
-sawpulseN(N,freq,SawPulse,duty) = diffdel(sawN(N,freq),del)*compensate  
+sawpulseN(N,freq,SawPulse,duty) = diffdel(sawN(N,freq),del)*compensate
 with {
      // non-interpolated-delay version: diffdel(x,del) = x - x@int(del+0.5);
      // linearly interpolated delay version (sounds good to me):
-        diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
+    diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
      // Third-order Lagrange interpolated-delay version (see filter.lib):
      // diffdel(x,del) = x - fl.fdelay3(DELPWR2,max(1,min(DELPWR2-2,ddel)));
-     compensate = (((SawPulse*-1)+1)*0.2)+0.8; //compensate volume dif between saw and pulse
-     DELPWR2 = 2048; // Needs to be a power of 2 when fdelay*() used above.
-     delmax = DELPWR2-1; // arbitrary upper limit on diff delay (duty=0.5)
-     SRmax = 96000.0; // assumed upper limit on sampling rate
-     fmin = SRmax / float(2.0*delmax); // 23.4 Hz (audio freqs only)
-     freqC = max(freq,fmin); // clip frequency at lower limit
-     period = (float(ml.SR) / freqC); // actual period
-     ddel = duty * period; // desired delay
+     
+     compensate = (((SawPulse*-1)+1)*0.2)+0.8; // compensate volume dif between saw and pulse
+     DELPWR2 = 2048;                           // Needs to be a power of 2 when fdelay*() used above.
+     delmax = DELPWR2-1;                       // arbitrary upper limit on diff delay (duty=0.5)
+     SRmax = 96000.0;                          // assumed upper limit on sampling rate
+     fmin = SRmax / float(2.0*delmax);         // 23.4 Hz (audio freqs only)
+     freqC = max(freq,fmin);                   // clip frequency at lower limit
+     period = (float(ml.SR) / freqC);          // actual period
+     ddel = duty * period;                     // desired delay
      del = max(0,min(delmax,ddel));
      };
 
@@ -603,9 +597,6 @@ vocoderFund(freq)=
 
 vocoderOsc(freq) =
     supersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty);
-
-//sawNws(vocoderN,vocoderFund(freq),freq*vocoderOctave);
-//supersawpulse(N,fund,freq,detune,mix,SawPulse,duty)
 
 volFilter(c,f,v,q) =
     f:resonbp(c:min((SR/2)-10),q,v):resonbp(c:min((SR/2)-10),q,compensate)
@@ -841,8 +832,8 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,16, _,freq * oct:*:min(SR/2)));
 KPanalizer(voice,freq) =
-    analizer(voice,freq),par(i,16,1):interleave(16,2)
-    :par(i,16,((_*KPvocoderStrength,_*((KPvocoderStrength*-1)+1)):+
+    analizer(voice,freq)
+    :par(i,16,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
     :max(0.001):linear2db) );//adapt to eq instead of bandpass
 
 
