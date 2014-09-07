@@ -517,13 +517,42 @@ with {
       sawpulseN(N,(det * 0.0199122+1)*freq,SawPulse,duty),
       sawpulseN(N,(det * 0.0621654+1)*freq,SawPulse,duty),
       sawpulseN(N,(det * 0.107452+1)*freq,SawPulse,duty);
-
     mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
     detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
-
     //*-1 to get it into phase with my other synths
     mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
     };
+
+
+stereosupersawpulse(N,fund,freq,detune,mix,SawPulse,duty) = 
+supersawpulse(N,fund,freq,detune,mix,SawPulse,duty),
+supersawpulse(N,fund,freq,detune*-1,mix,SawPulse,duty);
+
+/*
+saws(fund,freq,detuner(detune)):mixer(mix)
+with {
+    detuner (detune) =
+      (((detune*0.2),(detune<0.6)):*),
+      ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
+      ((((detune-0.95)*12+0.4),(detune>0.95)):*)
+      :>_;
+    saws(fund,freq,det) =
+        sawpulseN(N,(det * -0.110023+1)*freq,SawPulse,duty),
+        sawpulseN(N,(det * -0.0628844+1)*freq,SawPulse,duty),
+        sawpulseN(N,(det * -0.0195236+1)*freq,SawPulse,duty),
+        sawpulseNws(N,fund,freq,SawPulse,duty)*db2linear(-3),
+        sawpulseN(N,(det * 0.0199122+1)*freq,SawPulse,duty),
+        sawpulseN(N,(det * 0.0621654+1)*freq,SawPulse,duty),
+        sawpulseN(N,(det * 0.107452+1)*freq,SawPulse,duty);
+    mainmix = (mix  -0.55366 + 0.99785):smooth(0.999);
+    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
+    //*-1 to get it into phase with my other synths
+//    mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
+    mixer(mix) =
+        par(i, 3, _*detunemix),(_*mainmix<:_,_),par(i, 3, _*detunemix)
+        :((bus4:>_*-1),(bus4:>_*-1));
+    };
+*/
 
 //todo:Window Function Synthesis:
 //see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
@@ -605,7 +634,7 @@ vocoderFund(freq)=
     fund(freq,vocoderOctave);
 
 vocoderOsc(freq) =
-    supersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty);
+    stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty);
 
 volFilter(c,f,v,q) =
     f:resonbp(c:min((SR/2)-10),q,v):resonbp(c:min((SR/2)-10),q,compensate)
@@ -651,6 +680,27 @@ volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Ce
     volFilter(Center16,Oscilator,Volume16,q)
     ;
 
+StereoVolFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,freq,q)=
+    vocoderOsc(freq)<:bus(16):
+    volFilter(Center1,_,Volume1,q),
+    volFilter(Center2,_,Volume2,q),
+    volFilter(Center3,_,Volume3,q),
+    volFilter(Center4,_,Volume4,q),
+    volFilter(Center5,_,Volume5,q),
+    volFilter(Center6,_,Volume6,q),
+    volFilter(Center7,_,Volume7,q),
+    volFilter(Center8,_,Volume8,q),
+    volFilter(Center9,_,Volume9,q),
+    volFilter(Center10,_,Volume10,q),
+    volFilter(Center11,_,Volume11,q),
+    volFilter(Center12,_,Volume12,q),
+    volFilter(Center13,_,Volume13,q),
+    volFilter(Center14,_,Volume14,q),
+    volFilter(Center15,_,Volume15,q),
+    volFilter(Center16,_,Volume16,q)
+    ;
+
+
 EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator,q)=
 
     Oscilator<:
@@ -681,9 +731,11 @@ vocoderCenters(freq) =
     VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
 
 vocoder(audio,freq)=
-    (vocoderCenters(freq),analizer(voice(audio),freq),vocoderOsc(freq), vocoderQ):volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
+    (vocoderCenters(freq),analizer(voice(audio),freq),(freq), vocoderQ):StereoVolFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
 
 
+//process(audio) = StereoVolFilterBank;
+//vocoderOsc(PitchTracker(audio));
 
 //-----------------------------------------------
 // PAF vocoder synthesis
@@ -1074,4 +1126,4 @@ process(audio) = VocSynth(audio);
 //stringloop(_,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod),
 //stringloop(_,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
 
-//process(audio) = pafvocoder(audio,PitchTracker(audio));
+//process(audio) = vocoder(audio,PitchTracker(audio));
