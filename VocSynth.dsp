@@ -44,42 +44,42 @@ synthsGroup(x) = tabs(hgroup("[0]synths", x));
 FXGroup(x)     = tabs(hgroup("[1]effects", x));
 
 
-OSCpitch      = OSCgroup(nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
-OSCfidelity   = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0.001));
-OSConset      = OSCgroup(nentry("[2]onset", 0, 0, 1,0.001 ));
-formant       = OSCgroup(nentry("[3]formant", MinInputPitch, MinInputPitch, 12000, 0.001)):smooth(0.999);
-envelop       = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
-MeterGroup(x) = (vgroup("[4]output level", x)); // To recieve OSC pitch and other messages
-VuMeter       = par(i,2,_<:(_, (envelop :(OSCgroup(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, +6))))):attach));
-ManualOnset   = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
+OSCpitch                = OSCgroup(nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
+OSCfidelity             = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0.001));
+OSConset                = OSCgroup(nentry("[2]onset", 0, 0, 1,0.001 ));
+formant                 = OSCgroup(nentry("[3]formant", MinInputPitch, MinInputPitch, 12000, 0.001)):smooth(0.999);
+envelop                 = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
+MeterGroup(x)           = (vgroup("[4]output level", x)); // To recieve OSC pitch and other messages
+VuMeter                 = par(i,2,_<:(_, (envelop :(OSCgroup(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, +6))))):attach));
+ManualOnset             = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
 
-cleanGroup(x) = synthsGroup((vgroup("[0]clean", x)));
-cleanVolume   = cleanGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-cleanNLKS     = cleanGroup(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-cleanpmFX     = cleanGroup(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+cleanGroup(x)           = synthsGroup((vgroup("[0]clean", x)));
+cleanVolume             = cleanGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+cleanNLKS               = cleanGroup(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+cleanpmFX               = cleanGroup(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
 
-subGroup(x) = synthsGroup((vgroup("[1]sub", x)));
-subVolume   = subGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-subNLKS     = subGroup(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-subpmFX     = subGroup(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-subOctave   = subGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of sub
+subGroup(x)             = synthsGroup((vgroup("[1]sub", x)));
+subVolume               = subGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+subNLKS                 = subGroup(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+subpmFX                 = subGroup(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+subOctave               = subGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of sub
 
-vocoderGroup(x)      = synthsGroup((hgroup("[2]vocoder", x)));
-vocoderGroupLevel(x) = vocoderGroup((vgroup("[0]levels", x)));
-vocoderVolume        = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-vocoderNLKS          = vocoderGroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-vocoderpmFX          = vocoderGroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-vocoderOctave        = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
+vocoderGroup(x)         = synthsGroup((hgroup("[2]vocoder", x)));
+vocoderGroupLevel(x)    = vocoderGroup((vgroup("[0]levels", x)));
+vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+vocoderNLKS             = vocoderGroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
 
-vocoderParamsGroup(x) = vocoderGroup((vgroup("[1]parameters", x)));
-vocoderTop            = vocoderParamsGroup(vslider("[1]top[style:knob]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderBottom         = vocoderParamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999)); // 0.25 to 49 logarithmicly
-vocoderQ              = vocoderParamsGroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999));     // 0.1 to 49 logarithmicly,
-vocoderMix            = vocoderParamsGroup(vslider("[4]mix[style:knob]",	0, 0, 1, 0.001)); // is smoothed at the synth
-vocoderDetune         = vocoderParamsGroup(vslider("[5]detune[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-vocoderSawPulse       = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob]", 0, 0, 1, 0.001));
-vocoderDuty           = vocoderParamsGroup(vslider("[7]PW[style:knob]", 0.5, 0.5, 1, 0.001):min(0.9996));
-vocoderWidth          = vocoderParamsGroup(vslider("[8]width[style:knob]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                             = mono 1 = normal 2 = full-wide
+vocoderParamsGroup(x)   = vocoderGroup((vgroup("[1]parameters", x)));
+vocoderTop              = vocoderParamsGroup(vslider("[1]top[style:knob]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderBottom           = vocoderParamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999)); // 0.25 to 49 logarithmicly
+vocoderQ                = vocoderParamsGroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999));     // 0.1 to 49 logarithmicly,
+vocoderMix              = vocoderParamsGroup(vslider("[4]mix[style:knob]",	0, 0, 1, 0.001)); // is smoothed at the synth
+vocoderDetune           = vocoderParamsGroup(vslider("[5]detune[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+vocoderSawPulse         = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob]", 0, 0, 1, 0.001));
+vocoderDuty             = vocoderParamsGroup(vslider("[7]PW[style:knob]", 0.5, 0.5, 1, 0.001):min(0.9996));
+vocoderWidth            = vocoderParamsGroup(vslider("[8]width[style:knob]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                   = mono 1 = normal 2 = full-wide
 
 PAFvocoderGroup(x)      = synthsGroup((hgroup("[3]PAFvocoder", x)));
 PAFvocoderGroupLevel(x) = PAFvocoderGroup((vgroup("[0]levels", x)));
@@ -89,70 +89,70 @@ pafpmFX                 = PAFvocoderGroupLevel(vslider("[2]PM fx[style:knob]",	0
 pafOctave               = PAFvocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of paf
 
 
-PAFparamsGroup(x) = PAFvocoderGroup((vgroup("[1]parameters", x)));
-pafTop            = PAFparamsGroup(vslider("[1]top[style:knob]",		12, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-pafBottom         = PAFparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
-pafIndex          = PAFparamsGroup(vslider("[3]index[style:knob]",	25, 1, 100, 0.001):smooth(0.999));
-pafWidth          = PAFparamsGroup(vslider("[4]width[style:knob]",1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                          = mono 1 = normal 2 = full-wide
+PAFparamsGroup(x)       = PAFvocoderGroup((vgroup("[1]parameters", x)));
+pafTop                  = PAFparamsGroup(vslider("[1]top[style:knob]",		12, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+pafBottom               = PAFparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
+pafIndex                = PAFparamsGroup(vslider("[3]index[style:knob]",	25, 1, 100, 0.001):smooth(0.999));
+pafWidth                = PAFparamsGroup(vslider("[4]width[style:knob]",1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
 
 //-----------------------------------------------
 // FOF
 //-----------------------------------------------
-fofVocoderGroup(x) = synthsGroup((hgroup("[4]FOFvocoder", x)));
-fofVocoderGroupLevel(x) = fofVocoderGroup((vgroup("[0]levels", x)));
-fofVolume          = fofVocoderGroupLevel(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-fofNLKS            = fofVocoderGroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-fofpmFX            = fofVocoderGroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-fofOctave          = fofVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of fof
+fofVocoderGroup(x)            = synthsGroup((hgroup("[4]FOFvocoder", x)));
+fofVocoderGroupLevel(x)       = fofVocoderGroup((vgroup("[0]levels", x)));
+fofVolume                     = fofVocoderGroupLevel(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+fofNLKS                       = fofVocoderGroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+fofpmFX                       = fofVocoderGroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+fofOctave                     = fofVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of fof
 
-fofparamsGroup(x) = fofVocoderGroup((vgroup("[1]parameters", x)));
-fofTop            = fofparamsGroup(vslider("[1]top[style:knob]",	11.313708, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly,
-fofBottom         = fofparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
-fofSkirtTop       = fofparamsGroup(vslider("[3]skirtTop[style:knob]", 1.212, 0.1, 9, 0.001):pow(4)*0.001:smooth(0.999));
-fofSkirtBottom    = fofparamsGroup(vslider("[4]skirtBottom[style:knob]", 3.882, 0.1, 9, 0.001):pow(4)*0.001:smooth(0.999));
-fofDecayTop       = fofparamsGroup(vslider("[5]decayTop[style:knob]", 1.88, 0, 4, 0.001):pow(4):smooth(0.999));
-fofDecayBottom    = fofparamsGroup(vslider("[6]decayBottom[style:knob]", 1.161, 0.001, 4, 0.001):pow(4):smooth(0.999));
+fofparamsGroup(x)             = fofVocoderGroup((vgroup("[1]parameters", x)));
+fofTop                        = fofparamsGroup(vslider("[1]top[style:knob]",	11.313708, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly,
+fofBottom                     = fofparamsGroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
+fofSkirtTop                   = fofparamsGroup(vslider("[3]skirtTop[style:knob]", 1.212, 0.1, 9, 0.001):pow(4)*0.001:smooth(0.999));
+fofSkirtBottom                = fofparamsGroup(vslider("[4]skirtBottom[style:knob]", 3.882, 0.1, 9, 0.001):pow(4)*0.001:smooth(0.999));
+fofDecayTop                   = fofparamsGroup(vslider("[5]decayTop[style:knob]", 1.88, 0, 4, 0.001):pow(4):smooth(0.999));
+fofDecayBottom                = fofparamsGroup(vslider("[6]decayBottom[style:knob]", 1.161, 0.001, 4, 0.001):pow(4):smooth(0.999));
 
 //was used for formant phase:
-//fofPhaseRand	= fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:smooth(0.999));
-fofPhaseRand	= fofparamsGroup((vslider("[7]phase rnd[style:knob]", 0.355, 0, 1, 0.001)):pow(2)*400:smooth(0.999));
-//fofWidth	= fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0.001):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
-//width = vslider("width", 3, 3, 100, 0.001)*0.001:smooth(0.999);
-//decay = vslider("decay", 0, 0, 10, 0.001):_<:*:smooth(0.999);
-//fReso= vslider("fReso", 60, 0, 1270, 0.001):smooth(0.999);
+//fofPhaseRand                = fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:smooth(0.999));
+fofPhaseRand                  = fofparamsGroup((vslider("[7]phase rnd[style:knob]", 0.355, 0, 1, 0.001)):pow(2)*400:smooth(0.999));
+//fofWidth                    = fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0.001):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+//width                       = vslider("width", 3, 3, 100, 0.001)*0.001:smooth(0.999);
+//decay                       = vslider("decay", 0, 0, 10, 0.001):_<:*:smooth(0.999);
+//fReso                       = vslider("fReso", 60, 0, 1270, 0.001):smooth(0.999);
 
 // -----------------------------------------------
 // FM
 // -----------------------------------------------
 
-FMgroup(x)       = synthsGroup((hgroup("[5]FM", x)));
-FMgroupLevel(x)  = FMgroup((vgroup("[0]levels", x)));
-FMvolume         = FMgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-fmNLKS           = FMgroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
-FMpmFX           = FMgroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
+FMgroup(x)         = synthsGroup((hgroup("[5]FM", x)));
+FMgroupLevel(x)    = FMgroup((vgroup("[0]levels", x)));
+FMvolume           = FMgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+fmNLKS             = FMgroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
+FMpmFX             = FMgroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
 
-FMparamsGroup(x) = FMgroup((vgroup("[1]parameters", x)));
+FMparamsGroup(x)   = FMgroup((vgroup("[1]parameters", x)));
 
 HHFMparamsGroup(x) = FMparamsGroup((hgroup("[0]+2 oct", x)));
 FMvolHH            = HHFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
 FMindexHH          = HHFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
 FMdynHH            = HHFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
-HFMparamsGroup(x) = FMparamsGroup((hgroup("[1]+1 oct", x)));
-FMvolH            = HFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
-FMindexH          = HFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
-FMdynH            = HFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+HFMparamsGroup(x)  = FMparamsGroup((hgroup("[1]+1 oct", x)));
+FMvolH             = HFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
+FMindexH           = HFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
+FMdynH             = HFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
-mFMparamsGroup(x) = FMparamsGroup((hgroup("[2]0 oct", x)));
-FMvol             = mFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
-FMindex           = mFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
-FMdyn             = mFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+mFMparamsGroup(x)  = FMparamsGroup((hgroup("[2]0 oct", x)));
+FMvol              = mFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
+FMindex            = mFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
+FMdyn              = mFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
-LFMparamsGroup(x) = FMparamsGroup((hgroup("[3]-1 oct", x)));
-FMvolL            = LFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
-FMindexL          = LFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
-FMdynL            = LFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+LFMparamsGroup(x)  = FMparamsGroup((hgroup("[3]-1 oct", x)));
+FMvolL             = LFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
+FMindexL           = LFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
+FMdynL             = LFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
 LLFMparamsGroup(x) = FMparamsGroup((hgroup("[4]-2 oct", x)));
 FMvolLL            = LLFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -164,12 +164,12 @@ FMdynLL            = LLFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.00
 // ringmodualtion with emulated Casio CZ oscilators
 //-----------------------------------------------
 
-CZgroup(x)       = synthsGroup((hgroup("[6]CZ ringmodulator", x)));
-CZgroupLevel(x)  = CZgroup((vgroup("[0]levels", x)));
-CZvolume         = CZgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-CZNLKS           = CZgroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
-CZpmFX           = CZgroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
-CZparamsGroup(x) = CZgroup((vgroup("[1]parameters", x)));
+CZgroup(x)         = synthsGroup((hgroup("[6]CZ ringmodulator", x)));
+CZgroupLevel(x)    = CZgroup((vgroup("[0]levels", x)));
+CZvolume           = CZgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+CZNLKS             = CZgroupLevel(vslider("[1]NL-KS[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
+CZpmFX             = CZgroupLevel(vslider("[2]PM fx[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));     // 0 to 1
+CZparamsGroup(x)   = CZgroup((vgroup("[1]parameters", x)));
 
 
 HHCZparamsGroup(x) = CZparamsGroup((hgroup("[0]+2 oct", x)));
@@ -180,29 +180,29 @@ CZpulseIxHH        = HHCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 
 CZresHH            = HHCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0.001):smooth(0.999));
 CZresMultHH        = HHCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
-HCZparamsGroup(x) = CZparamsGroup((hgroup("[1]+1 oct", x)));
-CZsquareH         = HCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZsquareIxH       = HCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZpulseH          = HCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZpulseIxH        = HCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZresH            = HCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0.001):smooth(0.999));
-CZresMultH        = HCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+HCZparamsGroup(x)  = CZparamsGroup((hgroup("[1]+1 oct", x)));
+CZsquareH          = HCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZsquareIxH        = HCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZpulseH           = HCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZpulseIxH         = HCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZresH             = HCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0.001):smooth(0.999));
+CZresMultH         = HCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
-mCZparamsGroup(x) = CZparamsGroup((hgroup("[2]0 oct", x)));
-CZsquareM         = mCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZsquareIxM       = mCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZpulseM          = mCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZpulseIxM        = mCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZresM            = mCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0.001):smooth(0.999));
-CZresMultM        = mCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+mCZparamsGroup(x)  = CZparamsGroup((hgroup("[2]0 oct", x)));
+CZsquareM          = mCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZsquareIxM        = mCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZpulseM           = mCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZpulseIxM         = mCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZresM             = mCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0.001):smooth(0.999));
+CZresMultM         = mCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
-LCZparamsGroup(x) = CZparamsGroup((hgroup("[3]-1 oct", x)));
-CZsquareL         = LCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZsquareIxL       = LCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZpulseL          = LCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZpulseIxL        = LCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZresL            = LCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0.001):smooth(0.999));
-CZresMultL        = LCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+LCZparamsGroup(x)  = CZparamsGroup((hgroup("[3]-1 oct", x)));
+CZsquareL          = LCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZsquareIxL        = LCZparamsGroup(vslider("[1]squareIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZpulseL           = LCZparamsGroup(vslider("[2]pulse[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZpulseIxL         = LCZparamsGroup(vslider("[3]pulseIx[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZresL             = LCZparamsGroup(vslider("[4]res[style:knob]",		0, 0, 1, 0.001):smooth(0.999));
+CZresMultL         = LCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
 LLCZparamsGroup(x) = CZparamsGroup((hgroup("[4]-2 oct", x)));
 CZsquareLL         = LLCZparamsGroup(vslider("[0]square[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
@@ -217,11 +217,11 @@ CZresMultLL        = LLCZparamsGroup(vslider("[5]resMult[style:knob]",	0, 0, 1, 
 // input compression and expansion
 //-----------------------------------------------
 
-qompanderGroup(x)  = FXGroup(vgroup("[0]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
-factor		= qompanderGroup(hslider("[0]factor[unit::1][style:knob]",		3, 0.8, 8, 0.01):smooth(0.999));
-threshold	= qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-40, -96, -20, 0.01):smooth(0.999));
-attack		= qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1, 1, 20, 0.01):smooth(0.999));
-release		= qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):smooth(0.999));
+qompanderGroup(x) = FXGroup(vgroup("[0]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
+factor            = qompanderGroup(hslider("[0]factor[unit::1][style:knob]",		3, 0.8, 8, 0.01):smooth(0.999));
+threshold         = qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-40, -96, -20, 0.01):smooth(0.999));
+attack            = qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1, 1, 20, 0.01):smooth(0.999));
+release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):smooth(0.999));
 
 //-----------------------------------------------
 // Karplus Strong as an effect
@@ -239,56 +239,56 @@ KPtop             = vocoderKPgroup(vslider("[1]top[style:knob]",	32, 1, 64, 0.00
 KPbottom          = vocoderKPgroup(vslider("[2]bottom[style:knob]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));
 KPvocoderQ        = vocoderKPgroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999)); // 0.1 to 49 logarithmicly,
 
-HHKPgroup(x)   = KPgroup((hgroup("[2]+2 oct", x)));
-KPvolHH        = HHKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackHH     = HHKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
-HHmodGroup(y)  = HHKPgroup((hgroup("[2]modulation", y)));
-nonLinHH       = HHmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
-frequencyModHH = HHmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
-phaseHH        = HHmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
-DCnonlinHH     = HHmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly,
+HHKPgroup(x)      = KPgroup((hgroup("[2]+2 oct", x)));
+KPvolHH           = HHKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
+feedbackHH        = HHKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
+HHmodGroup(y)     = HHKPgroup((hgroup("[2]modulation", y)));
+nonLinHH          = HHmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
+frequencyModHH    = HHmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
+phaseHH           = HHmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlinHH        = HHmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly,
 
-HKPgroup(x)   = KPgroup((hgroup("[3]+1 oct", x)));
-KPvolH        = HKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackH     = HKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
-HmodGroup(y)  = HKPgroup((hgroup("[2]modulation", y)));
-nonLinH       = HmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
-frequencyModH = HmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
-phaseH        = HmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
-DCnonlinH     = HmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
+HKPgroup(x)       = KPgroup((hgroup("[3]+1 oct", x)));
+KPvolH            = HKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
+feedbackH         = HKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
+HmodGroup(y)      = HKPgroup((hgroup("[2]modulation", y)));
+nonLinH           = HmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
+frequencyModH     = HmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
+phaseH            = HmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlinH         = HmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
-MKPgroup(x)  = KPgroup((hgroup("[4]0 oct", x)));
-KPvol        = MKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackM    = MKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
-MmodGroup(y) = MKPgroup((hgroup("[2]modulation", y)));
-nonLin       = MmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
-frequencyMod = MmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
-phaseM       = MmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
-DCnonlin     = MmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
+MKPgroup(x)       = KPgroup((hgroup("[4]0 oct"                    , x)));
+KPvol             = MKPgroup(vslider("[0]volume [style:knob]"     , 0, 0, 1, 0.001):pow(2):smooth(0.999));
+feedbackM         = MKPgroup(vslider("[1]feedback [style:knob]"   , 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
+MmodGroup(y)      = MKPgroup((hgroup("[2]modulation"              , y)));
+nonLin            = MmodGroup(vslider("[1]amount [style:knob]"    , 0,0,1,0.001) : pow(3) : smooth(0.999));
+frequencyMod      = MmodGroup(vslider("[2]frequency [style:knob]" , 1,0,8,0.001) : smooth(0.999));
+phaseM            = MmodGroup(vslider("[3]phase[style:knob]"      , 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlin          = MmodGroup(vslider("[4]DC[style:knob]"         , 0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
-LKPgroup(x)   = KPgroup((hgroup("[5]-1 oct", x)));
-KPvolL        = LKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackL     = LKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999);  // -60db decay time (sec)
-LmodGroup(y)  = LKPgroup((hgroup("[2]modulation", y)));
-nonLinL       = LmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
-frequencyModL = LmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
-phaseL        = LmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
-DCnonlinL     = LmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
+LKPgroup(x)       = KPgroup((hgroup("[5]-1 oct", x)));
+KPvolL            = LKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
+feedbackL         = LKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999);  // -60db decay time (sec)
+LmodGroup(y)      = LKPgroup((hgroup("[2]modulation", y)));
+nonLinL           = LmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
+frequencyModL     = LmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
+phaseL            = LmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlinL         = LmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
-LLKPgroup(x)   = KPgroup((hgroup("[6]-2 oct", x)));
-KPvolLL        = LLKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackLL     = LLKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
-LLmodGroup(y)  = LLKPgroup((hgroup("[2]modulation", y)));
-nonLinLL       = LLmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
-frequencyModLL = LLmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
-phaseLL        = LLmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
-DCnonlinLL     = LLmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
+LLKPgroup(x)      = KPgroup((hgroup("[6]-2 oct", x)));
+KPvolLL           = LLKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
+feedbackLL        = LLKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
+LLmodGroup(y)     = LLKPgroup((hgroup("[2]modulation", y)));
+nonLinLL          = LLmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
+frequencyModLL    = LLmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
+phaseLL           = LLmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlinLL        = LLmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 //-----------------------------------------------
 // Phase Modulation as an effect
 //-----------------------------------------------
 pmFXgroup(x) = FXGroup((vgroup("[2]Phase Modulation", x)));
-// pmFXvolume = pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+//pmFXvolume = pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
 pmFXi        = pmFXgroup(vslider("[1]depth[style:knob]",1,0,4,0.001):pow(2):smooth(0.999) );
 pmFXr        = pmFXgroup(vslider("[2]freq[style:knob]",4,0,8,0.001):smooth(0.999) );
 PMphase      = pmFXgroup(hslider("[3]phase[style:knob]", 0.9, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
@@ -988,7 +988,7 @@ stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
     //KPvocoder(audio,freq,oct)
 */
 
-stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
+stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH) =
     (_+feedback
     <:(    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL,DCnonlinLL),
     stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL,DCnonlinL),
@@ -1062,8 +1062,8 @@ VocSynth(audio) =
 
     :_,_//No effect
 
-    ,(stringloopBank(PitchTracker(audio),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH))
-    ,(stringloopBank(PitchTracker(audio),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH))
+    ,(stringloopBank(PitchTracker(audio),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH))
+    ,(stringloopBank(PitchTracker(audio),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH))
 
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
