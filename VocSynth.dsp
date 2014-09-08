@@ -246,6 +246,7 @@ HHmodGroup(y)  = HHKPgroup((hgroup("[2]modulation", y)));
 nonLinHH       = HHmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModHH = HHmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseHH        = HHmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlinHH     = HHmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly,
 
 HKPgroup(x)   = KPgroup((hgroup("[3]+1 oct", x)));
 KPvolH        = HKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -254,6 +255,7 @@ HmodGroup(y)  = HKPgroup((hgroup("[2]modulation", y)));
 nonLinH       = HmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModH = HmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseH        = HmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlinH     = HmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 MKPgroup(x)  = KPgroup((hgroup("[4]0 oct", x)));
 KPvol        = MKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -262,6 +264,7 @@ MmodGroup(y) = MKPgroup((hgroup("[2]modulation", y)));
 nonLin       = MmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyMod = MmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseM       = MmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlin     = MmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 LKPgroup(x)   = KPgroup((hgroup("[5]-1 oct", x)));
 KPvolL        = LKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -270,6 +273,7 @@ LmodGroup(y)  = LKPgroup((hgroup("[2]modulation", y)));
 nonLinL       = LmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModL = LmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseL        = LmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlinL     = LmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 LLKPgroup(x)   = KPgroup((hgroup("[6]-2 oct", x)));
 KPvolLL        = LLKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -278,6 +282,7 @@ LLmodGroup(y)  = LLKPgroup((hgroup("[2]modulation", y)));
 nonLinLL       = LLmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModLL = LLmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseLL        = LLmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+DCnonlinLL     = LLmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 //-----------------------------------------------
 // Phase Modulation as an effect
@@ -910,7 +915,7 @@ stringloop(audio, voice(audio), freq, oct,feedback,thresh,nonLinearity,bright,fr
 audio : (+) ~ (( NLFM : compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter)) : NLFM
 */
 //: compressor_mono(100,thresh,0.1,30)
-stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod) =
+stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
     (( NLFM : fdelay4(Pmax, P-2) : loopfilter))
     with {
     nlfOrder = 16;
@@ -936,7 +941,7 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod) =
         _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)))
         with{
             //theta is modulated by a sine wave generator
-            tosc = nonlinearity*PI*PHosci(freq,phase);
+            tosc = (nonlinearity*PI*PHosci(freq,phase))+DC;
 
             //incoming signal is sent to the nonlinear passive allpass ladder filter
             //nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
@@ -985,11 +990,11 @@ stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
 
 stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
     (_+feedback
-    <:(    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL),
-    stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL),
-    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod),
-    stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH),
-    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH)
+    <:(    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL,DCnonlinLL),
+    stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL,DCnonlinL),
+    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod,DCnonlin),
+    stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH,DCnonlinH),
+    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModH,DCnonlinHH)
     )
     :>KPvocoder(audio,_,freq))~
     ((
