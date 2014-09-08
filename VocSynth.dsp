@@ -247,6 +247,7 @@ nonLinHH          = HHmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : p
 frequencyModHH    = HHmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseHH           = HHmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 DCnonlinHH        = HHmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly,
+DCleftRightHH     = HHmodGroup(vslider("[5]left-right offset[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly,
 
 HKPgroup(x)       = KPgroup((hgroup("[3]+1 oct", x)));
 KPvolH            = HKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -256,6 +257,7 @@ nonLinH           = HmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : po
 frequencyModH     = HmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseH            = HmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 DCnonlinH         = HmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
+DCleftRightH      = HmodGroup(vslider("[5]left-right offset[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 MKPgroup(x)       = KPgroup((hgroup("[4]0 oct"                    , x)));
 KPvol             = MKPgroup(vslider("[0]volume [style:knob]"     , 0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -265,6 +267,7 @@ nonLin            = MmodGroup(vslider("[1]amount [style:knob]"    , 0,0,1,0.001)
 frequencyMod      = MmodGroup(vslider("[2]frequency [style:knob]" , 1,0,8,0.001) : smooth(0.999));
 phaseM            = MmodGroup(vslider("[3]phase[style:knob]"      , 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 DCnonlin          = MmodGroup(vslider("[4]DC[style:knob]"         , 0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
+DCleftRight       = MmodGroup(vslider("[5]left-right offset[style:knob]"         , 0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 LKPgroup(x)       = KPgroup((hgroup("[5]-1 oct", x)));
 KPvolL            = LKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -274,6 +277,7 @@ nonLinL           = LmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : po
 frequencyModL     = LmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseL            = LmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 DCnonlinL         = LmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
+DCleftRightL      = LmodGroup(vslider("[5]left-right offset[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 LLKPgroup(x)      = KPgroup((hgroup("[6]-2 oct", x)));
 KPvolLL           = LLKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -283,6 +287,7 @@ nonLinLL          = LLmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : p
 frequencyModLL    = LLmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
 phaseLL           = LLmodGroup(vslider("[3]phase[style:knob]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 DCnonlinLL        = LLmodGroup(vslider("[4]DC[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
+DCleftRightLL     = LLmodGroup(vslider("[5]left-right offset[style:knob]",	0, -3, 3, 0.001):pow(2):smooth(0.999)); //-9 to 9 logarithmicly
 
 //-----------------------------------------------
 // Phase Modulation as an effect
@@ -1062,8 +1067,8 @@ VocSynth(audio) =
 
     :_,_//No effect
 
-    ,(stringloopBank(PitchTracker(audio),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH))
-    ,(stringloopBank(PitchTracker(audio),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH))
+    ,(stringloopBank(PitchTracker(audio),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
+    ,(stringloopBank(PitchTracker(audio),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
 
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
