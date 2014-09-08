@@ -12,7 +12,6 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 import ("oscillator.lib");
 import ("maxmsp.lib");
 import ("effect.lib");
-//import ("NLFeksFX.lib");
 import ("mixer.lib");
 import ("qompander/qompander.lib");
 
@@ -45,11 +44,14 @@ synthsGroup(x) = tabs(hgroup("[0]synths", x));
 FXGroup(x)     = tabs(hgroup("[1]effects", x));
 
 
-OSCpitch    = OSCgroup(nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
-OSCfidelity = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0.001));
-OSConset    = OSCgroup(nentry("[2]onset", 0, 0, 1,0.001 ));
-formant     = OSCgroup(nentry("[3]formant", MinInputPitch, MinInputPitch, 12000, 0.001)):smooth(0.999);
-ManualOnset = OSCgroup(button("[4]trigger")); //button does not seem to recieve osc
+OSCpitch      = OSCgroup(nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
+OSCfidelity   = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0.001));
+OSConset      = OSCgroup(nentry("[2]onset", 0, 0, 1,0.001 ));
+formant       = OSCgroup(nentry("[3]formant", MinInputPitch, MinInputPitch, 12000, 0.001)):smooth(0.999);
+envelop       = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
+MeterGroup(x) = (vgroup("[4]output level", x)); // To recieve OSC pitch and other messages
+VuMeter       = par(i,2,_<:(_, (envelop :(OSCgroup(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, +6))))):attach));
+ManualOnset   = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
 
 cleanGroup(x) = synthsGroup((vgroup("[0]clean", x)));
 cleanVolume   = cleanGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
@@ -678,6 +680,7 @@ volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Ce
     volFilter(Center14,Oscilator,Volume14,q),
     volFilter(Center15,Oscilator,Volume15,q),
     volFilter(Center16,Oscilator,Volume16,q)
+    //resonhp(Center16,q,1)
     ;
 
 StereoVolFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,freq,q)=
@@ -1082,8 +1085,6 @@ VocSynth(audio) =
           same(x,time)                         = (x@time) == x;
           intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
           block                                = par(i,2,(intervalTester(PitchTracker(audio),2,265)*-1+1:smooth(0.999))*_);
-          envelop                              = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
-          VuMeter                              = par(i,2,_<:(_, (envelop :(hbargraph("[2][unit:dB][tooltip: output level in dB]", -70, +6)))):attach);
           };
 
 
