@@ -230,7 +230,7 @@ release		= qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 10
 //todo: make FX group and routing
 KPgroup(x)        = FXGroup((vgroup("[1]Karplus-Strong", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
-KPvolume          = mainKPgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+KPvolume          = mainKPgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001)*0.2:pow(2):smooth(0.999));
 KPrelease         = mainKPgroup(vslider("[1]release [style:knob]",	0, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);         // 0 to 1
 KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1)):smooth(0.999);
 vocoderKPgroup(x) = mainKPgroup((hgroup("[3]vocoder", x)));
