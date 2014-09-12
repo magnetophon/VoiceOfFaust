@@ -999,7 +999,7 @@ stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinL
     stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL,DCnonlinL),
     stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod,DCnonlin),
     stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH,DCnonlinH),
-    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModH,DCnonlinHH)
+    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
     )
     :>KPvocoder(audio,_,freq))~
     ((
