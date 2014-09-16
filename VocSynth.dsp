@@ -241,7 +241,7 @@ KPvocoderQ        = vocoderKPgroup(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001)
 
 HHKPgroup(x)      = KPgroup((hgroup("[2]+2 oct", x)));
 KPvolHH           = HHKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackHH        = HHKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
+feedbackHH        = HHKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 1, 0.001)):pow(2):smooth(0.999); // -60db decay time (sec)
 HHmodGroup(y)     = HHKPgroup((hgroup("[2]modulation", y)));
 nonLinHH          = HHmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModHH    = HHmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
@@ -251,7 +251,7 @@ DCleftRightHH     = HHmodGroup(vslider("[5]left-right offset[style:knob]",	0, -3
 
 HKPgroup(x)       = KPgroup((hgroup("[3]+1 oct", x)));
 KPvolH            = HKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackH         = HKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
+feedbackH         = HKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 1, 0.001)):pow(2):smooth(0.999); // -60db decay time (sec)
 HmodGroup(y)      = HKPgroup((hgroup("[2]modulation", y)));
 nonLinH           = HmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModH     = HmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
@@ -261,7 +261,7 @@ DCleftRightH      = HmodGroup(vslider("[5]left-right offset[style:knob]",	0, -3,
 
 MKPgroup(x)       = KPgroup((hgroup("[4]0 oct"                    , x)));
 KPvol             = MKPgroup(vslider("[0]volume [style:knob]"     , 0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackM         = MKPgroup(vslider("[1]feedback [style:knob]"   , 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
+feedbackM         = MKPgroup(vslider("[1]feedback [style:knob]"   , 0, 0, 1, 0.001)):pow(2):smooth(0.999); // -60db decay time (sec)
 MmodGroup(y)      = MKPgroup((hgroup("[2]modulation"              , y)));
 nonLin            = MmodGroup(vslider("[1]amount [style:knob]"    , 0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyMod      = MmodGroup(vslider("[2]frequency [style:knob]" , 1,0,8,0.001) : smooth(0.999));
@@ -271,7 +271,7 @@ DCleftRight       = MmodGroup(vslider("[5]left-right offset[style:knob]"        
 
 LKPgroup(x)       = KPgroup((hgroup("[5]-1 oct", x)));
 KPvolL            = LKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackL         = LKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999);  // -60db decay time (sec)
+feedbackL         = LKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 1, 0.001)):pow(2):smooth(0.999);  // -60db decay time (sec)
 LmodGroup(y)      = LKPgroup((hgroup("[2]modulation", y)));
 nonLinL           = LmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModL     = LmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
@@ -281,7 +281,7 @@ DCleftRightL      = LmodGroup(vslider("[5]left-right offset[style:knob]",	0, -3,
 
 LLKPgroup(x)      = KPgroup((hgroup("[6]-2 oct", x)));
 KPvolLL           = LLKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
-feedbackLL        = LLKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 2, 0.001)):pow(3):smooth(0.999); // -60db decay time (sec)
+feedbackLL        = LLKPgroup(vslider("[1]feedback [style:knob]", 0, 0, 1, 0.001)):pow(2):smooth(0.999); // -60db decay time (sec)
 LLmodGroup(y)     = LLKPgroup((hgroup("[2]modulation", y)));
 nonLinLL          = LLmodGroup(vslider("[1]amount [style:knob]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModLL    = LLmodGroup(vslider("[2]frequency [style:knob]",1,0,8,0.001) : smooth(0.999));
@@ -714,25 +714,26 @@ StereoVolFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Cent
     ;
 
 
-EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator,q)=
+EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator,q) =
 
-    Oscilator<:
+    Oscilator:
     (
-    lowshelf(N,Volume1,Center1),
-    peak_eq_cq(Volume2,Center2,q),
-    peak_eq_cq(Volume3,Center3,q),
-    peak_eq_cq(Volume4,Center4,q),
-    peak_eq_cq(Volume5,Center5,q),
-    peak_eq_cq(Volume6,Center6,q),
-    peak_eq_cq(Volume7,Center7,q),
-    peak_eq_cq(Volume8,Center8,q),
-    peak_eq_cq(Volume9,Center9,q),
-    peak_eq_cq(Volume10,Center10,q),
-    peak_eq_cq(Volume11,Center11,q),
-    peak_eq_cq(Volume12,Center12,q),
-    peak_eq_cq(Volume13,Center13,q),
-    peak_eq_cq(Volume14,Center14,q),
-    peak_eq_cq(Volume15,Center15,q),
+    //lowshelf(N,Volume1,Center1):
+    peak_eq_cq(Volume1,Center1,q):
+    peak_eq_cq(Volume2,Center2,q):
+    peak_eq_cq(Volume3,Center3,q):
+    peak_eq_cq(Volume4,Center4,q):
+    peak_eq_cq(Volume5,Center5,q):
+    peak_eq_cq(Volume6,Center6,q):
+    peak_eq_cq(Volume7,Center7,q):
+    peak_eq_cq(Volume8,Center8,q):
+    peak_eq_cq(Volume9,Center9,q):
+    peak_eq_cq(Volume10,Center10,q):
+    peak_eq_cq(Volume11,Center11,q):
+    peak_eq_cq(Volume12,Center12,q):
+    peak_eq_cq(Volume13,Center13,q):
+    peak_eq_cq(Volume14,Center14,q):
+    peak_eq_cq(Volume15,Center15,q):
     peak_eq_cq(Volume16,Center16,q)
     //highshelf(N,Volume16,Center16)
     )
@@ -905,13 +906,16 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 
 
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,16, _,freq * oct:*:min(SR/2)));
+
 KPanalizer(audio,freq) =
+//par(i,16,0);
+
     analizer(audio,freq)
     :par(i,16,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
-    :max(0.001):linear2db) );//adapt to eq instead of bandpass
+    :linear2db) );//adapt to eq instead of bandpass
 
 
-KPvocoder(audio,feedback,freq)= (KPcenters(freq,1),KPanalizer(voice(audio),freq),feedback,KPvocoderQ):EQbank:>_;
+KPvocoder(audio,feedback,freq)= (KPcenters(freq,1),KPanalizer(voice(audio),freq),feedback,KPvocoderQ):EQbank*128;
 
 
 //KPvocoder(voice(audio),freq,oct):
