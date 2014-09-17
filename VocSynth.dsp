@@ -228,16 +228,17 @@ release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	2
 //-----------------------------------------------
 
 //todo: make FX group and routing
-KPgroup(x)        = FXGroup((vgroup("[1]Karplus-Strong[tooltip: A feedback delay line whose delay-time is tuned to the input pitch]", x)));
+KPgroup(x)        = FXGroup((vgroup("[1]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level]",	0, 0, 1, 0.001)*0.2:pow(2):smooth(0.999));
 KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay time of the feedback]",	0, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);         // 0 to 1
-KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: A limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1)):smooth(0.999);
+KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1)):smooth(0.999);
 vocoderKPgroup(x) = mainKPgroup((hgroup("[3]vocoder[tooltip: an EQ based vocoder in the feedback loop]", x)));
 KPvocoderStrength = vocoderKPgroup(vslider("[0]strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0, 0, 1, 0.001):smooth(0.999));
-KPtop             = vocoderKPgroup(vslider("[1]top[style:knob][tooltip: the highest frequency of the EQ's]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-KPbottom          = vocoderKPgroup(vslider("[2]bottom[style:knob][tooltip: the lowest frequency of the EQ's]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));
-KPvocoderQ        = vocoderKPgroup(vslider("[3]Q[style:knob][tooltip: the bandwidt of the EQ's]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999)); // 0.1 to 49 logarithmicly,
+KPeqCutBoost      = vocoderKPgroup(vslider("[1]cut/boost[style:knob][tooltip: whether the eq is cutting or boosting]",	0, -1, 1, 0.001):smooth(0.999));
+KPtop             = vocoderKPgroup(vslider("[2]top[style:knob][tooltip: the highest frequency of the EQ's]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+KPbottom          = vocoderKPgroup(vslider("[3]bottom[style:knob][tooltip: the lowest frequency of the EQ's]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));
+KPvocoderQ        = vocoderKPgroup(vslider("[4]Q[style:knob][tooltip: the bandwidt of the EQ's]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999)); // 0.1 to 49 logarithmicly,
 
 HHKPgroup(x)      = KPgroup((hgroup("[2]+2 oct", x)));
 KPvolHH           = HHKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -382,6 +383,7 @@ analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)
 //also sounds cool to vary between this and 0
 
 bandEnv(freq)=resonbp(freq,analizerQ,1):amp_follower_ud(0.002,0.004);
+
 analizers(audio,freq1,freq2,freq3,freq4,freq5,freq6,freq7,freq8,freq9,freq10,freq11,freq12,freq13,freq14,freq15,freq16)=
 audio<:
         (
@@ -723,27 +725,30 @@ EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,C
 
     Oscilator:
     (
-    //lowshelf(N,Volume1,Center1):
-    peak_eq_cq(Volume1,Center1,q):
-    peak_eq_cq(Volume2,Center2,q):
-    peak_eq_cq(Volume3,Center3,q):
-    peak_eq_cq(Volume4,Center4,q):
-    peak_eq_cq(Volume5,Center5,q):
-    peak_eq_cq(Volume6,Center6,q):
-    peak_eq_cq(Volume7,Center7,q):
-    peak_eq_cq(Volume8,Center8,q):
-    peak_eq_cq(Volume9,Center9,q):
-    peak_eq_cq(Volume10,Center10,q):
-    peak_eq_cq(Volume11,Center11,q):
-    peak_eq_cq(Volume12,Center12,q):
-    peak_eq_cq(Volume13,Center13,q):
-    peak_eq_cq(Volume14,Center14,q):
-    peak_eq_cq(Volume15,Center15,q):
-    peak_eq_cq(Volume16,Center16,q)
-    //highshelf(N,Volume16,Center16)
+    //lowshelf(N,Volume1+OffSet,Center1):
+    peak_eq_cq(Volume1+OffSet,Center1,q):
+    peak_eq_cq(Volume2+OffSet,Center2,q):
+    peak_eq_cq(Volume3+OffSet,Center3,q):
+    peak_eq_cq(Volume4+OffSet,Center4,q):
+    peak_eq_cq(Volume5+OffSet,Center5,q):
+    peak_eq_cq(Volume6+OffSet,Center6,q):
+    peak_eq_cq(Volume7+OffSet,Center7,q):
+    peak_eq_cq(Volume8+OffSet,Center8,q):
+    peak_eq_cq(Volume9+OffSet,Center9,q):
+    peak_eq_cq(Volume10+OffSet,Center10,q):
+    peak_eq_cq(Volume11+OffSet,Center11,q):
+    peak_eq_cq(Volume12+OffSet,Center12,q):
+    peak_eq_cq(Volume13+OffSet,Center13,q):
+    peak_eq_cq(Volume14+OffSet,Center14,q):
+    peak_eq_cq(Volume15+OffSet,Center15,q):
+    peak_eq_cq(Volume16+OffSet,Center16,q)
+    //highshelf(N,Volume16+OffSet,Center16)
     )
     with {
         N = 3; //uneven only: 1,3,5
+        AvgVolume = (Volume1+Volume2+Volume3+Volume4+Volume5+Volume6+Volume7+Volume8+Volume9+Volume10+Volume11+Volume12+Volume13+Volume14+Volume15+Volume16)/16;
+        MinVolume = (Volume1):min(Volume2):min(Volume3):min(Volume4):min(Volume5):min(Volume6):min(Volume7):min(Volume8):min(Volume9):min(Volume10):min(Volume11):min(Volume12):min(Volume13):min(Volume14):min(Volume15):min(Volume16);
+        OffSet    = (KPeqCutBoost>0),((KPeqCutBoost+1)*-AvgVolume),((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume): select2;
         };
 
 vocoderCenters(freq) =
