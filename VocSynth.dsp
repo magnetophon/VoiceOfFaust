@@ -235,10 +235,12 @@ KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay
 KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1)):smooth(0.999);
 vocoderKPgroup(x) = mainKPgroup((hgroup("[3]vocoder[tooltip: an EQ based vocoder in the feedback loop]", x)));
 KPvocoderStrength = vocoderKPgroup(vslider("[0]strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0, 0, 1, 0.001):smooth(0.999));
-KPeqCutBoost      = vocoderKPgroup(vslider("[1]cut/boost[style:knob][tooltip: whether the eq is cutting or boosting]",	0, -1, 1, 0.001):smooth(0.999));
+KPeqCutBoost      = vocoderKPgroup(vslider("[1]cut/boost[style:knob][tooltip: -1 means cut only, 1 means boost only, and 0 means the average gain is zero]",	0, -1, 1, 0.001):smooth(0.999));
 KPtop             = vocoderKPgroup(vslider("[2]top[style:knob][tooltip: the highest frequency of the EQ's]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 KPbottom          = vocoderKPgroup(vslider("[3]bottom[style:knob][tooltip: the lowest frequency of the EQ's]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));
 KPvocoderQ        = vocoderKPgroup(vslider("[4]Q[style:knob][tooltip: the bandwidt of the EQ's]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999)); // 0.1 to 49 logarithmicly,
+
+bright            = mainKPgroup(vslider("[4]damping[style:knob][tooltip: brightness of the feedback]", 0, 0, 1, 0.001)):pow(2):smooth(0.999); // -60db decay time (sec)
 
 HHKPgroup(x)      = KPgroup((hgroup("[2]+2 oct", x)));
 KPvolHH           = HHKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -748,7 +750,8 @@ EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,C
         N = 3; //uneven only: 1,3,5
         AvgVolume = (Volume1+Volume2+Volume3+Volume4+Volume5+Volume6+Volume7+Volume8+Volume9+Volume10+Volume11+Volume12+Volume13+Volume14+Volume15+Volume16)/16;
         MinVolume = (Volume1):min(Volume2):min(Volume3):min(Volume4):min(Volume5):min(Volume6):min(Volume7):min(Volume8):min(Volume9):min(Volume10):min(Volume11):min(Volume12):min(Volume13):min(Volume14):min(Volume15):min(Volume16);
-        OffSet    = (KPeqCutBoost>0),((KPeqCutBoost+1)*-AvgVolume),((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume): select2;
+        MaxVolume = (Volume1):max(Volume2):max(Volume3):max(Volume4):max(Volume5):max(Volume6):max(Volume7):max(Volume8):max(Volume9):max(Volume10):max(Volume11):max(Volume12):max(Volume13):max(Volume14):max(Volume15):max(Volume16);
+        OffSet    = (KPeqCutBoost>0),(((KPeqCutBoost+1)*-AvgVolume)+(KPeqCutBoost*MaxVolume)),((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume): select2;
         };
 
 vocoderCenters(freq) =
@@ -950,7 +953,7 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
     h0 = (1.0 + bright)/2; h1 = (1.0 - bright)/4;
     dampingfilter2(x) = rho * (h0 * x' + h1*(x+x''));
 
-    loopfilter = _*rho;//dampingfilter2; // or dampingfilter1
+    loopfilter = _*rho;//:dampingfilter1; // or dampingfilter2
 
     //nonlinear allpass filter (nonLinearModulator is declared in instrument.lib)
     NLFM =  MyNonLinearModulator(nonLinearity,frequencyMod*freq*oct,phase);
@@ -1015,12 +1018,17 @@ stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinL
     stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH,DCnonlinH),
     stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
     )
-    :>KPvocoder(audio,_,freq))~
+    :>KPvocoder(audio,_,freq):dampingfilter1)~
     ((
 //    (_<:(
 _):compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
     :_*KPvolume
-    ;
+    with {
+    b1 = 0.5*bright; b0 = 1.0-b1; // S and 1-S
+    dampingfilter1(x) = ((b0 * x) + (b1 * x'));
+    
+    
+    };
     //stringloopFBpath(audio, audio, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
     //KPvocoder(audio,freq,oct)
 
