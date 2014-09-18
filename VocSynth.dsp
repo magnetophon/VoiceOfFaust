@@ -24,14 +24,18 @@ import ("qompander/qompander.lib");
 // contants
 //-----------------------------------------------
 //todo: test or ask about smooth vs line:, efficiency and behaviour
-minline                = 3;		// minimum line time in ms
-MinInputPitch          = 61.7354;	// lowest expected note is a B1
-MaxInputPitch          = 493.6635;	// highest expected note is a B4
-maxTimeWithoutPitch    = 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
-maxTimeWithoutFidelity = 265*4 ;	// is 4*6ms @ 44100. the time between 4 fid messages
-analizerQ              = 9;//(vslider("[3]Q[style:knob]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999)); //0.1 to 49 logarithmicly,
-vocoderN               = 2;
-PTsmooth               = 0.9984;
+minline                 = 3;		// minimum line time in ms
+MinInputPitch           = 61.7354;	// lowest expected note is a B1
+MaxInputPitch           = 493.6635;	// highest expected note is a B4
+maxTimeWithoutPitch     = 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
+maxTimeWithoutFidelity  = 265*4 ;	// is 4*6ms @ 44100. the time between 4 fid messages
+analizerTop             = 128;//hslider("anaTop",64,16,128,1);
+analizerBottom          = (0.5*pow(2,0.5))+0.0;
+analizerQ               = 7;//(vslider("[3]Q[style:knob]",	9, 0.1, 50, 0.001):smooth(0.999)); //0.1 to 49 logarithmicly,
+vocoderN                = 2;
+defaultTop              = 128:pow(0.5);
+defaultBottom           = ((0.25*pow(2,0.5))+0.5):pow(0.5);
+PTsmooth                = 0.9984;
 
 //-----------------------------------------------
 // the GUI
@@ -54,15 +58,17 @@ VuMeter                 = par(i,2,_<:(_, (envelop :(OSCgroup(MeterGroup(hbargrap
 ManualOnset             = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
-cleanVolume             = cleanGroup(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-cleanNLKS               = cleanGroup(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-cleanpmFX               = cleanGroup(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));
+cleanVolume             = cleanGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+cleanNLKS               = cleanGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+cleanpmFX               = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
 
 subGroup(x)             = synthsGroup((vgroup("[1]sub[tooltip:a sinewave]", x)));
-subVolume               = subGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-subNLKS                 = subGroup(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-subpmFX                 = subGroup(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-subOctave               = subGroup(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of sub
+subGroupLevel(x)        = subGroup((vgroup("[0]levels", x)));
+subVolume               = subGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+subNLKS                 = subGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+subpmFX                 = subGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
+subOctave               = subGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of sub
 
 vocoderGroup(x)         = synthsGroup((hgroup("[2]vocoder[tooltip: a traditional vocoder, extended]", x)));
 vocoderGroupLevel(x)    = vocoderGroup((vgroup("[0]levels", x)));
@@ -72,12 +78,12 @@ vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modula
 vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
 
 vocoderParamsGroup(x)   = vocoderGroup((vgroup("[1]parameters", x)));
-vocoderTop              = vocoderParamsGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderBottom           = vocoderParamsGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999)); // 0.25 to 49 logarithmicly
-vocoderQ                = vocoderParamsGroup(vslider("[3]Q[style:knob][tooltip: the bandwidt/resonance of the band-pass filters]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999));     // 0.1 to 49 logarithmicly,
-vocoderMix              = vocoderParamsGroup(vslider("[4]mix[style:knob][tooltip: amount of man oscillator vs amount of detuned osclillators]",	0, 0, 1, 0.001)); // is smoothed at the synth
+vocoderTop              = vocoderParamsGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderBottom           = vocoderParamsGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2):smooth(0.999)); // 0.25 to 49 logarithmicly
+vocoderQ                = vocoderParamsGroup(vslider("[3]Q[style:knob][tooltip: the bandwidt/resonance of the band-pass filters]",	2.646, 0.3, 7, 0.001):pow(2):smooth(0.999));     // 0.1 to 49 logarithmicly,
+vocoderMix              = vocoderParamsGroup(vslider("[4]mix[style:knob][tooltip: amount of man oscillator vs amount of detuned osclillators]",	0, 0, 1, 0.001)):pow(2):smooth(0.999);
 vocoderDetune           = vocoderParamsGroup(vslider("[5]detune[style:knob][tooltip: the amount of detune]",	0, 0, 1, 0.001):smooth(0.999));
-vocoderSawPulse         = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob][tooltip: crossfade from saw to pulse]", 0, 0, 1, 0.001));
+vocoderSawPulse         = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob][tooltip: crossfade from saw to pulse]", 0, 0, 1, 0.001)):pow(1.5):smooth(0.999);
 vocoderDuty             = vocoderParamsGroup(vslider("[7]pulse-width[style:knob][tooltip: the width of the pulse-oscillator]", 0.5, 0.5, 1, 0.001):min(0.9996));
 vocoderWidth            = vocoderParamsGroup(vslider("[8]width[style:knob][tooltip:stereo-width]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                   = mono 1 = normal 2 = full-wide
 
@@ -90,8 +96,8 @@ pafOctave               = PAFvocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1)
 
 
 PAFparamsGroup(x)       = PAFvocoderGroup((vgroup("[1]parameters", x)));
-pafTop                  = PAFparamsGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		12, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-pafBottom               = PAFparamsGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
+pafTop                  = PAFparamsGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		defaultTop, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+pafBottom               = PAFparamsGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
 pafIndex                = PAFparamsGroup(vslider("[3]index[style:knob][tooltip: PAF index]",	25, 1, 100, 0.001):smooth(0.999));
 pafWidth                = PAFparamsGroup(vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
@@ -101,14 +107,14 @@ pafWidth                = PAFparamsGroup(vslider("[4]width[style:knob][tooltip:s
 //-----------------------------------------------
 fofVocoderGroup(x)            = synthsGroup((hgroup("[4]FOFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
 fofVocoderGroupLevel(x)       = fofVocoderGroup((vgroup("[0]levels", x)));
-fofVolume                     = fofVocoderGroupLevel(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+fofVolume                     = fofVocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
 fofNLKS                       = fofVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
 fofpmFX                       = fofVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
 fofOctave                     = fofVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of fof
 
 fofparamsGroup(x)             = fofVocoderGroup((vgroup("[1]parameters", x)));
-fofTop                        = fofparamsGroup(vslider("[1]top[style:knob][tooltip: the highest frequency of the band-pass filters]",	11.313708, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly,
-fofBottom                     = fofparamsGroup(vslider("[2]bottom[style:knob][tooltip: the lowest frequency of the band-pass filters]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
+fofTop                        = fofparamsGroup(vslider("[1]top[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2):smooth(0.999));		//1 to 100 logarithmicly,
+fofBottom                     = fofparamsGroup(vslider("[2]bottom[style:knob][tooltip: the lowest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2):smooth(0.999));			//0.25 to 49 logarithmicly
 fofSkirtTop                   = fofparamsGroup(vslider("[3]skirtTop[style:knob]", 1.212, 0.1, 9, 0.001):pow(4)*0.001:smooth(0.999));
 fofSkirtBottom                = fofparamsGroup(vslider("[4]skirtBottom[style:knob]", 3.882, 0.1, 9, 0.001):pow(4)*0.001:smooth(0.999));
 fofDecayTop                   = fofparamsGroup(vslider("[5]decayTop[style:knob]", 1.88, 0, 4, 0.001):pow(4):smooth(0.999));
@@ -150,8 +156,8 @@ FMindex            = mFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.0
 FMdyn              = mFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
 LFMparamsGroup(x)  = FMparamsGroup((hgroup("[3]-1 oct", x)));
-FMvolL             = LFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999));
-FMindexL           = LFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
+FMvolL             = LFMparamsGroup(vslider("[1]vol[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999));
+FMindexL           = LFMparamsGroup(vslider("[2]index[style:knob]",	0.19, 0, 1, 0.001):pow(2):smooth(0.999):_*15000);
 FMdynL             = LFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
 LLFMparamsGroup(x) = FMparamsGroup((hgroup("[4]-2 oct", x)));
@@ -199,8 +205,8 @@ CZresMultM         = mCZparamsGroup(vslider("[5]resMult[tooltip: resonant freque
 LCZparamsGroup(x)  = CZparamsGroup((hgroup("[3]-1 oct", x)));
 CZsquareL          = LCZparamsGroup(vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 CZsquareIxL        = LCZparamsGroup(vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZpulseL           = LCZparamsGroup(vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):smooth(0.999));
-CZpulseIxL         = LCZparamsGroup(vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+CZpulseL           = LCZparamsGroup(vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	1, 0, 1, 0.001):smooth(0.999));
+CZpulseIxL         = LCZparamsGroup(vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0.667, 0, 1, 0.001):smooth(0.999));
 CZresL             = LCZparamsGroup(vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):smooth(0.999));
 CZresMultL         = LCZparamsGroup(vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
@@ -231,16 +237,16 @@ release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	2
 KPgroup(x)        = FXGroup((vgroup("[1]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level]",	0, 0, 1, 0.001)*0.2:pow(2):smooth(0.999));
-KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay time of the feedback]",	0, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);         // 0 to 1
-KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 33, -33, 33, 0.1)):smooth(0.999);
+KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);         // 0 to 1
+KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 21, -33, 33, 0.1)):smooth(0.999);
 vocoderKPgroup(x) = mainKPgroup((hgroup("[3]vocoder[tooltip: an EQ based vocoder in the feedback loop]", x)));
-KPvocoderStrength = vocoderKPgroup(vslider("[0]strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0, 0, 1, 0.001):smooth(0.999));
-KPeqCutBoost      = vocoderKPgroup(vslider("[1]cut/boost[style:knob][tooltip: -1 means cut only, 1 means boost only, and 0 means the average gain is zero]",	0, -1, 1, 0.001):smooth(0.999));
-KPtop             = vocoderKPgroup(vslider("[2]top[style:knob][tooltip: the highest frequency of the EQ's]",	32, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-KPbottom          = vocoderKPgroup(vslider("[3]bottom[style:knob][tooltip: the lowest frequency of the EQ's]",	1, 0.5, 7, 0.001):pow(2):smooth(0.999));
-KPvocoderQ        = vocoderKPgroup(vslider("[4]Q[style:knob][tooltip: the bandwidt of the EQ's]",	2, 0.3, 7, 0.001):pow(2):smooth(0.999)); // 0.1 to 49 logarithmicly,
+KPvocoderStrength = vocoderKPgroup(vslider("[0]strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0.72, 0, 1, 0.001):smooth(0.999));
+KPeqCutBoost      = vocoderKPgroup(vslider("[1]cut/boost[style:knob][tooltip: -1 means cut only, 1 means boost only, and 0 means the average gain is zero]",	-0.72, -1, 1, 0.001):smooth(0.999));
+KPtop             = vocoderKPgroup(vslider("[2]top[style:knob][tooltip: the highest frequency of the EQ's]",	defaultTop, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+KPbottom          = vocoderKPgroup(vslider("[3]bottom[style:knob][tooltip: the lowest frequency of the EQ's]",	defaultBottom, 0.5, 7, 0.001):pow(2):smooth(0.999));
+KPvocoderQ        = vocoderKPgroup(vslider("[4]Q[style:knob][tooltip: the bandwidt of the EQ's]",	3, 0.3, 7, 0.001):pow(2):smooth(0.999)); // 0.1 to 49 logarithmicly,
 
-bright            = mainKPgroup(vslider("[4]damping[style:knob][tooltip: brightness of the feedback]", 0, 0, 1, 0.001)):pow(2):smooth(0.999); // -60db decay time (sec)
+bright            = mainKPgroup(vslider("[4]damping[style:knob][tooltip: brightness of the feedback]", 0.5, 0, 1, 0.001)):pow(2):smooth(0.999); // -60db decay time (sec)
 
 HHKPgroup(x)      = KPgroup((hgroup("[2]+2 oct", x)));
 KPvolHH           = HHKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -251,7 +257,7 @@ DCleftRightHH     = HHmodGroup(vslider("[2]left-right offset[tooltip: the differ
 HHoscModGroup(y)  = HHKPgroup((hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
 nonLinHH          = HHoscModGroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModHH    = HHoscModGroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : smooth(0.999));
-phaseHH           = HHoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+phaseHH           = HHoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
 HKPgroup(x)       = KPgroup((hgroup("[3]+1 oct", x)));
 KPvolH            = HKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -262,7 +268,7 @@ DCleftRightH      = HmodGroup(vslider("[2]left-right offset[tooltip: the differe
 HoscModGroup(y)   = HKPgroup((hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
 nonLinH           = HoscModGroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModH     = HoscModGroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : smooth(0.999));
-phaseH            = HoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+phaseH            = HoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
 MKPgroup(x)       = KPgroup((hgroup("[4]0 oct"                    , x)));
 KPvol             = MKPgroup(vslider("[0]volume [style:knob]"     , 0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -273,7 +279,7 @@ DCleftRight       = MmodGroup(vslider("[2]left-right offset[tooltip: the differe
 MoscModGroup(y)   = MKPgroup((hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]"              , y)));
 nonLin            = MoscModGroup(vslider("[1]amount [style:knob][tooltip: modulation amount]"    , 0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyMod      = MoscModGroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]" , 1,0,8,0.001) : smooth(0.999));
-phaseM            = MoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]"      , 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+phaseM            = MoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]"      , 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
 LKPgroup(x)       = KPgroup((hgroup("[5]-1 oct", x)));
 KPvolL            = LKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -284,7 +290,7 @@ DCleftRightL      = LmodGroup(vslider("[2]left-right offset[tooltip: the differe
 LoscModGroup(y)   = LKPgroup((hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
 nonLinL           = LoscModGroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModL     = LoscModGroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : smooth(0.999));
-phaseL            = LoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+phaseL            = LoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
 LLKPgroup(x)      = KPgroup((hgroup("[6]-2 oct", x)));
 KPvolLL           = LLKPgroup(vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):pow(2):smooth(0.999));
@@ -295,16 +301,16 @@ DCleftRightLL     = LLmodGroup(vslider("[2]left-right offset[tooltip: the differ
 LLoscModGroup(y)  = LLKPgroup((hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
 nonLinLL          = LLoscModGroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyModLL    = LLoscModGroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : smooth(0.999));
-phaseLL           = LLoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.666, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+phaseLL           = LLoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
 //-----------------------------------------------
 // Phase Modulation as an effect
 //-----------------------------------------------
 pmFXgroup(x) = FXGroup(vgroup("[2]Phase Modulation[tooltip: delay lines modulated by an oscilator]",x));
 //pmFXvolume = pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
-pmFXi        = pmFXgroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",1,0,4,0.001):pow(2):smooth(0.999) );
-pmFXr        = pmFXgroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",4,0,8,0.001):smooth(0.999) );
-PMphase      = pmFXgroup(hslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.9, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+pmFXi        = pmFXgroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",0.5,0,4,0.001):pow(2):smooth(0.999) );
+pmFXr        = pmFXgroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.5,0,8,0.001):smooth(0.999) );
+PMphase      = pmFXgroup(hslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
 //-----------------------------------------------
 // Some general functions
@@ -382,7 +388,8 @@ subLevel(audio) = voice(audio):lowpass(3,300):amp_follower_ud(0.003,0.005)*6:tan
 
 //analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
 
-analizerCenters(freq) = VocoderFreqs((0.25*pow(2,0.5))+0.5,128):(par(i,16, _,freq:*:min(SR/2)));
+analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,16, _,freq:*:min(SR/2)));
+
 //amp_follower_ud params set for minimal distortion
 //also sounds cool to vary between this and 0
 
@@ -471,7 +478,8 @@ with {
       sawN(N,(det * 0.0621654+1)*freq),
       sawN(N,(det * 0.107452+1)*freq);
 
-    mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
+    mainmix = mix * -1 + 1.6:smooth(0.999);
+    //mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
     detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
 
     //*-1 to get it into phase with my other synths
@@ -540,8 +548,9 @@ with {
       sawpulseN(N,(det * 0.0199122+1)*freq,SawPulse,duty),
       sawpulseN(N,(det * 0.0621654+1)*freq,SawPulse,duty),
       sawpulseN(N,(det * 0.107452+1)*freq,SawPulse,duty);
-    mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
-    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
+    mainmix = mix * -1 + 1.6;
+    //mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
+    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841);
     //*-1 to get it into phase with my other synths
     mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
     };
