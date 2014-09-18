@@ -54,7 +54,7 @@ VuMeter                 = par(i,2,_<:(_, (envelop :(OSCgroup(MeterGroup(hbargrap
 ManualOnset             = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
-cleanVolume             = cleanGroup(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
+cleanVolume             = cleanGroup(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
 cleanNLKS               = cleanGroup(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
 cleanpmFX               = cleanGroup(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
 
@@ -380,7 +380,9 @@ subLevel(audio) = voice(audio):lowpass(3,300):amp_follower_ud(0.003,0.005)*6:tan
 
 //subLevel(audio) = audio:lowpass(3,300):amp_follower_ud((vslider("up", 0, 0, 1, 0)*0.1),(vslider("down", 0, 0, 1, 0.001)*0.1))*6:tanh;
 
-analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
+//analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
+
+analizerCenters(freq) = VocoderFreqs((0.25*pow(2,0.5))+0.5,128):(par(i,16, _,freq:*:min(SR/2)));
 //amp_follower_ud params set for minimal distortion
 //also sounds cool to vary between this and 0
 
@@ -1018,14 +1020,19 @@ stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinL
     stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH,DCnonlinH),
     stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
     )
-    :>KPvocoder(audio,_,freq):dampingfilter1)~
+    :>KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
     ((
 //    (_<:(
 _):compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
     :_*KPvolume
     with {
+
+    // Original EKS damping filter:
     b1 = 0.5*bright; b0 = 1.0-b1; // S and 1-S
     dampingfilter1(x) = ((b0 * x) + (b1 * x'));
+    // Linear phase FIR3 damping filter:
+    h0 = (1.0 + bright)/2; h1 = (1.0 - bright)/4;
+    dampingfilter2(x) = (h0 * x' + h1*(x+x''));
     
     
     };
