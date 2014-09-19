@@ -768,7 +768,7 @@ EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,C
 vocoderCenters(freq) =
     VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
 
-vocoder(audio,freq)=
+StereoVocoder(audio,freq)=
     (vocoderCenters(freq),analizer(voice(audio),freq),(freq), vocoderQ):StereoVolFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
 
 
@@ -1087,7 +1087,7 @@ VocSynth(audio) =
     subSine(audio,PitchTracker(audio)),
 
     vocoderVolume,vocoderNLKS,vocoderpmFX,
-    vocoder(audio,PitchTracker(audio)),
+    StereoVocoder(audio,PitchTracker(audio)),
 
     pafVolume,pafNLKS,pafpmFX,
     pafvocoder(audio,PitchTracker(audio)),
