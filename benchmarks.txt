@@ -1,0 +1,21 @@
+512 samples latency, netbook (Acer Aspire One)
+
+
+***************************************************************************
+Compiled with:
+ faust2jack  -osc stringSinger.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
+
+stereoVocoder and clean trough limiter and meter
+sends: PM
+104% cpu
+
+stereoVocoder and clean trough limiter and meter
+sends: PM & chorus
+175% cpu
+
+***************************************************************************
+Compiled with:
+ faust2jack  -osc classicVocoder.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
+
+stereoVocoder
+102% cpu
