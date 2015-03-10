@@ -26,6 +26,6 @@ pafCenters =
     ;
 
 
-pafvocoder(audio,freq)=
+PAFvocoder(audio,freq)=
     (pafCenters,analizer(voice(audio),freq),pafFund(freq)):pafOscs:vocoderMixer:par(i, 2, _*0.75):WidePanner(pafWidth);
 
