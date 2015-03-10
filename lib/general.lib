@@ -26,4 +26,16 @@ WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);
 vocoderMixer = interleave(2,8):((bus(8):>_),(bus(8):>_));
 voice(audio) = qompander(audio,factor,threshold,attack,release);
 
-
+//is actually dual mono. on purpose; to try and keep the image in the center.
+//todo: make this stereo, and find a better way for  KP-FX to stay centered
+stereoLimiter(audio)=
+  (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)),
+  (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)):
+  (compressor_mono(100,-6,0.001,decay*0.5)),
+  (compressor_mono(100,-6,0.001,decay*0.5))
+  with {
+    decay                                = (1/(PitchTracker(audio) * subOctave ));
+    same(x,time)                         = (x@time) == x;
+    intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
+    blockNoise                           = par(i,2,(intervalTester(PitchTracker(audio),2,265)*-1+1:smooth(0.999))*_);
+    };
