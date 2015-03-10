@@ -19,3 +19,10 @@ Compiled with:
 
 stereoVocoder
 102% cpu
+
+***************************************************************************
+Compiled with:
+ faust2jack  -osc PAFvocoder.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
+
+PAFvocoder
+102 to 170% cpu
