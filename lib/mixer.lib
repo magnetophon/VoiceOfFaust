@@ -5,17 +5,10 @@ declare version 	"0.2";
 declare author 		"Bart Brouns";
 declare license 	"GNU 3.0";
 declare copyright 	"(c) Bart Brouns 2014";
-declare coauthors	"PitchTracker by Tiziano Bole, qompander translated from a pd patch by Katja Vetter";
 
 //-----------------------------------------------
 // imports
 //-----------------------------------------------
-
-import ("oscillator.lib");
-import ("maxmsp.lib");
-import ("effect.lib");
-
-
 
 
 //make a channel with nrSends outputs.

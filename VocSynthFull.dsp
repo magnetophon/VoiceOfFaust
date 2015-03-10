@@ -13,17 +13,9 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //qompander	= component("qompander/qompander.dsp");
 //KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
-import ("oscillator.lib");
-import ("maxmsp.lib");
-import ("effect.lib");
-import ("mixer.lib");
-import ("qompander/qompander.lib");
-import ("lib/constants.lib");
+import ("lib/common.lib");
+// specific to this synth:
 import ("lib/FullGUI.lib");
-import ("lib/general.lib");
-import ("lib/pitchtracker.lib");
-import ("lib/analizer.lib");
-import ("lib/slaveOscilators.lib");
 import ("lib/classicVocoder.lib");
 import ("lib/PAFvocoder.lib");
 import ("lib/FOFvocoder.lib");
@@ -31,8 +23,6 @@ import ("lib/inputFM.lib");
 import ("lib/CZringmod.lib");
 import ("lib/KarplusStrongFX.lib");
 import ("lib/pmFX.lib");
-
-
 
 //-----------------------------------------------
 // VocSynth: Combine all the elements
