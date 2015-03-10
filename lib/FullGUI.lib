@@ -36,14 +36,14 @@ vocoderGroupLevel(x)    = vocoderGroup((vgroup("[0]levels", x)));
 vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1 logarithmicly
 vocoderNLKS             = vocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
 vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):pow(2):smooth(0.999)); // 0 to 1
-vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
+vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
 
 vocoderParamsGroup(x)   = vocoderGroup((vgroup("[1]parameters", x)));
 vocoderTop              = vocoderParamsGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2):smooth(0.999)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 vocoderBottom           = vocoderParamsGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2):smooth(0.999)); // 0.25 to 49 logarithmicly
-vocoderQ                = vocoderParamsGroup(vslider("[3]Q[style:knob][tooltip: the bandwidt/resonance of the band-pass filters]",	2.646, 0.3, 7, 0.001):pow(2):smooth(0.999));     // 0.1 to 49 logarithmicly,
-vocoderMix              = vocoderParamsGroup(vslider("[4]mix[style:knob][tooltip: amount of man oscillator vs amount of detuned osclillators]",	0, 0, 1, 0.001)):pow(2):smooth(0.999);
-vocoderDetune           = vocoderParamsGroup(vslider("[5]detune[style:knob][tooltip: the amount of detune]",	0, 0, 1, 0.001):smooth(0.999));
+vocoderQ                = vocoderParamsGroup(vslider("[3]Q[style:knob][tooltip: the bandwidt/resonance of the band-pass filters]",	1.2, 0.3, 7, 0.001):pow(2):smooth(0.999));     // 0.1 to 49 logarithmicly,
+vocoderMix              = vocoderParamsGroup(vslider("[4]mix[style:knob][tooltip: amount of man oscillator vs amount of detuned osclillators]",	1, 0, 1, 0.001)):pow(2):smooth(0.999);
+vocoderDetune           = vocoderParamsGroup(vslider("[5]detune[style:knob][tooltip: the amount of detune]",	0.75, 0, 1, 0.001):smooth(0.999));
 vocoderSawPulse         = vocoderParamsGroup(vslider("[6]saw-pulse[style:knob][tooltip: crossfade from saw to pulse]", 0, 0, 1, 0.001)):pow(1.5):smooth(0.999);
 vocoderDuty             = vocoderParamsGroup(vslider("[7]pulse-width[style:knob][tooltip: the width of the pulse-oscillator]", 0.5, 0.5, 1, 0.001):min(0.9996));
 vocoderWidth            = vocoderParamsGroup(vslider("[8]width[style:knob][tooltip:stereo-width]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                   = mono 1 = normal 2 = full-wide
@@ -187,8 +187,8 @@ CZresMultLL        = LLCZparamsGroup(vslider("[5]resMult[tooltip: resonant frequ
 //-----------------------------------------------
 
 qompanderGroup(x) = FXGroup(vgroup("[0]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
-factor            = qompanderGroup(hslider("[0]factor[unit::1][style:knob]",		3, 0.8, 8, 0.01):smooth(0.999));
-threshold         = qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-40, -96, -20, 0.01):smooth(0.999));
+factor            = qompanderGroup(hslider("[0]factor[unit::1][style:knob]",		8, 0.8, 8, 0.01):smooth(0.999));
+threshold         = qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-50, -96, -20, 0.01):smooth(0.999));
 attack            = qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1, 1, 20, 0.01):smooth(0.999));
 release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):smooth(0.999));
 
@@ -274,5 +274,17 @@ pmFXgroup(x) = FXGroup(vgroup("[2]Phase Modulation[tooltip: delay lines modulate
 pmFXi        = pmFXgroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",0.5,0,4,0.001):pow(2):smooth(0.999) );
 pmFXr        = pmFXgroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.5,0,8,0.001):smooth(0.999) );
 PMphase      = pmFXgroup(hslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
+
+//-----------------------------------------------
+// chorus
+//-----------------------------------------------
+
+chorusGroup(x)  =  FXGroup(hgroup("[0]chorus", x));
+
+slowFreq	= chorusGroup(vslider("[0]slow freq",	0.57, 0, 5, 0.01):smooth(0.999));
+slowDepth	= chorusGroup(vslider("[1]slow depth",	4, 0, 5, 0.01):pow(2):smooth(0.999));
+fastFreq	= chorusGroup(vslider("[2]fast freq",	1, 0, 10, 0.01):smooth(0.999));
+fastDepth	= chorusGroup(vslider("[3]fast depth",	4, 0, 10, 0.01):pow(2):smooth(0.999));
+feedback	= chorusGroup(vslider("[4]feedback",	0, -1, 1, 0.01)*0.8:smooth(0.999));
 
 
