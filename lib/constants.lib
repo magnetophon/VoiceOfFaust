@@ -1,0 +1,17 @@
+//-----------------------------------------------
+// contants
+//-----------------------------------------------
+//todo: test or ask about smooth vs line:, efficiency and behaviour
+minline                 = 3;		// minimum line time in ms
+MinInputPitch           = 61.7354;	// lowest expected note is a B1
+MaxInputPitch           = 493.6635;	// highest expected note is a B4
+maxTimeWithoutPitch     = 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
+maxTimeWithoutFidelity  = 265*4 ;	// is 4*6ms @ 44100. the time between 4 fid messages
+analizerTop             = 128;//hslider("anaTop",64,16,128,1);
+analizerBottom          = (0.5*pow(2,0.5))+0.0;
+analizerQ               = 7;//(vslider("[3]Q[style:knob]",	9, 0.1, 50, 0.001):smooth(0.999)); //0.1 to 49 logarithmicly,
+vocoderN                = 2;
+defaultTop              = 128:pow(0.5);
+defaultBottom           = ((0.25*pow(2,0.5))+0.5):pow(0.5);
+PTsmooth                = 0.9984;
+

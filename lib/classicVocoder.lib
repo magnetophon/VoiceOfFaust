@@ -1,0 +1,118 @@
+//-----------------------------------------------
+// Classic vocoder synthesis
+//-----------------------------------------------
+
+vocoderFund(freq)=
+    fund(freq,vocoderOctave);
+
+vocoderOsc(freq) =
+    stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty);
+
+volFilter(c,f,v,q) =
+    f:resonbp(c:min((SR/2)-10),q,v):resonbp(c:min((SR/2)-10),q,compensate)
+    with {
+    //compensate for one filter:
+    //compensate = (tanh((1/(vocoderQ:min(1)))/2));
+    //compensate for two filters:
+    //pow(vslider("[-1]comp",	1, 1, 20, 0.001)):
+    //compensate = ((1/(((vocoderQ:min(7))/7):pow(hslider("[-1]comp",	1, 0.001, 1, 0))))-1)*(hslider("[-1]comp",	1, 1, 2000, 0.001)):hbargraph("[-1]compensate", 0, 99)+1;
+    //compensate = 1;// ((1/(vocoderQ:min(7)))/7);
+    //compensate = (1/(((vocoderQ:min(2))/2)))*((((vocoderQ*0.5:min(1)*-1)+1)*10)+1);
+    //gain = line (v*compensate, minline);
+    //gain = (v*compensate);
+    BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0.001); //1.766
+    BP2 =9.43;//1/hslider("[-1]bp2",	0, 0, 1, 0.001); //9.43
+    FAC1 = 1;//hslider("[-1]fac1",	1, 1, 30, 0.001);//1
+    FAC2 = 1.7;//hslider("[-1]fac2",	1, 1, 30, 0.001);//1.7
+    FAC3 = 4;//hslider("[-1]fac3",	1, 1, 30, 0.001);//4
+    com = 1/(q/49);
+    compensate =
+          (((com*FAC1),(com<BP1)):*),
+          ((((com-BP1)*FAC2+FAC1*BP1),((com>=BP1)&(com<=BP2))):*),
+          ((((com-BP2)*FAC3+((BP2-BP1)*FAC2)+FAC1*BP1),(com>BP2)):*)
+          :>_+1;
+    };
+
+volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator,q)=
+    volFilter(Center1,Oscilator,Volume1,q),
+    volFilter(Center2,Oscilator,Volume2,q),
+    volFilter(Center3,Oscilator,Volume3,q),
+    volFilter(Center4,Oscilator,Volume4,q),
+    volFilter(Center5,Oscilator,Volume5,q),
+    volFilter(Center6,Oscilator,Volume6,q),
+    volFilter(Center7,Oscilator,Volume7,q),
+    volFilter(Center8,Oscilator,Volume8,q),
+    volFilter(Center9,Oscilator,Volume9,q),
+    volFilter(Center10,Oscilator,Volume10,q),
+    volFilter(Center11,Oscilator,Volume11,q),
+    volFilter(Center12,Oscilator,Volume12,q),
+    volFilter(Center13,Oscilator,Volume13,q),
+    volFilter(Center14,Oscilator,Volume14,q),
+    volFilter(Center15,Oscilator,Volume15,q),
+    volFilter(Center16,Oscilator,Volume16,q)
+    //resonhp(Center16,q,1)
+    ;
+
+StereoVolFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,freq,q)=
+    vocoderOsc(freq)<:bus(16):
+    volFilter(Center1,_,Volume1,q),
+    volFilter(Center2,_,Volume2,q),
+    volFilter(Center3,_,Volume3,q),
+    volFilter(Center4,_,Volume4,q),
+    volFilter(Center5,_,Volume5,q),
+    volFilter(Center6,_,Volume6,q),
+    volFilter(Center7,_,Volume7,q),
+    volFilter(Center8,_,Volume8,q),
+    volFilter(Center9,_,Volume9,q),
+    volFilter(Center10,_,Volume10,q),
+    volFilter(Center11,_,Volume11,q),
+    volFilter(Center12,_,Volume12,q),
+    volFilter(Center13,_,Volume13,q),
+    volFilter(Center14,_,Volume14,q),
+    volFilter(Center15,_,Volume15,q),
+    volFilter(Center16,_,Volume16,q)
+    ;
+
+
+EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,Oscilator,q) =
+
+    Oscilator:
+    (
+    //lowshelf(N,Volume1+OffSet,Center1):
+    peak_eq_cq(Volume1+OffSet,Center1,q):
+    peak_eq_cq(Volume2+OffSet,Center2,q):
+    peak_eq_cq(Volume3+OffSet,Center3,q):
+    peak_eq_cq(Volume4+OffSet,Center4,q):
+    peak_eq_cq(Volume5+OffSet,Center5,q):
+    peak_eq_cq(Volume6+OffSet,Center6,q):
+    peak_eq_cq(Volume7+OffSet,Center7,q):
+    peak_eq_cq(Volume8+OffSet,Center8,q):
+    peak_eq_cq(Volume9+OffSet,Center9,q):
+    peak_eq_cq(Volume10+OffSet,Center10,q):
+    peak_eq_cq(Volume11+OffSet,Center11,q):
+    peak_eq_cq(Volume12+OffSet,Center12,q):
+    peak_eq_cq(Volume13+OffSet,Center13,q):
+    peak_eq_cq(Volume14+OffSet,Center14,q):
+    peak_eq_cq(Volume15+OffSet,Center15,q):
+    peak_eq_cq(Volume16+OffSet,Center16,q)
+    //highshelf(N,Volume16+OffSet,Center16)
+    )
+    with {
+        N = 3; //uneven only: 1,3,5
+        AvgVolume = (Volume1+Volume2+Volume3+Volume4+Volume5+Volume6+Volume7+Volume8+Volume9+Volume10+Volume11+Volume12+Volume13+Volume14+Volume15+Volume16)/16;
+        MinVolume = (Volume1):min(Volume2):min(Volume3):min(Volume4):min(Volume5):min(Volume6):min(Volume7):min(Volume8):min(Volume9):min(Volume10):min(Volume11):min(Volume12):min(Volume13):min(Volume14):min(Volume15):min(Volume16);
+        MaxVolume = (Volume1):max(Volume2):max(Volume3):max(Volume4):max(Volume5):max(Volume6):max(Volume7):max(Volume8):max(Volume9):max(Volume10):max(Volume11):max(Volume12):max(Volume13):max(Volume14):max(Volume15):max(Volume16);
+        OffSet    = (KPeqCutBoost>0),(((KPeqCutBoost+1)*-AvgVolume)+(KPeqCutBoost*MaxVolume)),((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume): select2;
+        };
+
+vocoderCenters(freq) =
+    VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
+
+StereoVocoder(audio,freq)=
+    (vocoderCenters(freq),analizer(voice(audio),freq),(freq), vocoderQ):StereoVolFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
+
+
+//process(audio) = StereoVolFilterBank;
+//vocoderOsc(PitchTracker(audio));
+
+

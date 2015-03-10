@@ -1,0 +1,24 @@
+//-----------------------------------------------
+// ringmodualtion with emulated Casio CZ oscilators
+//-----------------------------------------------
+
+CZ(fund,freq,square,squareIx,pulse,pulseIx,res,resMult,formant) =
+    (CZsquare(fund, squareIx)*square),
+    (CZsinepulse(fund, pulseIx)*(-pulse)),
+    (CZrestrap(fund, RES)*(-res))
+    :>_
+    with {
+        RES = (formant/freq)* ((resMult:pow(2) * 3.75)+0.25);
+        };
+
+CZringMod(audio,freq) =
+    (
+    CZ(fund(freq,0.25),freq*0.25	,CZsquareLL,CZsquareIxLL,CZpulseLL,CZpulseIxLL,CZresLL,CZresMultLL,formant),
+    CZ(fund(freq,0.5),freq*0.5	,CZsquareL,CZsquareIxL,CZpulseL,CZpulseIxL,CZresL,CZresMultL,formant),
+    CZ(fund(freq,1),freq		,CZsquareM,CZsquareIxM,CZpulseM,CZpulseIxM,CZresM,CZresMultM,formant),
+    CZ(fund(freq,2),freq*2		,CZsquareH,CZsquareIxH,CZpulseH,CZpulseIxH,CZresH,CZresMultH,formant),
+    CZ(fund(freq,4),freq*4		,CZsquareHH,CZsquareIxHH,CZpulseHH,CZpulseIxHH,CZresHH,CZresMultHH,formant)
+    ):>_*voice(audio)*3<:_,_;
+
+
+

@@ -1,0 +1,23 @@
+//-----------------------------------------------
+// Phase Modulation as an effect
+//-----------------------------------------------
+
+PHosci(freq,PH)	= s1 + d * (s2 - s1)
+    with {
+    i = int(phase(freq));
+    d = decimal(phase(freq));
+    PHi = decimal(i/tablesize+PH)*tablesize;
+    s1 = rdtable(tablesize+1,sinwaveform,int(PHi));
+    s2 = rdtable(tablesize+1,sinwaveform,int(PHi+1));
+    };
+
+        // modulator:
+pmFX(fc,r,I,PH,x) = x : fdelay3(1 << 17, dt + 1)
+    with {
+    k = 8.0 ; // pitch-tracking analyzing cycles number
+    //fc = PtchPr(k,x) ;
+    dt = (0.5 * PHosci(fc * r,PH) + 0.5) * I / (PI * fc) *SR ;
+    };
+    //process = pmFX(r,I) ;
+
+

@@ -1,0 +1,247 @@
+//-----------------------------------------------
+// slave oscilators
+//-----------------------------------------------
+
+//-----------------------------------------------
+// Sub sine
+//-----------------------------------------------
+
+subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * //(subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
+(subLevel(audio))*2<:_,_;
+
+//---------------- Bandlimited Sawtooth sawN, saw2, ... ------------------
+// METHOD: Differentiated Polynomial Waves (DPW) (for aliasing suppression)
+// REFERENCE:
+// "Alias-Suppressed Oscillators based on Differentiated Polynomial Waveforms",
+// Vesa Valimaki, Juhan Nam, Julius Smith, and Jonathan Abel,
+// IEEE Tr. Acoustics, Speech, and Language Processing (IEEE-ASLP),
+// Vol. 18, no. 5, May 2010.
+
+//todo: research N
+
+// --- sawN for N = 1 to 6 ---
+//ws = waveshaping, so it takes an input saw as index
+sawNws(N,lfsawpos,freq) = saw1 : poly(N) : D(N-1) : gate(N-1)
+with {
+  p0n = float(ml.SR)/float(freq); // period in samples
+  //lfsawpos = (_,1:fmod) ~ +(1.0/p0n); // sawtooth waveform in [0,1)
+  // To introduce a phase offset here (phase in [0,1]):
+  // lfsawpos(phase) = (+(phase*(1-1')), 1 : fmod ) ~ +(1.0/p0n);
+  saw1 = 2*lfsawpos - 1; // zero-mean, amplitude +/- 1
+  poly(1,x) =  x;
+  poly(2,x) =  x*x;
+  poly(3,x) =  x*x*x - x;
+  poly(4,x) =  x*x*(x*x - 2.0);
+  poly(5,x) =  pow(x,5) - pow(x,3)*10.0/3.0 + x*7.0/3.0;
+  poly(6,x) =  pow(x,6) - 5.0*pow(x,4) + 7.0*poly(2,x);
+  diff1(x) =  (x - x')/(2.0/p0n);
+  diff(N) = seq(n,N,diff1); // N diff1s in series
+  D(0) = _;
+  D(1) = diff1/2.0;
+  D(2) = diff(2)/6.0;
+  D(3) = diff(3)/24.0;
+  D(4) = diff(4)/120.0;
+  D(5) = diff(5)/720.0;
+  gate(N) = *(1@(N)); // delayed step for blanking startup glitch
+};
+
+//emulation of a roland supersaw, based on: "How to Emulate the Super Saw" by ADAM SZABO
+//http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf
+//ported toFaust by Bart Brouns
+supersaw(N,fund,freq,detune,mix) = saws(fund,freq,detuner(detune)):mixer(mix)
+with {
+    detuner (detune) =
+      (((detune*0.2),(detune<0.6)):*),
+      ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
+      ((((detune-0.95)*12+0.4),(detune>0.95)):*)
+      :>_;
+    saws(fund,freq,det) =
+      sawNws(N,fund,freq),
+      sawN(N,(det * -0.110023+1)*freq),
+      sawN(N,(det * -0.0628844+1)*freq),
+      sawN(N,(det * -0.0195236+1)*freq),
+      sawN(N,(det * 0.0199122+1)*freq),
+      sawN(N,(det * 0.0621654+1)*freq),
+      sawN(N,(det * 0.107452+1)*freq);
+
+    mainmix = mix * -1 + 1.6:smooth(0.999);
+    //mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
+    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
+
+    //*-1 to get it into phase with my other synths
+    mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
+    };
+
+//todo:Window Function Synthesis:
+//see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
+//todo: vector PM osclators
+
+sawpulseNws(N,fund,freq,SawPulse,duty)
+= diffdel(sawNws(N,fund,freq),del)*compensate
+with {
+     // non-interpolated-delay version: diffdel(x,del) = x - x@int(del+0.5);
+     // linearly interpolated delay version (sounds good to me):
+        diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
+     // Third-order Lagrange interpolated-delay version (see filter.lib):
+     // diffdel(x,del) = x - fl.fdelay3(DELPWR2,max(1,min(DELPWR2-2,ddel)));
+
+     compensate = (((SawPulse*-1)+1)*0.2)+0.8; // compensate volume dif between saw and pulse
+     DELPWR2 = 2048;                           // Needs to be a power of 2 when fdelay*() used above.
+     delmax = DELPWR2-1;                       // arbitrary upper limit on diff delay (duty=0.5)
+     SRmax = 96000.0;                          // assumed upper limit on sampling rate
+     fmin = SRmax / float(2.0*delmax);         // 23.4 Hz (audio freqs only)
+     freqC = max(freq,fmin);                   // clip frequency at lower limit
+     period = (float(ml.SR) / freqC);          // actual period
+     ddel = duty * period;                     // desired delay
+     del = max(0,min(delmax,ddel));
+    };
+
+sawpulseN(N,freq,SawPulse,duty) = diffdel(sawN(N,freq),del)*compensate
+with {
+     // non-interpolated-delay version: diffdel(x,del) = x - x@int(del+0.5);
+     // linearly interpolated delay version (sounds good to me):
+    diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
+     // Third-order Lagrange interpolated-delay version (see filter.lib):
+     // diffdel(x,del) = x - fl.fdelay3(DELPWR2,max(1,min(DELPWR2-2,ddel)));
+     
+     compensate = (((SawPulse*-1)+1)*0.2)+0.8; // compensate volume dif between saw and pulse
+     DELPWR2 = 2048;                           // Needs to be a power of 2 when fdelay*() used above.
+     delmax = DELPWR2-1;                       // arbitrary upper limit on diff delay (duty=0.5)
+     SRmax = 96000.0;                          // assumed upper limit on sampling rate
+     fmin = SRmax / float(2.0*delmax);         // 23.4 Hz (audio freqs only)
+     freqC = max(freq,fmin);                   // clip frequency at lower limit
+     period = (float(ml.SR) / freqC);          // actual period
+     ddel = duty * period;                     // desired delay
+     del = max(0,min(delmax,ddel));
+     };
+
+
+//emulation of a roland supersaw, based on: "How to Emulate the Super Saw" by ADAM SZABO
+//http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf
+//ported toFaust by Bart Brouns
+supersawpulse(N,fund,freq,detune,mix,SawPulse,duty) = saws(fund,freq,detuner(detune)):mixer(mix)
+with {
+    detuner (detune) =
+      (((detune*0.2),(detune<0.6)):*),
+      ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
+      ((((detune-0.95)*12+0.4),(detune>0.95)):*)
+      :>_;
+    saws(fund,freq,det) =
+      sawpulseNws(N,fund,freq,SawPulse,duty),
+      sawpulseN(N,(det * -0.110023+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * -0.0628844+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * -0.0195236+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * 0.0199122+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * 0.0621654+1)*freq,SawPulse,duty),
+      sawpulseN(N,(det * 0.107452+1)*freq,SawPulse,duty);
+    mainmix = mix * -1 + 1.6;
+    //mainmix = mix * -0.55366 + 0.99785:smooth(0.999);
+    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841);
+    //*-1 to get it into phase with my other synths
+    mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
+    };
+
+
+stereosupersawpulse(N,fund,freq,detune,mix,SawPulse,duty) = 
+supersawpulse(N,fund,freq,detune,mix,SawPulse,duty),
+supersawpulse(N,fund,freq,detune*-1,mix,SawPulse,duty);
+
+/*
+saws(fund,freq,detuner(detune)):mixer(mix)
+with {
+    detuner (detune) =
+      (((detune*0.2),(detune<0.6)):*),
+      ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
+      ((((detune-0.95)*12+0.4),(detune>0.95)):*)
+      :>_;
+    saws(fund,freq,det) =
+        sawpulseN(N,(det * -0.110023+1)*freq,SawPulse,duty),
+        sawpulseN(N,(det * -0.0628844+1)*freq,SawPulse,duty),
+        sawpulseN(N,(det * -0.0195236+1)*freq,SawPulse,duty),
+        sawpulseNws(N,fund,freq,SawPulse,duty)*db2linear(-3),
+        sawpulseN(N,(det * 0.0199122+1)*freq,SawPulse,duty),
+        sawpulseN(N,(det * 0.0621654+1)*freq,SawPulse,duty),
+        sawpulseN(N,(det * 0.107452+1)*freq,SawPulse,duty);
+    mainmix = (mix  -0.55366 + 0.99785):smooth(0.999);
+    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
+    //*-1 to get it into phase with my other synths
+//    mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
+    mixer(mix) =
+        par(i, 3, _*detunemix),(_*mainmix<:_,_),par(i, 3, _*detunemix)
+        :((bus4:>_*-1),(bus4:>_*-1));
+    };
+*/
+
+//todo:Window Function Synthesis:
+//see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
+//todo: vector PM osclators
+
+//-----------------------------------------------
+// CZ oscilators by Mike Moser-Booth. ported from pd to faust by Bart Brouns
+//-----------------------------------------------
+
+//index= 0 to 1
+CZsquare(fund, index) =
+    (fund>=0.5),
+    (decimal((fund*2)+1)<:_-min(_,(-1*_+1)*((INDEX)/(1-INDEX))))
+    :+ *PI:cos*0.5
+    with {INDEX = (index:pow(0.25)) * 0.98;};
+
+CZsinepulse(fund, index) =
+    (min(fund*((0.5-INDEX)/INDEX),(-1*fund+1)*((.5-INDEX)/(1-INDEX)))+fund)*4*PI:cos
+    with {INDEX = ((index*-0.49)+0.5);};
+
+//res= 0.5 to 64. this is multiplied by the fundamental pitch
+    CZrestrap(fund, res) =
+    (((-1*(1-fund)):max(-0.5):min(0.5)*2) *  (cos(decimal((fund*(res:max(1)))+1)*2*PI)*-1)+1)+1;
+
+//-----------------------------------------------
+// PAF oscilator
+//-----------------------------------------------
+
+pafFreq(audio)=
+    PitchTracker(audio)*pafOctave;
+    pafFund(freq) = fund(freq,pafOctave);
+    sampleAndHold(sample) = select2((sample!=0):int) ~ _;
+
+
+
+paf(c,f,i,v)=
+    (((cos12(c,f))*bell(f,i)) * line (v, minline))
+    with {
+    bellcurve(x) = int(x):rdtable(belltablesize+1,curve,_)
+    with 	{
+            belltablesize 	= 199;
+            curve 	= time:(((_-100)/25)<:(_*_)*-1);
+            };
+
+//bellcurve = (((_-100)/25)<:(_*_)*-1);
+
+
+wrap
+    =_<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
+    centerWrap(c,f) = line (c, 300):sampleAndHold(f)<:wrap;
+    centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
+    cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
+    bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*line (i, 12))+100:bellcurve;
+    };
+
+//-----------------------------------------------
+// FOF oscilator
+//-----------------------------------------------
+//fof is based on work by Xavier Rodet on his CHANT program at IRCAM
+fof(fReso,fund,skirt,decay,phase,vol) =
+    select2((PHfund<skirt),
+        (0.5*(1-cos((PI/skirt)*PHfund))*exp((-decay/PI)*PHfund)*sin(fReso*PHfund+PH)),
+        exp((-decay/PI)*PHfund)*sin(fReso*PHfund+PH))*vol
+        with {
+            arc(angle) = angle/360 * 2 * PI;
+            PHfund = decimal(fund+phase);
+            //warning: phase is currently being re-used for the fundamentalosc phase, this is the formant phase
+            //PH = arc( sin(fReso*exp((-decay/PI))) / (phase -cos(fReso*exp((-decay/PI))) ));
+            //sounds cool, but glithes when either the phase or one of the other params is moved, so:
+            PH = 0;
+           };
+
+
+

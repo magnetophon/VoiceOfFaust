@@ -1,0 +1,29 @@
+
+//-----------------------------------------------
+// master index
+//-----------------------------------------------
+masterIndex(freq)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
+fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq)); //choose octaves
+
+//-----------------------------------------------
+// Some general functions
+//-----------------------------------------------
+
+octaveMultiplier	=
+    _<:
+    (
+        (_==-2) * 0.25,
+        (_==-1) * 0.5,
+        (_==0),
+        (_==1) * 2,
+        (_==2) * 4
+    ):>_;
+
+VocoderFreqs(bottom,top) =     par(i,16,   pow((pow((top/bottom),1/15)),i)*bottom);
+//to make it stereo
+//todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
+WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);
+vocoderMixer = interleave(2,8):((bus(8):>_),(bus(8):>_));
+voice(audio) = qompander(audio,factor,threshold,attack,release);
+
+
