@@ -3,7 +3,7 @@
 
 ***************************************************************************
 Compiled with:
- faust2jack  -osc stringSinger.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
+faust2jack  -osc stringSinger.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
 
 stereoVocoder and clean trough limiter and meter
 sends: PM
@@ -15,14 +15,23 @@ sends: PM & chorus
 
 ***************************************************************************
 Compiled with:
- faust2jack  -osc classicVocoder.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
-
-stereoVocoder
+faust2jack  -osc classicVocoder.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
 102% cpu
 
+faust2jack  -osc classicVocoder.dsp
+90%
+
+faust2jack  -osc classicVocoder.dsp -time -vec -vs 512 (and higher)
+segfault
+
+faust2jack  -osc classicVocoder.dsp -time -vec -vs 256 (and lower)
+90% cpu
 ***************************************************************************
 Compiled with:
- faust2jack  -osc PAFvocoder.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
+faust2jack  -osc PAFvocoder.dsp -time -sch -vs 1024 -lv 1 -lt -t 99999
 
 PAFvocoder
 102 to 170% cpu
+
+FOF default: 105%
+FOF vec vs 256: 110%
