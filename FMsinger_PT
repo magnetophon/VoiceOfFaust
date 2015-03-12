@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# a NixOS friendly prompt
+
+
+#////////////////////////////////////////////////////////
+# startup script for the input-FM synth plus pitchtracker
+#////////////////////////////////////////////////////////
+
+current_synth=FMsinger
+source synthWrapper

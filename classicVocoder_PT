@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# a NixOS friendly prompt
+
+
+#////////////////////////////////////////////////////////
+# startup script for the classic vocoder plus pitchtracker
+#////////////////////////////////////////////////////////
+
+
+./classicVocoder &
+synth_pid=$!
+sleep 2 &&
+jack_connect system:capture_1 classicVocoder:in_0 &&
+
+# If this script is killed, kill everything.
+trap "kill -- -$$" EXIT
+
+pd -nodac -nomidi -nogui PureData/OscSendVoc.pd &
+
+wait $synth_pid
+kill -- -$$

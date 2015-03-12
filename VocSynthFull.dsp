@@ -48,7 +48,7 @@ VocSynth(audio) =
     fofvocoder(audio,PitchTracker(audio)),
 
     FMvolume,fmNLKS,FMpmFX,
-    FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)),
+    FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio))<:_,_,
 
     CZvolume,CZNLKS,CZpmFX,
     CZringMod(audio,PitchTracker(audio))
@@ -65,7 +65,7 @@ VocSynth(audio) =
 
     :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
 
-    :stereoLimiter(audio) //it needs the original audio (the voice) to calculate the pitch, and with that the decay time.
+    :stereoLimiter(PitchTracker(audio) * subOctave) //it needs the lowest pitch to adjust the decay time.
     :VuMeter
     )
     with {

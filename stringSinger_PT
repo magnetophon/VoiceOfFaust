@@ -3,17 +3,17 @@
 
 
 #////////////////////////////////////////////////////////
-# startup script for the classic vocoder plus pitchtracker
+# startup script for the classic vocoder plus FX plus pitchtracker
 #////////////////////////////////////////////////////////
 
 
-./classicVocoder &
+./stringSinger &
 synth_pid=$!
-sleep 3 &&
-jack_connect system:capture_1 classicVocoder:in_0 &&
+sleep 5 &&
+jack_connect system:capture_1 stringSinger:in_0 &&
 
-# If this script is killed, kill the synth.
-trap "kill $synth_pid 2> /dev/null" EXIT
+# If this script is killed, kill everything.
+trap "kill -- -$$" EXIT
 
 pd -nodac -nomidi -nogui ~/faust/VoiceOfFaust/PureData/OscSendVoc.pd &
 

@@ -2,6 +2,9 @@
 // Universal Pitch Tracker (a periods measurement)
 //-----------------------------------------------
 
+// experimental pitch tracker plus automatic switcher.
+// it takes about as much cpu as just smoothing the incoming pitch.
+// not smoothing it saves quite some cpu, but gives more glitchy sound.
 SH(trig,x) = (*(1 - trig) + x * trig) ~_;
 
 
@@ -14,13 +17,10 @@ with  {
       M = SH(N == 0, N' + 1) ;
       };
 
-// switch to internal pitchtracker if OSC is silent for too long
-//todo: make a more elaborate version, or kill it alltogether
-//for example, make the fidelity be a kill switch
 //PTsmooth = 0.1*(((OSCfidelity*-1)+1):amp_follower(0.026))+0.997:min(0.9996):max(0.9984):vbargraph("[-1]PTsmooth", 0.997, 1);
 
 PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
-//PitchTracker(audio) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
+//PitchTracker(audio) = OSCpitch : smooth(PTsmooth)
 with	{
         internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(8.0): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
         OSCpitchIsBad  = (isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity));

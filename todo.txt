@@ -1,0 +1,27 @@
+fix volumes
+benchmark meters+limiters: +/- 10%
+choose FX
+benchmark qompander
+
+split up:
+* classicVocoder
+* stringSinger
+* PAF
+* FOF
+* FM
+* CZ RM
+* Sub
+* SubSinger = clean+sub FM+chorus+limiter
+* Karplus-Strong-Singer
+* PM
+
+nix-installer
+* pkg vocsynth
+* router
+* 
+
+demo
+txt
+video
+
+PR puredata

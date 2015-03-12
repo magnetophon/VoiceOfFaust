@@ -1,0 +1,12 @@
+./$current_synth &
+synth_pid=$!
+sleep 2 &&
+jack_connect system:capture_1 $current_synth:in_0 &&
+
+# If this script is killed, kill everything.
+trap "kill -- -$$" EXIT
+
+pd -nodac -nomidi -nogui PureData/OscSendVoc.pd &
+
+wait $synth_pid
+kill -- -$$

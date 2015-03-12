@@ -1,6 +1,6 @@
 
 //-----------------------------------------------
-// master index
+// master index, all slave oscilators 'clock' to this.
 //-----------------------------------------------
 masterIndex(freq)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
 fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq)); //choose octaves
@@ -8,6 +8,10 @@ fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq
 //-----------------------------------------------
 // Some general functions
 //-----------------------------------------------
+// cheaper than actual dB calculations:
+volScale=_:pow(2):smooth(0.999);
+envelop                 = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
+VuMeter                 = par(i,2,_<:(_, (envelop :(OSCgroup(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, +6))))):attach));
 
 octaveMultiplier	=
     _<:
@@ -24,18 +28,32 @@ VocoderFreqs(bottom,top) =     par(i,16,   pow((pow((top/bottom),1/15)),i)*botto
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
 WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);
 vocoderMixer = interleave(2,8):((bus(8):>_),(bus(8):>_));
-voice(audio) = qompander(audio,factor,threshold,attack,release);
+voice(audio) = qompander(audio:highpass(3,PitchTracker(audio)*0.75),factor,threshold,attack,release);
 
 //is actually dual mono. on purpose; to try and keep the image in the center.
 //todo: make this stereo, and find a better way for  KP-FX to stay centered
-stereoLimiter(audio)=
+oldstereoLimiter(pitch)=
   (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)),
   (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)):
   (compressor_mono(100,-6,0.001,decay*0.5)),
   (compressor_mono(100,-6,0.001,decay*0.5))
   with {
-    decay                                = (1/(PitchTracker(audio) * subOctave ));
+    decay                                = (1/pitch);
     same(x,time)                         = (x@time) == x;
     intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
-    blockNoise                           = par(i,2,(intervalTester(PitchTracker(audio),2,265)*-1+1:smooth(0.999))*_);
+    blockNoise                           = par(i,2,(intervalTester(pitch,2,265)*-1+1:smooth(0.999))*_);
     };
+
+monoLimiter(pitch)=
+  (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)):
+  (compressor_mono(100,-6,0.001,decay*0.5))
+  with {
+    decay                                = (1/pitch);
+    same(x,time)                         = (x@time) == x;
+    intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
+    blockNoise                           = par(i,2,(intervalTester(pitch,2,265)*-1+1:smooth(0.999))*_);
+    };
+
+stereoLimiter(pitch) =monoLimiter(pitch),monoLimiter(pitch);
+
+
