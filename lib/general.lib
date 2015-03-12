@@ -45,8 +45,8 @@ oldstereoLimiter(pitch)=
     };
 
 monoLimiter(pitch)=
-  (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)):
-  (compressor_mono(100,-6,0.001,decay*0.5))
+  (dcblocker:compressor_mono(100,-6,decay*0.5,decay)):
+  (compressor_mono(100,-3,0,decay*0.5))
   with {
     decay                                = (1/pitch);
     same(x,time)                         = (x@time) == x;

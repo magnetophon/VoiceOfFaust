@@ -30,8 +30,6 @@ import ("lib/pmFX.lib");
 //mixerWithSends(nrChan,nrMonoChan,nrSends)
 
 
-vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-
 VocSynth(audio) =
   (
   cleanVolume,cleanChorus,cleanpmFX, //output volumes. The number of parameters should be nrSends

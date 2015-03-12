@@ -99,30 +99,30 @@ FMpmFX             = FMgroupLevel(vslider("[2]PM[tooltip: phase modulation][styl
 
 FMparamsGroup(x)   = FMgroup((vgroup("[1]parameters", x)));
 
-HHFMparamsGroup(x) = FMparamsGroup((hgroup("[0]+2 oct", x)));
-FMvolHH            = HHFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):volScale);
-FMindexHH          = HHFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):volScale:_*15000);
-FMdynHH            = HHFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+HHFMparamsGroup(x) = FMparamsGroup((hgroup("[0]+2 octaves", x)));
+FMvolHH            = HHFMparamsGroup(vslider("[1]vol[tooltip: volume] [style:knob]",	0, 0, 1, 0.001):volScale);
+FMindexHH          = HHFMparamsGroup(vslider("[2]index[tooltip: modulation amount][style:knob]",	0.4, 0, 1, 0.001):volScale:_*15000);
+FMdynHH            = HHFMparamsGroup(vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inversed dynamics][style:knob]",	1, 0, 1, 0.001):smooth(0.999));
 
-HFMparamsGroup(x)  = FMparamsGroup((hgroup("[1]+1 oct", x)));
-FMvolH             = HFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):volScale);
-FMindexH           = HFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):volScale:_*15000);
-FMdynH             = HFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+HFMparamsGroup(x)  = FMparamsGroup((hgroup("[1]+1 octave", x)));
+FMvolH             = HFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	0.4, 0, 1, 0.001):volScale);
+FMindexH           = HFMparamsGroup(vslider("[2]index[tooltip: modulation amount][style:knob]",	1, 0, 1, 0.001):volScale:_*15000);
+FMdynH             = HFMparamsGroup(vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inversed dynamics][style:knob]",	0.25, 0, 1, 0.001):smooth(0.999));
 
-mFMparamsGroup(x)  = FMparamsGroup((hgroup("[2]0 oct", x)));
-FMvol              = mFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):volScale);
-FMindex            = mFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):volScale:_*15000);
-FMdyn              = mFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+mFMparamsGroup(x)  = FMparamsGroup((hgroup("[2]0 octave", x)));
+FMvol              = mFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	0, 0, 1, 0.001):volScale);
+FMindex            = mFMparamsGroup(vslider("[2]index[tooltip: modulation amount][style:knob]",	0.25, 0, 1, 0.001):volScale:_*15000);
+FMdyn              = mFMparamsGroup(vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inversed dynamics][style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
-LFMparamsGroup(x)  = FMparamsGroup((hgroup("[3]-1 oct", x)));
-FMvolL             = LFMparamsGroup(vslider("[1]vol[style:knob]",	1, 0, 1, 0.001):volScale);
-FMindexL           = LFMparamsGroup(vslider("[2]index[style:knob]",	0.19, 0, 1, 0.001):volScale:_*15000);
-FMdynL             = LFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+LFMparamsGroup(x)  = FMparamsGroup((hgroup("[3]-1 octave", x)));
+FMvolL             = LFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	1, 0, 1, 0.001):volScale);
+FMindexL           = LFMparamsGroup(vslider("[2]index[tooltip: modulation amount][style:knob]",	0.25, 0, 1, 0.001):volScale:_*15000);
+FMdynL             = LFMparamsGroup(vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inversed dynamics][style:knob]",	1, 0, 1, 0.001):smooth(0.999));
 
-LLFMparamsGroup(x) = FMparamsGroup((hgroup("[4]-2 oct", x)));
-FMvolLL            = LLFMparamsGroup(vslider("[1]vol[style:knob]",	0, 0, 1, 0.001):volScale);
-FMindexLL          = LLFMparamsGroup(vslider("[2]index[style:knob]",	0, 0, 1, 0.001):volScale:_*15000);
-FMdynLL            = LLFMparamsGroup(vslider("[3]dyn[style:knob]",	0, 0, 1, 0.001):smooth(0.999));
+LLFMparamsGroup(x) = FMparamsGroup((hgroup("[4]-2 octaves", x)));
+FMvolLL            = LLFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	0.5, 0, 1, 0.001):volScale);
+FMindexLL          = LLFMparamsGroup(vslider("[2]index[tooltip: modulation amount][style:knob]",	0.5, 0, 1, 0.001):volScale:_*15000);
+FMdynLL            = LLFMparamsGroup(vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inversed dynamics][style:knob]",	0.125, 0, 1, 0.001):smooth(0.999));
 
 
 //-----------------------------------------------

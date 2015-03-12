@@ -48,7 +48,7 @@ VocSynth(audio) =
     fofvocoder(audio,PitchTracker(audio)),
 
     FMvolume,fmNLKS,FMpmFX,
-    FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio))<:_,_,
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)),
 
     CZvolume,CZNLKS,CZpmFX,
     CZringMod(audio,PitchTracker(audio))

@@ -26,7 +26,7 @@ FMSynth(limited, unlimited,freq,gain) =
     FMvoc(limited, unlimited,freq,gain*FMvol,FMindex,FMdyn),
     FMvoc(limited, unlimited,freq*2,gain*FMvolH,FMindexH,FMdynH),
     FMvoc(limited, unlimited,freq*4,gain*FMvolHH,FMindexHH,FMdynHH)
-    ):>_*2
+    ):>_
     ;
 
-
+stereoFMSynth(limited, unlimited,freq,gain) = FMSynth(limited, unlimited,freq,gain) ,FMSynth(limited*-1, unlimited*-1,freq,gain);

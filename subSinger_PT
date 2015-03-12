@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# a NixOS friendly prompt
+
+
+#////////////////////////////////////////////////////////
+# startup script for clean, sub and input-FM synth trough Limiter + pitchtracker
+#////////////////////////////////////////////////////////
+
+current_synth=subSinger
+source synthWrapper
