@@ -3,6 +3,7 @@
 #################
 
 *.svg
+*.cpp
 *.tmp.cpp
 *.tmp.dsp
 *.temp-svg
@@ -15,3 +16,5 @@ VocSynthFull
 classicVocoder
 stringSinger
 PAFvocoder
+FOFvocoder
+FMsinger
