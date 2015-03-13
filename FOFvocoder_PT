@@ -2,8 +2,8 @@
 # a NixOS friendly prompt
 
 #////////////////////////////////////////////////////////
-# startup script for the classic vocoder plus pitchtracker
+# startup script for the FOF vocoder plus pitchtracker
 #////////////////////////////////////////////////////////
 
-current_synth=classicVocoder
+current_synth=FOFvocoder
 source synthWrapper

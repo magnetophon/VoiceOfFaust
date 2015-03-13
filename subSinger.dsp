@@ -50,7 +50,7 @@ VocSynth(audio) =
 
     subVolume  = subGroupLevel(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):volScale);
 
-    FMvolH     = HFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	0, 0, 1, 0.001):volScale);
+    FMvolM     = HFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	1, 0, 1, 0.001):volScale);
     FMvolLL    = LLFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]", 0, 0, 1, 0.001):volScale);
     };
 

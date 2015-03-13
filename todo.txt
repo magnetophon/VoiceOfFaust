@@ -25,3 +25,7 @@ txt
 video
 
 PR puredata
+
+make each synth use it's own osc port
+
+put back formant tracker

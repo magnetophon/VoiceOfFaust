@@ -2,8 +2,8 @@
 # a NixOS friendly prompt
 
 #////////////////////////////////////////////////////////
-# startup script for the classic vocoder plus pitchtracker
+# startup script for the Karplus-Strong synth plus pitchtracker
 #////////////////////////////////////////////////////////
 
-current_synth=classicVocoder
+current_synth=Karplus-StrongSinger
 source synthWrapper

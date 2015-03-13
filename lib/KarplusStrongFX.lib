@@ -1,26 +1,10 @@
 //-----------------------------------------------
 // Karplus-Strong effect
 //-----------------------------------------------
-//KarplusStrongFX(x,freq,gain,resonance)
-/*
-KarplusBank(audio,freq) = (
-KarplusStrongFX(audio,freq*0.25,KPvolLL,KPresonanceLL),
-KarplusStrongFX(audio,freq*0.5,KPvolL,KPresonanceL),
-KarplusStrongFX(audio,freq,KPvol,KPresonance),
-KarplusStrongFX(audio,freq*2,KPvolH,KPresonanceH),
-KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
-):>_*KPvolume<:_,_
-;
-*/
-
-
-
 
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,16, _,freq * oct:*:min(SR/2)));
 
 KPanalizer(audio,freq) =
-//par(i,16,0);
-
     analizer(audio,freq)
     :par(i,16,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
     :linear2db) );//adapt to eq instead of bandpass
@@ -28,15 +12,9 @@ KPanalizer(audio,freq) =
 
 KPvocoder(audio,feedback,freq)= (KPcenters(freq,1),KPanalizer(voice(audio),freq),feedback,KPvocoderQ):EQbank*128;
 
-
-//KPvocoder(voice(audio),freq,oct):
-/*
-stringloop(audio, voice(audio), freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
-audio : (+) ~ (( NLFM : compressor_mono(100,thresh,0.1,30) : fdelay4(Pmax, P-2) : loopfilter)) : NLFM
-*/
-//: compressor_mono(100,thresh,0.1,30)
 stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
-    (( NLFM : fdelay4(Pmax, P-2) : loopfilter))
+      //(( fdelay4(Pmax, P-2)))
+  (( NLFM : fdelay4(Pmax, P-2) : loopfilter))
     with {
     nlfOrder = 16;
     P = SR/(freq*oct) ; // fundamental period in samples
@@ -70,44 +48,6 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
 
 feedbackADSR(audio) = tanh(voice(audio)*2:amp_follower(KPrelease)):pow(4);
 
-/*
-stringloopBank(freq,voice,feedback) =
-(_+feedback
-:>_)~
-(KPvocoder(_,voice,freq)<:(
-//(_<:(
-stringloopFBpath(_,voice,freq,0.25,feedbackLL*feedbackADSR(voice),treshLL,nonLinLL,brightLL,frequencyModLL),
-stringloopFBpath(_,voice,freq,0.5,feedbackL*feedbackADSR(voice),treshL,nonLinL,brightL,frequencyModL),
-stringloopFBpath(_,voice,freq,1,feedbackM*feedbackADSR(voice),tresh,nonLin,bright,frequencyMod),
-stringloopFBpath(_,voice,freq,2,feedbackH*feedbackADSR(voice),treshH,nonLinH,brightH,frequencyModH),
-stringloopFBpath(_,voice,freq,4,feedbackHH*feedbackADSR(voice),treshHH,nonLinHH,brightHH,frequencyModHH)
-):>compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
-:_*KPvolume
-;
-/*
-(_ + audio
-:>_)~(voco(1)<:(fb(1),fb(2),fb(3),fb(4),fb(5)):>_)
-;
-*/
-/*
-
-stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH) =
-    (_+feedback
-    :>_)~
-    (KPvocoder(_,audio,freq)<:(
-//    (_<:(
-    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL),
-    stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL),
-    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod),
-    stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH),
-    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH)
-    ):>compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
-    //:_*KPvolume
-    ;
-    //stringloopFBpath(audio, audio, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
-    //KPvocoder(audio,freq,oct)
-*/
-
 stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH) =
     (_+feedback
     <:(    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL,DCnonlinLL),
@@ -117,9 +57,8 @@ stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinL
     stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
     )
     :>KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
-    ((
-//    (_<:(
-_):compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
+//  feedback path
+    ( compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
     :_*KPvolume
     with {
 
@@ -129,11 +68,31 @@ _):compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
     // Linear phase FIR3 damping filter:
     h0 = (1.0 + bright)/2; h1 = (1.0 - bright)/4;
     dampingfilter2(x) = (h0 * x' + h1*(x+x''));
-    
-    
     };
-    //stringloopFBpath(audio, audio, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
-    //KPvocoder(audio,freq,oct)
+
+stringloop(freq,audio,feedback,phase,DCnonlin) =
+    ((_+feedback
+    :
+    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod,DCnonlin)
+    )~ //or dampingfilter2
+      //:KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
+           ( compressor_mono(100,KPtresh,0,1/(freq *0.5 ))))
+    *KPvolume
+    with {
+
+    // Original EKS damping filter:
+    b1 = 0.5*bright; b0 = 1.0-b1; // S and 1-S
+    dampingfilter1(x) = ((b0 * x) + (b1 * x'));
+    // Linear phase FIR3 damping filter:
+    h0 = (1.0 + bright)/2; h1 = (1.0 - bright)/4;
+    dampingfilter2(x) = (h0 * x' + h1*(x+x''));
+    };
+
+/*simpleStringLoop = (_+feedback : fdelay4(Pmax, P-2):vocoder)~_:( compressor_mono(100,KPtresh,0,(1/(freq *0.5 ))))*/
+  /*with {*/
+    /*P = SR/(freq*oct) ; // fundamental period in samples*/
+    /*Pmax = 4096; // maximum P (for delay-line allocation)*/
+    /*};*/
 
 
 

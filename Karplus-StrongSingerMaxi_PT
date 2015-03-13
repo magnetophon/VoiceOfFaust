@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# a NixOS friendly prompt
+
+#////////////////////////////////////////////////////////
+# startup script for a bank of the Karplus-Strong synths,
+# with an EQ based vocoder in the feedback path,
+# plus pitchtracker
+# This one is quite CPU expensive
+#////////////////////////////////////////////////////////
+
+current_synth=Karplus-StrongSingerMaxi
+source synthWrapper

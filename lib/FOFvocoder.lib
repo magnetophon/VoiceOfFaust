@@ -42,8 +42,8 @@ Fund)=
 //fofvocoder(audio,freq)=(fofCenters,analizer(voice(audio),freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
 
 fofvocoder(audio,freq)=
-    ((fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(1):>_*3),
-    ((fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(2):>_*3)
+  ((fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(1):>_*0.125),
+  ((fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(2):>_*0.125)
     ;
 
 
