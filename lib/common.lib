@@ -3,7 +3,7 @@ import ("oscillator.lib");
 import ("maxmsp.lib");
 import ("effect.lib");
 // needed for all synths and FX:
-import ("qompander/qompander.lib");
+import ("lib/qompander.lib");
 import ("lib/constants.lib");
 import ("lib/general.lib");
 import ("lib/pitchtracker.lib");
