@@ -1,4 +1,8 @@
-./$current_synth &
+#////////////////////////////////////////////////////////
+# startup script for the current_synth plus pitchtracker
+#////////////////////////////////////////////////////////
+
+$current_synth &
 synth_pid=$!
 sleep 2 &&
 jack_connect system:capture_1 $current_synth:in_0 &&
