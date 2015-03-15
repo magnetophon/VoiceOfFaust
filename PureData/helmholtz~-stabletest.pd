@@ -1,0 +1,345 @@
+#N canvas 112 47 785 523 10;
+#X msg 246 339 \; pd dsp 1;
+#X msg 246 380 \; pd dsp 0;
+#X obj 246 313 loadbang;
+#X obj 292 216 bng 25 250 50 0 empty empty empty 17 7 0 10 -262144
+-260097 -1;
+#X obj 130 103 vsl 15 100 0 1 0 1 empty empty 1 4 9 0 10 -262144 -260097
+-1 9900 0;
+#X obj 170 103 vsl 15 100 0 1 0 1 empty empty 2 4 9 0 10 -262144 -260097
+-1 9900 0;
+#X obj 211 103 vsl 15 100 0 1 0 1 empty empty 3 4 9 0 10 -262144 -260097
+-1 6600 0;
+#X obj 251 103 vsl 15 100 0 1 0 1 empty empty 4 4 9 0 10 -262144 -260097
+-1 4700 0;
+#X text 137 84 harmonic components;
+#X floatatom 137 219 4 0 0 0 - - -;
+#X floatatom 179 220 4 0 0 0 - - -;
+#X floatatom 218 220 4 0 0 0 - - -;
+#X floatatom 259 220 4 0 0 0 - - -;
+#X obj 52 24 hsl 250 15 50 1000 0 1 empty empty frequency 20 8 0 10
+-262144 -260097 -1 11000 0;
+#X floatatom 58 46 5 0 0 0 - - -;
+#X floatatom 106 356 5 0 0 0 - - -;
+#X floatatom 106 334 5 0 0 0 - - -;
+#N canvas 0 22 450 300 (subpatch) 0;
+#X array \$0-signal 1024 float 0;
+#X coords 0 1 1023 -1 400 140 1;
+#X restore 350 1 graph;
+#X text 143 336 fidelity;
+#X text 352 459 Katja Vetter Feb 2012;
+#N canvas 641 69 568 465 test-signal-harmonics1234------------- 0;
+#X obj 143 219 osc~ 100;
+#X obj 220 220 osc~ 200;
+#X obj 298 219 osc~ 300;
+#X obj 143 362 outlet~;
+#X obj 220 184 * 2;
+#X msg 45 103 344.531;
+#X obj 45 77 loadbang;
+#X obj 35 19 inlet;
+#X obj 35 145 f;
+#X obj 109 21 inlet;
+#X text 43 39 freq;
+#X text 464 124 random phases;
+#X obj 225 370 block~ 1024;
+#N canvas 0 22 359 215 random 0;
+#X obj 29 33 inlet;
+#X obj 105 72 random 100;
+#X obj 190 71 random 100;
+#X obj 105 119 / 100;
+#X obj 190 117 / 100;
+#X obj 29 72 random 100;
+#X obj 29 119 / 100;
+#X obj 29 159 outlet;
+#X obj 105 157 outlet;
+#X obj 190 155 outlet;
+#X obj 266 71 random 100;
+#X obj 266 117 / 100;
+#X obj 266 155 outlet;
+#X connect 0 0 5 0;
+#X connect 0 0 1 0;
+#X connect 0 0 2 0;
+#X connect 0 0 10 0;
+#X connect 1 0 3 0;
+#X connect 2 0 4 0;
+#X connect 3 0 8 0;
+#X connect 4 0 9 0;
+#X connect 5 0 6 0;
+#X connect 6 0 7 0;
+#X connect 10 0 11 0;
+#X connect 11 0 12 0;
+#X restore 468 70 pd random;
+#X obj 164 21 inlet;
+#X obj 241 19 inlet;
+#X obj 319 21 inlet;
+#X obj 220 259 *~ 1;
+#X obj 298 261 *~ 1;
+#X obj 143 260 *~ 1;
+#X obj 164 72 clip 0 1;
+#X obj 241 73 clip 0 1;
+#X obj 319 71 clip 0 1;
+#X obj 298 182 * 3;
+#X obj 383 261 *~ 1;
+#X obj 404 21 inlet;
+#X obj 383 226 osc~ 400;
+#X obj 485 47 loadbang;
+#X obj 143 304 *~ 0.25;
+#X floatatom 468 102 5 0 0 0 - - -;
+#X obj 468 18 inlet;
+#X obj 109 74 * 0.25;
+#X text 116 44 level;
+#X obj 404 70 clip 0 1;
+#X obj 383 181 * 4;
+#X obj 101 104 s \$0-level;
+#X obj 64 292 env~;
+#X floatatom 64 326 5 0 0 0 - - -;
+#X connect 0 0 19 0;
+#X connect 0 0 36 0;
+#X connect 1 0 17 0;
+#X connect 2 0 18 0;
+#X connect 4 0 1 0;
+#X connect 5 0 8 0;
+#X connect 6 0 5 0;
+#X connect 7 0 8 0;
+#X connect 8 0 0 0;
+#X connect 8 0 4 0;
+#X connect 8 0 23 0;
+#X connect 8 0 34 0;
+#X connect 9 0 31 0;
+#X connect 9 0 35 0;
+#X connect 13 0 0 1;
+#X connect 13 0 29 0;
+#X connect 13 1 1 1;
+#X connect 13 2 2 1;
+#X connect 13 3 26 1;
+#X connect 14 0 20 0;
+#X connect 15 0 21 0;
+#X connect 16 0 22 0;
+#X connect 17 0 28 0;
+#X connect 18 0 28 0;
+#X connect 19 0 28 0;
+#X connect 20 0 19 1;
+#X connect 21 0 17 1;
+#X connect 22 0 18 1;
+#X connect 23 0 2 0;
+#X connect 24 0 28 0;
+#X connect 25 0 33 0;
+#X connect 26 0 24 0;
+#X connect 27 0 13 0;
+#X connect 28 0 3 0;
+#X connect 30 0 13 0;
+#X connect 31 0 28 1;
+#X connect 33 0 24 1;
+#X connect 34 0 26 0;
+#X connect 36 0 37 0;
+#X restore 49 247 pd test-signal-harmonics1234-------------;
+#X text 291 197 phases;
+#X obj 92 66 hsl 150 15 0.001 1 0 1 empty empty level 20 8 0 10 -262144
+-260097 -1 14700 0;
+#X floatatom 89 98 5 0 0 0 - - -;
+#X obj 77 424 output~;
+#N canvas 779 362 299 254 synthesis 0;
+#X obj 28 27 inlet;
+#X obj 124 158 line~;
+#X obj 28 149 osc~;
+#X obj 28 109 line~;
+#X obj 28 210 outlet~;
+#X msg 28 78 \$1 2;
+#N canvas 204 354 199 215 delay 0;
+#X obj 44 174 outlet;
+#X obj 71 94 samplerate~;
+#X obj 44 142 /;
+#X obj 44 69 t b b;
+#X msg 44 116 1.024e+06;
+#X obj 44 34 loadbang;
+#X obj 103 38 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X connect 1 0 2 1;
+#X connect 2 0 0 0;
+#X connect 3 0 4 0;
+#X connect 3 1 1 0;
+#X connect 4 0 2 0;
+#X connect 5 0 3 0;
+#X connect 6 0 3 0;
+#X restore 145 60 pd delay;
+#X obj 28 180 *~;
+#X obj 124 28 r \$0-level;
+#X msg 124 128 \$1 2;
+#X obj 124 86 pipe;
+#X connect 0 0 5 0;
+#X connect 1 0 7 1;
+#X connect 2 0 7 0;
+#X connect 3 0 2 0;
+#X connect 5 0 3 0;
+#X connect 6 0 10 1;
+#X connect 7 0 4 0;
+#X connect 8 0 10 0;
+#X connect 9 0 1 0;
+#X connect 10 0 9 0;
+#X restore 77 390 pd synthesis;
+#X obj 49 300 helmholtz~;
+#X text 351 321 [helmholtz~] is a pitch tracker using the SNAC (Specially
+Normalized AutoCorrelation) function developed by Philip McLeod.;
+#N canvas 0 22 450 300 (subpatch) 0;
+#X array \$0-snac 1024 float 0;
+#X coords 0 1 1023 -1 400 140 1;
+#X restore 350 169 graph;
+#X text 144 357 pitch;
+#X obj 691 170 cnv 15 59 138 empty empty empty 20 12 0 14 -191407 -66577
+0;
+#N canvas 700 55 487 526 helmholtz~ 0;
+#X obj 27 479 pddplink http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf
+;
+#X obj 27 433 pddplink http://miracle.otago.ac.nz/tartini/papers/Philip_McLeod_PhD.pdf
+;
+#X text 27 33 Pitch estimation with SNAC and parabolic interpolation
+is accurate up to ~0.1 Hz.;
+#X text 27 77 About 85% of the SNAC function length is useful for analysis.
+The right tail 15% is too instable and may trigger false results \,
+so this part is set to zero and ignored.;
+#X text 26 401 Find Philip McLeod's thesis with detailed description
+of the SNAC function:;
+#X text 27 461 Find an article on pitch detection by Philip McLeod
+here:;
+#X text 28 145 With the large part of the function being useful \,
+[helmholtz~] can find period lengths from ~1.2 times the analysis frame.
+An example: with framelength 1024 and SR 44100 \, the fundamental frequency
+of the frame is ~43 Hz \, while [helmholtz~] can find pitch starting
+from ~50 Hz.;
+#X text 27 228 There is also an upper bound for detection \, caused
+by the fact that narrow \, pulse-like waveforms have too little discrete
+samples to always describe the actual maximum of a peak. In [helmholtz~]
+\, parabolic interpolation is used to find the peak maxima before comparing
+them. This way \, pitches up to 2000 Hz can be detected \, provided
+they have not too rich harmonics (use a filter otherwise).;
+#X text 28 342 The default maximum for pitch reporting by [helmholt~]
+is 1000 Hz \, but you can set the maximum at will between 0 and 2000
+Hz with message 'maxfreq'.;
+#X restore 208 455 pd helmholtz~ info;
+#X obj 350 227 cnv 15 36 20 empty \$0-pitchcanvas empty 20 12 0 14
+-260097 -66577 0;
+#N canvas 95 200 447 401 scope 0;
+#X obj 38 21 inlet~;
+#X obj 139 131 sel 0;
+#X msg 139 48 1;
+#X obj 139 77 +;
+#X obj 92 326 tabwrite~ \$0-snac;
+#X obj 139 293 delay;
+#X obj 349 133 samplerate~;
+#X obj 349 84 loadbang;
+#X obj 359 112 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 349 157 t b f;
+#X obj 349 206 /;
+#X msg 349 182 1;
+#X obj 238 223 *;
+#X floatatom 238 256 10 0 0 0 - - -;
+#X obj 166 268 * 1000;
+#X obj 238 195 - 32;
+#X obj 238 24 r \$0-framesize;
+#X obj 257 147 loadbang;
+#X msg 257 54 resize \$1;
+#X obj 257 109 s \$0-snac;
+#X obj 265 82 s \$0-signal;
+#X obj 92 22 inlet~;
+#X obj 38 350 tabwrite~ \$0-signal;
+#X obj 139 22 inlet;
+#N canvas 71 301 316 324 pointer 0;
+#X obj 36 20 inlet;
+#X obj 166 22 inlet;
+#X obj 101 21 inlet;
+#X obj 86 76 f;
+#X obj 166 99 samplerate~;
+#X obj 166 130 /;
+#X floatatom 166 158 5 0 0 0 - - -;
+#X obj 86 171 /;
+#X obj 166 73 t b f;
+#X obj 86 147 f;
+#X obj 86 99 t b f;
+#X obj 224 21 loadbang;
+#X msg 224 49 1024;
+#X obj 86 262 s \$0-pitchcanvas;
+#X obj 86 207 * 400;
+#X msg 86 235 vis_size \$1 20;
+#X connect 0 0 3 0;
+#X connect 1 0 8 0;
+#X connect 2 0 3 1;
+#X connect 3 0 10 0;
+#X connect 4 0 5 0;
+#X connect 5 0 6 0;
+#X connect 5 0 9 1;
+#X connect 7 0 14 0;
+#X connect 8 0 4 0;
+#X connect 8 1 5 1;
+#X connect 9 0 7 0;
+#X connect 10 0 9 0;
+#X connect 10 1 7 1;
+#X connect 11 0 12 0;
+#X connect 12 0 8 0;
+#X connect 14 0 15 0;
+#X connect 15 0 13 0;
+#X restore 162 209 pd pointer;
+#X obj 139 105 & 7;
+#X obj 38 190 delay~ 1024 1024;
+#X msg 257 171 1024;
+#X connect 0 0 26 0;
+#X connect 1 0 5 0;
+#X connect 2 0 3 0;
+#X connect 3 0 25 0;
+#X connect 5 0 4 0;
+#X connect 5 0 22 0;
+#X connect 5 0 24 0;
+#X connect 6 0 9 0;
+#X connect 7 0 6 0;
+#X connect 8 0 6 0;
+#X connect 9 0 11 0;
+#X connect 9 1 10 1;
+#X connect 10 0 12 1;
+#X connect 11 0 10 0;
+#X connect 12 0 13 0;
+#X connect 12 0 14 0;
+#X connect 14 0 5 1;
+#X connect 15 0 12 0;
+#X connect 16 0 18 0;
+#X connect 16 0 15 0;
+#X connect 16 0 24 2;
+#X connect 16 0 26 1;
+#X connect 17 0 27 0;
+#X connect 18 0 19 0;
+#X connect 18 0 20 0;
+#X connect 21 0 4 0;
+#X connect 23 0 2 0;
+#X connect 23 0 24 1;
+#X connect 25 0 3 1;
+#X connect 25 0 1 0;
+#X connect 26 0 22 0;
+#X connect 27 0 15 0;
+#X restore 27 339 pd scope;
+#X text 350 374 The input signal is in the upper plot \, and the lower
+plot shows the SNAC function derived from the signal. [helmholtz~]
+tries to pick the principal peak from the SNAC function \, indicating
+period length \, from which the fundamental frequency is computed.
+;
+#X connect 2 0 0 0;
+#X connect 3 0 20 6;
+#X connect 4 0 9 0;
+#X connect 4 0 20 2;
+#X connect 5 0 10 0;
+#X connect 5 0 20 3;
+#X connect 6 0 11 0;
+#X connect 6 0 20 4;
+#X connect 7 0 12 0;
+#X connect 7 0 20 5;
+#X connect 13 0 20 0;
+#X connect 13 0 14 0;
+#X connect 20 0 26 0;
+#X connect 20 0 33 0;
+#X connect 22 0 20 1;
+#X connect 22 0 23 0;
+#X connect 25 0 24 0;
+#X connect 25 0 24 1;
+#X connect 26 0 33 1;
+#X connect 26 1 15 0;
+#X connect 26 1 25 0;
+#X connect 26 1 33 2;
+#X connect 26 2 16 0;

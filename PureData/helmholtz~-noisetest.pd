@@ -1,0 +1,135 @@
+#N canvas 207 40 447 585 10;
+#X obj 193 425 output~;
+#X obj 153 311 helmholtz~ 512;
+#N canvas 880 475 271 215 resynth 0;
+#X obj 31 115 osc~;
+#X obj 31 178 outlet~;
+#X obj 31 23 inlet;
+#X obj 31 84 line~;
+#X msg 31 56 \$1 5;
+#X connect 0 0 1 0;
+#X connect 2 0 4 0;
+#X connect 3 0 0 0;
+#X connect 4 0 3 0;
+#X restore 193 394 pd resynth;
+#N canvas 719 119 246 263 timer 0;
+#X obj 37 33 inlet;
+#X obj 184 32 inlet;
+#X obj 37 59 t b b;
+#X obj 151 213 print;
+#X obj 151 180 spigot;
+#X obj 37 212 outlet;
+#X obj 37 89 timer;
+#X obj 85 60 samplerate~;
+#X obj 37 156 /;
+#X obj 85 84 t b f;
+#X obj 85 131 /;
+#X msg 85 107 1000;
+#X obj 85 33 loadbang;
+#X connect 0 0 2 0;
+#X connect 1 0 4 1;
+#X connect 2 0 6 0;
+#X connect 2 1 6 1;
+#X connect 4 0 3 0;
+#X connect 6 0 8 0;
+#X connect 7 0 9 0;
+#X connect 8 0 5 0;
+#X connect 8 0 4 0;
+#X connect 9 0 11 0;
+#X connect 9 1 10 1;
+#X connect 10 0 8 1;
+#X connect 11 0 10 0;
+#X connect 12 0 7 0;
+#X restore 234 338 pd timer;
+#X floatatom 234 364 5 0 0 0 - - -;
+#X obj 279 311 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X text 298 309 print;
+#X text 271 365 response interval;
+#N canvas 231 117 204 206 sweep 0;
+#X obj 39 34 osc~ 1;
+#X obj 39 86 +~ 400;
+#X obj 39 61 *~ 200;
+#X obj 39 140 outlet~;
+#X connect 0 0 2 0;
+#X connect 1 0 3 0;
+#X connect 2 0 1 0;
+#X restore 153 5 pd sweep;
+#X obj 168 173 pink~;
+#X obj 168 230 *~ 0;
+#X obj 192 203 hsl 128 15 0 1 0 1 empty empty noise 20 8 0 10 -262144
+-260097 -1 3500 0;
+#X obj 153 274 +~;
+#X obj 34 346 output~;
+#X obj 34 312 delay~ 512 512;
+#X floatatom 204 225 5 0 0 0 - - -;
+#X text 32 392 original;
+#N canvas 700 55 487 526 helmholtz~ 0;
+#X obj 27 479 pddplink http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf
+;
+#X obj 27 433 pddplink http://miracle.otago.ac.nz/tartini/papers/Philip_McLeod_PhD.pdf
+;
+#X text 27 33 Pitch estimation with SNAC and parabolic interpolation
+is accurate up to ~0.1 Hz.;
+#X text 27 77 About 85% of the SNAC function length is useful for analysis.
+The right tail 15% is too instable and may trigger false results \,
+so this part is set to zero and ignored.;
+#X text 26 401 Find Philip McLeod's thesis with detailed description
+of the SNAC function:;
+#X text 27 461 Find an article on pitch detection by Philip McLeod
+here:;
+#X text 28 145 With the large part of the function being useful \,
+[helmholtz~] can find period lengths from ~1.2 times the analysis frame.
+An example: with framelength 1024 and SR 44100 \, the fundamental frequency
+of the frame is ~43 Hz \, while [helmholtz~] can find pitch starting
+from ~50 Hz.;
+#X text 27 228 There is also an upper bound for detection \, caused
+by the fact that narrow \, pulse-like waveforms have too little discrete
+samples to always describe the actual maximum of a peak. In [helmholtz~]
+\, parabolic interpolation is used to find the peak maxima before comparing
+them. This way \, pitches up to 2000 Hz can be detected \, provided
+they have not too rich harmonics (use a filter otherwise).;
+#X text 28 342 The default maximum for pitch reporting by [helmholt~]
+is 1000 Hz \, but you can set the maximum at will between 0 and 2000
+Hz with message 'maxfreq'.;
+#X restore 31 452 pd helmholtz~ info;
+#X msg 189 256 overlap 1;
+#X msg 189 282 overlap 2;
+#X obj 153 31 harmonics4;
+#X obj 108 173 env~;
+#X floatatom 108 198 5 0 0 0 - - -;
+#X floatatom 279 274 5 0 0 0 - - -;
+#X obj 279 247 env~ 8192;
+#X msg 336 103 \; pd dsp 1;
+#X msg 336 140 \; pd dsp 1;
+#X obj 336 78 loadbang;
+#X text 326 380 (samples);
+#X floatatom 199 339 5 0 0 0 - - -;
+#X text 30 496 How much noise can [helmholtz~] bear before it loses
+track of the pitch? The response interval should be 512 samples \,
+but if it looses track \, larger intervals appear (incidentally or
+more often).;
+#X connect 1 1 2 0;
+#X connect 1 1 29 0;
+#X connect 1 2 3 0;
+#X connect 2 0 0 0;
+#X connect 2 0 0 1;
+#X connect 3 0 4 0;
+#X connect 5 0 3 1;
+#X connect 8 0 20 0;
+#X connect 9 0 10 0;
+#X connect 10 0 12 1;
+#X connect 10 0 24 0;
+#X connect 11 0 10 1;
+#X connect 11 0 15 0;
+#X connect 12 0 1 0;
+#X connect 12 0 14 0;
+#X connect 14 0 13 0;
+#X connect 14 0 13 1;
+#X connect 18 0 1 0;
+#X connect 19 0 1 0;
+#X connect 20 0 12 0;
+#X connect 20 0 21 0;
+#X connect 21 0 22 0;
+#X connect 24 0 23 0;
+#X connect 27 0 25 0;
