@@ -5,9 +5,11 @@ A voice synthesizer/effects machine.
 
 Partly a port of https://github.com/magnetophon/VocSynth to faust (http://faust.grame.fr), partly adding in some new stuff that is not possible in puredata.
 
-More information on how it’s predecessor/prototype works can be found here:
+More information on how it works can be found here:
 
 https://github.com/magnetophon/VocSynth/blob/master/A%20realtime%20synthesizer%20controlled%20by%20singing%20and%20beatboxing.pdf
+
+Caribean.mp3 is a demo song
 
 Currently it consists of:
 
