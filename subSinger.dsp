@@ -17,7 +17,7 @@ import ("lib/FullGUI.lib");
 import ("lib/inputFM.lib");
 import ("lib/pmFX.lib");
 
-VocSynth(audio) =
+VoiceOfFaust(audio) =
   (
   (
     cleanVolume,cleanpmFX, //output volumes. The number of parameters should be nrSends
@@ -59,6 +59,6 @@ VocSynth(audio) =
 // process
 //-----------------------------------------------
 
-process(audio) = VocSynth(audio);
+process(audio) = VoiceOfFaust(audio);
 //process(audio) = StereoVocoder(audio,PitchTracker(audio));
 

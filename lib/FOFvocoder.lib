@@ -11,39 +11,47 @@ fofCenters = VocoderFreqs(fofBottom,fofTop);
 fofSkirts  = VocoderFreqs(fofSkirtBottom,fofSkirtTop);
 fofDecays  = VocoderFreqs(fofDecayBottom,fofDecayTop);
 
-fofOscs(NoiseIx,fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,fofCenter7,fofCenter8,fofCenter9,fofCenter10,fofCenter11,fofCenter12,fofCenter13,fofCenter14,fofCenter15,fofCenter16,
-fofVol1,fofVol2,fofVol3,fofVol4,fofVol5,fofVol6,fofVol7,fofVol8,fofVol9,fofVol10,fofVol11,fofVol12,fofVol13,fofVol14,fofVol15,fofVol16,
-fofSkirt1,fofSkirt2,fofSkirt3,fofSkirt4,fofSkirt5,fofSkirt6,fofSkirt7,fofSkirt8,fofSkirt9,fofSkirt10,fofSkirt11,fofSkirt12,fofSkirt13,fofSkirt14,fofSkirt15,fofSkirt16,
-fofDecay1,fofDecay2,fofDecay3,fofDecay4,fofDecay5,fofDecay6,fofDecay7,fofDecay8,fofDecay9,fofDecay10,fofDecay11,fofDecay12,fofDecay13,fofDecay14,fofDecay15,fofDecay16,
-Fund)=
-    //fof(fofCenter1,Fund,fofSkirt,fofDecay,lfnoise(0.1*1):lowpass(1,2)*fofPhaseRand*lfnoise(0.03125*fofCenter),fofVol1),
+/*fofOscs(NoiseIx,fofCenter1,fofCenter2,fofCenter3,fofCenter4,fofCenter5,fofCenter6,fofCenter7,fofCenter8,fofCenter9,fofCenter10,fofCenter11,fofCenter12,fofCenter13,fofCenter14,fofCenter15,fofCenter16,*/
+/*fofVol1,fofVol2,fofVol3,fofVol4,fofVol5,fofVol6,fofVol7,fofVol8,fofVol9,fofVol10,fofVol11,fofVol12,fofVol13,fofVol14,fofVol15,fofVol16,*/
+/*fofSkirt1,fofSkirt2,fofSkirt3,fofSkirt4,fofSkirt5,fofSkirt6,fofSkirt7,fofSkirt8,fofSkirt9,fofSkirt10,fofSkirt11,fofSkirt12,fofSkirt13,fofSkirt14,fofSkirt15,fofSkirt16,*/
+/*fofDecay1,fofDecay2,fofDecay3,fofDecay4,fofDecay5,fofDecay6,fofDecay7,fofDecay8,fofDecay9,fofDecay10,fofDecay11,fofDecay12,fofDecay13,fofDecay14,fofDecay15,fofDecay16,*/
+/*Fund)=*/
+    /*//fof(fofCenter1,Fund,fofSkirt,fofDecay,lfnoise(0.1*1):lowpass(1,2)*fofPhaseRand*lfnoise(0.03125*fofCenter),fofVol1),*/
+    /*//this part is to make a different (low)freq modulation for each osc.*/
+    /*//noises(nrBands,0):smooth(tau2pole(32))*/
+    /*//"NoiseIx*" is to make ir differen left and right.*/
+    /*fof(fofCenter1,Fund,fofSkirt1,fofDecay1,(fofPhaseRand*(noises(32,NoiseIx*1-1):smooth(tau2pole(32)))),fofVol1),*/
+    /*fof(fofCenter2,Fund,fofSkirt2,fofDecay2,(fofPhaseRand*(noises(32,NoiseIx*2-1):smooth(tau2pole(32)))),fofVol2),*/
+    /*fof(fofCenter3,Fund,fofSkirt3,fofDecay3,(fofPhaseRand*(noises(32,NoiseIx*3-1):smooth(tau2pole(32)))),fofVol3),*/
+    /*fof(fofCenter4,Fund,fofSkirt4,fofDecay4,(fofPhaseRand*(noises(32,NoiseIx*4-1):smooth(tau2pole(32)))),fofVol4),*/
+    /*fof(fofCenter5,Fund,fofSkirt5,fofDecay5,(fofPhaseRand*(noises(32,NoiseIx*5-1):smooth(tau2pole(32)))),fofVol5),*/
+    /*fof(fofCenter6,Fund,fofSkirt6,fofDecay6,(fofPhaseRand*(noises(32,NoiseIx*6-1):smooth(tau2pole(32)))),fofVol6),*/
+    /*fof(fofCenter7,Fund,fofSkirt7,fofDecay7,(fofPhaseRand*(noises(32,NoiseIx*7-1):smooth(tau2pole(32)))),fofVol7),*/
+    /*fof(fofCenter8,Fund,fofSkirt8,fofDecay8,(fofPhaseRand*(noises(32,NoiseIx*8-1):smooth(tau2pole(32)))),fofVol8),*/
+    /*fof(fofCenter9,Fund,fofSkirt9,fofDecay9,(fofPhaseRand*(noises(32,NoiseIx*9-1):smooth(tau2pole(32)))),fofVol9),*/
+    /*fof(fofCenter10,Fund,fofSkirt10,fofDecay10,(fofPhaseRand*(noises(32,NoiseIx*10-1):smooth(tau2pole(32)))),fofVol10),*/
+    /*fof(fofCenter11,Fund,fofSkirt11,fofDecay11,(fofPhaseRand*(noises(32,NoiseIx*11-1):smooth(tau2pole(32)))),fofVol11),*/
+    /*fof(fofCenter12,Fund,fofSkirt12,fofDecay12,(fofPhaseRand*(noises(32,NoiseIx*12-1):smooth(tau2pole(32)))),fofVol12),*/
+    /*fof(fofCenter13,Fund,fofSkirt13,fofDecay13,(fofPhaseRand*(noises(32,NoiseIx*13-1):smooth(tau2pole(32)))),fofVol13),*/
+    /*fof(fofCenter14,Fund,fofSkirt14,fofDecay14,(fofPhaseRand*(noises(32,NoiseIx*14-1):smooth(tau2pole(32)))),fofVol14),*/
+    /*fof(fofCenter15,Fund,fofSkirt15,fofDecay15,(fofPhaseRand*(noises(32,NoiseIx*15-1):smooth(tau2pole(32)))),fofVol15),*/
+    /*fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(fofPhaseRand*(noises(32,NoiseIx*nrBands-1):smooth(tau2pole(32)))),fofVol16)*/
+    /*;*/
+
+
+fofOscs(NoiseIx,Fund)=
     //this part is to make a different (low)freq modulation for each osc.
     //noises(nrBands,0):smooth(tau2pole(32))
     //"NoiseIx*" is to make ir differen left and right.
-    fof(fofCenter1,Fund,fofSkirt1,fofDecay1,(fofPhaseRand*(noises(32,NoiseIx*1-1):smooth(tau2pole(32)))),fofVol1),
-    fof(fofCenter2,Fund,fofSkirt2,fofDecay2,(fofPhaseRand*(noises(32,NoiseIx*2-1):smooth(tau2pole(32)))),fofVol2),
-    fof(fofCenter3,Fund,fofSkirt3,fofDecay3,(fofPhaseRand*(noises(32,NoiseIx*3-1):smooth(tau2pole(32)))),fofVol3),
-    fof(fofCenter4,Fund,fofSkirt4,fofDecay4,(fofPhaseRand*(noises(32,NoiseIx*4-1):smooth(tau2pole(32)))),fofVol4),
-    fof(fofCenter5,Fund,fofSkirt5,fofDecay5,(fofPhaseRand*(noises(32,NoiseIx*5-1):smooth(tau2pole(32)))),fofVol5),
-    fof(fofCenter6,Fund,fofSkirt6,fofDecay6,(fofPhaseRand*(noises(32,NoiseIx*6-1):smooth(tau2pole(32)))),fofVol6),
-    fof(fofCenter7,Fund,fofSkirt7,fofDecay7,(fofPhaseRand*(noises(32,NoiseIx*7-1):smooth(tau2pole(32)))),fofVol7),
-    fof(fofCenter8,Fund,fofSkirt8,fofDecay8,(fofPhaseRand*(noises(32,NoiseIx*8-1):smooth(tau2pole(32)))),fofVol8),
-    fof(fofCenter9,Fund,fofSkirt9,fofDecay9,(fofPhaseRand*(noises(32,NoiseIx*9-1):smooth(tau2pole(32)))),fofVol9),
-    fof(fofCenter10,Fund,fofSkirt10,fofDecay10,(fofPhaseRand*(noises(32,NoiseIx*10-1):smooth(tau2pole(32)))),fofVol10),
-    fof(fofCenter11,Fund,fofSkirt11,fofDecay11,(fofPhaseRand*(noises(32,NoiseIx*11-1):smooth(tau2pole(32)))),fofVol11),
-    fof(fofCenter12,Fund,fofSkirt12,fofDecay12,(fofPhaseRand*(noises(32,NoiseIx*12-1):smooth(tau2pole(32)))),fofVol12),
-    fof(fofCenter13,Fund,fofSkirt13,fofDecay13,(fofPhaseRand*(noises(32,NoiseIx*13-1):smooth(tau2pole(32)))),fofVol13),
-    fof(fofCenter14,Fund,fofSkirt14,fofDecay14,(fofPhaseRand*(noises(32,NoiseIx*14-1):smooth(tau2pole(32)))),fofVol14),
-    fof(fofCenter15,Fund,fofSkirt15,fofDecay15,(fofPhaseRand*(noises(32,NoiseIx*15-1):smooth(tau2pole(32)))),fofVol15),
-    fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(fofPhaseRand*(noises(32,NoiseIx*nrBands-1):smooth(tau2pole(32)))),fofVol16)
-    ;
+    interleave(nrBands,4):
+    par(i, nrBands, (fof(Fund,((fofPhaseRand*(noises(nrBands*2,NoiseIx*i)):smooth(tau2pole(32)))))));
 
 
 //fofvocoder(audio,freq)=(fofCenters,analizer(voice(audio),freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
 
 fofvocoder(audio,freq)=
-  ((fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(1):>_*0.125),
-  ((fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays,fofFund(freq)):fofOscs(2):>_*0.125)
+  ((fofFund(freq),fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays):fofOscs(1):>_*0.125),
+  ((fofFund(freq),fofCenters,analizer(voice(audio),freq),fofSkirts,fofDecays):fofOscs(2):>_*0.125)
     ;
 
 

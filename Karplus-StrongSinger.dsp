@@ -1,4 +1,4 @@
-declare name      "VocSynth";
+declare name      "Karplus-StrongSinger";
 declare version   "0.7";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -19,13 +19,13 @@ import ("lib/KarplusStrongFX.lib");
 import ("lib/pmFX.lib");
 
 //-----------------------------------------------
-// VocSynth: Combine all the elements
+// VoiceOfFaust: Combine all the elements
 //-----------------------------------------------
 
 
 //KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output level]",	1, 0, 1, 0.001)*0.2:volScale);
 
-VocSynth(audio) =
+VoiceOfFaust(audio) =
   (voice(audio)<:_,_)
   :
   (
@@ -55,7 +55,7 @@ VocSynth(audio) =
 //-----------------------------------------------
 
     KPoctave          = mainKPgroup(vslider("[-1]octave",-1, -2, 2, 1):octaveMultiplier);
-process(audio) = VocSynth(audio);
+process(audio) = VoiceOfFaust(audio);
 //process(audio) = audio:stringloop(PitchTracker(audio),audio,_,phaseM,DCnonlin);
 
  //process(audio) =  _<:(_,stringloop(PitchTracker(audio)*KPoctave,audio,_,phaseM,DCnonlin+DCleftRight)):>_;

@@ -1,4 +1,4 @@
-declare name      "VocSynth";
+declare name      "stringSinger";
 declare version   "0.7";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -24,13 +24,13 @@ import ("lib/pmFX.lib");
 
 
 //-----------------------------------------------
-// VocSynth: Combine all the elements
+// VoiceOfFaust: Combine all the elements
 //-----------------------------------------------
 
 //mixerWithSends(nrChan,nrMonoChan,nrSends)
 
 
-VocSynth(audio) =
+VoiceOfFaust(audio) =
   (
   cleanVolume,cleanChorus,cleanpmFX, //output volumes. The number of parameters should be nrSends
   (voice(audio)<:_,_)
@@ -70,6 +70,6 @@ VocSynth(audio) =
 // process
 //-----------------------------------------------
 
-process(audio) = VocSynth(audio);
+process(audio) = VoiceOfFaust(audio);
 //process(audio) = StereoVocoder(audio,PitchTracker(audio));
 

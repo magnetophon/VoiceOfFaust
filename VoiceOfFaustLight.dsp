@@ -1,4 +1,4 @@
-declare name      "VocSynth";
+declare name      "VoiceOfFaustLight";
 declare version   "0.6";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -1073,12 +1073,12 @@ pmFX(fc,r,I,PH,x) = x : fdelay3(1 << 17, dt + 1)
 
 
 //-----------------------------------------------
-// VocSynth: Combine all the elements
+// VoiceOfFaust: Combine all the elements
 //-----------------------------------------------
 
 //mixerWithSends(nrChan,nrMonoChan,nrSends)
 
-VocSynth(audio) =
+VoiceOfFaust(audio) =
     (
     cleanVolume,cleanNLKS,cleanpmFX,
     (voice(audio)*4<:_,_),
@@ -1140,7 +1140,7 @@ VocSynth(audio) =
 // process
 //-----------------------------------------------
 
-process(audio) = VocSynth(audio);
+process(audio) = VoiceOfFaust(audio);
 
 
 //-----------------------------------------------
