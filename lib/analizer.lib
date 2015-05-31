@@ -6,35 +6,38 @@ subLevel(audio) = voice(audio):gate_mono(threshold-15,0,0.1,0.05):lowpass(3,300)
 
 //subLevel(audio) = audio:lowpass(3,300):amp_follower_ud((vslider("up", 0, 0, 1, 0)*0.1),(vslider("down", 0, 0, 1, 0.001)*0.1))*6:tanh;
 
-//analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
+//analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,nrBands, _,freq:*:min(SR/2)));
 
-analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,16, _,freq:*:min(SR/2)));
+analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands, _,freq:*:min(SR/2)));
 
 //amp_follower_ud params set for minimal distortion
 //also sounds cool to vary between this and 0
 
-bandEnv(freq)=resonbp(freq,analizerQ,1):amp_follower_ud(0.002,0.004);
+bandEnv=resonbp(analizerQ,1):amp_follower_ud(0.002,0.004);
 
-analizers(audio,freq1,freq2,freq3,freq4,freq5,freq6,freq7,freq8,freq9,freq10,freq11,freq12,freq13,freq14,freq15,freq16)=
-audio<:
-        (
-        bandEnv(freq1),
-        bandEnv(freq2),
-        bandEnv(freq3),
-        bandEnv(freq4),
-        bandEnv(freq5),
-        bandEnv(freq6),
-        bandEnv(freq7),
-        bandEnv(freq8),
-        bandEnv(freq9),
-        bandEnv(freq10),
-        bandEnv(freq11),
-        bandEnv(freq12),
-        bandEnv(freq13),
-        bandEnv(freq14),
-        bandEnv(freq15),
-        bandEnv(freq16)
-);
+analizers(audio)=
+par(i, nrBands,(audio,_:bandEnv));
+
+/*analizers(audio,freq1,freq2,freq3,freq4,freq5,freq6,freq7,freq8,freq9,freq10,freq11,freq12,freq13,freq14,freq15,freq16)=*/
+/*audio<:*/
+        /*(*/
+        /*bandEnv(freq1),*/
+        /*bandEnv(freq2),*/
+        /*bandEnv(freq3),*/
+        /*bandEnv(freq4),*/
+        /*bandEnv(freq5),*/
+        /*bandEnv(freq6),*/
+        /*bandEnv(freq7),*/
+        /*bandEnv(freq8),*/
+        /*bandEnv(freq9),*/
+        /*bandEnv(freq10),*/
+        /*bandEnv(freq11),*/
+        /*bandEnv(freq12),*/
+        /*bandEnv(freq13),*/
+        /*bandEnv(freq14),*/
+        /*bandEnv(freq15),*/
+        /*bandEnv(freq16)*/
+/*);*/
 
 analizer(audio,freq)=(analizerCenters(freq)):analizers(audio);
 

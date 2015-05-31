@@ -326,11 +326,11 @@ octaveMultiplier	=
         (_==2) * 4
     ):>_;
 
-VocoderFreqs(bottom,top) =     par(i,16,   pow((pow((top/bottom),1/15)),i)*bottom);
+VocoderFreqs(bottom,top) =     par(i,nrBands,   pow((pow((top/bottom),1/15)),i)*bottom);
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
 WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);
-vocoderMixer = interleave(2,8):((bus(8):>_),(bus(8):>_));
+vocoderMixer = interleave(2,nrBands/2s):((bus(nrBands/2s):>_),(bus(nrBands/2s):>_));
 voice(audio) = qompander(audio,factor,threshold,attack,release);
 
 
@@ -386,9 +386,9 @@ subLevel(audio) = voice(audio):lowpass(3,300):amp_follower_ud(0.003,0.005)*6:tan
 
 //subLevel(audio) = audio:lowpass(3,300):amp_follower_ud((vslider("up", 0, 0, 1, 0)*0.1),(vslider("down", 0, 0, 1, 0.001)*0.1))*6:tanh;
 
-//analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,16, _,freq:*:min(SR/2)));
+//analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,nrBands, _,freq:*:min(SR/2)));
 
-analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,16, _,freq:*:min(SR/2)));
+analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands, _,freq:*:min(SR/2)));
 
 //amp_follower_ud params set for minimal distortion
 //also sounds cool to vary between this and 0
@@ -714,7 +714,7 @@ volFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Ce
     ;
 
 StereoVolFilterBank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,Center10,Center11,Center12,Center13,Center14,Center15,Center16,Volume1,Volume2,Volume3,Volume4,Volume5,Volume6,Volume7,Volume8,Volume9,Volume10,Volume11,Volume12,Volume13,Volume14,Volume15,Volume16,freq,q)=
-    vocoderOsc(freq)<:bus(16):
+    vocoderOsc(freq)<:bus(nrBands):
     volFilter(Center1,_,Volume1,q),
     volFilter(Center2,_,Volume2,q),
     volFilter(Center3,_,Volume3,q),
@@ -766,7 +766,7 @@ EQbank(Center1,Center2,Center3,Center4,Center5,Center6,Center7,Center8,Center9,C
         };
 
 vocoderCenters(freq) =
-    VocoderFreqs(vocoderBottom,vocoderTop):(par(i,16, _,freq * vocoderOctave:*:min(SR/2)));
+    VocoderFreqs(vocoderBottom,vocoderTop):(par(i,nrBands, _,freq * vocoderOctave:*:min(SR/2)));
 
 StereoVocoder(audio,freq)=
     (vocoderCenters(freq),analizer(voice(audio),freq),(freq), vocoderQ):StereoVolFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
@@ -779,7 +779,7 @@ StereoVocoder(audio,freq)=
 // PAF vocoder synthesis
 //-----------------------------------------------
 
-//pafCenters=     par(i,16,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
+//pafCenters=     par(i,nrBands,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
 pafCenters =
     VocoderFreqs(pafBottom,pafTop);
     pafOscs(pafCenter1,pafCenter2,pafCenter3,pafCenter4,pafCenter5,pafCenter6,pafCenter7,pafCenter8,pafCenter9,pafCenter10,pafCenter11,pafCenter12,pafCenter13,pafCenter14,pafCenter15,pafCenter16,pafVol1,pafVol2,pafVol3,pafVol4,pafVol5,pafVol6,pafVol7,pafVol8,pafVol9,pafVol10,pafVol11,pafVol12,pafVol13,pafVol14,pafVol15,pafVol16,Fund)=
@@ -809,7 +809,7 @@ pafvocoder(audio,freq)=
 // FOF vocoder synthesis
 //-----------------------------------------------
 
-//fofCenters=     par(i,16,   pow((pow((fofTop/fofBottom),1/15)),i)*fofBottom);
+//fofCenters=     par(i,nrBands,   pow((pow((fofTop/fofBottom),1/15)),i)*fofBottom);
 fofFund(freq) =
     fund(freq,fofOctave);
 
@@ -824,7 +824,7 @@ fofDecay1,fofDecay2,fofDecay3,fofDecay4,fofDecay5,fofDecay6,fofDecay7,fofDecay8,
 Fund)=
     //fof(fofCenter1,Fund,fofSkirt,fofDecay,lfnoise(0.1*1):lowpass(1,2)*fofPhaseRand*lfnoise(0.03125*fofCenter),fofVol1),
     //this part is to make a different (low)freq modulation for each osc.
-    //noises(16,0):smooth(tau2pole(32))
+    //noises(nrBands,0):smooth(tau2pole(32))
     //"NoiseIx*" is to make ir differen left and right.
     fof(fofCenter1,Fund,fofSkirt1,fofDecay1,(fofPhaseRand*(noises(32,NoiseIx*1-1):smooth(tau2pole(32)))),fofVol1),
     fof(fofCenter2,Fund,fofSkirt2,fofDecay2,(fofPhaseRand*(noises(32,NoiseIx*2-1):smooth(tau2pole(32)))),fofVol2),
@@ -841,7 +841,7 @@ Fund)=
     fof(fofCenter13,Fund,fofSkirt13,fofDecay13,(fofPhaseRand*(noises(32,NoiseIx*13-1):smooth(tau2pole(32)))),fofVol13),
     fof(fofCenter14,Fund,fofSkirt14,fofDecay14,(fofPhaseRand*(noises(32,NoiseIx*14-1):smooth(tau2pole(32)))),fofVol14),
     fof(fofCenter15,Fund,fofSkirt15,fofDecay15,(fofPhaseRand*(noises(32,NoiseIx*15-1):smooth(tau2pole(32)))),fofVol15),
-    fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(fofPhaseRand*(noises(32,NoiseIx*16-1):smooth(tau2pole(32)))),fofVol16)
+    fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(fofPhaseRand*(noises(32,NoiseIx*nrBands-1):smooth(tau2pole(32)))),fofVol16)
     ;
 
 
@@ -929,13 +929,13 @@ KarplusStrongFX(audio,freq*4,KPvolHH,KPresonanceHH)
 
 
 
-KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,16, _,freq * oct:*:min(SR/2)));
+KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(SR/2)));
 
 KPanalizer(audio,freq) =
-//par(i,16,0);
+//par(i,nrBands,0);
 
     analizer(audio,freq)
-    :par(i,16,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
+    :par(i,nrBands,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
     :linear2db) );//adapt to eq instead of bandpass
 
 
@@ -1158,8 +1158,8 @@ process(audio) = VocSynth(audio);
 
 //process(audio) = audio<:(stringloopBank(PitchTracker(audio)));
 
-//fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*(noises(16,1):smooth(tau2pole(1))),fofVol1)
-//process(audio) = fof(444,222,fofSkirt,fofDecay,1*fofPhaseRand*(noises(16,1):smooth(tau2pole(1))),1);
+//fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*(noises(nrBands,1):smooth(tau2pole(1))),fofVol1)
+//process(audio) = fof(444,222,fofSkirt,fofDecay,1*fofPhaseRand*(noises(nrBands,1):smooth(tau2pole(1))),1);
 //process(audio) = fofvocoder(voice,PitchTracker(audio)):>min(100):max(-100):stringloop(_,PitchTracker(audio)*0.5,nlfOrderL,feedbackL*feedbackADSR(audio),treshL,nonLinL,brightL,frequencyModL);
 
 //process(audio) = volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);

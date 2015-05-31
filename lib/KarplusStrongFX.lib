@@ -2,11 +2,11 @@
 // Karplus-Strong effect
 //-----------------------------------------------
 
-KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,16, _,freq * oct:*:min(SR/2)));
+KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(SR/2)));
 
 KPanalizer(audio,freq) =
     analizer(audio,freq)
-    :par(i,16,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
+    :par(i,nrBands,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
     :linear2db) );//adapt to eq instead of bandpass
 
 

@@ -3,7 +3,7 @@
 // FOF vocoder synthesis
 //-----------------------------------------------
 
-//fofCenters=     par(i,16,   pow((pow((fofTop/fofBottom),1/15)),i)*fofBottom);
+//fofCenters=     par(i,nrBands,   pow((pow((fofTop/fofBottom),1/15)),i)*fofBottom);
 fofFund(freq) =
     fund(freq,fofOctave);
 
@@ -18,7 +18,7 @@ fofDecay1,fofDecay2,fofDecay3,fofDecay4,fofDecay5,fofDecay6,fofDecay7,fofDecay8,
 Fund)=
     //fof(fofCenter1,Fund,fofSkirt,fofDecay,lfnoise(0.1*1):lowpass(1,2)*fofPhaseRand*lfnoise(0.03125*fofCenter),fofVol1),
     //this part is to make a different (low)freq modulation for each osc.
-    //noises(16,0):smooth(tau2pole(32))
+    //noises(nrBands,0):smooth(tau2pole(32))
     //"NoiseIx*" is to make ir differen left and right.
     fof(fofCenter1,Fund,fofSkirt1,fofDecay1,(fofPhaseRand*(noises(32,NoiseIx*1-1):smooth(tau2pole(32)))),fofVol1),
     fof(fofCenter2,Fund,fofSkirt2,fofDecay2,(fofPhaseRand*(noises(32,NoiseIx*2-1):smooth(tau2pole(32)))),fofVol2),
@@ -35,7 +35,7 @@ Fund)=
     fof(fofCenter13,Fund,fofSkirt13,fofDecay13,(fofPhaseRand*(noises(32,NoiseIx*13-1):smooth(tau2pole(32)))),fofVol13),
     fof(fofCenter14,Fund,fofSkirt14,fofDecay14,(fofPhaseRand*(noises(32,NoiseIx*14-1):smooth(tau2pole(32)))),fofVol14),
     fof(fofCenter15,Fund,fofSkirt15,fofDecay15,(fofPhaseRand*(noises(32,NoiseIx*15-1):smooth(tau2pole(32)))),fofVol15),
-    fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(fofPhaseRand*(noises(32,NoiseIx*16-1):smooth(tau2pole(32)))),fofVol16)
+    fof(fofCenter16,Fund,fofSkirt16,fofDecay16,(fofPhaseRand*(noises(32,NoiseIx*nrBands-1):smooth(tau2pole(32)))),fofVol16)
     ;
 
 

@@ -3,7 +3,7 @@
 // PAF vocoder synthesis
 //-----------------------------------------------
 
-//pafCenters=     par(i,16,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
+//pafCenters=     par(i,nrBands,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
 pafCenters =
     VocoderFreqs(pafBottom,pafTop);
     pafOscs(pafCenter1,pafCenter2,pafCenter3,pafCenter4,pafCenter5,pafCenter6,pafCenter7,pafCenter8,pafCenter9,pafCenter10,pafCenter11,pafCenter12,pafCenter13,pafCenter14,pafCenter15,pafCenter16,pafVol1,pafVol2,pafVol3,pafVol4,pafVol5,pafVol6,pafVol7,pafVol8,pafVol9,pafVol10,pafVol11,pafVol12,pafVol13,pafVol14,pafVol15,pafVol16,Fund)=
