@@ -6,26 +6,14 @@
 //pafCenters=     par(i,nrBands,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
 pafCenters =
     VocoderFreqs(pafBottom,pafTop);
-    pafOscs(pafCenter1,pafCenter2,pafCenter3,pafCenter4,pafCenter5,pafCenter6,pafCenter7,pafCenter8,pafCenter9,pafCenter10,pafCenter11,pafCenter12,pafCenter13,pafCenter14,pafCenter15,pafCenter16,pafVol1,pafVol2,pafVol3,pafVol4,pafVol5,pafVol6,pafVol7,pafVol8,pafVol9,pafVol10,pafVol11,pafVol12,pafVol13,pafVol14,pafVol15,pafVol16,Fund)=
-    paf(pafCenter1,Fund,pafIndex,pafVol1),
-    paf(pafCenter2,Fund,pafIndex,pafVol2),
-    paf(pafCenter3,Fund,pafIndex,pafVol3),
-    paf(pafCenter4,Fund,pafIndex,pafVol4),
-    paf(pafCenter5,Fund,pafIndex,pafVol5),
-    paf(pafCenter6,Fund,pafIndex,pafVol6),
-    paf(pafCenter7,Fund,pafIndex,pafVol7),
-    paf(pafCenter8,Fund,pafIndex,pafVol8),
-    paf(pafCenter9,Fund,pafIndex,pafVol9),
-    paf(pafCenter10,Fund,pafIndex,pafVol10),
-    paf(pafCenter11,Fund,pafIndex,pafVol11),
-    paf(pafCenter12,Fund,pafIndex,pafVol12),
-    paf(pafCenter13,Fund,pafIndex,pafVol13),
-    paf(pafCenter14,Fund,pafIndex,pafVol14),
-    paf(pafCenter15,Fund,pafIndex,pafVol15),
-    paf(pafCenter16,Fund,pafIndex,pafVol16)
+
+pafOscs(Fund)=
+    interleave(nrBands,2):
+    par(i, nrBands, paf(Fund,pafIndex))
+    /*paf(pafCenter16,Fund,pafIndex,pafVol16)*/
     ;
 
 
 PAFvocoder(audio,freq)=
-    (pafCenters,analizer(voice(audio),freq),pafFund(freq)):pafOscs:vocoderMixer:par(i, 2, _*0.25):WidePanner(pafWidth);
+    (pafFund(freq),pafCenters,analizer(voice(audio),freq)):pafOscs:vocoderMixer:par(i, 2, _*0.25):WidePanner(pafWidth);
 
