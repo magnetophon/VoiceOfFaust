@@ -1,5 +1,5 @@
 // number of bands for the vocoders.
-nrBands =24;
+nrBands =16;
 //-----------------------------------------------
 // master index, all slave oscilators 'clock' to this.
 //-----------------------------------------------
@@ -9,6 +9,18 @@ fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq
 //-----------------------------------------------
 // Some general functions
 //-----------------------------------------------
+// minimum of n values
+minOfN(1) = _;
+minOfN(2) = min;
+minOfN(n) = (minOfN(n-1),_):min;
+// maximum of n values
+maxOfN(1) = _;
+maxOfN(2) = max;
+maxOfN(n) = (maxOfN(n-1),_):max;
+// sum of n values
+sumOfN(1) = _;
+sumOfN(2) = +;
+sumOfN(n) = (sumOfN(n-1),_):+;
 // cheaper than actual dB calculations:
 volScale=_:pow(2):smooth(0.999);
 envelop                 = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;

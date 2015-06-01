@@ -56,6 +56,20 @@ VoiceOfFaust(audio) =
 
     KPoctave          = mainKPgroup(vslider("[-1]octave",-1, -2, 2, 1):octaveMultiplier);
 process(audio) = VoiceOfFaust(audio);
+/*process = bus(4)<:(selector(1,4),selector(2,4),selector(3,4),selector(0,4));*/
+/*process = EQbank;*/
+/*process =     ((bus(nrBands)<:(bus(nrBands),interleave(nrBands,nrBands)):interleave(nrBands,nrBands+1)),bus(2*nrBands));*/
+    /*(par(i,nrBands,_+OffSet),bus(nrBands),(q<:bus(nrBands)));*/
+/*process = bus(nrBands)<:(bus(nrBands),interleave(nrBands,nrBands)):interleave(nrBands,nrBands+1);*/
+/*process(q,OffSet) =  (bus(nrBands),interleave(4,nrBands),bus(2*nrBands));*/
+/*process = eqOfN(9);*/
+/*process(x) =     ((x,interleave(nrBands,3)):eqOfN(nrBands));*/
+/*process = peak_eq_cq;*/
+/*process = seq(i, nrBands, peak_eq_cq(7,8,9));*/
+/*process = seq(j,(log(nrBands)/log(2)),par(k,nrBands/(2:pow(j+1)),min));*/
+/*process = ((0,_:+),_):+;*/
+/*process = (0,_:(+)):seq(i,nrBands,((+),_));*/
+/*process = (0:seq(i,nrBands, +))/nrBands;*/
 //process(audio) = audio:stringloop(PitchTracker(audio),audio,_,phaseM,DCnonlin);
 
  //process(audio) =  _<:(_,stringloop(PitchTracker(audio)*KPoctave,audio,_,phaseM,DCnonlin+DCleftRight)):>_;

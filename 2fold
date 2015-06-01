@@ -1,0 +1,5 @@
+#!/nix/store/nshgh2svh4a5z1vqfvbqq2dnvgfq59ka-bash-4.3-p33/bin/bash  
+for f in $@; do
+    faust -t 9999 -svg $f -o /dev/null
+done
+
