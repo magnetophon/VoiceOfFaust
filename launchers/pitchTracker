@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# a NixOS friendly prompt
+
+#////////////////////////////////////////////////////////
+# startup script for the pitchtracker
+#////////////////////////////////////////////////////////
+# If this script is killed, kill everything.
+trap "kill -- -$$" EXIT
+
+pd -nodac -nomidi -nogui -jack ../PureData/OscSendVoc.pd &
