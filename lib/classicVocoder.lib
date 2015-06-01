@@ -9,7 +9,7 @@ vocoderOsc(freq) =
     stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty);
 
 volFilter(c,f,v,q) =
-    f:resonbp(c:min((SR/2)-10),q,v):resonbp(c:min((SR/2)-10),q,compensate)
+    f:resonbp(c:min((SR/2)-10),Q,v):resonbp(c:min((SR/2)-10),Q,compensate)
     with {
     //compensate for one filter:
     //compensate = (tanh((1/(vocoderQ:min(1)))/2));
@@ -18,14 +18,18 @@ volFilter(c,f,v,q) =
     //compensate = ((1/(((vocoderQ:min(7))/7):pow(hslider("[-1]comp",	1, 0.001, 1, 0))))-1)*(hslider("[-1]comp",	1, 1, 2000, 0.001)):hbargraph("[-1]compensate", 0, 99)+1;
     //compensate = 1;// ((1/(vocoderQ:min(7)))/7);
     //compensate = (1/(((vocoderQ:min(2))/2)))*((((vocoderQ*0.5:min(1)*-1)+1)*10)+1);
-    //gain = line (v*compensate, minline);
+    //gain = dezip(v*compensate, minline);
     //gain = (v*compensate);
+	/*bandFreq =       25*pow(2,(band+1)*(9/bandsNumb));*/
+	/*BW = (bandFreq - 25*pow(2,(band)*(9/bandsNumb)))*bwRatio;*/
+	/*bandQ = bandFreq/BW;*/
+    Q = q;
     BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0.001); //1.766
     BP2 =9.43;//1/hslider("[-1]bp2",	0, 0, 1, 0.001); //9.43
     FAC1 = 1;//hslider("[-1]fac1",	1, 1, 30, 0.001);//1
     FAC2 = 1.7;//hslider("[-1]fac2",	1, 1, 30, 0.001);//1.7
     FAC3 = 4;//hslider("[-1]fac3",	1, 1, 30, 0.001);//4
-    com = 1/(q/49);
+    com = 1/(Q/49);
     compensate =
           (((com*FAC1),(com<BP1)):*),
           ((((com-BP1)*FAC2+FAC1*BP1),((com>=BP1)&(com<=BP2))):*),

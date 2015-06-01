@@ -9,6 +9,8 @@ fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq
 //-----------------------------------------------
 // Some general functions
 //-----------------------------------------------
+// dezipper
+dezip(x) = x:smooth(0.999);
 // minimum of n values
 minOfN(1) = _;
 minOfN(2) = min;

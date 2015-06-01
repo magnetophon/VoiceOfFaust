@@ -207,7 +207,7 @@ pafFreq(audio)=
 
 
 paf(c,f,i,v)=
-    (((cos12(c,f))*bell(f,i)) * line (v, minline))
+    (((cos12(c,f))*bell(f,i)) * dezip(v))
     with {
     bellcurve(x) = int(x):rdtable(belltablesize+1,curve,_)
     with 	{
@@ -220,10 +220,10 @@ paf(c,f,i,v)=
 
 wrap
     =_<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
-    centerWrap(c,f) = line (c, 300):sampleAndHold(f)<:wrap;
+    centerWrap(c,f) = dezip(c):sampleAndHold(f)<:wrap;
     centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
     cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
-    bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*line (i, 12))+100:bellcurve;
+    bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*dezip(i))+100:bellcurve;
     };
 
 //-----------------------------------------------
