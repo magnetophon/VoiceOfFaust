@@ -15,35 +15,27 @@ eqOfN(1) = bus(4)<:(selector(1,4),selector(2,4),selector(3,4),selector(0,4)):pea
 eqOfN(n) = (eqOfN(n-1),_,_,_):eqOfN(1);
 
 EQbank(Oscilator,q) =
-    ((bus(nrBands)<:(bus(nrBands),interleave(nrBands,nrBands)):interleave(nrBands,nrBands+1)),bus(nrBands))
-    :(par(i,nrBands,_+OffSet),bus(nrBands),(q<:bus(nrBands)))
+    /*((bus(nrBands)<:(par(i, nrBands, (selector(i,nrBands), par(j,nrBands, selector(j,nrBands)))))),bus(nrBands))*/
+    ((bus(nrBands)<:(bus(nrBands),OffSet)<:(par(i, nrBands, (selector(i,nrBands+1)+selector(nrBands,nrBands+1))))),bus(nrBands))
+    :(bus(2*nrBands),(q<:bus(nrBands)))
+    /*((bus(nrBands)<:(bus(nrBands),interleave(nrBands,nrBands)):interleave(nrBands,nrBands+1)),bus(nrBands))*/
+    /*((bus(nrBands)<:(par(i, nrBands, (selector(i,nrBands), par(j,nrBands, selector(j,nrBands)))))),bus(nrBands))*/
+    /*:(par(i,nrBands,_+OffSet),bus(nrBands),(q<:bus(nrBands)))*/
     :((Oscilator,interleave(nrBands,3)):eqOfN(nrBands))
     /*(*/
     /*//lowshelf(N,Volume1+OffSet,Center1):*/
     /*peak_eq_cq(OffSet,q):*/
-    /*peak_eq_cq(Volume2+OffSet,Center2,q):*/
-    /*peak_eq_cq(Volume3+OffSet,Center3,q):*/
-    /*peak_eq_cq(Volume4+OffSet,Center4,q):*/
-    /*peak_eq_cq(Volume5+OffSet,Center5,q):*/
-    /*peak_eq_cq(Volume6+OffSet,Center6,q):*/
-    /*peak_eq_cq(Volume7+OffSet,Center7,q):*/
-    /*peak_eq_cq(Volume8+OffSet,Center8,q):*/
-    /*peak_eq_cq(Volume9+OffSet,Center9,q):*/
-    /*peak_eq_cq(Volume10+OffSet,Center10,q):*/
-    /*peak_eq_cq(Volume11+OffSet,Center11,q):*/
-    /*peak_eq_cq(Volume12+OffSet,Center12,q):*/
-    /*peak_eq_cq(Volume13+OffSet,Center13,q):*/
-    /*peak_eq_cq(Volume14+OffSet,Center14,q):*/
-    /*peak_eq_cq(Volume15+OffSet,Center15,q):*/
-    /*peak_eq_cq(Volume16+OffSet,Center16,q)*/
-    /*//highshelf(N,Volume16+OffSet,Center16)*/
-    /*)*/
     with {
         N = 3; //uneven only: 1,3,5
         AvgVolume = sumOfN(nrBands)/nrBands;
         MinVolume = minOfN(nrBands);
         MaxVolume = maxOfN(nrBands);
-        OffSet    = bus(nrBands)<:bus(nrBands*4):(KPeqCutBoost>0),(((KPeqCutBoost+1)*-AvgVolume)+(KPeqCutBoost*MaxVolume)),((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume): select2;
+        OffSet    =
+           bus(nrBands)<:bus(nrBands*4):
+           (KPeqCutBoost>0),
+           (((KPeqCutBoost+1)*-AvgVolume)+(KPeqCutBoost*MaxVolume)),
+           ((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume):
+           select2;
         };
 KPvocoder(audio,feedback,freq)= (feedback,KPvocoderQ,KPanalizer(voice(audio),freq),KPcenters(freq,1)):EQbank*128;
 

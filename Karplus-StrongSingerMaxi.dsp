@@ -56,6 +56,11 @@ VoiceOfFaust(audio) =
 
     KPoctave          = mainKPgroup(vslider("[-1]octave",-1, -2, 2, 1):octaveMultiplier);
 process(audio) = VoiceOfFaust(audio);
+/*OS = bus(nrBands):>_;*/
+/*process = (selector(nrBands,nrBands+1));*/
+/*process = (selector(3,nrBands+1),selector(nrBands+1,nrBands+1)):+;*/
+/*process = bus(nrBands)<:(bus(nrBands),OS)<:(par(i, nrBands, (selector(i,nrBands+1),selector(nrBands,nrBands+1):+)));*/
+/*process = bus(nrBands)<:(par(i, nrBands, (selector(i,nrBands), par(j,nrBands, selector(j,nrBands)))));*/
 /*process = bus(4)<:(selector(1,4),selector(2,4),selector(3,4),selector(0,4));*/
 /*process = EQbank;*/
 /*process =     ((bus(nrBands)<:(bus(nrBands),interleave(nrBands,nrBands)):interleave(nrBands,nrBands+1)),bus(2*nrBands));*/
