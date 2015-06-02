@@ -15,8 +15,8 @@ analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands
 
 bandEnv=resonbp(analizerQ,1):amp_follower_ud(0.002,0.004);
 
-analizers(audio)=
-par(i, nrBands,(_,audio:bandEnv));
+analizers=
+interleave(nrBands,4):par(i, nrBands,(resonbp:amp_follower_ud(0.002,0.004)));
 
 /*analizers(audio,freq1,freq2,freq3,freq4,freq5,freq6,freq7,freq8,freq9,freq10,freq11,freq12,freq13,freq14,freq15,freq16)=*/
 /*audio<:*/
@@ -39,6 +39,6 @@ par(i, nrBands,(_,audio:bandEnv));
         /*bandEnv(freq16)*/
 /*);*/
 
-analizer(audio,freq)=(analizerCenters(freq)):analizers(audio);
+analizer(audio,freq)=(analizerCenters(freq),(analizerQ<:bus(nrBands)),(1<:bus(nrBands)),(audio<:bus(nrBands))):analizers;
 
 
