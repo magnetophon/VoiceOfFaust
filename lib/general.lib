@@ -1,5 +1,3 @@
-// number of bands for the vocoders.
-nrBands =16;
 //-----------------------------------------------
 // master index, all slave oscilators 'clock' to this.
 //-----------------------------------------------
