@@ -57,8 +57,9 @@ pafOctave               = PAFvocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1
 PAFparamsGroup(x)       = PAFvocoderGroup((vgroup("[1]parameters", x)));
 pafTop                  = PAFparamsGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		defaultTop, 1, 64, 0.001):volScale);		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 pafBottom               = PAFparamsGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):volScale);			//0.25 to 49 logarithmicly
-pafIndex                = PAFparamsGroup(vslider("[3]index[style:knob][tooltip: PAF index]",	25, 0, 100, 0.001):smooth(0.999));
-pafWidth                = PAFparamsGroup(vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
+pafIndexTop             = PAFparamsGroup(vslider("[3]indexTop[style:knob][tooltip: PAF index of the highest oscillator]",	100, 0.001, 100, 0.001):smooth(0.999));
+pafIndexBottom          = PAFparamsGroup(vslider("[4]indexBottom[style:knob][tooltip: PAF index of the lowest oscillator]",	0.001, 0.001, 100, 0.001):smooth(0.999));
+pafWidth                = PAFparamsGroup(vslider("[5]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
 
 //-----------------------------------------------

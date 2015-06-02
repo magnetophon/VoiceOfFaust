@@ -216,7 +216,7 @@ with {
     };
 
 /*bellcurve = (((_-100)/25)<:exp((_*_)*-1));*/
-    volumeCompensate = 0.2+(i/125);
+    volumeCompensate = 0.666+(i/300);
     wrap            = _<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
     centerWrap(c,f) = dezip(c):sampleAndHold(f)<:wrap;
     centerMin(c,f)  = c:sampleAndHold(f)-centerWrap(c,f);

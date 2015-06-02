@@ -36,7 +36,10 @@ octaveMultiplier	=
         (_==2) * 4
     ):>_;
 
+      // make a log array of values, from bottom to top
 VocoderFreqs(bottom,top) =     par(i,nrBands,   pow((pow((top/bottom),1/(nrBands-1))),i)*bottom);
+      // make a lin array of values, from bottom to top
+VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/nrBands))+bottom);
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
 WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);

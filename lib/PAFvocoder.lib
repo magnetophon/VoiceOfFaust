@@ -4,8 +4,9 @@
 //-----------------------------------------------
 
 //pafCenters=     par(i,nrBands,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
-pafCenters =
-    VocoderFreqs(pafBottom,pafTop);
+pafCenters = VocoderFreqs(pafBottom,pafTop);
+
+pafIndexes = VocoderLinArray(pafIndexBottom,pafIndexTop);
 
 pafOscs=
     interleave(nrBands,4):
@@ -15,5 +16,5 @@ pafOscs=
 
 
 PAFvocoder(audio,freq)=
-    (pafCenters,(pafFund(freq)<:bus(nrBands)),(pafIndex<:bus(nrBands)),analizer(voice(audio),freq)):pafOscs:vocoderMixer:par(i, 2, _*0.25):WidePanner(pafWidth);
+    (pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer:par(i, 2, _*0.25):WidePanner(pafWidth);
 
