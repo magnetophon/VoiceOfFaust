@@ -212,19 +212,19 @@ paf(c,f,i,v)=
     bellcurve(x) = int(x):rdtable(belltablesize+1,curve,_)
     with 	{
             belltablesize 	= 199;
-            curve 	= time:(((_-100)/25)<:(_*_)*-1);
+            curve 	= time:(((_-100)/25)<:exp((_*_)*-1));
             };
 
 //bellcurve = (((_-100)/25)<:(_*_)*-1);
 
+    wrap
+        =_<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
+        centerWrap(c,f) = dezip(c):sampleAndHold(f)<:wrap;
+        centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
+        cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
 
-wrap
-    =_<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
-    centerWrap(c,f) = dezip(c):sampleAndHold(f)<:wrap;
-    centerMin(c,f) = c:sampleAndHold(f)-centerWrap(c,f);
-    cos12(c,f) = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
     bell(f,i)= (((f*0.5)-0.25:(_*2*PI:cos))*dezip(i))+100:bellcurve;
-    };
+};
 
 //-----------------------------------------------
 // FOF oscilator
