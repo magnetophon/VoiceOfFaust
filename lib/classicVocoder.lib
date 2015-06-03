@@ -7,7 +7,10 @@ vocoderFund(freq)=
 
 vocoderOsc(freq) =
            stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty)
-           <:bus(nrBands);
+           <:(
+             (par(i, 2, ((MS-1)*-1) *_) <:bus(nrBands))
+             ,(par(i, 2, MS *_) <:bus(nrBands))
+            ):>bus(nrBands);
 
 volFilter(prevC,c,f,v,q) =
     f:resonbp(c:min((SR/2)-10),Q,v):resonbp(c:min((SR/2)-10),Q,compensate)

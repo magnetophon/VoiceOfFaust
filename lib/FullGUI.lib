@@ -3,17 +3,19 @@
 //-----------------------------------------------
 
 OSCgroup(x)    = (hgroup("[0]OSC", x)); // To recieve OSC pitch and other messages
+channelLayout = (checkbox("[1] channel layout
+        [tooltip: When this is checked, give mid-side output (or ambisonics in 4 channel mode), otherwise give stereo (surround in 4 channel mode)]"));
 //qompander    = [1]
-tabs(x)        = (tgroup("[1]", x));
-synthsGroup(x) = tabs(hgroup("[0]synths", x));
-FXGroup(x)     = tabs(hgroup("[1]effects", x));
-
+tabs(x)        = (tgroup("[2]", x));
+  synthsGroup(x) = tabs(hgroup("[0]synths", x));
+  FXGroup(x)     = tabs(hgroup("[1]effects", x));
+      //MeterGroup(x)  = (vgroup("[3]output level", x)); // To recieve OSC pitch and other messages
 
 OSCpitch                = OSCgroup(nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
 OSCfidelity             = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0.001));
 OSConset                = OSCgroup(nentry("[2]onset", 0, 0, 1,0.001 ));
 formant                 = OSCgroup(nentry("[3]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);
-MeterGroup(x)           = (vgroup("[4]output level", x)); // To recieve OSC pitch and other messages
+
 ManualOnset             = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
@@ -195,7 +197,6 @@ release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	2
 // Karplus Strong as an effect
 //-----------------------------------------------
 
-//todo: make FX group and routing
 KPgroup(x)        = FXGroup((vgroup("[1]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level]",	1, 0, 1, 0.001):volScale);
