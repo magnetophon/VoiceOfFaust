@@ -1,4 +1,4 @@
-#N canvas 2 45 1020 535 10;
+#N canvas 2 45 1046 610 10;
 #X obj 297 64 adc~;
 #X msg 73 196 disconnect;
 #X obj 116 22 loadbang;
@@ -7,7 +7,7 @@
 #X msg 451 169 send /*/OSC/fidelity \$1;
 #X obj 297 239 osc/packOSC;
 #X obj 297 272 net/udpsend;
-#N canvas 2 45 1020 535 PitchTracker 0;
+#N canvas 2 45 1046 610 PitchTracker 0;
 #X obj -379 -27 inlet~;
 #N canvas 2 50 508 535 filters 0;
 #X obj 47 41 inlet~;
@@ -48,10 +48,10 @@
 #X msg -242 -56 0.25;
 #X obj -242 -76 loadbang;
 #X text -212 -57 resample factor;
-#N canvas 2 50 1020 535 user-parameters 0;
-#X obj 45 139 vradio 15 1 1 4 empty empty empty 0 -8 0 10 -262144 -260097
+#N canvas 2 45 1046 610 user-parameters 0;
+#X obj 45 139 vradio 15 1 1 6 empty empty empty 0 -8 0 10 -262144 -260097
 -1 3;
-#N canvas 0 50 167 265 overlap 0;
+#N canvas 2 45 1046 610 overlap 0;
 #X obj 29 35 inlet;
 #X obj 29 195 outlet;
 #X obj 29 130 pow;
@@ -64,7 +64,7 @@
 #X connect 3 1 2 1;
 #X connect 4 0 2 0;
 #X connect 5 0 1 0;
-#X restore 45 210 pd overlap;
+#X restore 45 250 pd overlap;
 #N canvas 2 50 1571 1007 framesize 0;
 #X obj 29 14 inlet;
 #X obj 29 242 outlet;
@@ -102,19 +102,18 @@
 #X text 50 7 512;
 #X text 49 37 2048;
 #X text 67 154 2;
-#X text 67 186 8;
 #X text 67 171 4;
-#X obj 29 501 outlet;
+#X obj 29 541 outlet;
 #X floatatom 98 90 5 0 0 0 - - -, f 5;
 #X text 49 22 1024 (default);
 #X text 67 138 1 (default);
 #X text 292 84 Overlapping analysis frames can be used for a finer
 rate of pitch messages. This may be useful in the case of longer analysis
 frames. Note that overlap multiplies the object's CPU load.;
-#X msg 62 292 bias \$1;
-#X obj 65 242 hsl 100 15 0 1 0 1 empty empty empty -2 -8 0 10 -262144
--260097 -1 2000 0;
-#X floatatom 71 266 5 0 0 0 - - -, f 5;
+#X msg 62 332 bias \$1;
+#X obj 65 282 hsl 100 15 0 1 0 1 empty empty empty -2 -8 0 10 -262144
+-260097 -1 3300 0;
+#X floatatom 71 306 5 0 0 0 - - -, f 5;
 #X text 290 152 Bias (range 0 - 1) is used to favour the first peaks
 found in the SNAC function. If bias is set to a higher level \, you
 are more likely to experience upper octave jumps. If bias is set to
@@ -122,10 +121,10 @@ a low level \, low octave jumps are more likely to happen. Set bias
 according to your input material. For example \, for a sound type with
 weak fundamental \, bias is better not set too high. Default is 0.2.
 ;
-#X obj 64 325 hsl 100 15 0 1 0 1 empty empty empty -2 -8 0 10 -262144
+#X obj 64 365 hsl 100 15 0 1 0 1 empty empty empty -2 -8 0 10 -262144
 -260097 -1 0 0;
-#X floatatom 70 349 5 0 0 0 - - -, f 5;
-#X msg 61 375 fidelity \$1;
+#X floatatom 70 389 5 0 0 0 - - -, f 5;
+#X msg 61 415 fidelity \$1;
 #X text 290 259 Fidelity (range 0 - 1 ) determines the fidelity threshold
 required for new pitch information to get through. Fidelity is an indication
 of how periodic a sound is (as opposed to noisy \, not periodic). Default
@@ -136,29 +135,33 @@ Framesize also determines latency of the pitch info. Note that reported
 pitch is the average pitch of an analysis frame. Framesize is always
 a power of two \, because FFT is used for efficiency.;
 #X text 93 110 lowest detectable pitch (Hz);
-#X obj 65 409 hsl 100 15 0 2000 0 1 empty empty empty -2 -8 0 10 -262144
--260097 -1 2400 0;
-#X floatatom 72 431 5 0 0 0 - - -, f 5;
-#X msg 62 459 maxfreq \$1;
+#X obj 65 449 hsl 100 15 0 2000 0 1 empty empty empty -2 -8 0 10 -262144
+-260097 -1 2000 0;
+#X floatatom 72 471 5 0 0 0 - - -, f 5;
+#X msg 62 499 maxfreq \$1;
 #X text 291 330 Maxfreq is the maximum frequency which will possibly
 be reported by [helmholtz~]. Default is 2000 Set it lower if you experience
 harmonic interference components such as from cellphones.;
-#X text -51 359 has to be zero so it gives continuous fidelity outputs
+#X text -51 399 has to be zero so it gives continuous fidelity outputs
 ;
-#X connect 0 0 1 0;
-#X connect 1 0 10 0;
-#X connect 2 0 10 0;
-#X connect 2 1 11 0;
+#X text 67 186 8;
+#X obj 113 186 loadbang;
+#X msg 113 208 16;
+#X connect 1 0 9 0;
+#X connect 2 0 9 0;
+#X connect 2 1 10 0;
 #X connect 3 0 2 0;
-#X connect 15 0 10 0;
-#X connect 16 0 15 0;
-#X connect 16 0 17 0;
-#X connect 19 0 21 0;
-#X connect 19 0 20 0;
-#X connect 21 0 10 0;
-#X connect 25 0 27 0;
-#X connect 25 0 26 0;
-#X connect 27 0 10 0;
+#X connect 14 0 9 0;
+#X connect 15 0 14 0;
+#X connect 15 0 16 0;
+#X connect 18 0 20 0;
+#X connect 18 0 19 0;
+#X connect 20 0 9 0;
+#X connect 24 0 26 0;
+#X connect 24 0 25 0;
+#X connect 26 0 9 0;
+#X connect 30 0 31 0;
+#X connect 31 0 1 0;
 #X restore -103 -6 pd user-parameters;
 #N canvas 2 50 1020 535 downsample--------------------------- 0;
 #X obj 29 38 inlet~;
@@ -197,8 +200,8 @@ harmonic interference components such as from cellphones.;
 #X connect 15 1 1 0;
 #X connect 15 2 2 0;
 #X restore -380 15 pd downsample---------------------------;
-#X obj -345 408 outlet pitch;
-#X obj -242 408 outlet fidelity;
+#X obj -379 458 outlet pitch;
+#X obj -242 458 outlet fidelity;
 #X text -270 -38 gives a value every 6 ms;
 #X obj -313 375 f;
 #X obj -140 310 b;
@@ -213,16 +216,14 @@ harmonic interference components such as from cellphones.;
 #X obj -140 174 clip 60 80;
 #X obj -380 84 moses 60;
 #X obj 111 -40 nbx 4 14 51 200 1 1 empty empty empty 0 -8 0 10 -262144
--1 -1 60.0171 256;
+-1 -1 120.77 256;
 #X obj 111 -10 * 1.33;
 #X text 158 -44 lowest note you produce;
 #X text 164 -11 the range above the lowest note that has flaky fidelity
 ;
-#X obj -327 106 t f f;
-#X obj -207 285 moses 0.94;
 #X obj 70 107 loadbang;
 #X msg 70 129 -0.1;
-#N canvas 2 45 1020 535 curve_pow 0;
+#N canvas 2 50 1020 535 curve_pow 0;
 #X obj 106 325 pow 1;
 #X obj 62 10 inlet;
 #X obj 257 9 inlet;
@@ -263,7 +264,7 @@ harmonic interference components such as from cellphones.;
 #X connect 15 0 17 0;
 #X connect 16 0 15 0;
 #X restore -140 223 pd curve_pow;
-#N canvas 2 45 1020 535 scaleFrom01 0;
+#N canvas 2 45 1046 610 scaleFrom01 0;
 #X obj 98 5 inlet;
 #X obj 162 161 outlet;
 #X obj 148 5 inlet;
@@ -282,7 +283,7 @@ harmonic interference components such as from cellphones.;
 #X connect 7 1 4 1;
 #X connect 7 2 6 1;
 #X restore -140 253 pd scaleFrom01;
-#N canvas 2 45 1020 535 scaleTo01 0;
+#N canvas 2 50 1020 535 scaleTo01 0;
 #X obj 98 35 inlet;
 #X obj 98 77 - 60;
 #X obj 98 119 / 20;
@@ -298,6 +299,23 @@ harmonic interference components such as from cellphones.;
 #X connect 5 0 6 0;
 #X connect 6 0 2 1;
 #X restore -140 199 pd scaleTo01;
+#X floatatom -196 185 5 0 0 0 - - -, f 5;
+#X obj -196 206 / 100;
+#X floatatom -196 228 5 0 0 0 - - -, f 5;
+#X obj -440 306 -;
+#X obj -440 255 f;
+#X obj -440 350 /;
+#X obj -440 328 abs;
+#X obj -398 328 max;
+#X obj -440 277 t f f;
+#X obj -440 395 t b;
+#X obj -207 260 f;
+#X obj -327 106 t b f f;
+#X obj -435 224 t f b f f f;
+#X obj -379 423 f;
+#X obj -440 372 moses 0.4;
+#X floatatom -380 351 5 0 0 0 - - -, f 5;
+#X obj -207 285 moses 0.9;
 #X connect 0 0 1 0;
 #X connect 1 0 8 0;
 #X connect 2 0 1 2;
@@ -306,32 +324,52 @@ harmonic interference components such as from cellphones.;
 #X connect 7 0 8 2;
 #X connect 8 0 23 0;
 #X connect 8 1 10 0;
-#X connect 8 1 29 0;
-#X connect 12 0 9 0;
+#X connect 8 1 43 1;
+#X connect 12 0 45 0;
 #X connect 13 0 12 0;
 #X connect 14 0 15 0;
 #X connect 15 0 16 0;
-#X connect 15 0 33 1;
+#X connect 15 0 31 1;
 #X connect 17 0 18 0;
 #X connect 18 0 19 0;
-#X connect 18 0 33 2;
-#X connect 22 0 34 0;
-#X connect 23 1 28 0;
+#X connect 18 0 31 2;
+#X connect 22 0 32 0;
+#X connect 23 1 44 0;
 #X connect 24 0 23 1;
 #X connect 24 0 22 1;
 #X connect 24 0 25 0;
 #X connect 24 0 1 1;
-#X connect 24 0 34 1;
+#X connect 24 0 32 1;
 #X connect 25 0 22 2;
-#X connect 25 0 34 2;
-#X connect 28 0 22 0;
-#X connect 28 1 12 1;
-#X connect 29 1 13 0;
+#X connect 25 0 32 2;
+#X connect 28 0 29 0;
+#X connect 29 0 30 1;
 #X connect 30 0 31 0;
-#X connect 31 0 32 1;
-#X connect 32 0 33 0;
-#X connect 33 0 29 1;
-#X connect 34 0 32 0;
+#X connect 32 0 30 0;
+#X connect 33 0 34 0;
+#X connect 34 0 35 0;
+#X connect 34 0 49 1;
+#X connect 36 0 39 0;
+#X connect 37 0 41 0;
+#X connect 38 0 47 0;
+#X connect 39 0 38 0;
+#X connect 40 0 38 1;
+#X connect 41 0 36 0;
+#X connect 41 1 40 0;
+#X connect 42 0 46 0;
+#X connect 43 0 49 0;
+#X connect 44 0 43 0;
+#X connect 44 1 22 0;
+#X connect 44 2 12 1;
+#X connect 45 0 37 1;
+#X connect 45 1 37 0;
+#X connect 45 2 36 1;
+#X connect 45 3 40 1;
+#X connect 45 4 46 1;
+#X connect 46 0 9 0;
+#X connect 47 0 42 0;
+#X connect 48 0 47 1;
+#X connect 49 1 13 0;
 #X restore 297 95 pd PitchTracker;
 #X msg 116 66 \; pd dsp 1;
 #N canvas 2 50 1020 535 fallback 0;
@@ -378,12 +416,16 @@ pitchtracker is not installed.;
 #X restore 297 127 pd fallback;
 #X obj 116 44 delay 500;
 #X obj 186 44 delay 50;
+#X obj 20 39 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 20 59 metro 2000;
 #X connect 0 0 8 0;
 #X connect 0 0 10 1;
 #X connect 1 0 7 0;
 #X connect 2 0 3 0;
 #X connect 2 0 11 0;
 #X connect 2 0 12 0;
+#X connect 2 0 14 0;
 #X connect 3 0 7 0;
 #X connect 4 0 6 0;
 #X connect 5 0 6 0;
@@ -393,3 +435,5 @@ pitchtracker is not installed.;
 #X connect 10 0 4 0;
 #X connect 11 0 9 0;
 #X connect 12 0 9 0;
+#X connect 13 0 14 0;
+#X connect 14 0 3 0;
