@@ -23,22 +23,12 @@ import ("hoa.lib");
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
 /*process(audio) = StereoVocoder(audio,PitchTracker(audio));*/
-nrBands =16; // number of bands for the vocoders.
-nrOutChan = 2; // number of output
+nrBands =32; // number of bands for the vocoders.
+nrOutChan = 8; // number of output
 process =tmp;
-tmp = bus2
-<:(
-             (par(i, 2, (channelLayout==0) *_) <:bus(nrBands))
-             ,(par(i, 2, (channelLayout==1) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) )
-             // ==3 hademar?
-            ):>bus(nrBands)
-  ):vocoderMixer;
+tmp = vocoderOsc(2):vocoderMixer;
 /*process = decoderStereo(2);*/
 
-vocoderMixer =bus(nrBands)<:(
-             (interleave(nrOutChan,nrBands/nrOutChan):par(i, nrOutChan,(bus((nrBands/nrOutChan)):>_*(channelLayout==0))))
-             ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(channelLayout==1) *_))
-             ):>bus(nrOutChan);
 /*process = bus2<:bus(nrBands):vocoderMixer;*/
 /*process = bus2<:interleave(2,nrOutChan/2)<:bus(nrBands):vocoderMixer;*/
 /*process = (bus(nrBands)<:par(i,nrBands,selector(i-1,nrBands)));*/
