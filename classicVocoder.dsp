@@ -22,6 +22,7 @@ import ("lib/classicVocoder.lib");
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
 process(audio) = StereoVocoder(audio,PitchTracker(audio)) ;
+/*process = (bus(nrBands)<:par(i,nrBands,selector(i-1,nrBands)));*/
 /*process = resonbp;*/
 /*process = VocoderFreqs(1,2);*/
 /*process = StereoVolFilterBank(nrBands);*/
