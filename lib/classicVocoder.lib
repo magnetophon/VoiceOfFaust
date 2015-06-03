@@ -8,8 +8,8 @@ vocoderFund(freq)=
 vocoderOsc(freq) =
            stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty)
            <:(
-             (par(i, 2, ((MS-1)*-1) *_) <:bus(nrBands))
-             ,(par(i, 2, MS *_) <:bus(nrBands))
+             (par(i, 2, ((channelLayout-1)*-1) *_) <:bus(nrBands))
+             ,(par(i, 2, channelLayout *_) <:bus(nrBands))
             ):>bus(nrBands);
 
 volFilter(prevC,c,f,v,q) =
