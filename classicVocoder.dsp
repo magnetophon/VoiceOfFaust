@@ -21,12 +21,14 @@ import ("lib/classicVocoder.lib");
 //-----------------------------------------------
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
-process(audio) = StereoVocoder(audio,PitchTracker(audio)) ;
+process(audio) = StereoVocoder(audio,PitchTracker(audio));
+/*process = bus2<:bus(nrBands):vocoderMixer;*/
+/*process = bus2<:interleave(2,nrOutChan/2)<:bus(nrBands):vocoderMixer;*/
 /*process = (bus(nrBands)<:par(i,nrBands,selector(i-1,nrBands)));*/
 /*process = resonbp;*/
 /*process = VocoderFreqs(1,2);*/
 /*process = StereoVolFilterBank(nrBands);*/
 /*process(audio) =  analizers(audio);*/
 /*process(audio) = (audio,_:bandEnv);*/
-/*process(freq,audio) =  (vocoderCenters(freq),(vocoderOsc(freq)<:bus(nrBands)),analizer(voice(audio),freq), (vocoderQ<:bus(nrBands))):StereoVolFilterBank(nrBands):vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);*/
+/*process(freq,audio) =  (vocoderCenters(freq),(vocoderOsc(freq)<:bus(nrBands)),analizer(voice(audio),freq), (vocoderQ<:bus(nrBands))):StereoVolFilterBank(nrBands):vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth,nrOutChan);*/
 /*process = (bus(nrBands*4)):par(i, nrBands, volFilter);*/

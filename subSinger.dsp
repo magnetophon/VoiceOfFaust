@@ -29,21 +29,21 @@ VoiceOfFaust(audio) =
     FMvolume,FMpmFX,
     stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio))
   )
-  : mixerWithSends(nrChan,nrMonoChan,nrSends)
+  : mixerWithSends(nrChan,nrOutChan,nrSends)
 
   :_,_//No effect
 
   ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
   ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
 
-  :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_)) // mix the clean and FX
+  :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
   :stereoLimiter(PitchTracker(audio) * vocoderOctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   )
   with {
     nrChan     = 3;
-    nrMonoChan = 2;
+    nrOutChan = 2;
     nrSends    = 2;
 
     cleanpmFX  = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0.5, 0, 1, 0.001):volScale);

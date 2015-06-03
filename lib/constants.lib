@@ -2,6 +2,7 @@
 // contants
 //-----------------------------------------------
 nrBands =16; // number of bands for the vocoders.
+nrOutChan = 8; // number of output
 //todo: test or ask about smooth vs line:, efficiency and behaviour
 minline                 = 3;		// minimum line time in ms
 MinInputPitch           = 61.7354;	// lowest expected note is a B1

@@ -6,7 +6,8 @@ vocoderFund(freq)=
     fund(freq,vocoderOctave);
 
 vocoderOsc(freq) =
-    stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty);
+           stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty)
+           <:bus(nrBands);
 
 volFilter(prevC,c,f,v,q) =
     f:resonbp(c:min((SR/2)-10),Q,v):resonbp(c:min((SR/2)-10),Q,compensate)
@@ -44,7 +45,7 @@ vocoderCenters(freq) =
 
 StereoVocoder(audio,freq)=
            ((vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands)))),(vocoderOsc(freq)<:bus(nrBands)),analizer(voice(audio),freq), (vocoderQ<:bus(nrBands)))
-           :StereoVolFilterBank(nrBands):vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
+           :StereoVolFilterBank(nrBands):vocoderMixer:par(i, nrOutChan, _*0.01):WidePanner(vocoderWidth,nrOutChan);
 
 
 //process(audio) = StereoVolFilterBank;

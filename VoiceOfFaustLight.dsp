@@ -769,7 +769,7 @@ vocoderCenters(freq) =
     VocoderFreqs(vocoderBottom,vocoderTop):(par(i,nrBands, _,freq * vocoderOctave:*:min(SR/2)));
 
 StereoVocoder(audio,freq)=
-    (vocoderCenters(freq),analizer(voice(audio),freq),(freq), vocoderQ):StereoVolFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
+    (vocoderCenters(freq),analizer(voice(audio),freq),(freq), vocoderQ):StereoVolFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth,nrOutChan);
 
 
 //process(audio) = StereoVolFilterBank;
@@ -1076,7 +1076,7 @@ pmFX(fc,r,I,PH,x) = x : fdelay3(1 << 17, dt + 1)
 // VoiceOfFaust: Combine all the elements
 //-----------------------------------------------
 
-//mixerWithSends(nrChan,nrMonoChan,nrSends)
+//mixerWithSends(nrChan,nrOutChan,nrSends)
 
 VoiceOfFaust(audio) =
     (
@@ -1101,7 +1101,7 @@ VoiceOfFaust(audio) =
     CZvolume,CZNLKS,CZpmFX,
     CZringMod(audio,PitchTracker(audio))
 
-    : mixerWithSends(nrChan,nrMonoChan,nrSends)
+    : mixerWithSends(nrChan,nrOutChan,nrSends)
 
     :_,_//No effect
 
@@ -1111,7 +1111,7 @@ VoiceOfFaust(audio) =
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
 
-    :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
+    :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_))
 
     //:block  //block out non tonal sounds
     :stereoLimiter(audio) //it needs the original audio (the voice) to calculate the pitch, and with that the decay time.
@@ -1119,7 +1119,7 @@ VoiceOfFaust(audio) =
     )
     with {
           nrChan     = 7;
-          nrMonoChan = 2;
+          nrOutChan = 2;
           nrSends    = 3;
           //is actually dual mono. on purpose; to try and keep the image in the center.
           //todo: make this stereo, and find a better way for  KP-FX to stay centered
@@ -1162,7 +1162,7 @@ process(audio) = VoiceOfFaust(audio);
 //process(audio) = fof(444,222,fofSkirt,fofDecay,1*fofPhaseRand*(noises(nrBands,1):smooth(tau2pole(1))),1);
 //process(audio) = fofvocoder(voice,PitchTracker(audio)):>min(100):max(-100):stringloop(_,PitchTracker(audio)*0.5,nlfOrderL,feedbackL*feedbackADSR(audio),treshL,nonLinL,brightL,frequencyModL);
 
-//process(audio) = volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth);
+//process(audio) = volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth,nrOutChan);
 //process(audio) = (stringloopBank(PitchTracker(audio),audio,audio,phaseLL,phaseL,phaseM,phaseH,phaseHH));
 //process(audio) = stringloopFBpath(1,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL);
 //process(audio) = KPvocoder(audio,voice(audio),PitchTracker(audio));

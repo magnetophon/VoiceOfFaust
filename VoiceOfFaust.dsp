@@ -28,7 +28,7 @@ import ("lib/pmFX.lib");
 // VoiceOfFaust: Combine all the elements
 //-----------------------------------------------
 
-//mixerWithSends(nrChan,nrMonoChan,nrSends)
+//mixerWithSends(nrChan,nrOutChan,nrSends)
 
 VoiceOfFaust(audio) =
     (
@@ -53,7 +53,7 @@ VoiceOfFaust(audio) =
     CZvolume,CZNLKS,CZpmFX,
     CZringMod(audio,PitchTracker(audio))
 
-    : mixerWithSends(nrChan,nrMonoChan,nrSends)
+    : mixerWithSends(nrChan,nrOutChan,nrSends)
 
     :_,_//No effect
 
@@ -63,14 +63,14 @@ VoiceOfFaust(audio) =
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
     ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
 
-    :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_))
+    :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_))
 
     :stereoLimiter(PitchTracker(audio) * subOctave) //it needs the lowest pitch to adjust the decay time.
     :VuMeter
     )
     with {
           nrChan     = 7;
-          nrMonoChan = 2;
+          nrOutChan = 2;
           nrSends    = 3;
           };
 

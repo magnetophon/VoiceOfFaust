@@ -27,7 +27,7 @@ import ("lib/pmFX.lib");
 // VoiceOfFaust: Combine all the elements
 //-----------------------------------------------
 
-//mixerWithSends(nrChan,nrMonoChan,nrSends)
+//mixerWithSends(nrChan,nrOutChan,nrSends)
 
 
 VoiceOfFaust(audio) =
@@ -38,7 +38,7 @@ VoiceOfFaust(audio) =
   vocoderVolume,vocoderChorus,vocoderpmFX,
   StereoVocoder(audio,PitchTracker(audio))
 
-  : mixerWithSends(nrChan,nrMonoChan,nrSends)
+  : mixerWithSends(nrChan,nrOutChan,nrSends)
 
   :_,_//No effect
 
@@ -47,14 +47,14 @@ VoiceOfFaust(audio) =
   ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
   ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
 
-  :interleave(nrMonoChan,nrSends):par(i,nrMonoChan,(bus(nrSends):>_)) // mix the clean and FX
+  :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
   //:stereoLimiter(PitchTracker(audio) * vocoderOctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   )
   with {
     nrChan     = 2;
-    nrMonoChan = 2;
+    nrOutChan = 2;
     nrSends    = 3;
 
     cleanChorus             = cleanGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0, 0, 1, 0.001):volScale);

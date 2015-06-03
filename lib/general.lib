@@ -42,8 +42,15 @@ VocoderFreqs(bottom,top) =     par(i,nrBands,   pow((pow((top/bottom),1/(nrBands
 VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/nrBands))+bottom);
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
-WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);
-vocoderMixer = interleave(2,nrBands/2):((bus((nrBands/2)):>_),(bus((nrBands/2)):>_));
+/*WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);*/
+WidePanner(w,2) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2)
+with {
+  L = selector(1,2);
+  R = selector(2,2);
+};
+// for mutichannel, bypass the widepanner.
+WidePanner(w,nr) = bus(nr);
+vocoderMixer = interleave(nrOutChan,nrBands/nrOutChan):par(i, nrOutChan,(bus((nrBands/nrOutChan)):>_));
 voice(audio) = qompander(audio:highpass(3,PitchTracker(audio)*0.75),factor,threshold,attack,release);
 
 //is actually dual mono. on purpose; to try and keep the image in the center.
