@@ -22,11 +22,32 @@ import ("hoa.lib");
 //-----------------------------------------------
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
-/*process(audio) = StereoVocoder(audio,PitchTracker(audio));*/
-nrBands =32; // number of bands for the vocoders.
-nrOutChan = 8; // number of output
-process =tmp;
+process(audio) = StereoVocoder(audio,PitchTracker(audio));
+/*process = vocoderMixer  ;*/
+nrBands =16; // number of bands for the vocoders.
+nrOutChan = 2; // number of output
+ambisonicsOrder = 3;
+width = hslider("radius", 0, 0, 1, 0.001) : smooth(tau2pole(0.02));
+angleTop = hslider("angleTop", 62831, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02));
+angleBottom = hslider("angleBottom", 62831, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02));
+rotation = hslider("rotation", 62831, -6.28318530717959, 6.28318530717959, 0.001) : smooth(tau2pole(0.02));
+
+//
+vocoderMixer  =(angles,bus(nrBands)): interleave(nrBands,2) : par(i,nrBands,myMap):>wider(ambisonicsOrder,width) :rotate(ambisonicsOrder, rotation) :optimInPhase(ambisonicsOrder) :decoderStereo(ambisonicsOrder)
+with {
+  myMap(a) = _<:encoder(ambisonicsOrder, _, a);
+  angles = par(i,nrBands/2,   ((angleTop-angleBottom)*(i/(nrBands/2)))+angleBottom)<:(bus(nrBands/2),par(i,nrBands/2,_*-1)):interleave(nrBands/2,2);
+};
+
 tmp = vocoderOsc(2):vocoderMixer;
+
+vocoderMixerOld =bus(nrBands)<:(
+               (interleave(nrOutChan,nrBands/nrOutChan):par(i, nrOutChan,(bus((nrBands/nrOutChan)):>_*(channelLayout==0))))
+               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(channelLayout==1) *_))
+               ,(bandsToAmbisonics:>par(i,nrOutChan, (channelLayout==2) *_))
+             ):>bus(nrOutChan);
+
+bandsToAmbisonics = bus(nrBands);
 /*process = decoderStereo(2);*/
 
 /*process = bus2<:bus(nrBands):vocoderMixer;*/

@@ -49,7 +49,8 @@ vocoderCenters(freq) =
 
 StereoVocoder(audio,freq)=
            ((vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands)))),(vocoderOsc(freq)<:bus(nrBands)),analizer(voice(audio),freq), (vocoderQ<:bus(nrBands)))
-           :StereoVolFilterBank(nrBands):vocoderMixer:par(i, nrOutChan, _*0.01):WidePanner(vocoderWidth,nrOutChan);
+           :StereoVolFilterBank(nrBands):vocoderMixer;
+      //:par(i, nrOutChan, _*0.01):WidePanner(vocoderWidth,nrOutChan);
 
 
 //process(audio) = StereoVolFilterBank;

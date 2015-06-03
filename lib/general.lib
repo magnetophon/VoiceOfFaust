@@ -42,10 +42,6 @@ VocoderFreqs(bottom,top) =     par(i,nrBands,   pow((pow((top/bottom),1/(nrBands
 VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/nrBands))+bottom);
 
 
-vocoderMixer =bus(nrBands)<:(
-               (interleave(nrOutChan,nrBands/nrOutChan):par(i, nrOutChan,(bus((nrBands/nrOutChan)):>_*(channelLayout==0))))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(channelLayout==1) *_))
-             ):>bus(nrOutChan);
 
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
