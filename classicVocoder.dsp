@@ -23,6 +23,7 @@ import ("hoa.lib");
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
 process(audio) = StereoVocoder(audio,PitchTracker(audio));
+/*process=((decoderStereo(ambisonicsOrder):par(i,2, autoSat)), bus(nrOutChan));*/
 /*process = vocoderOsc(3.3333):vocoderMixer(ambisonicsOn):postProc(nrOutChan,ambisonicsOn) ;*/
 /*process = (butterfly(nrBands):>par(i,nrOutChan,(outputRouting==4) *_)):>bus(nrOutChan);*/
 nrBands =16; // NUmber of bands for the vocoders.

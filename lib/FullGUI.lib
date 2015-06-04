@@ -4,6 +4,7 @@
 
 OSCgroup(x)    = (hgroup("[0]OSC", x)); // To recieve OSC pitch and other messages
 //qompander    = [1]
+volume = hslider("[1]main output level", 1,0,4,0.001):volScale;
 tabs(x)        = (tgroup("[2]", x));
   synthsGroup(x) = tabs(hgroup("[0]synths", x));
   FXGroup(x)     = tabs(hgroup("[1]effects", x));
@@ -15,6 +16,7 @@ OSConset                = OSCgroup(nentry("[2]onset", 0, 0, 1,0.001 ));
 formant                 = OSCgroup(nentry("[3]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);
 
 ManualOnset             = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
+
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
 cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));
