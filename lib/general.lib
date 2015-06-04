@@ -42,7 +42,8 @@ VocoderFreqs(bottom,top) =     par(i,nrBands,   pow((pow((top/bottom),1/(nrBands
 VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/nrBands))+bottom);
 
 
-
+postProc(nrOutChan,0) = par(i, nrOutChan, _*0.01):WidePanner(vocoderWidth,nrOutChan);
+postProc(nrOutChan,1) = par(i, ambisonicsOrder*2+1, _*0.01):wider(ambisonicsOrder,width) :rotate(ambisonicsOrder, rotation) :optimInPhase(ambisonicsOrder) :decoderStereo(ambisonicsOrder);
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
 /*WidePanner(w,L,R) = (((1+w)*L + (1-w)*R)/2) , (((1+w)*R + (1-w)*L)/2);*/

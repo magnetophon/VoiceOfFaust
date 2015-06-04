@@ -3,8 +3,6 @@
 //-----------------------------------------------
 
 OSCgroup(x)    = (hgroup("[0]OSC", x)); // To recieve OSC pitch and other messages
-channelLayout = (checkbox("[1] channel layout
-        [tooltip: When this is checked, give mid-side output (or ambisonics in 4 channel mode), otherwise give stereo (surround in 4 channel mode)]"));
 //qompander    = [1]
 tabs(x)        = (tgroup("[2]", x));
   synthsGroup(x) = tabs(hgroup("[0]synths", x));
