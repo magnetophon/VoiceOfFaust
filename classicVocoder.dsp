@@ -24,50 +24,47 @@ import ("hoa.lib");
 /*process = _<:par(i, nrBands, volFilter);*/
 process(audio) = StereoVocoder(audio,PitchTracker(audio));
 /*process = vocoderOsc(3.3333):vocoderMixer(ambisonicsOn):postProc(nrOutChan,ambisonicsOn) ;*/
-/*process = (butterfly(nrBands):>par(i,nrOutChan,(outLayout==4) *_)):>bus(nrOutChan);*/
+/*process = (butterfly(nrBands):>par(i,nrOutChan,(outputRouting==4) *_)):>bus(nrOutChan);*/
 nrBands =16; // NUmber of bands for the vocoders.
 nrOutChan = 2; // number of output
-
-ambisonicsOn = 0;
+maxNrOutRoutings = select2(ambisonicsOn,6,3);
+ambisonicsOn = 1;
 ambisonicsOrder = 3;
 /*
-bandsLayout (1==2 with 2chan)
+inputRouting (1==2 with 2chan)
 out ,6,7 ,8kaput
 */
 vocoderMixer(0) =bus(nrBands)<:(
-               (bus(nrBands):>(par(i,nrOutChan,(outLayout==0:dezip) *_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus((nrBands/nrOutChan)):>_*(outLayout==1:dezip))))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(outLayout==2:dezip) *_))
-               ,(butterfly(nrBands):>(par(i,nrOutChan,(outLayout==3:dezip) *_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly((nrBands/nrOutChan)):>_*(outLayout==4:dezip))))
-               ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,(outLayout==5:dezip) *_))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(outLayout==6:dezip) *_):butterfly(nrOutChan))
-               /*,(hademar:>par(i,nrOutChan, (outLayout==2) *_))*/
+               (bus(nrBands):>(par(i,nrOutChan,(outputRouting==0:dezip) *_)))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus((nrBands/nrOutChan)):>_*(outputRouting==1:dezip))))
+               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(outputRouting==2:dezip) *_))
+               ,(butterfly(nrBands):>(par(i,nrOutChan,(outputRouting==3:dezip) *_)))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly((nrBands/nrOutChan)):>_*(outputRouting==4:dezip))))
+               ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,(outputRouting==5:dezip) *_))
+               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(outputRouting==6:dezip) *_):butterfly(nrOutChan))
+               /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrOutChan);
 
-             /*(par(i, 2, (bandsLayout==0) *_) <:bus(nrBands))*/
-             /*,(par(i, 2, (bandsLayout==1) *_) : par(i,2,_<:bus(nrBands/2)) )*/
-             /*,(par(i, 2, (bandsLayout==2) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))*/
-             /*,(par(i, 2, (bandsLayout==3) *_) :butterfly(2)<:bus(nrBands))*/
-             /*,(par(i, 2, (bandsLayout==4) *_) :butterfly(2)<:butterfly(nrBands))*/
-             /*,(par(i, 2, (bandsLayout==5) *_) <:hadamard(nrBands))*/
+             /*(par(i, 2, (inputRouting==0) *_) <:bus(nrBands))*/
+             /*,(par(i, 2, (inputRouting==1) *_) : par(i,2,_<:bus(nrBands/2)) )*/
+             /*,(par(i, 2, (inputRouting==2) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))*/
+             /*,(par(i, 2, (inputRouting==3) *_) :butterfly(2)<:bus(nrBands))*/
+             /*,(par(i, 2, (inputRouting==4) *_) :butterfly(2)<:butterfly(nrBands))*/
+             /*,(par(i, 2, (inputRouting==5) *_) <:hadamard(nrBands))*/
              /*// ==3 hademar?*/
 // Ambisonics mixer.
-vocoderMixer(1)  =(angles,bus(nrBands)): interleave(nrBands,2) : par(i,nrBands,myMap):>bus((ambisonicsOrder*2)+1)
+vocoderMixer(1)  = routing:((angles,bus(nrBands)): interleave(nrBands,2)) : par(i,nrBands,myMap):>bus((ambisonicsOrder*2)+1)
 with {
   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
   angles = par(i,nrBands/2,   ((angleTop-angleBottom)*(i/(nrBands/2)))+angleBottom)<:(bus(nrBands/2),par(i,nrBands/2,_*-1)):interleave(nrBands/2,2);
+  routing =bus(nrBands)<:(
+               (bus(nrBands):(par(i,nrBands,(outputRouting==0:dezip) *_)))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(outputRouting==1:dezip) *_)))
+               ,(butterfly(nrBands):(par(i,nrBands,(outputRouting==2:dezip) *_)))
+               ,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(outputRouting==3:dezip) *_)))
+               /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
+             ):>bus(nrBands);
 };
-bandsLayout = hslider(
-  "[1] bands layout [tooltip: When this is checked, give mid-side output (or ambisonics in 4 channel mode), otherwise give stereo (surround in 4 channel mode)]",
-  1,0,6,1);
-outLayout = hslider(
-  "[2] out layout [tooltip: When this is checked, give mid-side output (or ambisonics in 4 channel mode), otherwise give stereo (surround in 4 channel mode)]",
-  1,0,6,1);
-width = hslider("radius", 0, 0, 1, 0.001) : smooth(tau2pole(0.02));
-angleTop = hslider("angleTop", 62831, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02));
-angleBottom = hslider("angleBottom", 62831, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02));
-rotation = hslider("rotation", 62831, -6.28318530717959, 6.28318530717959, 0.001) : smooth(tau2pole(0.02));
 
 
 /*tmp = vocoderOsc(2):vocoderMixer(ambisonicsOn);*/

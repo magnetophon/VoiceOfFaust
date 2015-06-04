@@ -192,10 +192,24 @@ attack            = qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1,
 release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):smooth(0.999));
 
 //-----------------------------------------------
+// routing and panning
+//-----------------------------------------------
+routingGroup(x) = FXGroup(vgroup("[1]routing and panning", x));
+inputRouting    = routingGroup(hslider(
+  "[1] input routing [tooltip: Change the routing between the oscillators and the filters]",
+  5,0,6,1));
+outputRouting   = routingGroup(hslider(
+  "[2] output routing [tooltip: Change the routing between the filters and the outputs]",
+  0,0,maxNrOutRoutings,1));
+angleTop        = routingGroup(hslider("[3]angle top [tooltip: the angle of the highs]", 2, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
+angleBottom     = routingGroup(hslider("[4]angle bottom [tooltip: the angle of the lows]", 2, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
+           width           = routingGroup(hslider("[5]width[tooltip: stereo width]", 0.5, 0, 1, 0.001) : smooth(tau2pole(0.02)));
+rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo field]", 0, -6.28318530717959, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
+//-----------------------------------------------
 // Karplus Strong as an effect
 //-----------------------------------------------
 
-KPgroup(x)        = FXGroup((vgroup("[1]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
+KPgroup(x)        = FXGroup((vgroup("[2]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level]",	1, 0, 1, 0.001):volScale);
 KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);         
@@ -267,7 +281,7 @@ phaseLL           = LLoscModGroup(vslider("[3]phase[style:knob][tooltip: phase d
 //-----------------------------------------------
 // Phase Modulation as an effect
 //-----------------------------------------------
-pmFXgroup(x) = FXGroup(vgroup("[2]Phase Modulation[tooltip: delay lines modulated by an oscilator]",x));
+pmFXgroup(x) = FXGroup(vgroup("[3]Phase Modulation[tooltip: delay lines modulated by an oscilator]",x));
 //pmFXvolume = pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):volScale);
 pmFXi        = pmFXgroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",0.5,0,4,0.001):volScale );
 pmFXr        = pmFXgroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.5,0,8,0.001):smooth(0.999) );

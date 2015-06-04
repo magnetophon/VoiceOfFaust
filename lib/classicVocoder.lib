@@ -8,18 +8,18 @@ vocoderFund(freq)=
 vocoderOsc(freq) =
            stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty)
            <:(
-              (par(i, 2, ((bandsLayout==0):dezip) *_) <:bus(nrBands))
-             ,(par(i, 2, ((bandsLayout==1):dezip) *_) : par(i,2,_<:bus(nrBands/2)) )
-             ,(par(i, 2, ((bandsLayout==2):dezip) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))
-             ,(par(i, 2, ((bandsLayout==3):dezip) *_) :butterfly(2)<:bus(nrBands))
-             ,(par(i, 2, ((bandsLayout==4):dezip) *_) :butterfly(2)<:butterfly(nrBands))
-             ,(par(i, 2, ((bandsLayout==5):dezip) *_) :butterfly(2): par(i,2,_<:bus(nrBands/2)) )
-             /*,(par(i, 2, ((bandsLayout==6):dezip) *_) :butterfly(2):( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))*/
-             /*,(par(i, 2, ((bandsLayout==7):dezip) *_) :butterfly(2)<:interleave(2,nrBands/2))*/
-             ,(par(i, 2, ((bandsLayout==6):dezip) *_) :butterfly(2)<:interleave(nrBands/2,2))
-             /*,(par(i, 2, (bandsLayout==7) *_) <:interleave(2,nrBands/2):hadamard(nrBands))*/
-             /*,(par(i, 2, (bandsLayout==8) *_) <:hadamard(nrBands))*/
-             /*,(par(i, 2, (bandsLayout==9) *_) <:hadamard(nrBands):interleave(2,nrBands/2))*/
+              (par(i, 2, ((inputRouting==0):dezip) *_) <:bus(nrBands))
+             ,(par(i, 2, ((inputRouting==1):dezip) *_) : par(i,2,_<:bus(nrBands/2)) )
+             ,(par(i, 2, ((inputRouting==2):dezip) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))
+             ,(par(i, 2, ((inputRouting==3):dezip) *_) :butterfly(2)<:bus(nrBands))
+             ,(par(i, 2, ((inputRouting==4):dezip) *_) :butterfly(2)<:butterfly(nrBands))
+             ,(par(i, 2, ((inputRouting==5):dezip) *_) :butterfly(2): par(i,2,_<:bus(nrBands/2)) )
+             /*,(par(i, 2, ((inputRouting==6):dezip) *_) :butterfly(2):( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))*/
+             /*,(par(i, 2, ((inputRouting==7):dezip) *_) :butterfly(2)<:interleave(2,nrBands/2))*/
+             ,(par(i, 2, ((inputRouting==6):dezip) *_) :butterfly(2)<:interleave(nrBands/2,2))
+             /*,(par(i, 2, (inputRouting==7) *_) <:interleave(2,nrBands/2):hadamard(nrBands))*/
+             /*,(par(i, 2, (inputRouting==8) *_) <:hadamard(nrBands))*/
+             /*,(par(i, 2, (inputRouting==9) *_) <:hadamard(nrBands):interleave(2,nrBands/2))*/
              // ==3 hademar?
             ):>bus(nrBands);
 
@@ -38,7 +38,7 @@ volFilter(prevC,c,f,v,q) =
 	/*bandFreq =       25*pow(2,(band+1)*(9/bandsNumb));*/
 	/*BW = (bandFreq - 25*pow(2,(band)*(9/bandsNumb)))*bwRatio;*/
 	/*bandQ = bandFreq/BW;*/
-    Q = ((((c-(prevC*autoQ)):max(50))*q)/(c:max(50)))*(1+(2*autoQ));
+    Q = ((((c-(prevC*autoQ)):max(20))*q)/(c:max(20)))*(1+(2*autoQ));
     BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0.001); //1.766
     BP2 =9.43;//1/hslider("[-1]bp2",	0, 0, 1, 0.001); //9.43
     FAC1 = 1;//hslider("[-1]fac1",	1, 1, 30, 0.001);//1
