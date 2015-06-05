@@ -10,4 +10,5 @@ import ("lib/pitchtracker.lib");
 import ("lib/analizer.lib");
 import ("lib/slaveOscilators.lib");
 import ("lib/mixer.lib");
+import ("hoa.lib");
 

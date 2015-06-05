@@ -68,7 +68,7 @@ StereoVocoder(audio,freq)=
            ,analizer(voice(audio),freq)
            , (vocoderQ<:bus(nrBands)))
            :StereoVolFilterBank(nrBands):vocoderMixer(ambisonicsOn)
-           :postProc(nrOutChan,ambisonicsOn);
+           :postProc(nrOutChan,ambisonicsOn,volume*0.01,vocoderWidth);
 
 
 //process(audio) = StereoVolFilterBank;

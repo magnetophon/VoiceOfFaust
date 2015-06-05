@@ -4,7 +4,7 @@
 nrBands =16; // NUmber of bands for the vocoders.
 nrOutChan = 2; // number of output
 maxNrOutRoutings = select2(ambisonicsOn,6,3);
-ambisonicsOn = 0;
+ambisonicsOn = 1;
 ambisonicsOrder = 3;
 //todo: test or ask about smooth vs line:, efficiency and behaviour
 //minline                 = 3;		// minimum line time in ms

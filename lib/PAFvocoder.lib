@@ -10,21 +10,20 @@ pafIndexes = VocoderLinArray(pafIndexBottom,pafIndexTop);
 
 pafOscs=
     interleave(nrBands,4):
-    par(i, nrBands, paf):routing
+    par(i, nrBands, paf);
     /*paf(pafCenter16,Fund,pafIndex,pafVol16)*/
-           with {
-           
-  routing =bus(nrBands)<:(
-               (bus(nrBands):(par(i,nrBands,(inputRouting==0:dezip) *_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==1:dezip) *_)))
-               ,(butterfly(nrBands):(par(i,nrBands,(inputRouting==2:dezip) *_)))
-               ,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==3:dezip) *_)))
-               /*,(hademar:>par(i,nrOutChan, (inputRouting==2) *_))*/
-             ):>bus(nrBands);
-           };
+/*with {*/
+  /*routing =bus(nrBands)<:(*/
+               /*(bus(nrBands):(par(i,nrBands,(inputRouting==0:dezip) *_)))*/
+               /*,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==1:dezip) *_)))*/
+               /*,(butterfly(nrBands):(par(i,nrBands,(inputRouting==2:dezip) *_)))*/
+               /*,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==3:dezip) *_)))*/
+               /*[>,(hademar:>par(i,nrOutChan, (inputRouting==2) *_))<]*/
+             /*):>bus(nrBands);*/
+           /*};*/
 
 
 
 PAFvocoder(audio,freq)=
   (pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer(ambisonicsOn)
-  :postProc(nrOutChan,ambisonicsOn);
+           :postProc(nrOutChan,ambisonicsOn,volume*0.25,pafWidth);

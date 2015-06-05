@@ -15,7 +15,6 @@ import ("lib/common.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/classicVocoder.lib");
-import ("hoa.lib");
 
 //-----------------------------------------------
 // process
