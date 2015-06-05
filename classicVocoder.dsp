@@ -23,13 +23,14 @@ import ("hoa.lib");
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
 process(audio) = StereoVocoder(audio,PitchTracker(audio));
+/*process = */
 /*process=((decoderStereo(ambisonicsOrder):par(i,2, autoSat)), bus(nrOutChan));*/
 /*process = vocoderOsc(3.3333):vocoderMixer(ambisonicsOn):postProc(nrOutChan,ambisonicsOn) ;*/
 /*process = (butterfly(nrBands):>par(i,nrOutChan,(outputRouting==4) *_)):>bus(nrOutChan);*/
 nrBands =16; // NUmber of bands for the vocoders.
 nrOutChan = 2; // number of output
 maxNrOutRoutings = select2(ambisonicsOn,6,3);
-ambisonicsOn = 1;
+ambisonicsOn = 0;
 ambisonicsOrder = 3;
 /*
 inputRouting (1==2 with 2chan)
