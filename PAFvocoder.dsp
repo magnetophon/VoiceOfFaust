@@ -21,6 +21,9 @@ import ("lib/PAFvocoder.lib");
 //-----------------------------------------------
 // process
 //-----------------------------------------------
-
+freq=3.33;
 process(audio) = PAFvocoder(audio,PitchTracker(audio));
+/*process(audio) =*/
+  /*(pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer(ambisonicsOn)*/
+  /*:postProc(nrOutChan,ambisonicsOn);*/
 

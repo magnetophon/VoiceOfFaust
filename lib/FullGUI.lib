@@ -204,7 +204,7 @@ release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	2
 routingGroup(x) = FXGroup(vgroup("[1]routing and panning", x));
 inputRouting    = routingGroup(hslider(
   "[1] input routing [tooltip: Change the routing between the oscillators and the filters]",
-  5,0,6,1));
+  5,0,maxNrInRoutings ,1));
 outputRouting   = routingGroup(hslider(
   "[2] output routing [tooltip: Change the routing between the filters and the outputs]",
   0,0,maxNrOutRoutings,1));

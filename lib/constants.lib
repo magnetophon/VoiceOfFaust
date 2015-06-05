@@ -1,8 +1,13 @@
 //-----------------------------------------------
 // contants
 //-----------------------------------------------
+nrBands =16; // NUmber of bands for the vocoders.
+nrOutChan = 2; // number of output
+maxNrOutRoutings = select2(ambisonicsOn,6,3);
+ambisonicsOn = 0;
+ambisonicsOrder = 3;
 //todo: test or ask about smooth vs line:, efficiency and behaviour
-minline                 = 3;		// minimum line time in ms
+//minline                 = 3;		// minimum line time in ms
 MinInputPitch           = 61.7354;	// lowest expected note is a B1
 MaxInputPitch           = 493.6635;	// highest expected note is a B4
 maxTimeWithoutPitch     = 2*SR;		// longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)

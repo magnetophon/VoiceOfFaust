@@ -14,9 +14,9 @@ vocoderOsc(freq) =
              ,(par(i, 2, ((inputRouting==3):dezip) *_) :butterfly(2)<:bus(nrBands))
              ,(par(i, 2, ((inputRouting==4):dezip) *_) :butterfly(2)<:butterfly(nrBands))
              ,(par(i, 2, ((inputRouting==5):dezip) *_) :butterfly(2): par(i,2,_<:bus(nrBands/2)) )
+             ,(par(i, 2, ((inputRouting==6):dezip) *_) :butterfly(2)<:interleave(nrBands/2,2))
              /*,(par(i, 2, ((inputRouting==6):dezip) *_) :butterfly(2):( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))*/
              /*,(par(i, 2, ((inputRouting==7):dezip) *_) :butterfly(2)<:interleave(2,nrBands/2))*/
-             ,(par(i, 2, ((inputRouting==6):dezip) *_) :butterfly(2)<:interleave(nrBands/2,2))
              /*,(par(i, 2, (inputRouting==7) *_) <:interleave(2,nrBands/2):hadamard(nrBands))*/
              /*,(par(i, 2, (inputRouting==8) *_) <:hadamard(nrBands))*/
              /*,(par(i, 2, (inputRouting==9) *_) <:hadamard(nrBands):interleave(2,nrBands/2))*/

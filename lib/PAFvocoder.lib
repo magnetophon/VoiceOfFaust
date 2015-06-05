@@ -2,7 +2,7 @@
 //-----------------------------------------------
 // PAF vocoder synthesis
 //-----------------------------------------------
-
+maxNrInRoutings = 3;
 //pafCenters=     par(i,nrBands,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
 pafCenters = VocoderFreqs(pafBottom,pafTop);
 
@@ -10,11 +10,21 @@ pafIndexes = VocoderLinArray(pafIndexBottom,pafIndexTop);
 
 pafOscs=
     interleave(nrBands,4):
-    par(i, nrBands, paf)
+    par(i, nrBands, paf):routing
     /*paf(pafCenter16,Fund,pafIndex,pafVol16)*/
-    ;
+           with {
+           
+  routing =bus(nrBands)<:(
+               (bus(nrBands):(par(i,nrBands,(inputRouting==0:dezip) *_)))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==1:dezip) *_)))
+               ,(butterfly(nrBands):(par(i,nrBands,(inputRouting==2:dezip) *_)))
+               ,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==3:dezip) *_)))
+               /*,(hademar:>par(i,nrOutChan, (inputRouting==2) *_))*/
+             ):>bus(nrBands);
+           };
+
 
 
 PAFvocoder(audio,freq)=
-    (pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer:par(i, 2, _*0.25):WidePanner(pafWidth);
-
+  (pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer(ambisonicsOn)
+  :postProc(nrOutChan,ambisonicsOn);
