@@ -48,8 +48,9 @@ vocoderDetune           = vocoderOscGroup(vslider("[4]detune[style:knob][tooltip
 vocoderWidth            = vocoderOscGroup(vslider("[5]width[style:knob][tooltip:stereo-width]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                                             = mono 1 = normal 2 = full-wide
 vocoderTop              = vocoderFilterGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):volScale); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 vocoderBottom           = vocoderFilterGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):volScale); // 0.25 to 49 logarithmicly
-vocoderQ                = vocoderFilterGroup(vslider("[3]Q[style:knob][tooltip: the bandwidt/resonance of the band-pass filters]",	1.2, 0.3, 7, 0.001):volScale);     // 0.1 to 49 logarithmicly,
-autoQ                   = 1;//vocoderFilterGroup(vslider("[4]autoQ[style:knob][tooltip: link the Q to the freq]",	0, 0, 1, 0.001));
+vocoderQTop             = vocoderFilterGroup(vslider("[3]topQ[style:knob][tooltip: the bandwidt/resonance of the high band-pass filters]",	1.2, 0.3, 7, 0.001):volScale);     // 0.1 to 49 logarithmicly,
+vocoderQBottom          = vocoderFilterGroup(vslider("[4]bottomQ[style:knob][tooltip: the bandwidt/resonance of the low band-pass filters]",	1.2, 0.3, 7, 0.001):volScale);     // 0.1 to 49 logarithmicly,
+autoQ                   = 0;//vocoderFilterGroup(vslider("[4]autoQ[style:knob][tooltip: link the Q to the freq]",	0, 0, 1, 0.001));
 filterFeedback          = vocoderFilterGroup(hslider("[5]self feedback[style:knob][tooltip: filter feedback into itself]", 0,-1,1,0.001):pow(3):dezip);
 higherFB                = vocoderFilterGroup(hslider("[6]higher filter feedback[style:knob][tooltip:  filter feedback from its higher neighbour]", 0,-1,1,0.001):pow(3):dezip);
 lowerFB                 = vocoderFilterGroup(hslider("[7]lower filter feedback[style:knob][tooltip: filter feedback from its lower neighbour]", 0,-1,1,0.001):pow(3):dezip);

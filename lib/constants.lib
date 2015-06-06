@@ -2,7 +2,7 @@
 // contants
 //-----------------------------------------------
 nrBands =16; // NUmber of bands for the vocoders.
-nrOutChan = 4; // number of output
+nrOutChan = 2; // number of output
 maxNrOutRoutings = select2(ambisonicsOn,6,3);
 ambisonicsOn = 0;
 ambisonicsOrder = 3;
