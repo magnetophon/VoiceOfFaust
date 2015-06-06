@@ -41,6 +41,7 @@ VocoderFreqs(bottom,top) =     par(i,nrBands,   pow((pow((top/bottom),1/(nrBands
       // make a lin array of values, from bottom to top
 VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/nrBands))+bottom);
 
+//normal mixer
 vocoderMixer(0) =bus(nrBands)<:(
                (bus(nrBands):>(par(i,nrOutChan,(outputRouting==0:dezip) *_)))
                ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus((nrBands/nrOutChan)):>_*(outputRouting==1:dezip))))
@@ -52,13 +53,6 @@ vocoderMixer(0) =bus(nrBands)<:(
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrOutChan);
 
-             /*(par(i, 2, (inputRouting==0) *_) <:bus(nrBands))*/
-             /*,(par(i, 2, (inputRouting==1) *_) : par(i,2,_<:bus(nrBands/2)) )*/
-             /*,(par(i, 2, (inputRouting==2) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))*/
-             /*,(par(i, 2, (inputRouting==3) *_) :butterfly(2)<:bus(nrBands))*/
-             /*,(par(i, 2, (inputRouting==4) *_) :butterfly(2)<:butterfly(nrBands))*/
-             /*,(par(i, 2, (inputRouting==5) *_) <:hadamard(nrBands))*/
-             /*// ==3 hademar?*/
 // Ambisonics mixer.
 vocoderMixer(1)  = routing:((angles,bus(nrBands)): interleave(nrBands,2)) : par(i,nrBands,myMap):>bus((ambisonicsOrder*2)+1)
 with {
