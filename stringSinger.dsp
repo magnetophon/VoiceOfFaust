@@ -18,6 +18,8 @@ import ("lib/classicVocoder.lib");
 import ("lib/chorus.lib");
 import ("lib/pmFX.lib");
 
+maxNrInRoutings = 6;
+
 //-----------------------------------------------
 // GUI changes
 //-----------------------------------------------
@@ -33,19 +35,21 @@ import ("lib/pmFX.lib");
 VoiceOfFaust(audio) =
   (
   cleanVolume,cleanChorus,cleanpmFX, //output volumes. The number of parameters should be nrSends
-  (voice(audio)<:_,_)
+  (voice(audio)<:bus(nrOutChan))
   ,
   vocoderVolume,vocoderChorus,vocoderpmFX,
   StereoVocoder(audio,PitchTracker(audio))
 
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
-  :_,_//No effect
+  :bus(nrOutChan)//No effect
 
-  ,stereoChorus
+  ,par(i,nrOutChan/2,stereoChorus)
 
-  ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
-  ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
+  ,par(i,nrOutChan/2,
+    (pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
+    ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase))
+  )
 
   :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
@@ -54,7 +58,6 @@ VoiceOfFaust(audio) =
   )
   with {
     nrChan     = 2;
-    nrOutChan = 2;
     nrSends    = 3;
 
     cleanChorus             = cleanGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0, 0, 1, 0.001):volScale);
