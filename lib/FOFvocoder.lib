@@ -8,15 +8,14 @@ fofFund(freq) =
     fund(freq,fofOctave);
 
 fofCenters = VocoderFreqs(fofBottom,fofTop);
+/*fofSkirts  = VocoderFreqs(fofSkirtBottom,fofSkirtTop);*/
+/*fofDecays  = VocoderFreqs(fofDecayBottom,fofDecayTop);*/
 fofSkirts  = VocoderFreqs(fofSkirtBottom,fofSkirtTop);
-fofDecays  = VocoderFreqs(fofDecayBottom,fofDecayTop);
+fofDecays  = VocoderLinArray(fofDecayBottom,fofDecayTop);
 
-fofOscs(NoiseIx)=
-    //this part is to make a different (low)freq modulation for each osc.
-    //noises(nrBands,0):smooth(tau2pole(32))
-    //"NoiseIx*" is to make ir differen left and right.
-    interleave(nrBands,5):
-    par(i, nrBands, (fof(fofPhaseRand*(noises(nrBands*nrOutChan,NoiseIx*i)):smooth(tau2pole(32)))));
+fofOscs=
+    interleave(nrBands,6):
+    par(i, nrBands, (fof));
 //fof(fReso,fund,skirt,decay,phase,vol) =
 
 //normal mixer
@@ -49,9 +48,14 @@ with {
 //fofvocoder(audio,freq)=(fofCenters,analizer(voice(audio),freq),fofFund(freq)):fofOscs:vocoderMixer:par(i, 2, min(100):max(-100)):WidePanner(fofWidth);
 
 fofvocoder(audio,freq)=
-           par(i,nrOutChan,(fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq)) :fofOscs(i+1))
-           :FOFvocoderMixer(ambisonicsOn)
-           :postProc(nrOutChan,ambisonicsOn,volume*0.125,1);
+  //the noises part is to make a different (low)freq modulation for each osc.
+  //noises(nrBands,0):smooth(tau2pole(32))
+  //"(i+1)*" is to make each band different
+  par(i,nrOutChan
+    ,(VocoderLinArray(fofPhaseRandBottom,fofPhaseRandTop):par(j,nrBands,(_*(noises(nrBands*nrOutChan,(i+1)*j)):smooth(tau2pole(fofPhaseSpeed)))),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
+    :fofOscs)
+  :FOFvocoderMixer(ambisonicsOn)
+  :postProc(nrOutChan,ambisonicsOn,volume*0.0003,1);
 
 //fof(fReso,fund,skirt,decay,phase,vol) =
 
