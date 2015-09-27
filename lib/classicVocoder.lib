@@ -55,9 +55,11 @@ volFilter(fb,f,prevC,c,v,q) =
 
 StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))~FBpath with {
   FBpath = bus(nrBands)<:(
-    ((0,par(i,nrBands,selector(i-1,nrBands))):par(i,nrBands,_*lowerFB))
-    ,par(i,nrBands,_*filterFeedback),((par(i,nrBands,selector(i+1,nrBands)),0):par(i,nrBands,_*higherFB))
-  ):>par(i,nrBands,autoSat);
+     ((0,par(i,nrBands,selector(i-1,nrBands))):par(i,nrBands,_*lowerFB))
+    ,par(i,nrBands,_*filterFeedback)
+    ,((par(i,nrBands,selector(i+1,nrBands)),0):par(i,nrBands,_*higherFB))
+    , (bus(nrBands):>_*allFB<:bus(nrBands))
+    ):>par(i,nrBands,autoSat);
 };
 
 vocoderCenters(freq) =

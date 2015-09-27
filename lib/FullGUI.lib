@@ -54,6 +54,7 @@ autoQ                   = 0;//vocoderFilterGroup(vslider("[4]autoQ[style:knob][t
 filterFeedback          = vocoderFilterGroup(hslider("[5]self feedback[style:knob][tooltip: filter feedback into itself]", 0,-1,1,0.001):pow(3):dezip);
 higherFB                = vocoderFilterGroup(hslider("[6]higher filter feedback[style:knob][tooltip:  filter feedback from its higher neighbour]", 0,-1,1,0.001):pow(3):dezip);
 lowerFB                 = vocoderFilterGroup(hslider("[7]lower filter feedback[style:knob][tooltip: filter feedback from its lower neighbour]", 0,-1,1,0.001):pow(3):dezip);
+allFB                   = vocoderFilterGroup(hslider("[8]all filter feedback[style:knob][tooltip: filter feedback from all filters]", 0,-1,1,0.001):pow(3):dezip);
 
 PAFvocoderGroup(x)      = synthsGroup((hgroup("[3]PAFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
 PAFvocoderGroupLevel(x) = PAFvocoderGroup((vgroup("[0]levels", x)));
