@@ -6,7 +6,8 @@ vocoderFund(freq)=
     fund(freq,vocoderOctave);
 
 vocoderOsc(freq) =
-           stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty)
+           ( noises(2,0),noises(2,1))
+      //stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty)
            <:(
               (par(i, 2, ((inputRouting==0):dezip) *_) <:bus(nrBands))
              ,(par(i, 2, ((inputRouting==1):dezip) *_) : par(i,2,_<:bus(nrBands/2)) )
