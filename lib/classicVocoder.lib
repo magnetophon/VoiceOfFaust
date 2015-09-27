@@ -57,10 +57,10 @@ volFilter(fb,f,prevC,c,v,q) =
 
 StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))~FBpath with {
   FBpath = bus(nrBands)<:(
-     ((0,par(i,nrBands,selector(i-1,nrBands))):par(i,nrBands,_*lowerFB))
-    ,par(i,nrBands,_*filterFeedback)
-    ,((par(i,nrBands,selector(i+1,nrBands)),0):par(i,nrBands,_*higherFB))
-    , (bus(nrBands):>_*allFB<:bus(nrBands))
+     ((0,par(i,nrBands,selector(i-1,nrBands))):((bus(nrBands),VocoderLinArray(bottomLowerFB,topLowerFB)):(interleave(nrBands,2)):par(i,nrBands,*)))
+    ,((bus(nrBands),VocoderLinArray(bottomFilterFB,topFilterFB)):(interleave(nrBands,2)):par(i,nrBands,*))
+    ,((par(i,nrBands,selector(i+1,nrBands)),0):((bus(nrBands),VocoderLinArray(bottomHigherFB,topHigherFB)):(interleave(nrBands,2)):par(i,nrBands,*)))
+    , (bus(nrBands):>_<:((bus(nrBands),VocoderLinArray(bottomAllFB,topAllFB)):(interleave(nrBands,2)):par(i,nrBands,*)))
     ):>par(i,nrBands,autoSat);
 };
 
