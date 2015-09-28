@@ -61,7 +61,7 @@ StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))
     ,((bus(nrBands),VocoderLinArray(bottomFilterFB,topFilterFB)):(interleave(nrBands,2)):par(i,nrBands,*))
     ,((par(i,nrBands,selector(i+1,nrBands)),0):((bus(nrBands),VocoderLinArray(bottomHigherFB,topHigherFB)):(interleave(nrBands,2)):par(i,nrBands,*)))
     , (bus(nrBands):>_<:((bus(nrBands),VocoderLinArray(bottomAllFB,topAllFB)):(interleave(nrBands,2)):par(i,nrBands,*)))
-    ):>par(i,nrBands,autoSat);
+    ):>((bus(nrBands),VocoderLinArray(autoSatBottom,autoSatTop)):interleave(nrBands,2)):par(i,nrBands,bus(2)<:((selector(0,2)*(selector(1,2):db2linear)):autoSat)*(selector(1,2)*-1:db2linear));
 };
 
 vocoderCenters(freq) =
