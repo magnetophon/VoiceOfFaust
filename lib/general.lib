@@ -45,13 +45,13 @@ VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/nrBands))+bo
 
 //normal mixer
 vocoderMixer(0) =bus(nrBands)<:(
-               (bus(nrBands):>(par(i,nrOutChan,(outputRouting==0:dezip) *_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus((nrBands/nrOutChan)):>_*(outputRouting==1:dezip))))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(outputRouting==2:dezip) *_))
-               ,(butterfly(nrBands):>(par(i,nrOutChan,(outputRouting==3:dezip) *_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly((nrBands/nrOutChan)):>_*(outputRouting==4:dezip))))
-               ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,(outputRouting==5:dezip) *_))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(outputRouting==6:dezip) *_):butterfly(nrOutChan))
+               (bus(nrBands):>(par(i,nrOutChan, xfadeSelector(outputRouting,0)*_)))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*(xfadeSelector(outputRouting,1)))))
+               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(xfadeSelector(outputRouting,2) *_)))
+               ,(butterfly(nrBands):>(par(i,nrOutChan,(xfadeSelector(outputRouting,3) *_))))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*(xfadeSelector(outputRouting,4)))))
+               ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,(xfadeSelector(outputRouting,5)) *_))
+               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(xfadeSelector(outputRouting,6)) *_):butterfly(nrOutChan))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrOutChan);
 
@@ -61,13 +61,18 @@ with {
   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
   angles = par(i,nrBands/2,   ((angleTop-angleBottom)*(i/(nrBands/2)))+angleBottom)<:(bus(nrBands/2),par(i,nrBands/2,_*-1)):interleave(nrBands/2,2);
   routing =bus(nrBands)<:(
-               (bus(nrBands):(par(i,nrBands,(outputRouting==0:dezip) *_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(outputRouting==1:dezip) *_)))
-               ,(butterfly(nrBands):(par(i,nrBands,(outputRouting==2:dezip) *_)))
-               ,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(outputRouting==3:dezip) *_)))
+               (bus(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,0)) *_)))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,1)) *_)))
+               ,(butterfly(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,2)) *_)))
+               ,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,3)) *_)))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrBands);
 };
+// crossfade between multiple inputs (just the gain)
+xfadeSelector(sel,nr) = 
+(((sel<=nr)*((sel-nr)+1):max(0))
++ ((sel>nr)*((nr-sel)+1):max(0))
+):dezip;
 
 autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 

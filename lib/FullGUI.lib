@@ -216,10 +216,10 @@ release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	2
 routingGroup(x) = FXGroup(vgroup("[1]routing and panning", x));
 inputRouting    = routingGroup(hslider(
   "[1] input routing [tooltip: Change the routing between the oscillators and the filters]",
-  5,0,maxNrInRoutings ,1));
+             5,0,maxNrInRoutings ,0.001));
 outputRouting   = routingGroup(hslider(
   "[2] output routing [tooltip: Change the routing between the filters and the outputs]",
-  0,0,maxNrOutRoutings,1));
+           0,0,maxNrOutRoutings,0.001));
 angleTop        = routingGroup(hslider("[3]angle top [tooltip: the angle of the highs]", 2, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
 angleBottom     = routingGroup(hslider("[4]angle bottom [tooltip: the angle of the lows]", 2, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
            width           = routingGroup(hslider("[5]width[tooltip: stereo width]", 0.5, 0, 1, 0.001) : smooth(tau2pole(0.02)));

@@ -22,7 +22,9 @@ import ("lib/classicVocoder.lib");
 maxNrInRoutings = 6;
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
+
 process(audio) = StereoVocoder(audio,PitchTracker(audio));
+
 /*process = */
 /*process=((decoderStereo(ambisonicsOrder):par(i,2, autoSat)), bus(nrOutChan));*/
 /*process = vocoderOsc(3.3333):vocoderMixer(ambisonicsOn):postProc(nrOutChan,ambisonicsOn) ;*/
