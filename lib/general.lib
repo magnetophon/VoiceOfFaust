@@ -41,8 +41,13 @@ octaveMultiplier	=
       // make a log array of values, from bottom to top
 VocoderFreqs(bottom,top) =     par(i,nrBands,   pow((pow((top/bottom),1/(nrBands-1))),i)*bottom);
       // make a lin array of values, from bottom to top
-VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/nrBands))+bottom);
+      //VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/(nrBands-1)))+bottom);
 
+/*VocoderLinArray(bottom,mid,band,top) =   */
+/*par(j,nrBands, */
+    /*((par(i,j+1,     ((mid-bottom)*(i/(j))+bottom)):(bus(j+1),!))*/
+   /*,(par(i,nrBands-j+1, ((top-mid)*((i+1)/(nrBands-j+1))+mid)):(!,bus(nrBands-j+1))))*/
+/*):interleave(nrBands,nrBands):>par(i,nrBands,_*xfadeSelector(band,i));*/
 //normal mixer
 vocoderMixer(0) =bus(nrBands)<:(
                (bus(nrBands):>(par(i,nrOutChan, xfadeSelector(outputRouting,0)*_)))
