@@ -23,56 +23,9 @@ maxNrInRoutings = 6;
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
 
-/*process(audio) = StereoVocoder(audio,PitchTracker(audio));*/
+process(audio) = StereoVocoder(audio,PitchTracker(audio));
 //process = interleave(nrBands,nrBands);
-LinArray(bottom,top,-1) =   0:! ;
-LinArray(bottom,top,0) =   0:! ;
-LinArray(bottom,top,nrElements) =     par(i,nrElements,   ((top-bottom)*(i/(nrElements-1)))+bottom);
-VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
-LinArrayBottom(bottom,top,1) =bottom;
-/*LinArrayBottom(bottom,top,2) =bottom,(bottom+(0.5*top));*/
-//LinArrayBottom(bottom,top,4) = VocoderLinArray(bottom,top);
-//LinArrayBottom(bottom,top,3) = LinArray(bottom,top,3);
-LinArrayBottom(bottom,top,nrElements) =
-  (
-     (LinArray(bottom,top,nrElements+1):(bus(nrElements),!)   :(par(i,nrElements, _*(nrElements<=(nrBands-2)))))
-    ,(LinArray(bottom,top,nrElements)                         :par(i,nrElements,_*(nrElements>(nrBands-2)))
-  ))
-  :>bus(nrElements);
-LinArrayTop(bottom,top,1) =top;
-LinArrayTop(bottom,top,nrElements) =LinArray(bottom,top,nrElements);
-myBus(0)= 0:!;
-myBus(nr)= bus(nr);
-/*j=1;*/
-VocoderLinArrayParametricMid(bottom,mid,band,top) =   
-(
-  (
-  (LinArray(mid,top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
-  ,((bottom,LinArray(mid,top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
-  )
-  ,par(j,nrBands-4,
-      (
-         (LinArray(bottom,mid,midBand):(bus(midBand-1),!))
-         ,LinArrayTop(mid,top,nrBands-midBand+1)
-      ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
-  )
-  ,
-  (
-    ((LinArray(bottom,mid,nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
-    ,(LinArray(bottom,mid,nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
-  )
-)
-
-  :>bus(nrBands)
-   ;
-bt=hslider("[0]bottom", 0, 0, 1, 0.001);
-md=hslider("[1]mid", 0, 0, 1, 0.001);
-bd=hslider("[2]band", nrBands/2, 1, nrBands, 0.001);
-tp=hslider("[3]top", 0, 0, 1, 0.001);
-  GRmeter_group(x)  = vgroup("[3] GR [tooltip: gain reduction in dB]", x);
-    meter(nr)           = GRmeter_group(  _<:(_,(_:min(1):max(0):( (hbargraph("%nr", 0, 1))))):attach);
-
-process = VocoderLinArrayParametricMid(bt,md,bd,tp):par(i,nrBands,meter(i));
+/*process = VocoderLinArrayParametricMid(bt,md,bd,tp);*/
 /*nrElements =j;*/
 /*process=     LinArray(11,14,nrElements+1):(bus(nrElements),!):(par(i,nrElements, _*(nrElements<(nrBands-2))));*/
 

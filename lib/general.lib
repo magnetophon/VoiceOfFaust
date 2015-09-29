@@ -39,24 +39,79 @@ octaveMultiplier	=
     ):>_;
 
       // make a log array of values, from bottom to top
-VocoderFreqs(bottom,top) =     par(i,nrBands,   pow((pow((top/bottom),1/(nrBands-1))),i)*bottom);
+LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
+           VocoderFreqs(bottom,top) =     LogArray(bottom,top,nrBands);
+
+           VocoderFreqsParametricMid(bottom,mid,band,top) =
+            (
+              (
+              (LinArray(mid,top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
+              ,((bottom,LinArray(mid,top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
+              )
+              ,par(j,nrBands-4,
+                  (
+                     (LinArray(bottom,mid,midBand):(bus(midBand-1),!))
+                     ,LinArray(mid,top,nrBands-midBand+1)
+                  ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
+              )
+              ,
+              (
+                ((LinArray(bottom,mid,nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
+                ,(LinArray(bottom,mid,nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
+              )
+            )
+            :>bus(nrBands)
+            with {
+             midVal=(mid>0)*(bottom);
+            };
+
+
       // make a lin array of values, from bottom to top
       //VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/(nrBands-1)))+bottom);
 
-/*VocoderLinArray(bottom,mid,band,top) =   */
-/*par(j,nrBands, */
-    /*((par(i,j+1,     ((mid-bottom)*(i/(j))+bottom)):(bus(j+1),!))*/
-   /*,(par(i,nrBands-j+1, ((top-mid)*((i+1)/(nrBands-j+1))+mid)):(!,bus(nrBands-j+1))))*/
-/*):interleave(nrBands,nrBands):>par(i,nrBands,_*xfadeSelector(band,i));*/
+LinArray(bottom,top,0) =   0:! ;
+LinArray(bottom,top,nrElements) =     par(i,nrElements,   ((top-bottom)*(i/(nrElements-1)))+bottom);
+
+VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
+VocoderLinArrayParametricMid(bottom,mid,band,top) =   
+(
+  (
+  (LinArray(mid,top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
+  ,((bottom,LinArray(mid,top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
+  )
+  ,par(j,nrBands-4,
+      (
+         (LinArray(bottom,mid,midBand):(bus(midBand-1),!))
+         ,LinArray(mid,top,nrBands-midBand+1)
+      ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
+  )
+  ,
+  (
+    ((LinArray(bottom,mid,nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
+    ,(LinArray(bottom,mid,nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
+  )
+)
+:>bus(nrBands);
+
+bt=hslider("[0]bottom", 0, 0, 1, 0.001);
+md=hslider("[1]mid", 0, 0, 1, 0.001);
+bd=hslider("[2]band", nrBands/2, 1, nrBands, 0.001);
+tp=hslider("[3]top", 0, 0, 1, 0.001);
+
+  GRmeter_group(x)  = vgroup("[3] GR [tooltip: gain reduction in dB]", x);
+    meter(nr)           = GRmeter_group(  _<:(_,(_:min(1):max(0):( (hbargraph("%nr", 0, 1))))):attach);
+
+/*process = VocoderLinArrayParametricMid(bt,md,bd,tp):par(i,nrBands,meter(i));*/
+
 //normal mixer
 vocoderMixer(0) =bus(nrBands)<:(
-               (bus(nrBands):>(par(i,nrOutChan, xfadeSelector(outputRouting,0)*_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*(xfadeSelector(outputRouting,1)))))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(xfadeSelector(outputRouting,2) *_)))
-               ,(butterfly(nrBands):>(par(i,nrOutChan,(xfadeSelector(outputRouting,3) *_))))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*(xfadeSelector(outputRouting,4)))))
-               ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,(xfadeSelector(outputRouting,5)) *_))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>(xfadeSelector(outputRouting,6)) *_):butterfly(nrOutChan))
+               (bus(nrBands):>(par(i,nrOutChan, (xfadeSelector(outputRouting,0):dezip)*_)))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,1):dezip)))))
+               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,2):dezip) *_)))
+               ,(butterfly(nrBands):>(par(i,nrOutChan,((xfadeSelector(outputRouting,3):dezip) *_))))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,4):dezip)))))
+               ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,5):dezip)) *_))
+               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,6):dezip)) *_):butterfly(nrOutChan))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrOutChan);
 
@@ -66,10 +121,10 @@ with {
   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
   angles = par(i,nrBands/2,   ((angleTop-angleBottom)*(i/(nrBands/2)))+angleBottom)<:(bus(nrBands/2),par(i,nrBands/2,_*-1)):interleave(nrBands/2,2);
   routing =bus(nrBands)<:(
-               (bus(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,0)) *_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,1)) *_)))
-               ,(butterfly(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,2)) *_)))
-               ,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,3)) *_)))
+               (bus(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,0):dezip) *_)))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,1):dezip) *_)))
+               ,(butterfly(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,2):dezip) *_)))
+               ,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,3):dezip) *_)))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrBands);
 };
@@ -77,7 +132,7 @@ with {
 xfadeSelector(sel,nr) = 
 (((sel<=nr)*((sel-nr)+1):max(0))
 + ((sel>nr)*((nr-sel)+1):max(0))
-):dezip;
+);
 
 autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 
