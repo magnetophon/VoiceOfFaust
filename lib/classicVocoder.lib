@@ -57,11 +57,19 @@ volFilter(fb,f,prevC,c,v,q) =
 
 StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))~FBpath with {
   FBpath = bus(nrBands)<:(
-     ((0,par(i,nrBands,selector(i-1,nrBands))):((bus(nrBands),VocoderLinArray(lowerFBbottom,lowerFBtop)):(interleave(nrBands,2)):par(i,nrBands,*)))
-    ,((bus(nrBands),VocoderLinArray(selfFBbottom,selfFBtop)):(interleave(nrBands,2)):par(i,nrBands,*))
-    ,((par(i,nrBands,selector(i+1,nrBands)),0):((bus(nrBands),VocoderLinArray(higherFBbottom,higherFBtop)):(interleave(nrBands,2)):par(i,nrBands,*)))
-    , (bus(nrBands):>_<:((bus(nrBands),VocoderLinArray(allFBbottom,allFBtop)):(interleave(nrBands,2)):par(i,nrBands,*)))
-    ):>((bus(nrBands),VocoderLinArray(autoSatBottom,autoSatTop)):interleave(nrBands,2)):par(i,nrBands,bus(2)<:((selector(0,2)*(selector(1,2):db2linear)):autoSat)*(selector(1,2)*-1:db2linear));
+     ((0,par(i,nrBands,selector(i-1,nrBands))):((bus(nrBands),(VocoderLinArrayParametricMid(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
+    ,((bus(nrBands),(VocoderLinArrayParametricMid(selfFBbottom,selfFBmid,selfFBband,selfFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*))
+    ,((par(i,nrBands,selector(i+1,nrBands)),0):((bus(nrBands),(VocoderLinArrayParametricMid(higherFBbottom,higherFBmid,higherFBband,higherFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
+    , (bus(nrBands):>_<:((bus(nrBands),(VocoderLinArrayParametricMid(allFBbottom,allFBmid,allFBband,allFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
+           ):>
+           (
+            (
+               bus(nrBands),
+               (VocoderLinArrayParametricMid(autoSatBottom,autoSatMid,autoSatBand,autoSatTop):par(i,nrBands,dezip))
+            )
+               :interleave(nrBands,2)
+           )
+           :par(i,nrBands,bus(2)<:((selector(0,2)*(selector(1,2):db2linear)):autoSat)*(selector(1,2)*-1:db2linear));
 };
 
 vocoderCenters(freq) =
