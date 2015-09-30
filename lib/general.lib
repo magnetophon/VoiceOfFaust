@@ -45,24 +45,27 @@ LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),
            VocoderFreqsParametricMid(bottom,mid,band,top) =
             (
               (
-              (LinArray(mid,top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
-              ,((bottom,LinArray(mid,top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
+              (LogArray(midVal(1),top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
+              ,((bottom,LogArray(midVal(2),top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
               )
               ,par(j,nrBands-4,
                   (
-                     (LinArray(bottom,mid,midBand):(bus(midBand-1),!))
-                     ,LinArray(mid,top,nrBands-midBand+1)
+                     (LogArray(bottom,midVal(midBand),midBand):(bus(midBand-1),!))
+                     ,LogArray(midVal(midBand),top,nrBands-midBand+1)
                   ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
               )
               ,
               (
-                ((LinArray(bottom,mid,nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
-                ,(LinArray(bottom,mid,nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
+                ((LogArray(bottom,midVal(nrBands-1),nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
+                ,(LogArray(bottom,midVal(nrBands),nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
               )
             )
             :>bus(nrBands)
             with {
-             midVal=(mid>0)*(bottom);
+            midVal(band)=
+            ((mid>0)*(((mid*(top-origMid(band)))+origMid(band))))
+            + ((mid<=0)*(((mid)*(origMid(band)-bottom))+origMid(band)));
+            origMid(band) = (VocoderFreqs(bottom,top):selector(band-1,nrBands)):>_;
             };
 
 

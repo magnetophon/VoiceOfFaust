@@ -52,8 +52,10 @@ vocoderSawPulse = vocoderOscGroup(vslider("[2]saw-pulse[style:knob][tooltip: cro
 vocoderMix      = vocoderOscGroup(vslider("[4]detune mix[style:knob][tooltip: amount of man oscillator vs amount of detuned oscillators]",	1, 0, 1, 0.001)):volScale;
 vocoderDetune   = vocoderOscGroup(vslider("[5]detune[style:knob][tooltip: the amount of detune]",	0.75, 0, 1, 0.001):smooth(0.999));
 vocoderWidth    = vocoderOscGroup(vslider("[6]width[style:knob][tooltip:stereo-width]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                                                       = mono 1 = normal 2 = full-wide
-vocoderBottom   = vocoderFilterBottomGroup(vslider("[1]frequency[style:knob][tooltip: the lowest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):volScale); // 0.25 to 49 logarithmicly
-vocoderTop      = vocoderFilterTopGroup(vslider("[1]frequency[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):volScale); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+vocoderBottom   = vocoderFilterBottomGroup(vslider("[1]frequency[style:knob][tooltip: the lowest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2)); // 0.25 to 49 logarithmicly
+vocoderMid     = vocoderFilterMidGroup(vslider("[1]frequency[style:knob][tooltip: the mid frequency of the band-pass filters, relative to the top and bottom",	0, -1, 1, 0.001):pow(3));     // 0.1 to 49 logarithmicly,
+vocoderBand    = vocoderFilterBandGroup(vslider("[1]frequency-band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));     // 0.1 to 49 logarithmicly,
+vocoderTop      = vocoderFilterTopGroup(vslider("[1]frequency[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 vocoderQbottom  = vocoderFilterBottomGroup(vslider("[2]Q[style:knob][tooltip: the bandwidt/resonance of the low band-pass filters, low frequencies]",	1.2, 0.3, 7, 0.001));     // 0.1 to 49 logarithmicly,
 vocoderQmid     = vocoderFilterMidGroup(vslider("[2]Q[style:knob][tooltip: the bandwidt/resonance of the low band-pass filters, mid frequencies]",	1.2, 0.3, 7, 0.001));     // 0.1 to 49 logarithmicly,
 vocoderQband    = vocoderFilterBandGroup(vslider("[2]Q-band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));     // 0.1 to 49 logarithmicly,
@@ -77,7 +79,7 @@ allFBband    = vocoderFilterBandGroup(vslider("[8]all filter feedback band[style
 allFBtop        = vocoderFilterTopGroup(hslider("[8]all filter feedback[style:knob][tooltip: filter feedback from all filters, high frequencies]", 0,-1,1,0.001));
 autoSatBottom   = vocoderFilterBottomGroup(hslider("[9]autoSat[style:knob][tooltip: autoSat pre and post gain, low frequencies]", 0,-24,24,0.001));
 autoSatMid     = vocoderFilterMidGroup(vslider("[9]autoSat[style:knob][tooltip:  autoSat pre and post gain, mid frequencies]",	0,-24,24, 0.001));     // 0.1 to 49 logarithmicly,
-autoSatBand    = vocoderFilterBandGroup(vslider("[9]QautoSat band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));     // 0.1 to 49 logarithmicly,
+autoSatBand    = vocoderFilterBandGroup(vslider("[9]autoSat band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));     // 0.1 to 49 logarithmicly,
 autoSatTop      = vocoderFilterTopGroup(hslider("[9]autoSat[style:knob][tooltip: autoSat pre and post gain, high frequencies]", 0,-24,24,0.001));
 
 PAFvocoderGroup(x)      = synthsGroup((hgroup("[3]PAFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));

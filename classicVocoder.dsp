@@ -24,6 +24,13 @@ maxNrInRoutings = 6;
 /*process = _<:par(i, nrBands, volFilter);*/
 
 process(audio) = StereoVocoder(audio,PitchTracker(audio));
+/*band=3;*/
+/*top=4;*/
+/*mid=0.5;*/
+/*bottom=1;*/
+/*process =((mid>0)*((mid*(top-origMid))+origMid))*/
+            /*+ ((mid<0)*(((mid*-1)*(origMid-bottom))+bottom));*/
+                        /*origMid(band) = (VocoderFreqs(bottom,top):par(i,nrBands,_*(xfadeSelector(band,nrBands)))):>_;*/
 //process = interleave(nrBands,nrBands);
 /*process = VocoderLinArrayParametricMid(bt,md,bd,tp);*/
 /*nrElements =j;*/
