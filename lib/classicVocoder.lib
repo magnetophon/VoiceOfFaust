@@ -12,7 +12,7 @@ vocoderOsc(freq) =
            ):>bus2
            <:(
               (par(i, 2, (xfadeSelector(inputRouting,0):dezip) *_) <:bus(nrBands))
-             ,(par(i, 2, (xfadeSelector(inputRouting,1):dezip) *_) : par(i,2,_<:bus(nrBands/2)) )
+             ,(par(i, 2, (xfadeSelector(inputRouting,1):dezip) *_) : cross(2) : par(i,2,_<:bus(nrBands/2)) )
              ,(par(i, 2, (xfadeSelector(inputRouting,2):dezip) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))
              ,(par(i, 2, (xfadeSelector(inputRouting,3):dezip) *_) :butterfly(2)<:bus(nrBands))
              ,(par(i, 2, (xfadeSelector(inputRouting,4):dezip) *_) :butterfly(2)<:butterfly(nrBands))
@@ -69,9 +69,9 @@ StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))
             )
                :interleave(nrBands,2)
            )
-           :par(i,nrBands,bus(2)<:((selector(0,2)*(selector(1,2):db2linear)):addDC(i):autoSat)*((selector(1,2)/12):autoSat*-12:db2linear))
+           :par(i,nrBands,bus(2)<:(((selector(0,2):addDC(i))*(selector(1,2):db2linear)):autoSat)*((selector(1,2)/8):autoSat*-8:db2linear))
            with {
-             addDC(band)=_+(VocoderLinArrayParametricMid(autoSatDCbottom,autoSatDCmid,autoSatDCband,autoSatDCtop):selector(band,nrBands):dezip);
+             addDC(band)=_+(VocoderLinArrayParametricMid(autoSatDCbottom,autoSatDCmid,autoSatDCband,autoSatDCtop):selector(band,nrBands):pow(3)*64:dezip);
            };
 };
 
