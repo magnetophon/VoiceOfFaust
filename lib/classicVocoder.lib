@@ -69,7 +69,10 @@ StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))
             )
                :interleave(nrBands,2)
            )
-           :par(i,nrBands,bus(2)<:((selector(0,2)*(selector(1,2):db2linear)):autoSat)*(selector(1,2)*-1:db2linear));
+           :par(i,nrBands,bus(2)<:((selector(0,2)*(selector(1,2):db2linear)):addDC(i):autoSat)*((selector(1,2)/12):autoSat*-12:db2linear))
+           with {
+             addDC(band)=_+(VocoderLinArrayParametricMid(autoSatDCbottom,autoSatDCmid,autoSatDCband,autoSatDCtop):selector(band,nrBands):dezip);
+           };
 };
 
 vocoderCenters(freq) =
@@ -79,7 +82,7 @@ StereoVocoder(audio,freq)=
            ((vocoderOsc(freq)<:bus(nrBands))
            ,(vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
            ,analizer(voice(audio),freq)
-           , (VocoderLinArrayParametricMid(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop):par(i,nrBands,dezip)))
+           ,(VocoderLinArrayParametricMid(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop):par(i,nrBands,dezip)))
            :StereoVolFilterBank(nrBands):vocoderMixer(ambisonicsOn)
            :postProc(nrOutChan,ambisonicsOn,volume*0.01,vocoderWidth);
 
