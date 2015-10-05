@@ -55,7 +55,9 @@ volFilter(fb,f,prevC,c,v,q) =
           :>_+1;
     };
 
-StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))~FBpath with {
+           StereoVolFilterBank(nrBands)= 
+           ((interleave(nrBands,6):par(i, nrBands, volFilter))~FBpath):outputRouter(outRouteBottom,outRouteTop) with {
+           /*((interleave(nrBands,6):par(i, nrBands, volFilter))~FBpath):vocoderMixer(ambisonicsOn) with {*/
   FBpath = bus(nrBands)<:(
      ((0,par(i,nrBands,selector(i-1,nrBands))):((bus(nrBands),(VocoderLinArrayParametricMid(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
     ,((bus(nrBands),(VocoderLinArrayParametricMid(selfFBbottom,selfFBmid,selfFBband,selfFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*))
@@ -75,6 +77,88 @@ StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))
            };
 };
 
+
+outputRouter(bottom,top) =
+           bus(nrBands)<:((bottomScale:routBottom),(topScale:routTop)):>bus(nrOutChan)
+           with {
+      //((top-bottom)*(i/(nrElements-1)))+bottom
+           route=0;
+           routBottom = 
+              routingXfade(floor(bottom),(floor(bottom)+1),(bottom-floor(bottom)):dezip);
+           bottomScale = par(i,nrBands,((((top-bottom)*(i/(nrBands)))/(top-bottom)):dezip)*_);
+           routTop =
+              routingXfade(floor(top),(floor(top)+1),(top-floor(top)):dezip);
+              topScale = par(i,nrBands,((((((top-bottom)*(i/(nrBands-1)))/(top-bottom))*-1)+1):dezip)*_);
+           routingXfade(bottom,top,fade) = 
+             bus(nrBands)<:
+               (
+               (routings(bottom):par(i,nrOutChan,_*((fade*-1)+1)))
+               ,(routings(top):par(i,nrOutChan,_*fade))
+               )
+             :>bus(nrOutChan);
+           routings(route) =
+             bus(nrBands)<:
+             (
+                 (bus(nrBands):>(par(i,nrOutChan, (route==0)*_)))
+                 ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*((route==1)))))
+                 ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((route==2)) *_))
+                 ,(butterfly(nrBands):>(par(i,nrOutChan,((route==3)) *_)))
+                 ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*((route==4)))))
+                 ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,(route==5) *_))
+                 ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((route==6)) *_):butterfly(nrOutChan))
+             )
+               /*,(hademar:>par(i,nrOutChan, (route==2) *_))*/
+           :>bus(nrOutChan);
+
+           };
+
+outputRouterParametricMid(bottom,mid,mip,band) =
+           bus(nrBands)<:((routBottom:bottomScale),(routMid:midScale),(routTop:topScale)):>bus(nrOutChan)
+           with {
+      //((top-bottom)*(i/(nrElements-1)))+bottom
+           route=0;
+           routBottom =
+              routingXfade(floor(bottom),(floor(bottom)+1),(bottom-floor(bottom)):dezip);
+           bottomScale = par(i,nrOutChan,((((top-bottom)*(i/(nrOutChan-1)))/(top-bottom)):dezip)*_);
+           routMid =
+              routingXfade(floor(mid),(floor(mid)+1),(mid-floor(mid)):dezip);
+           midScale = par(i,nrOutChan,((((mid-bottom)*(i/(nrOutChan-1)))/(mid-bottom)):dezip)*_);
+           routTop =
+              routingXfade(floor(top),(floor(top)+1),(top-floor(top)):dezip);
+           topScale = par(i,nrOutChan,((((((top-bottom)*(i/(nrOutChan-1)))/(top-bottom))*-1)+1):dezip)*_);
+           routingXfade(bottom,top,fade) =
+             bus(nrBands)<:
+               (
+               (routings(bottom):par(i,nrOutChan,_*((fade*-1)+1)))
+               ,(routings(top):par(i,nrOutChan,_*fade))
+               )
+             :>bus(nrOutChan);
+           routings(route) =
+             bus(nrBands)<:
+             (
+                 (bus(nrBands):>(par(i,nrOutChan, (route==0)*_)))
+                 ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*((route==1)))))
+                 ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((route==2)) *_))
+                 ,(butterfly(nrBands):>(par(i,nrOutChan,((route==3)) *_)))
+                 ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*((route==4)))))
+                 ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,(route==5) *_))
+                 ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((route==6)) *_):butterfly(nrOutChan))
+             )
+               /*,(hademar:>par(i,nrOutChan, (route==2) *_))*/
+           :>bus(nrOutChan);
+
+           };
+
+
+/*outputRouterParametricMid(bottom,mid,mip,band) =*/
+           /*bus(nrBands)<:*/
+/*((top-bottom)*(i/(nrElements-1)))+bottom*/
+           /*with {*/
+           /*routBottom =*/
+           /*routMid =*/
+           /*routTop =*/
+           /*};*/
+
 vocoderCenters(freq) =
     VocoderFreqsParametricMid(vocoderBottom,vocoderMid,vocoderBand,vocoderTop):(par(i,nrBands, _,freq * vocoderOctave:*:min(SR/2):dezip));
 
@@ -83,7 +167,7 @@ StereoVocoder(audio,freq)=
            ,(vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
            ,analizer(voice(audio),freq)
            ,(VocoderLinArrayParametricMid(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop):par(i,nrBands,dezip)))
-           :StereoVolFilterBank(nrBands):vocoderMixer(ambisonicsOn)
+           :StereoVolFilterBank(nrBands)
            :postProc(nrOutChan,ambisonicsOn,volume*0.01,vocoderWidth);
 
 

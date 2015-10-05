@@ -24,6 +24,10 @@ maxNrInRoutings = 6;
 /*process = _<:par(i, nrBands, volFilter);*/
 
 process(audio) = StereoVocoder(audio,PitchTracker(audio));
+
+
+
+
 /*band=3;*/
 /*top=4;*/
 /*mid=0.5;*/
@@ -36,7 +40,7 @@ process(audio) = StereoVocoder(audio,PitchTracker(audio));
 /*nrElements =j;*/
 /*process=     LinArray(11,14,nrElements+1):(bus(nrElements),!):(par(i,nrElements, _*(nrElements<(nrBands-2))));*/
 
-/*process = */
+/*process = outputRouter(3,4);*/
 /*process=((decoderStereo(ambisonicsOrder):par(i,2, autoSat)), bus(nrOutChan));*/
 /*process = vocoderOsc(3.3333):vocoderMixer(ambisonicsOn):postProc(nrOutChan,ambisonicsOn) ;*/
 /*process = (butterfly(nrBands):>par(i,nrOutChan,(outputRouting==4) *_)):>bus(nrOutChan);*/
