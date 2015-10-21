@@ -28,7 +28,10 @@ vocoderOsc(freq) =
 
 volFilter(fb,f,prevC,c,v,q) =
     (fb+f):resonbp(c:min((SR/2)-10),Q,v):resonbp(c:min((SR/2)-10),Q,compensate)
+    /*(fb+f):resonbp(c:min((SR/2)-10),Q,1):resonbp(c:min((SR/2)-10),Q,1):volCompare(v)*/
     with {
+    volCompare(in,vol) = inVol(in)*vol*in;
+    inVol(in) = (((in:amp_follower_ud(0.002,0.004):linear2db)*-1):db2linear)/nrBands;
     //compensate for one filter:
     //compensate = (tanh((1/(vocoderQ:min(1)))/2));
     //compensate for two filters:
@@ -48,14 +51,18 @@ volFilter(fb,f,prevC,c,v,q) =
     FAC2 = 1.7;//hslider("[-1]fac2",	1, 1, 30, 0.001);//1.7
     FAC3 = 4;//hslider("[-1]fac3",	1, 1, 30, 0.001);//4
     com = 1/(Q/49);
-    compensate =
+           compensate =
           (((com*FAC1),(com<BP1)):*),
           ((((com-BP1)*FAC2+FAC1*BP1),((com>=BP1)&(com<=BP2))):*),
           ((((com-BP2)*FAC3+((BP2-BP1)*FAC2)+FAC1*BP1),(com>BP2)):*)
           :>_+1;
     };
 
-StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))~FBpath with {
+StereoVolFilterBank(nrBands)= bus(nrBands*5)<:(((interleave(nrBands,6):par(i, nrBands, volFilter))~FBpath),(interleave(nrBands,5):par(i,nrBands,(selector(3,5))))):interleave(nrBands,2):volCompensate with {
+  /*volCompensate = par(i,nrBands,_,!);*/
+  volCompensate = par(i,nrBands,volCompare);
+    volCompare(in,vol) = inVol(in)*vol*in;
+    inVol(in) = (((in:amp_follower_ud(0.002,0.004):linear2db:min(96):max(-96))*-1):db2linear)/nrBands;
   FBpath = bus(nrBands)<:(
      ((0,par(i,nrBands,selector(i-1,nrBands))):((bus(nrBands),(VocoderLinArrayParametricMid(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
     ,((bus(nrBands),(VocoderLinArrayParametricMid(selfFBbottom,selfFBmid,selfFBband,selfFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*))
@@ -84,7 +91,8 @@ StereoVocoder(audio,freq)=
            ,analizer(voice(audio),freq)
            ,(VocoderLinArrayParametricMid(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop):par(i,nrBands,dezip)))
            :StereoVolFilterBank(nrBands):vocoderMixer(ambisonicsOn)
-           :postProc(nrOutChan,ambisonicsOn,volume*0.01,vocoderWidth);
+           :postProc(nrOutChan,ambisonicsOn,volume,vocoderWidth)
+           ;
 
 
 //process(audio) = StereoVolFilterBank;
