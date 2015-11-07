@@ -63,8 +63,11 @@ LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),
             :>bus(nrBands)
             with {
             midVal(band)=
-            ((mid>0)*(((mid*(top-origMid(band)))+origMid(band))))
-            + ((mid<=0)*(((mid)*(origMid(band)-bottom))+origMid(band)));
+            ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
+            + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
+
+            /*((mid>0)*(((mid*(top-origMid(band)))+origMid(band))))*/
+            /*+ ((mid<=0)*(((mid)*(origMid(band)-bottom))+origMid(band)));*/
             origMid(band) = (VocoderFreqs(bottom,top):selector(band-1,nrBands)):>_;
             };
 
@@ -76,6 +79,18 @@ LinArray(bottom,top,0) =   0:! ;
 LinArray(bottom,top,nrElements) =     par(i,nrElements,   ((top-bottom)*(i/(nrElements-1)))+bottom);
 
 VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
+      // doesn't compile:
+/*VocoderLinArrayParametricMid(bottom,mid,band,top) = ArrayPart(floor(band+1)):par(i,nrBands,_*(xfadeSelector(band,floor(band+1))))*/
+           /*with {*/
+/*ArrayPart(1)         = LinArray(mid,top,nrBands);*/
+/*ArrayPart(2)         = bottom,LinArray(mid,top,nrBands-1);*/
+/*ArrayPart(midBand)         =*/
+  /*(LinArray(bottom,mid,midBand):(bus(midBand-1),!))*/
+  /*,LinArray(mid,top,nrBands-midBand+1);*/
+           /*};*/
+/*ArrayPart(nrBands-1) = LinArray(bottom,mid,nrBands-1),top;*/
+/*ArrayPart(nrBands)   = LinArray(bottom,mid,nrBands);*/
+
 VocoderLinArrayParametricMid(bottom,mid,band,top) =   
 (
   (

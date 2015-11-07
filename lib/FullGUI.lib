@@ -53,7 +53,7 @@ vocoderMix      = vocoderOscGroup(          vslider(" [4]detune mix            [
 vocoderDetune   = vocoderOscGroup(          vslider(" [5]detune                [style:knob] [tooltip: the amount of detune]",	0.75, 0, 1, 0.001):smooth(0.999));
 vocoderWidth    = vocoderOscGroup(          vslider(" [6]width                 [style:knob] [tooltip: stereo-width]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0 = mono 1 = normal 2 = full-wide
 vocoderBottom   = vocoderFilterBottomGroup( vslider(" [1]frequency             [style:knob] [tooltip: the lowest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2)); // 0.25 to 49 logarithmicly
-vocoderMid      = vocoderFilterMidGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the mid frequency of the band-pass filters, relative to the top and bottom",	0, -1, 1, 0.001):pow(3));
+vocoderMid      = vocoderFilterMidGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the mid frequency of the band-pass filters, relative to the top and bottom",	0, -1, 1, 0.001));
 vocoderBand     = vocoderFilterBandGroup(   vslider(" [1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
 vocoderTop      = vocoderFilterTopGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 vocoderQbottom  = vocoderFilterBottomGroup( vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, low frequencies]",	1.2, 0.3, 7, 0.001));
