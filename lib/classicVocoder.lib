@@ -60,7 +60,7 @@ StereoVolFilterBank(nrBands)= (interleave(nrBands,6):par(i, nrBands, volFilter))
      ((0,par(i,nrBands,selector(i-1,nrBands))):((bus(nrBands),(VocoderLinArrayParametricMid(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
     ,((bus(nrBands),(VocoderLinArrayParametricMid(selfFBbottom,selfFBmid,selfFBband,selfFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*))
     ,((par(i,nrBands,selector(i+1,nrBands)),0):((bus(nrBands),(VocoderLinArrayParametricMid(higherFBbottom,higherFBmid,higherFBband,higherFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
-    , (bus(nrBands):>_<:((bus(nrBands),(VocoderLinArrayParametricMid(allFBbottom,allFBmid,allFBband,allFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
+    , (bus(nrBands)<:par(i,nrBands,_<:par(j,nrBands,_*(i!=j))):>((bus(nrBands),(VocoderLinArrayParametricMid(allFBbottom,allFBmid,allFBband,allFBtop):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)))
            ):>
            (
             (
