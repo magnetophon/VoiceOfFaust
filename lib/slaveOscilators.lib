@@ -192,7 +192,7 @@ CZsinepulse(fund, index) =
     with {INDEX = ((index*-0.49)+0.5);};
 
 //res= 0.5 to 64. this is multiplied by the fundamental pitch
-    CZrestrap(fund, res) =
+CZrestrap(fund, res) =
     (((-1*(1-fund)):max(-0.5):min(0.5)*2) *  (cos(decimal((fund*(res:max(1)))+1)*2*PI)*-1)+1)+1;
 
 //-----------------------------------------------
