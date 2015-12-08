@@ -103,7 +103,7 @@ with {
     diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
      // Third-order Lagrange interpolated-delay version (see filter.lib):
      // diffdel(x,del) = x - fl.fdelay3(DELPWR2,max(1,min(DELPWR2-2,ddel)));
-     
+
      compensate = (((SawPulse*-1)+1)*0.2)+0.8; // compensate volume dif between saw and pulse
      DELPWR2 = 2048;                           // Needs to be a power of 2 when fdelay*() used above.
      delmax = DELPWR2-1;                       // arbitrary upper limit on diff delay (duty=0.5)
@@ -142,7 +142,7 @@ with {
     };
 
 
-stereosupersawpulse(N,fund,freq,detune,mix,SawPulse,duty) = 
+stereosupersawpulse(N,fund,freq,detune,mix,SawPulse,duty) =
 supersawpulse(N,fund,freq,detune,mix,SawPulse,duty),
 supersawpulse(N,fund,freq,detune*-1,mix,SawPulse,duty);
 
