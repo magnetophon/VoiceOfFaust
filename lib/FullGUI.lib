@@ -21,21 +21,21 @@ ManualOnset             = OSCgroup(button("[5]trigger")); //button does not seem
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
 cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));
 cleanVolume             = cleanGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-cleanNLKS               = cleanGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale); 
-cleanpmFX               = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale); 
+cleanNLKS               = cleanGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+cleanpmFX               = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 
 subGroup(x)             = synthsGroup((vgroup("[1]sub[tooltip:a sinewave]", x)));
 subGroupLevel(x)        = subGroup((vgroup("[0]levels", x)));
 subVolume               = subGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-subNLKS                 = subGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale); 
-subpmFX                 = subGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale); 
+subNLKS                 = subGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+subpmFX                 = subGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 subOctave               = subGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of sub
 
 vocoderGroup(x)         = synthsGroup((hgroup("[2]vocoder[tooltip: a traditional vocoder, extended]", x)));
 vocoderGroupLevel(x)    = vocoderGroup((vgroup("[0]levels", x)));
 vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-vocoderNLKS             = vocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale); 
-vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale); 
+vocoderNLKS             = vocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
 
 vocoderParamsGroup(x)   = vocoderGroup(vgroup("[1]parameters", x));
@@ -89,8 +89,8 @@ autoSatDCtop    = vocoderFilterTopGroup(    vslider(" [8]autoSat DC            [
 PAFvocoderGroup(x)      = synthsGroup((hgroup("[3]PAFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
 PAFvocoderGroupLevel(x) = PAFvocoderGroup((vgroup("[0]levels", x)));
 pafVolume               = PAFvocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-pafNLKS                 = PAFvocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale); 
-pafpmFX                 = PAFvocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale); 
+pafNLKS                 = PAFvocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+pafpmFX                 = PAFvocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 pafOctave               = PAFvocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of paf
 
 
@@ -108,8 +108,8 @@ pafWidth                = PAFparamsGroup(vslider("[5]width[style:knob][tooltip:s
 fofVocoderGroup(x)            = synthsGroup((hgroup("[4]FOFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
 fofVocoderGroupLevel(x)       = fofVocoderGroup((vgroup("[0]levels", x)));
 fofVolume                     = fofVocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-fofNLKS                       = fofVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale); 
-fofpmFX                       = fofVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale); 
+fofNLKS                       = fofVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+fofpmFX                       = fofVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 fofOctave                     = fofVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of fof
 
 fofparamsGroup(x)             = fofVocoderGroup((vgroup("[1]parameters", x)));
@@ -137,8 +137,8 @@ fofPhaseSpeed = 64;//                 = fofparamsGroup((vslider("[7]phase speed[
 FMgroup(x)         = synthsGroup((hgroup("[5]FM[tooltip: sinewaves whose frequency is modulated by the input voice]", x)));
 FMgroupLevel(x)    = FMgroup((vgroup("[0]levels", x)));
 FMvolume           = FMgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-fmNLKS             = FMgroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);     
-FMpmFX             = FMgroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);     
+fmNLKS             = FMgroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+FMpmFX             = FMgroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 
 FMparamsGroup(x)   = FMgroup((vgroup("[1]parameters", x)));
 
@@ -175,8 +175,8 @@ FMdynLL            = LLFMparamsGroup(vslider("[3]dyn[tooltip: amount of dynamics
 CZgroup(x)         = synthsGroup((hgroup("[6]CZ ringmodulator[tooltip: the voice is ringmodulated with oscilators that are in tune with the input pitch]", x)));
 CZgroupLevel(x)    = CZgroup((vgroup("[0]levels", x)));
 CZvolume           = CZgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-CZNLKS             = CZgroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);     
-CZpmFX             = CZgroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);     
+CZNLKS             = CZgroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+CZpmFX             = CZgroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 CZparamsGroup(x)   = CZgroup((vgroup("[1]parameters", x)));
 
 HHCZparamsGroup(x) = CZparamsGroup((hgroup("[0]+2 oct", x)));
@@ -253,7 +253,7 @@ rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo f
 KPgroup(x)        = FXGroup((vgroup("[2]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level]",	1, 0, 1, 0.001):volScale);
-KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);         
+KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);
 KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 21, -33, 33, 0.1)):smooth(0.999);
 vocoderKPgroup(x) = mainKPgroup((hgroup("[3]vocoder[tooltip: an EQ based vocoder in the feedback loop]", x)));
 KPvocoderStrength = vocoderKPgroup(vslider("[0]strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0.72, 0, 1, 0.001):smooth(0.999));
