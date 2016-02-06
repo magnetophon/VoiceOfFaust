@@ -40,36 +40,41 @@ octaveMultiplier	=
 
       // make a log array of values, from bottom to top
 LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
-           VocoderFreqs(bottom,top) =     LogArray(bottom,top,nrBands);
 
-           VocoderFreqsParametricMid(bottom,mid,band,top) =
-            (
-              (
-              (LogArray(midVal(1),top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
-              ,((bottom,LogArray(midVal(2),top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
-              )
-              ,par(j,nrBands-4,
-                  (
-                     (LogArray(bottom,midVal(midBand),midBand):(bus(midBand-1),!))
-                     ,LogArray(midVal(midBand),top,nrBands-midBand+1)
-                  ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
-              )
-              ,
-              (
-                ((LogArray(bottom,midVal(nrBands-1),nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
-                ,(LogArray(bottom,midVal(nrBands),nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
-              )
-            )
-            :>bus(nrBands)
-            with {
-            midVal(band)=
-            ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
-            + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
+VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top);
+VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top);
 
-            /*((mid>0)*(((mid*(top-origMid(band)))+origMid(band))))*/
-            /*+ ((mid<=0)*(((mid)*(origMid(band)-bottom))+origMid(band)));*/
-            origMid(band) = (VocoderFreqs(bottom,top):selector(band-1,nrBands)):>_;
-            };
+
+VocoderFreqs(bottom,top) = LogArray(bottom,top,nrBands);
+
+VocoderFreqsParametricMid(bottom,mid,band,top) =
+  (
+    (
+    (LogArray(midVal(1),top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
+    ,((bottom,LogArray(midVal(2),top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
+    )
+    ,par(j,nrBands-4,
+        (
+            (LogArray(bottom,midVal(midBand),midBand):(bus(midBand-1),!))
+            ,LogArray(midVal(midBand),top,nrBands-midBand+1)
+        ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
+    )
+    ,
+    (
+      ((LogArray(bottom,midVal(nrBands-1),nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
+      ,(LogArray(bottom,midVal(nrBands),nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
+    )
+  )
+  :>bus(nrBands)
+  with {
+  midVal(band)=
+  ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
+  + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
+
+  /*((mid>0)*(((mid*(top-origMid(band)))+origMid(band))))*/
+  /*+ ((mid<=0)*(((mid)*(origMid(band)-bottom))+origMid(band)));*/
+  origMid(band) = (VocoderFreqs(bottom,top):selector(band-1,nrBands)):>_;
+  };
 
 
       // make a lin array of values, from bottom to top
@@ -77,6 +82,9 @@ LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),
 
 LinArray(bottom,top,0) =   0:! ;
 LinArray(bottom,top,nrElements) =     par(i,nrElements,   ((top-bottom)*(i/(nrElements-1)))+bottom);
+
+VocoderLinArrayChooser(bottom,mid,band,top,0) = VocoderLinArray(bottom,top);
+VocoderLinArrayChooser(bottom,mid,band,top,1) = VocoderLinArrayParametricMid(bottom,mid,band,top);
 
 VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
       // doesn't compile:
@@ -91,7 +99,7 @@ VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
 /*ArrayPart(nrBands-1) = LinArray(bottom,mid,nrBands-1),top;*/
 /*ArrayPart(nrBands)   = LinArray(bottom,mid,nrBands);*/
 
-VocoderLinArrayParametricMid(bottom,mid,band,top) =   
+VocoderLinArrayParametricMid(bottom,mid,band,top) =
 (
   (
   (LinArray(mid,top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
@@ -147,7 +155,7 @@ with {
              ):>bus(nrBands);
 };
 // crossfade between multiple inputs (just the gain)
-xfadeSelector(sel,nr) = 
+xfadeSelector(sel,nr) =
 (((sel<=nr)*((sel-nr)+1):max(0))
 + ((sel>nr)*((nr-sel)+1):max(0))
 );
@@ -156,8 +164,8 @@ autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 
 postProc(nrOutChan,0,volume,width) = par(i, nrOutChan, _*volume):WidePanner(width,nrOutChan):par(i,nrOutChan,dcblocker:autoSat);
 
-postProc(nrOutChan,1,volume,width) = 
-           wider(ambisonicsOrder,width) :rotate(ambisonicsOrder, rotation) :optimInPhase(ambisonicsOrder) 
+postProc(nrOutChan,1,volume,width) =
+           wider(ambisonicsOrder,width) :rotate(ambisonicsOrder, rotation) :optimInPhase(ambisonicsOrder)
            <:((decoderStereo(ambisonicsOrder):par(i,2,(_*volume):dcblocker: autoSat)), bus(2*ambisonicsOrder+1));
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
@@ -196,5 +204,3 @@ monoLimiter(pitch)=
     };
 
 stereoLimiter(pitch) =monoLimiter(pitch),monoLimiter(pitch);
-
-
