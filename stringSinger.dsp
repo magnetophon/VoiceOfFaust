@@ -75,4 +75,3 @@ VoiceOfFaust(audio) =
 
 process(audio) = VoiceOfFaust(audio);
 //process(audio) = StereoVocoder(audio,PitchTracker(audio));
-

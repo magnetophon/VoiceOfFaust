@@ -12,6 +12,7 @@ vocoderOsc(freq) =
            ):>bus2
            <:(
               (par(i, 2, (xfadeSelector(inputRouting,0):dezip) *_) <:bus(nrBands))
+              // todo: why the cross???
              ,(par(i, 2, (xfadeSelector(inputRouting,1):dezip) *_) : cross(2) : par(i,2,_<:bus(nrBands/2)) )
              ,(par(i, 2, (xfadeSelector(inputRouting,2):dezip) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))
              ,(par(i, 2, (xfadeSelector(inputRouting,3):dezip) *_) :butterfly(2)<:bus(nrBands))
