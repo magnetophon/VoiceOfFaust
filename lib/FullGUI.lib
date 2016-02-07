@@ -56,11 +56,10 @@ vocoderBottom   = vocoderFilterBottomGroup( vslider(" [1]frequency             [
 vocoderMid      = vocoderFilterMidGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the mid frequency of the band-pass filters, relative to the top and bottom",	0, -1, 1, 0.001));
 vocoderBand     = vocoderFilterBandGroup(   vslider(" [1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
 vocoderTop      = vocoderFilterTopGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderQbottom  = vocoderFilterBottomGroup( vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, low frequencies]",	1.2, 0.3, 7, 0.001));
-vocoderQmid     = vocoderFilterMidGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, mid frequencies]",	1.2, 0.3, 7, 0.001));
+vocoderQbottom  = vocoderFilterBottomGroup( vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, low frequencies]",	1.2, 0.3, 49, 0.001));
+vocoderQmid     = vocoderFilterMidGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, mid frequencies]",	1.2, 0.3, 49, 0.001));
 vocoderQband    = vocoderFilterBandGroup(   vslider(" [2]Q-band                [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-vocoderQtop     = vocoderFilterTopGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the high band-pass filters, high frequencies]",	1.2, 0.3, 7, 0.001));
-autoQ           = 0;//vocoderFilterGroup(   vslider(" [4]autoQ                 [style:knob] [tooltip: link the Q to the freq]",	0, 0, 1, 0.001));
+vocoderQtop     = vocoderFilterTopGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the high band-pass filters, high frequencies]",	1.2, 0.3, 49, 0.001));
 selfFBbottom    = vocoderFilterBottomGroup( vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, low frequencies]", 0,-1,1,0.001));
 selfFBmid       = vocoderFilterMidGroup(    vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, mid frequencies]", 0,-1,1, 0.001));
 selfFBband      = vocoderFilterBandGroup(   vslider(" [3]self feedback band    [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
@@ -260,7 +259,7 @@ KPvocoderStrength = vocoderKPgroup(vslider("[0]strength[style:knob][tooltip: 0 m
 KPeqCutBoost      = vocoderKPgroup(vslider("[1]cut/boost[style:knob][tooltip: -1 means cut only, 1 means boost only, and 0 means the average gain is zero]",	-0.72, -1, 1, 0.001):smooth(0.999));
 KPtop             = vocoderKPgroup(vslider("[2]top[style:knob][tooltip: the highest frequency of the EQ's]",	defaultTop, 1, 64, 0.001):volScale); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
 KPbottom          = vocoderKPgroup(vslider("[3]bottom[style:knob][tooltip: the lowest frequency of the EQ's]",	defaultBottom, 0.5, 7, 0.001):volScale);
-KPvocoderQ        = vocoderKPgroup(vslider("[4]Q[style:knob][tooltip: the bandwidt of the EQ's]",	3, 0.3, 7, 0.001):volScale); // 0.1 to 49 logarithmicly,
+KPvocoderQ        = vocoderKPgroup(vslider("[4]Q[style:knob][tooltip: the bandwidt of the EQ's]",	3, 0.3, 49, 0.001)); // 0.1 to 49 logarithmicly,
 
 bright            = mainKPgroup(vslider("[4]damping[style:knob][tooltip: brightness of the feedback]", 0.5, 0, 1, 0.001)):volScale; // -60db decay time (sec)
 
@@ -339,5 +338,3 @@ slowDepth	= chorusGroup(vslider("[1]slow depth [style:knob][tooltip: slow modula
 fastFreq	= chorusGroup(vslider("[2]fast freq [style:knob][tooltip: fast modulation frequency]",	8, 0, 10, 0.01):smooth(0.999));
 fastDepth	= chorusGroup(vslider("[3]fast depth [style:knob][tooltip: fast modulation amount]",	5, 0, 10, 0.01):volScale);
 feedback	= chorusGroup(vslider("[4]feedback [style:knob][tooltip: feedback amount]",	-0.5, -1, 1, 0.01)*0.8:smooth(0.999));
-
-
