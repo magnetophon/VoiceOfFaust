@@ -1,7 +1,7 @@
 //-----------------------------------------------
 // contants
 //-----------------------------------------------
-nrBands                = 32;      // Number of bands for the vocoders.
+nrBands                = 16;      // Number of bands for the vocoders.
 nrOutChan              = 2;       // number of output
 maxNrOutRoutings       = select2(ambisonicsOn,6,3);
 ambisonicsOn           = 0;
@@ -22,3 +22,4 @@ defaultTop             = 128:pow(0.5);
 defaultBottom          = ((0.25*pow(2,0.5))+0.5):pow(0.5);
 PTsmooth               = 0.9984;
 para                   = 1;       // whether we want a parametric mid
+gainCompEnable         = checkbox("gainCompEnable");
