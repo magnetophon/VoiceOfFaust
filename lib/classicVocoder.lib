@@ -77,11 +77,11 @@ StereoVolFilterBank(nrBands)= (((interleave(nrBands,2):par(i,nrBands,+):AutosatA
 vocoderCenters(freq) =
     VocoderFreqsChooser(vocoderBottom,vocoderMid,vocoderBand,vocoderTop,para):(par(i,nrBands, _,freq * vocoderOctave:*:min(SR/2):dezip));
 
-gainCompareElement(x,compGain) = (_<:(_,((_-1)*x)))~compare:(!,_) with {
+gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   compare(gain,gainedX) =
     select2(gainCompEnable,
-      2,
-      (((gain+1):linear2db+select2((gainedX:amp_follower_ud(0.002,0.004))>compGain,dbPs,dbPs*-1)):db2linear)
+      1,
+      ((((gain:max(0.01)):linear2db+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,dbPs,dbPs*-1)):db2linear))
     );
   dbPs = 30/SR;
   };
@@ -96,7 +96,7 @@ StereoVocoder(audio,freq)=
            :StereoVolFilterBank(nrBands)
            :gainCompare(audio,freq)
            :vocoderMixer(ambisonicsOn)
-           :postProc(nrOutChan,ambisonicsOn,volume*0.001,vocoderWidth);
+           :postProc(nrOutChan,ambisonicsOn,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth);
 
 
 //process(audio) = StereoVolFilterBank;
