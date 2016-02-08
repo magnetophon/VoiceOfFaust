@@ -57,6 +57,7 @@ volFilter(f,prevC,c,v,q) =
     };
 
 StereoVolFilterBank(nrBands)= (((interleave(nrBands,2):par(i,nrBands,+):AutosatArray),bus(nrBands*4)):interleave(nrBands,5):par(i, nrBands, volFilter))~FBpath with {
+
   FBpath = bus(nrBands)<:(lowerFB,selfFB,higherFB,allFB):>bus(nrBands);
   lowerFB= bus(nrBands)<:((0,par(i,nrBands,selector(i-1,nrBands))):((bus(nrBands),(VocoderLinArrayChooser(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));
   selfFB = ((bus(nrBands),(VocoderLinArrayChooser(selfFBbottom,selfFBmid,selfFBband,selfFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*));
@@ -81,9 +82,9 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   compare(gain,gainedX) =
     select2(gainCompEnable,
       1,
-      ((((gain:max(0.01)):linear2db+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,dbPs,dbPs*-1)):db2linear))
+      ((((gain:max(0.01)):linear2db+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,dbPs,dbPs*-1)):min(36):db2linear))
     );
-  dbPs = 30/SR;
+  dbPs = OSCgroup(vslider("[0]autospeed[style:knob]",	30, 0, 1000, 1))/SR;
   };
 
 gainCompare(audio,freq) = (bus(nrBands),analizer(voice(audio),freq)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
