@@ -36,7 +36,7 @@ vocoderGroupLevel(x)    = vocoderGroup((vgroup("[0]levels", x)));
 vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
 vocoderNLKS             = vocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
 vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
-vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
+vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
 
 vocoderParamsGroup(x)   = vocoderGroup(vgroup("[1]parameters", x));
   vocoderOscGroup(x)    = vocoderGroup(vgroup("[0]oscillators",x));
@@ -49,17 +49,17 @@ vocoderParamsGroup(x)   = vocoderGroup(vgroup("[1]parameters", x));
 vocoderOscNoise = vocoderOscGroup(          vslider(" [1]osc-noise             [style:knob] [tooltip: crossfade from osc to noise]", 0, 0, 1, 0.001)):smooth(0.999);
 vocoderSawPulse = vocoderOscGroup(          vslider(" [2]saw-pulse             [style:knob] [tooltip: crossfade from saw to pulse]", 0, 0, 1, 0.001)):pow(1.5):smooth(0.999);
 vocoderDuty     = vocoderOscGroup(          vslider(" [3]pulse-width           [style:knob] [tooltip: the width of the pulse-oscillator]", 0.5, 0.5, 1, 0.001):min(0.9996):smooth(0.999));
-vocoderMix      = vocoderOscGroup(          vslider(" [4]detune mix            [style:knob] [tooltip: amount of man oscillator vs amount of detuned oscillators]",	1, 0, 1, 0.001)):volScale;
-vocoderDetune   = vocoderOscGroup(          vslider(" [5]detune                [style:knob] [tooltip: the amount of detune]",	0.75, 0, 1, 0.001):smooth(0.999));
+vocoderMix      = vocoderOscGroup(          vslider(" [4]detune mix            [style:knob] [tooltip: amount of man oscillator vs amount of detuned oscillators]",	0.5, 0, 1, 0.001)):volScale;
+vocoderDetune   = vocoderOscGroup(          vslider(" [5]detune                [style:knob] [tooltip: the amount of detune]",	0.5, 0, 1, 0.001):smooth(0.999));
 vocoderWidth    = vocoderOscGroup(          vslider(" [6]width                 [style:knob] [tooltip: stereo-width]",	1, 0, 2, 0.001):smooth(0.999)); // wide pan, 0 = mono 1 = normal 2 = full-wide
 vocoderBottom   = vocoderFilterBottomGroup( vslider(" [1]frequency             [style:knob] [tooltip: the lowest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2)); // 0.25 to 49 logarithmicly
 vocoderMid      = vocoderFilterMidGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the mid frequency of the band-pass filters, relative to the top and bottom",	0, -1, 1, 0.001));
 vocoderBand     = vocoderFilterBandGroup(   vslider(" [1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
 vocoderTop      = vocoderFilterTopGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderQbottom  = vocoderFilterBottomGroup( vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, low frequencies]",	1.2, 0.3, 49, 0.001));
-vocoderQmid     = vocoderFilterMidGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, mid frequencies]",	1.2, 0.3, 49, 0.001));
+vocoderQbottom  = vocoderFilterBottomGroup( vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, low frequencies]",	7, 0.3, 49, 0.001));
+vocoderQmid     = vocoderFilterMidGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, mid frequencies]",	7, 0.3, 49, 0.001));
 vocoderQband    = vocoderFilterBandGroup(   vslider(" [2]Q-band                [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-vocoderQtop     = vocoderFilterTopGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the high band-pass filters, high frequencies]",	1.2, 0.3, 49, 0.001));
+vocoderQtop     = vocoderFilterTopGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the high band-pass filters, high frequencies]",	7, 0.3, 49, 0.001));
 selfFBbottom    = vocoderFilterBottomGroup( vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, low frequencies]", 0,-1,1,0.001));
 selfFBmid       = vocoderFilterMidGroup(    vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, mid frequencies]", 0,-1,1, 0.001));
 selfFBband      = vocoderFilterBandGroup(   vslider(" [3]self feedback band    [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
@@ -237,10 +237,10 @@ release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	2
 routingGroup(x) = FXGroup(vgroup("[1]routing and panning", x));
 inputRouting    = routingGroup(hslider(
   "[1] input routing [tooltip: Change the routing between the oscillators and the filters]",
-             5,0,maxNrInRoutings ,0.5));
+             4,0,maxNrInRoutings ,0.5));
 outputRouting   = routingGroup(hslider(
   "[2] output routing [tooltip: Change the routing between the filters and the outputs]",
-           0,0,maxNrOutRoutings,0.5));
+           4,0,maxNrOutRoutings,0.5));
 angleTop        = routingGroup(hslider("[3]angle top [tooltip: the angle of the highs]", 2, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
 angleBottom     = routingGroup(hslider("[4]angle bottom [tooltip: the angle of the lows]", 2, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
            width           = routingGroup(hslider("[5]width[tooltip: stereo width]", 0.5, 0, 1, 0.001) : smooth(tau2pole(0.02)));
