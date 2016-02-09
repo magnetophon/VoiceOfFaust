@@ -131,13 +131,13 @@ tp=hslider("[3]top", 0, 0, 1, 0.001);
 
 //normal mixer
 vocoderMixer(0) =bus(nrBands)<:(
-               (bus(nrBands):>(par(i,nrOutChan, (xfadeSelector(outputRouting,0):dezip)*_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,1):dezip)))))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,2):dezip) *_)))
-               ,(butterfly(nrBands):>(par(i,nrOutChan,((xfadeSelector(outputRouting,3):dezip) *_))))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,4):dezip)))))
-               ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,5):dezip)) *_))
-               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,6):dezip)) *_):butterfly(nrOutChan))
+                (par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,0):dezip) *_)))
+               ,(bus(nrBands):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
+               ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,3):dezip)))))
+               ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,4):dezip)) *_):cross(nrOutChan))
+               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,5):dezip)))))
+               ,(butterfly(nrBands):>(par(i,nrOutChan,((xfadeSelector(outputRouting,6):dezip) *_))))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrOutChan);
 

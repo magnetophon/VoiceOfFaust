@@ -19,7 +19,7 @@ import ("lib/classicVocoder.lib");
 //-----------------------------------------------
 // process
 //-----------------------------------------------
-maxNrInRoutings = 6;
+maxNrInRoutings = 5;
 /*process = volFilter;*/
 /*process = _<:par(i, nrBands, volFilter);*/
 

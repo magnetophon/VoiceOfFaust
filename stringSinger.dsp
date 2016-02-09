@@ -18,7 +18,7 @@ import ("lib/classicVocoder.lib");
 import ("lib/chorus.lib");
 import ("lib/pmFX.lib");
 
-maxNrInRoutings = 6;
+5axNrInRoutings = 5;
 
 //-----------------------------------------------
 // GUI changes
