@@ -1,4 +1,4 @@
-#N canvas 2 45 1276 620 10;
+#N canvas 0 43 1280 616 10;
 #X obj 297 64 adc~;
 #X msg 73 196 disconnect;
 #X obj 116 22 loadbang;
@@ -7,7 +7,7 @@
 #X msg 451 169 send /*/OSC/fidelity \$1;
 #X obj 297 239 osc/packOSC;
 #X obj 297 272 net/udpsend;
-#N canvas 2 45 1276 620 PitchTracker 1;
+#N canvas 0 43 1280 616 PitchTracker 1;
 #X obj -379 -27 inlet~;
 #N canvas 2 50 508 535 filters 0;
 #X obj 47 41 inlet~;
@@ -216,7 +216,7 @@ harmonic interference components such as from cellphones.;
 #X obj -140 174 clip 60 80;
 #X obj -380 84 moses 60;
 #X obj 111 -40 nbx 4 14 51 200 1 1 empty empty empty 0 -8 0 10 -262144
--1 -1 60.9859 256;
+-1 -1 51 256;
 #X obj 111 -10 * 1.33;
 #X text 158 -44 lowest note you produce;
 #X text 164 -11 the range above the lowest note that has flaky fidelity
