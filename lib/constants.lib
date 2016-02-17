@@ -26,3 +26,4 @@ para                   = 1;       // whether we want a parametric mid
 gainCompEnable         = OSCgroup(checkbox("gainCompEnable"));
 enableFeedback         = 1;
 enableAutosat          = 1;
+enableGainCompare      = 0;

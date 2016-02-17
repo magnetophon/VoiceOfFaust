@@ -99,7 +99,8 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   dbPs = OSCgroup(vslider("[0]autospeed[style:knob]",	750, 0, 1000, 1))/SR;
   };
 
-gainCompare(audio,freq) = (bus(nrBands),analizer(voice(audio),freq)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
+gainCompare(audio,freq,0) = bus(nrBands);
+gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 
 
 endGainCompare(audio,freq) = (bus(nrOutChan),(voice(audio)<:bus(nrOutChan))):interleave(nrOutChan,2):par(i,nrOutChan,gainCompareElement);
@@ -110,7 +111,7 @@ StereoVocoder(audio,freq)=
            ,analizer(voice(audio),freq)
            ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):par(i,nrBands,dezip)))
            :StereoVolFilterBank(nrBands,enableFeedback)
-           :gainCompare(audio,freq)
+           :gainCompare(audio,freq,enableGainCompare)
            :vocoderMixer(ambisonicsOn)
            // :endGainCompare(audio,freq)
            :postProc(nrOutChan,ambisonicsOn,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth);
