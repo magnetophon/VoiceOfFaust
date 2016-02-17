@@ -20,11 +20,11 @@ import ("lib/classicVocoder.lib");
 // process
 //-----------------------------------------------
 maxNrInRoutings = 5;
-/*process = volFilter;*/
-/*process = _<:par(i, nrBands, volFilter);*/
+
+process(audio) = StereoVocoder(audio,PitchTracker(audio));
+// process = _<:par(i, nrBands, volFilter);
 
 // process = VocoderFreqsChooser;
-process(audio) = StereoVocoder(audio,PitchTracker(audio));
 /*process = StereoVolFilterBank(16);*/
 /*process = (bus(nrBands)<:par(i,nrBands,_<:par(j,nrBands,_*(i!=j))):>((bus(nrBands),(VocoderLinArrayChooser(allFBbottom,allFBmid,allFBband,allFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));*/
 /*band=3;*/
