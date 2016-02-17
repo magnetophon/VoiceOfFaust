@@ -8,7 +8,7 @@ vocoderFund(freq)=
 vocoderOsc(freq) =
   ( par(i,2,(noises(2,i)*sqrt((vocoderOscNoise))))
   ,(stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty):par(i,2,_*sqrt((1-vocoderOscNoise))))
-  ):>inputRouter
+  ):> inputRouter
   with {
     inputRouter =
     bus2 <:(
@@ -56,14 +56,26 @@ volFilter(f,prevC,c,v,q) =
           :>_+1;
     };
 
-StereoVolFilterBank(nrBands)= (((interleave(nrBands,2):par(i,nrBands,+):AutosatArray),bus(nrBands*4)):interleave(nrBands,5):par(i, nrBands, volFilter))~FBpath with {
+StereoVolFilterBank(nrBands,0) = StereoVolFilterBankNoFeedback(nrBands);
+StereoVolFilterBank(nrBands,1) = StereoVolFilterBankWithFeedback(nrBands);
 
+
+
+StereoVolFilterBankNoFeedback(nrBands)= (AutosatArray(enableAutosat),bus(nrBands*4)):(interleave(nrBands,5):par(i, nrBands, volFilter));
+
+StereoVolFilterBankWithFeedback(nrBands)= (((interleave(nrBands,2):par(i,nrBands,+):AutosatArray(enableAutosat)),bus(nrBands*4)):interleave(nrBands,5):par(i, nrBands, volFilter))~FBpath with {
   FBpath = bus(nrBands)<:(lowerFB,selfFB,higherFB,allFB):>bus(nrBands);
-  lowerFB= bus(nrBands)<:((0,par(i,nrBands,selector(i-1,nrBands))):((bus(nrBands),(VocoderLinArrayChooser(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));
+  lowerFB=
+    bus(nrBands)
+      <:((0,par(i,nrBands,selector(i-1,nrBands)))
+        :((bus(nrBands),(VocoderLinArrayChooser(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));
   selfFB = ((bus(nrBands),(VocoderLinArrayChooser(selfFBbottom,selfFBmid,selfFBband,selfFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*));
   higherFB=  bus(nrBands)<:((par(i,nrBands,selector(i+1,nrBands)),0):((bus(nrBands),(VocoderLinArrayChooser(higherFBbottom,higherFBmid,higherFBband,higherFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));
   allFB   = (bus(nrBands)<:par(i,nrBands,par(j,nrBands,_*(i!=j)):>_):>((bus(nrBands),(VocoderLinArrayChooser(allFBbottom,allFBmid,allFBband,allFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));
-  AutosatArray =
+    };
+
+AutosatArray(0) = bus(nrBands);
+AutosatArray(1) =
   (
     (
        bus(nrBands),
@@ -73,7 +85,7 @@ StereoVolFilterBank(nrBands)= (((interleave(nrBands,2):par(i,nrBands,+):AutosatA
   )
     :par(i,nrBands,bus(2)<:(((selector(0,2):addDC(i))*(selector(1,2):db2linear)):autoSat)*((selector(1,2)/8):autoSat*-8:db2linear));
      addDC(band)=_+(VocoderLinArrayChooser(autoSatDCbottom,autoSatDCmid,autoSatDCband,autoSatDCtop,para):selector(band,nrBands):pow(3)*64:dezip);
-  };
+
 
 vocoderCenters(freq) =
     VocoderFreqsChooser(vocoderBottom,vocoderMid,vocoderBand,vocoderTop,para):(par(i,nrBands, _,freq * vocoderOctave:*:min(SR/2):dezip));
