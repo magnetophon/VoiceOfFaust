@@ -36,36 +36,36 @@ VoiceOfFaust(audio) =
     (voice(audio)*4<:_,_),
 
     subVolume,subNLKS,subpmFX,
-    subSine(audio,PitchTracker(audio)),
+    subSine(audio,PitchTracker(audio,enablePitchTracker)),
 
     vocoderVolume,vocoderNLKS,vocoderpmFX,
-    StereoVocoder(audio,PitchTracker(audio)),
+    StereoVocoder(audio,PitchTracker(audio,enablePitchTracker)),
 
     pafVolume,pafNLKS,pafpmFX,
-    PAFvocoder(audio,PitchTracker(audio)),
+    PAFvocoder(audio,PitchTracker(audio,enablePitchTracker)),
 
     fofVolume,fofNLKS,fofpmFX,
-    fofvocoder(audio,PitchTracker(audio)),
+    fofvocoder(audio,PitchTracker(audio,enablePitchTracker)),
 
     FMvolume,fmNLKS,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)),
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio,enablePitchTracker),subLevel(audio)),
 
     CZvolume,CZNLKS,CZpmFX,
-    CZringMod(audio,PitchTracker(audio))
+    CZringMod(audio,PitchTracker(audio,enablePitchTracker))
 
     : mixerWithSends(nrChan,nrOutChan,nrSends)
 
     :_,_//No effect
 
-    ,(stringloopBank(PitchTracker(audio),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
-    ,(stringloopBank(PitchTracker(audio),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
+    ,(stringloopBank(PitchTracker(audio,enablePitchTracker),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
+    ,(stringloopBank(PitchTracker(audio,enablePitchTracker),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
 
-    ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
-    ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
+    ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,PMphase)
+    ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,0-PMphase)
 
     :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_))
 
-    :stereoLimiter(PitchTracker(audio) * subOctave) //it needs the lowest pitch to adjust the decay time.
+    :stereoLimiter(PitchTracker(audio,enablePitchTracker) * subOctave) //it needs the lowest pitch to adjust the decay time.
     :VuMeter
     )
     with {
@@ -80,6 +80,3 @@ VoiceOfFaust(audio) =
 //-----------------------------------------------
 
 process(audio) = VoiceOfFaust(audio);
-
-
-

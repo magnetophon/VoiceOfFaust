@@ -38,7 +38,7 @@ VoiceOfFaust(audio) =
   (voice(audio)<:bus(nrOutChan))
   ,
   vocoderVolume,vocoderChorus,vocoderpmFX,
-  StereoVocoder(audio,PitchTracker(audio))
+  StereoVocoder(audio,PitchTracker(audio,enablePitchTracker))
 
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
@@ -47,13 +47,13 @@ VoiceOfFaust(audio) =
   ,par(i,nrOutChan/2,stereoChorus)
 
   ,par(i,nrOutChan/2,
-    (pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
-    ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase))
+    (pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,PMphase)
+    ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,0-PMphase))
   )
 
   :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
-  //:stereoLimiter(PitchTracker(audio) * vocoderOctave) //needs the pitch to adjust the decay time.
+  //:stereoLimiter(PitchTracker(audio,enablePitchTracker) * vocoderOctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   )
   with {
@@ -74,4 +74,4 @@ VoiceOfFaust(audio) =
 //-----------------------------------------------
 
 process(audio) = VoiceOfFaust(audio);
-//process(audio) = StereoVocoder(audio,PitchTracker(audio));
+//process(audio) = StereoVocoder(audio,PitchTracker(audio,enablePitchTracker));

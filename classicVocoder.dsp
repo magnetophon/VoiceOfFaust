@@ -21,7 +21,7 @@ import ("lib/classicVocoder.lib");
 //-----------------------------------------------
 maxNrInRoutings = 5;
 
-process(audio) = StereoVocoder(audio,PitchTracker(audio));
+process(audio) = StereoVocoder(audio,PitchTracker(audio,enablePitchTracker));
 // process = _<:par(i, nrBands, volFilter);
 
 // process = VocoderFreqsChooser;

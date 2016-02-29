@@ -118,4 +118,4 @@ StereoVocoder(audio,freq)=
 
 
 //process(audio) = StereoVolFilterBank;
-//vocoderOsc(PitchTracker(audio));
+//vocoderOsc(PitchTracker(audio,enablePitchTracker));

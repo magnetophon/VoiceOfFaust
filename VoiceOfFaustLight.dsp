@@ -355,8 +355,8 @@ with  {
 //for example, make the fidelity be a kill switch
 //PTsmooth = 0.1*(((OSCfidelity*-1)+1):amp_follower(0.026))+0.997:min(0.9996):max(0.9984):vbargraph("[-1]PTsmooth", 0.997, 1);
 
-PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
-//PitchTracker(audio) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
+PitchTracker(audio,enablePitchTracker) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
+//PitchTracker(audio,enablePitchTracker) = ((((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & OSCfidelity>0) | isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)), OSCpitch, internal)|:select2) :smooth(0.99)
 with	{
         internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(8.0): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
         OSCpitchIsBad  = (isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity));
@@ -517,7 +517,7 @@ with {
     diffdel(x,del) = x-SawPulse*(x@int(del)*(1-ml.frac(del))+x@(int(del)+1)*ml.frac(del));
      // Third-order Lagrange interpolated-delay version (see filter.lib):
      // diffdel(x,del) = x - fl.fdelay3(DELPWR2,max(1,min(DELPWR2-2,ddel)));
-     
+
      compensate = (((SawPulse*-1)+1)*0.2)+0.8; // compensate volume dif between saw and pulse
      DELPWR2 = 2048;                           // Needs to be a power of 2 when fdelay*() used above.
      delmax = DELPWR2-1;                       // arbitrary upper limit on diff delay (duty=0.5)
@@ -556,7 +556,7 @@ with {
     };
 
 
-stereosupersawpulse(N,fund,freq,detune,mix,SawPulse,duty) = 
+stereosupersawpulse(N,fund,freq,detune,mix,SawPulse,duty) =
 supersawpulse(N,fund,freq,detune,mix,SawPulse,duty),
 supersawpulse(N,fund,freq,detune*-1,mix,SawPulse,duty);
 
@@ -614,7 +614,7 @@ CZsinepulse(fund, index) =
 //-----------------------------------------------
 
 pafFreq(audio)=
-    PitchTracker(audio)*pafOctave;
+    PitchTracker(audio,enablePitchTracker)*pafOctave;
     pafFund(freq) = fund(freq,pafOctave);
     sampleAndHold(sample) = select2((sample!=0):int) ~ _;
 
@@ -773,7 +773,7 @@ StereoVocoder(audio,freq)=
 
 
 //process(audio) = StereoVolFilterBank;
-//vocoderOsc(PitchTracker(audio));
+//vocoderOsc(PitchTracker(audio,enablePitchTracker));
 
 //-----------------------------------------------
 // PAF vocoder synthesis
@@ -1042,8 +1042,8 @@ _):compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
     // Linear phase FIR3 damping filter:
     h0 = (1.0 + bright)/2; h1 = (1.0 - bright)/4;
     dampingfilter2(x) = (h0 * x' + h1*(x+x''));
-    
-    
+
+
     };
     //stringloopFBpath(audio, audio, freq, oct,feedback,thresh,nonLinearity,bright,frequencyMod) =
     //KPvocoder(audio,freq,oct)
@@ -1084,32 +1084,32 @@ VoiceOfFaust(audio) =
     (voice(audio)*4<:_,_),
 
     subVolume,subNLKS,subpmFX,
-    subSine(audio,PitchTracker(audio)),
+    subSine(audio,PitchTracker(audio,enablePitchTracker)),
 
     vocoderVolume,vocoderNLKS,vocoderpmFX,
-    StereoVocoder(audio,PitchTracker(audio)),
+    StereoVocoder(audio,PitchTracker(audio,enablePitchTracker)),
 
     pafVolume,pafNLKS,pafpmFX,
-    pafvocoder(audio,PitchTracker(audio)),
+    pafvocoder(audio,PitchTracker(audio,enablePitchTracker)),
 
     fofVolume,fofNLKS,fofpmFX,
-    fofvocoder(audio,PitchTracker(audio)),
+    fofvocoder(audio,PitchTracker(audio,enablePitchTracker)),
 
     FMvolume,fmNLKS,FMpmFX,
-    FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio)),
+    FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio,enablePitchTracker),subLevel(audio)),
 
     CZvolume,CZNLKS,CZpmFX,
-    CZringMod(audio,PitchTracker(audio))
+    CZringMod(audio,PitchTracker(audio,enablePitchTracker))
 
     : mixerWithSends(nrChan,nrOutChan,nrSends)
 
     :_,_//No effect
 
-    ,(stringloopBank(PitchTracker(audio),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
-    ,(stringloopBank(PitchTracker(audio),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
+    ,(stringloopBank(PitchTracker(audio,enablePitchTracker),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
+    ,(stringloopBank(PitchTracker(audio,enablePitchTracker),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
 
-    ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
-    ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
+    ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,PMphase)
+    ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,0-PMphase)
 
     :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_))
 
@@ -1129,10 +1129,10 @@ VoiceOfFaust(audio) =
               (compressor_mono(100,-6,0.001,decay*0.5)),
               (compressor_mono(100,-6,0.001,decay*0.5));
 
-          decay                                = (1/(PitchTracker(audio) * subOctave ));
+          decay                                = (1/(PitchTracker(audio,enablePitchTracker) * subOctave ));
           same(x,time)                         = (x@time) == x;
           intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
-          block                                = par(i,2,(intervalTester(PitchTracker(audio),2,265)*-1+1:smooth(0.999))*_);
+          block                                = par(i,2,(intervalTester(PitchTracker(audio,enablePitchTracker),2,265)*-1+1:smooth(0.999))*_);
           };
 
 
@@ -1147,32 +1147,32 @@ process(audio) = VoiceOfFaust(audio);
 // testing cruft
 //-----------------------------------------------
 
-//process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio));
-//FMvoc(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
-//process(audio) =stringloop(audio,PitchTracker(audio),nlfOrder,2,3,4,5,6.1);
-//process(audio) =stringloop(audio,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
+//process(audio) = FMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio,enablePitchTracker)/2,subLevel(audio));
+//FMvoc(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio,enablePitchTracker)/2,subLevel(audio),FMindex,FMdyn)<:_,_;
+//process(audio) =stringloop(audio,PitchTracker(audio,enablePitchTracker),nlfOrder,2,3,4,5,6.1);
+//process(audio) =stringloop(audio,PitchTracker(audio,enablePitchTracker)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
 
-//process(audio) = fof(400,fofFund(PitchTracker(audio)),fofSkirt,fofDecay,fofPhaseRand,1);
+//process(audio) = fof(400,fofFund(PitchTracker(audio,enablePitchTracker)),fofSkirt,fofDecay,fofPhaseRand,1);
 
 //adsr(KPattack,KPdecay,KPsustain,KPrelease,button("foo")):vbargraph("foo", 0, 1);
 
-//process(audio) = audio<:(stringloopBank(PitchTracker(audio)));
+//process(audio) = audio<:(stringloopBank(PitchTracker(audio,enablePitchTracker)));
 
 //fof(fofCenter1,Fund,fofSkirt,fofDecay,phase*fofPhaseRand*(noises(nrBands,1):smooth(tau2pole(1))),fofVol1)
 //process(audio) = fof(444,222,fofSkirt,fofDecay,1*fofPhaseRand*(noises(nrBands,1):smooth(tau2pole(1))),1);
-//process(audio) = fofvocoder(voice,PitchTracker(audio)):>min(100):max(-100):stringloop(_,PitchTracker(audio)*0.5,nlfOrderL,feedbackL*feedbackADSR(audio),treshL,nonLinL,brightL,frequencyModL);
+//process(audio) = fofvocoder(voice,PitchTracker(audio,enablePitchTracker)):>min(100):max(-100):stringloop(_,PitchTracker(audio,enablePitchTracker)*0.5,nlfOrderL,feedbackL*feedbackADSR(audio),treshL,nonLinL,brightL,frequencyModL);
 
 //process(audio) = volFilterBank:vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth,nrOutChan);
-//process(audio) = (stringloopBank(PitchTracker(audio),audio,audio,phaseLL,phaseL,phaseM,phaseH,phaseHH));
+//process(audio) = (stringloopBank(PitchTracker(audio,enablePitchTracker),audio,audio,phaseLL,phaseL,phaseM,phaseH,phaseHH));
 //process(audio) = stringloopFBpath(1,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL);
-//process(audio) = KPvocoder(audio,voice(audio),PitchTracker(audio));
+//process(audio) = KPvocoder(audio,voice(audio),PitchTracker(audio,enablePitchTracker));
 
 //process = PHosci(1000,0.5);
-//process(audio) = audio<:((_:qompander(factor,threshold,attack,release)*2<:stringloopBank(PitchTracker(audio))),(_:qompander(factor,threshold,attack,release)*2<:stringloopBank(PitchTracker(audio))));
+//process(audio) = audio<:((_:qompander(factor,threshold,attack,release)*2<:stringloopBank(PitchTracker(audio,enablePitchTracker))),(_:qompander(factor,threshold,attack,release)*2<:stringloopBank(PitchTracker(audio,enablePitchTracker))));
 
-//process(audio) = audio:stringloop(_,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
-//process(audio) = audio:(stringloopBank(_,PitchTracker(audio)));
-//stringloop(_,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod),
-//stringloop(_,PitchTracker(audio)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
+//process(audio) = audio:stringloop(_,PitchTracker(audio,enablePitchTracker)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
+//process(audio) = audio:(stringloopBank(_,PitchTracker(audio,enablePitchTracker)));
+//stringloop(_,PitchTracker(audio,enablePitchTracker)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod),
+//stringloop(_,PitchTracker(audio,enablePitchTracker)/1,nlfOrder,feedback,tresh,nonLin,bright,frequencyMod);
 
-//process(audio) = vocoder(audio,PitchTracker(audio));
+//process(audio) = vocoder(audio,PitchTracker(audio,enablePitchTracker));

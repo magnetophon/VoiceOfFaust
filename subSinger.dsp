@@ -24,21 +24,21 @@ VoiceOfFaust(audio) =
     (voice(audio)<:_,_)
     ,
     subVolume,subpmFX,
-    subSine(audio,PitchTracker(audio))
+    subSine(audio,PitchTracker(audio,enablePitchTracker))
     ,
     FMvolume,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio),subLevel(audio))
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio,enablePitchTracker),subLevel(audio))
   )
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
   :_,_//No effect
 
-  ,pmFX(PitchTracker(audio),pmFXr,pmFXi,PMphase)
-  ,pmFX(PitchTracker(audio),pmFXr,pmFXi,0-PMphase)
+  ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,PMphase)
+  ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,0-PMphase)
 
   :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
-  :stereoLimiter(PitchTracker(audio) * vocoderOctave) //needs the pitch to adjust the decay time.
+  :stereoLimiter(PitchTracker(audio,enablePitchTracker) * vocoderOctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   )
   with {
@@ -60,4 +60,4 @@ VoiceOfFaust(audio) =
 //-----------------------------------------------
 
 process(audio) = VoiceOfFaust(audio);
-//process(audio) = StereoVocoder(audio,PitchTracker(audio));
+//process(audio) = StereoVocoder(audio,PitchTracker(audio,enablePitchTracker));

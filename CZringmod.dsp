@@ -20,5 +20,4 @@ import ("lib/CZringmod.lib");
 // process
 //-----------------------------------------------
 
-process(audio) = CZringMod(audio,PitchTracker(audio));
-
+process(audio) = CZringMod(audio,PitchTracker(audio,enablePitchTracker));

@@ -19,8 +19,9 @@ with  {
 
 //PTsmooth = 0.1*(((OSCfidelity*-1)+1):amp_follower(0.026))+0.997:min(0.9996):max(0.9984):vbargraph("[-1]PTsmooth", 0.997, 1);
 
-PitchTracker(audio) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
-//PitchTracker(audio) = OSCpitch : smooth(PTsmooth)
+PitchTracker(audio,0) = OSCpitch :smooth(PTsmooth);
+PitchTracker(audio,1) = ((OSCpitchIsBad , OSCpitch, internal):select2) :smooth(PTsmooth)
+//PitchTracker(audio,enablePitchTracker) = OSCpitch : smooth(PTsmooth)
 with	{
         internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(8.0): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
         OSCpitchIsBad  = (isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity));
@@ -29,4 +30,3 @@ with	{
         sames(x,time) = (prod(i,int(time),same(x,i+1)));
         intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
         };
-

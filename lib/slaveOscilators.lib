@@ -200,7 +200,7 @@ CZrestrap(fund, res) =
 //-----------------------------------------------
 
 pafFreq(audio)=
-    PitchTracker(audio)*pafOctave;
+    PitchTracker(audio,enablePitchTracker)*pafOctave;
     pafFund(freq) = fund(freq,pafOctave);
     sampleAndHold(sample) = select2((sample!=0):int) ~ _;
 
@@ -240,6 +240,3 @@ fof(phase,fReso,fund,skirt,decay,vol) =
             //sounds cool, but glithes when either the phase or one of the other params is moved, so:
             PH = 0;
            };
-
-
-
