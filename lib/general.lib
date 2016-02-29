@@ -129,8 +129,11 @@ tp=hslider("[3]top", 0, 0, 1, 0.001);
 
 /*process = VocoderLinArrayParametricMid(bt,md,bd,tp):par(i,nrBands,meter(i));*/
 
-//normal mixer
-vocoderMixer(0) =bus(nrBands)<:(
+//normal mixer without outputRouting
+vocoderMixer(0,0) = bus(nrBands):>bus(nrOutChan);
+
+//normal mixer with outputRouting
+vocoderMixer(0,1) =bus(nrBands)<:(
                 (par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,0):dezip) *_)))
                ,(bus(nrBands):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
                ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
@@ -142,11 +145,12 @@ vocoderMixer(0) =bus(nrBands)<:(
              ):>bus(nrOutChan);
 
 // Ambisonics mixer.
-vocoderMixer(1)  = routing:((angles,bus(nrBands)): interleave(nrBands,2)) : par(i,nrBands,myMap):>bus((ambisonicsOrder*2)+1)
+vocoderMixer(1, outputRoutingEnabled)  = routing(outputRoutingEnabled):((angles,bus(nrBands)): interleave(nrBands,2)) : par(i,nrBands,myMap):>bus((ambisonicsOrder*2)+1)
 with {
   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
   angles = par(i,nrBands/2,   ((angleTop-angleBottom)*(i/(nrBands/2)))+angleBottom)<:(bus(nrBands/2),par(i,nrBands/2,_*-1)):interleave(nrBands/2,2);
-  routing =bus(nrBands)<:(
+  routing(0) = bus(nrBands);
+  routing(1) =bus(nrBands)<:(
                (bus(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,0):dezip) *_)))
                ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,1):dezip) *_)))
                ,(butterfly(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,2):dezip) *_)))

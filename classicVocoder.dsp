@@ -41,14 +41,14 @@ process(audio) = StereoVocoder(audio,PitchTracker(audio,enablePitchTracker));
 
 /*process = */
 /*process=((decoderStereo(ambisonicsOrder):par(i,2, autoSat)), bus(nrOutChan));*/
-/*process = vocoderOsc(3.3333):vocoderMixer(ambisonicsOn):postProc(nrOutChan,ambisonicsOn) ;*/
+/*process = vocoderOsc(3.3333):vocoderMixer(ambisonicsOn,outputRoutingEnabled):postProc(nrOutChan,ambisonicsOn) ;*/
 /*process = (butterfly(nrBands):>par(i,nrOutChan,(outputRouting==4) *_)):>bus(nrOutChan);*/
 /*
 inputRouting (1==2 with 2chan)
 out ,6,7 ,8kaput
 */
 
-/*tmp = vocoderOsc(2):vocoderMixer(ambisonicsOn);*/
+/*tmp = vocoderOsc(2):vocoderMixer(ambisonicsOn,outputRoutingEnabled);*/
 //normal mixer
 /*process = decoderStereo(2);*/
 

@@ -8,9 +8,10 @@ vocoderFund(freq)=
 vocoderOsc(freq) =
   ( par(i,2,(noises(2,i)*sqrt((vocoderOscNoise))))
   ,(stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty):par(i,2,_*sqrt((1-vocoderOscNoise))))
-  ):> inputRouter
+  ):> inputRouter(inputRoutingEnabled)
   with {
-    inputRouter =
+    inputRouter(0)= bus2<:bus(nrBands);
+    inputRouter(1) =
     bus2 <:(
        (par(i, 2, (xfadeSelector(inputRouting,0):dezip) *_) :butterfly(2): par(i,2,_<:bus(nrBands/2)) )
       ,(par(i, 2, (xfadeSelector(inputRouting,1):dezip) *_) :butterfly(2)<:interleave(nrBands/2,2))
@@ -112,7 +113,7 @@ StereoVocoder(audio,freq)=
            ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):par(i,nrBands,dezip)))
            :StereoVolFilterBank(nrBands,enableFeedback)
            :gainCompare(audio,freq,enableGainCompare)
-           :vocoderMixer(ambisonicsOn)
+           :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
            // :endGainCompare(audio,freq)
            :postProc(nrOutChan,ambisonicsOn,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth);
 
