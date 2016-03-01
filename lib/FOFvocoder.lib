@@ -62,8 +62,16 @@ with {
              ):>bus(nrBands*nrOutChan);
 };
 
+fofvocoder(audio,freq,0)=
+  //the noises part is to make a different (low)freq modulation for each osc.
+  //noises(nrBands,0):smooth(tau2pole(32))
+  //"(i+1)*" is to make each band different
+  (fofPhaseRands:par(j,nrBands,(_*(noises(nrBands,j)):smooth(tau2pole(fofPhaseSpeed)))),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
+  :fofOscs
+  :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
+  :postProc(nrOutChan,ambisonicsOn,volume*0.3,1);
 
-fofvocoder(audio,freq)=
+fofvocoder(audio,freq,1)=
   //the noises part is to make a different (low)freq modulation for each osc.
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
