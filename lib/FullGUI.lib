@@ -111,23 +111,36 @@ fofNLKS                       = fofVocoderGroupLevel(vslider("[1]K-S[tooltip: a 
 fofpmFX                       = fofVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 fofOctave                     = fofVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of fof
 
-fofparamsGroup(x)             = fofVocoderGroup((vgroup("[1]parameters", x)));
-fofTop                        = fofparamsGroup(vslider("[1]top[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):volScale);		//1 to 100 logarithmicly,
-fofBottom                     = fofparamsGroup(vslider("[2]bottom[style:knob][tooltip: the lowest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):volScale);			//0.25 to 49 logarithmicly
-fofSkirtTop                   = fofparamsGroup(vslider("[3]skirtTop[style:knob]", 1.212, 0.1, 9, 0.001)*-1+8.9:pow(4)*0.001:smooth(0.999));
-fofSkirtBottom                = fofparamsGroup(vslider("[4]skirtBottom[style:knob]", 3.882, 0.1, 9, 0.001)*-1+9:pow(4)*0.001:smooth(0.999));
-fofDecayTop                   = fofparamsGroup(vslider("[5]decayTop[style:knob]", 1.88, 0, 4, 0.001)*-1+4:pow(4):smooth(0.999));
-fofDecayBottom                = fofparamsGroup(vslider("[6]decayBottom[style:knob]", 1.161, 0.001, 4, 0.001)*-1+3.999:pow(4):smooth(0.999));
+fofParamsGroup(x)   = fofVocoderGroup(hgroup("[1]parameters", x));
+  fofBottomGroup(x) = fofParamsGroup(vgroup("[0]low frequencies",x));
+  fofMidGroup(x)    = fofParamsGroup(vgroup("[1]mid frequencies",x));
+  fofBandGroup(x)   = fofParamsGroup(vgroup("[2]mid band",x));
+  fofTopGroup(x)    = fofParamsGroup(vgroup("[3]high frequencies",x));
+
+fofBottom          = fofBottomGroup(vslider("[1]frequency[style:knob][tooltip: the lowest frequency of the fof oscillators]",	defaultBottom, 0.5, 7, 0.001):volScale);			//0.25 to 49 logarithmicly
+fofMid             = fofMidGroup(vslider(" [1]frequency             [style:knob] [tooltip: the mid frequency of the fof oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+fofBand            = fofBandGroup(vslider(" [1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+fofTop             = fofTopGroup(vslider("[1]frequency[style:knob][tooltip: the highest frequency of the fof oscillators]",	defaultTop, 1, 64, 0.001):volScale);		//1 to 100 logarithmicly,
+fofSkirtBottom     = fofBottomGroup(vslider("[2]skirtBottom[style:knob]", 3.882, 0.1, 9, 0.001)*-1+9:pow(4)*0.001:smooth(0.999));
+fofSkirtMid        = fofMidGroup(vslider("[2]skirtMid[style:knob] [tooltip: the mid Skirt of the fof oscillators, relative to the top and bottom",	0, -1, 1, 0.001))
+;fofSkirtBand       = fofBandGroup(vslider("[2]skirtBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+fofSkirtTop        = fofTopGroup(vslider("[2]skirtTop[style:knob]", 1.212, 0.1, 9, 0.001)*-1+8.9:pow(4)*0.001:smooth(0.999));
+fofDecayBottom     = fofBottomGroup(vslider("[3]decayBottom[style:knob]", 1.161, 0.001, 4, 0.001)*-1+3.999:pow(4):smooth(0.999));
+fofDecayMid        = fofMidGroup(vslider("[3]decayMid[style:knob]", 1.161, 0.001, 4, 0.001)*-1+3.999:pow(4):smooth(0.999));
+fofDecayBand       = fofBandGroup(vslider("[3]decayBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+fofDecayTop        = fofTopGroup(vslider("[3]decayTop[style:knob]", 1.88, 0, 4, 0.001)*-1+4:pow(4):smooth(0.999));
 
 //was used for formant phase:
-//fofPhaseRand                = fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:smooth(0.999));
-fofPhaseRandTop               = fofparamsGroup((vslider("[7]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
-fofPhaseRandBottom            = fofparamsGroup((vslider("[8]phase rnd bottom[style:knob][tooltip: phase randomization of the high oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
-fofPhaseSpeed = 64;//                 = fofparamsGroup((vslider("[7]phase speed[style:knob][tooltip: phase randomization speed]", 32, 3, 300, 1)):smooth(0.999));
-//fofWidth                    = fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0.001):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
-//width                       = vslider("width", 3, 3, 100, 0.001)*0.001:smooth(0.999);
-//decay                       = vslider("decay", 0, 0, 10, 0.001):_<:*:smooth(0.999);
-//fReso                       = vslider("fReso", 60, 0, 1270, 0.001):smooth(0.999);
+//fofPhaseRand     = fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:smooth(0.999));
+fofPhaseRandBottom = fofBottomGroup((vslider("[4]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
+fofPhaseRandMid    = fofMidGroup((vslider("[4]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
+fofPhaseRandBand   = fofBandGroup(vslider("[4]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+fofPhaseRandTop    = fofTopGroup((vslider("[4]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
+fofPhaseSpeed      = 64;//                 = fofparamsGroup((vslider("[7]phase speed[style:knob][tooltip: phase randomization speed]", 32, 3, 300, 1)):smooth(0.999));
+//fofWidth         = fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0.001):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+//width            = vslider("width", 3, 3, 100, 0.001)*0.001:smooth(0.999);
+//decay            = vslider("decay", 0, 0, 10, 0.001):_<:*:smooth(0.999);
+//fReso            = vslider("fReso", 60, 0, 1270, 0.001):smooth(0.999);
 
 // -----------------------------------------------
 // FM
