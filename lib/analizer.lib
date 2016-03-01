@@ -59,6 +59,6 @@ autoQresonBP(f,prevC,c,q) =
 analizer(audio,freq)=
 (
   (audio<:bus(nrBands))
-  ,(analizerCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
+  ,(analizerCenters(freq)<:((bus(nrBands)<:(freq/2,par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
   ,(analizerQ<:bus(nrBands))
 ):analizers;

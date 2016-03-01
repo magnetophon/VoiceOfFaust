@@ -1,7 +1,7 @@
 //-----------------------------------------------
 // contants
 //-----------------------------------------------
-nrBands                = 12;      // Number of bands for the vocoders.
+nrBands                = 8;      // Number of bands for the vocoders.
 nrOutChan              = 2;       // number of output
 maxNrOutRoutings       = select2(ambisonicsOn,6,3);
 ambisonicsOn           = 0;
@@ -30,4 +30,4 @@ gainCompEnable         = OSCgroup(checkbox("gainCompEnable"))*enableGainCompare;
 enableFeedback         = 0;
 enableAutosat          = 0;
 enablePitchTracker     = 0; // internal pitch tracker
-doubleOscs             = 0; //whether fofvocoder nrBands or nrBands*nrOutChan oscilators
+doubleOscs             = 1; //whether fofvocoder nrBands or nrBands*nrOutChan oscilators
