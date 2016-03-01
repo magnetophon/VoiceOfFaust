@@ -23,4 +23,4 @@ import ("lib/FOFvocoder.lib");
 //-----------------------------------------------
 
 process(audio) = fofvocoder(audio,PitchTracker(audio,enablePitchTracker));
-/*process = FOFvocoderMixer(ambisonicsOn);*/
+//process = FOFvocoderMixer(ambisonicsOn,outputRoutingEnabled);
