@@ -1,13 +1,21 @@
 //-----------------------------------------------
 // contants
 //-----------------------------------------------
-nrBands                = 8;      // Number of bands for the vocoders.
+nrBands                = 16;      // Number of bands for the vocoders.
 nrOutChan              = 2;       // number of output
 maxNrOutRoutings       = select2(ambisonicsOn,6,3);
 ambisonicsOn           = 0;
 ambisonicsOrder        = 3;
 outputRoutingEnabled   = 1;
 inputRoutingEnabled    = 1;
+para                   = 0;       // whether we want a parametric mid
+enableGainCompare      = 0;
+gainCompEnable         = OSCgroup(checkbox("gainCompEnable"))*enableGainCompare;
+enableFeedback         = 0;
+enableAutosat          = 0;
+doubleOscs             = 1; //whether fofvocoder nrBands or nrBands*nrOutChan oscilators
+enablePitchTracker     = 0; // internal pitch tracker
+enablePitchQuantise    = 0;
 //todo: test or ask about smooth vs line:, efficiency and behaviour
 //minline              = 3;       // minimum line time in ms
 // MinInputPitch          = 61.7354;	// lowest expected note is a B1
@@ -24,11 +32,3 @@ vocoderN               = 2;
 defaultTop             = 128:pow(0.5);
 defaultBottom          = ((0.25*pow(2,0.5))+0.5):pow(0.5);
 PTsmooth               = 0.9984;
-para                   = 1;       // whether we want a parametric mid
-enableGainCompare      = 1;
-gainCompEnable         = OSCgroup(checkbox("gainCompEnable"))*enableGainCompare;
-enableFeedback         = 0;
-enableAutosat          = 0;
-enablePitchTracker     = 0; // internal pitch tracker
-doubleOscs             = 1; //whether fofvocoder nrBands or nrBands*nrOutChan oscilators
-enablePitchQuantise    = 1;
