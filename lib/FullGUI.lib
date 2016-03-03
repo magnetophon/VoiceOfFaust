@@ -131,11 +131,16 @@ fofDecayTop        = fofTopGroup(vslider("[3]decayTop[style:knob]", 1.88, 0, 4, 
 
 //was used for formant phase:
 //fofPhaseRand     = fofparamsGroup((vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:smooth(0.999));
-fofPhaseRandBottom = fofBottomGroup((vslider("[4]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
-fofPhaseRandMid    = fofMidGroup((vslider("[4]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
-fofPhaseRandBand   = fofBandGroup(vslider("[4]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-fofPhaseRandTop    = fofTopGroup((vslider("[4]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
+fofPhaseBottom = fofBottomGroup((vslider("[4]phase bottom[style:knob][tooltip: phase  of the low oscillators]", 0.75, 0, 1, 0.001)):smooth(0.999));
+fofPhaseMid    = fofMidGroup((vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.75, 0, 1, 0.001)):smooth(0.999));
+fofPhaseBand   = fofBandGroup(vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+fofPhaseTop    = fofTopGroup((vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.75, 0, 1, 0.001)):smooth(0.999));
+fofPhaseRandBottom = fofBottomGroup((vslider("[5]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
+fofPhaseRandMid    = fofMidGroup((vslider("[5]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
+fofPhaseRandBand   = fofBandGroup(vslider("[5]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+fofPhaseRandTop    = fofTopGroup((vslider("[5]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.75, 0, 1, 0.001)):pow(2)*20000:smooth(0.999));
 fofPhaseSpeed      = 64;//                 = fofparamsGroup((vslider("[7]phase speed[style:knob][tooltip: phase randomization speed]", 32, 3, 300, 1)):smooth(0.999));
+
 //fofWidth         = fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0.001):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width            = vslider("width", 3, 3, 100, 0.001)*0.001:smooth(0.999);
 //decay            = vslider("decay", 0, 0, 10, 0.001):_<:*:smooth(0.999);

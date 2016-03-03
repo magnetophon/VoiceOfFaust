@@ -13,6 +13,7 @@ fofCenters = VocoderFreqsChooser(fofBottom,fofMid,fofBand,fofTop,para);
 fofSkirts  = VocoderFreqsChooser(fofSkirtBottom,fofSkirtMid,fofSkirtBand,fofSkirtTop,para);
 fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para);
 fofPhaseRands = VocoderLinArrayChooser(fofPhaseRandBottom,fofPhaseRandMid,fofPhaseRandBand,fofPhaseRandTop,para);
+fofPhases = VocoderLinArrayChooser(fofPhaseBottom,fofPhaseMid,fofPhaseBand,fofPhaseTop,para);
 
 fofOscs=
     interleave(nrBands,6):
@@ -32,7 +33,8 @@ fofOscs=
 //              ):>bus(nrOutChan);
 
 //normal mixer without outputRouting
-FOFvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
+// FOFvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
+FOFvocoderMixer(0,0) = par(i,nrOutChan, bus(nrBands):>_);
 
 //normal mixer with outputRouting
 FOFvocoderMixer(0,1) =bus(nrBands*nrOutChan)<:(
@@ -66,7 +68,7 @@ fofvocoder(audio,freq,0)=
   //the noises part is to make a different (low)freq modulation for each osc.
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
-  (fofPhaseRands:par(j,nrBands,(_*(noises(nrBands,j)):smooth(tau2pole(fofPhaseSpeed)))),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
+  (fofPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(fofPhaseSpeed)))),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
   :fofOscs
   :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,volume*0.3,1);
@@ -76,7 +78,7 @@ fofvocoder(audio,freq,1)=
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
   par(i,nrOutChan
-    ,(fofPhaseRands:par(j,nrBands,(_*(noises(nrBands*nrOutChan,(i+1)*j)):smooth(tau2pole(fofPhaseSpeed)))),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
+    ,(((fofPhases,(fofPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(fofPhaseSpeed))))):>(par(j, nrBands,_*select2(i%2,1,-1))))):>bus(nrBands),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
     :fofOscs)
   :FOFvocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,volume*0.3,1);
