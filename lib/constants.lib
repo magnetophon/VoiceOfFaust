@@ -31,3 +31,4 @@ enableFeedback         = 0;
 enableAutosat          = 0;
 enablePitchTracker     = 0; // internal pitch tracker
 doubleOscs             = 1; //whether fofvocoder nrBands or nrBands*nrOutChan oscilators
+enablePitchQuantise    = 1;

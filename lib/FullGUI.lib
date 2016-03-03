@@ -12,11 +12,10 @@ tabs(x)        = (tgroup("[2]", x));
 
 OSCpitch                = OSCgroup(nentry("[0]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
 OSCfidelity             = OSCgroup(nentry("[1]fidelity", 0, 0, 1, 0.001));
-OSConset                = OSCgroup(nentry("[2]onset", 0, 0, 1,0.001 ));
-formant                 = OSCgroup(nentry("[3]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);
-
+pitchQuantised          = OSCgroup(checkbox("[2]quantise pitch"));
+OSConset                = OSCgroup(nentry("[3]onset", 0, 0, 1,0.001 ));
+formant                 = OSCgroup(nentry("[4]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);
 ManualOnset             = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
-
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
 cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));
