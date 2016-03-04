@@ -26,8 +26,8 @@ olli1(x) = x:		tf2(0.161758, 0, -1, 0, -0.161758):tf2(0.733029, 0, -1, 0, -0.733
 olli2(x) = x:mem:	tf2(0.479401, 0, -1, 0, -0.479401):tf2(0.876218, 0, -1, 0, -0.876218):tf2(0.976599, 0, -1, 0, -0.976599):tf2(0.9975  , 0, -1, 0, -0.9975  );
 
 pyth(x) = sqrt((olli1(x)*olli1(x))+(olli2(x)*olli2(x))):max(0.00001):min(100); //compute instantaneous amplitudes
-attackDecay(x) = pyth(x) :amp_follower_ud(attack/1000,release/1000);
-mapping(x) = attackDecay(x) : ((sin((min(1/factor)*(factor/4)) * (2*PI)): max(0.0000001):min(1),exponent) : pow );
-qompander(x,factor,threshold,attack,release) = (mapping(x) / attackDecay(x))<: (_,olli1(x):*),(_,olli2(x):*):+:_*(sqrt(0.5));
+attackDecay(x,attack,release) = pyth(x) :amp_follower_ud(attack/1000,release/1000);
+mapping(x,attack,release) = attackDecay(x,attack,release) : ((sin((min(1/factor)*(factor/4)) * (2*PI)): max(0.0000001):min(1),exponent) : pow );
+qompander(x,factor,threshold,attack,release) = (mapping(x,attack,release) / attackDecay(x,attack,release))<: (_,olli1(x):*),(_,olli2(x):*):+:_*(sqrt(0.5));
 
 //process(x) = qompander(x,factor,threshold,attack,release);
