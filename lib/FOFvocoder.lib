@@ -70,6 +70,8 @@ fofvocoder(audio,freq,0)=
   //"(i+1)*" is to make each band different
   (fofPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(fofPhaseSpeed)))),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
   :fofOscs
+  :gainNormalise
+  :gainCompare(audio,freq,enableGainCompare)
   :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,volume*0.3,1);
 
@@ -78,7 +80,7 @@ fofvocoder(audio,freq,1)=
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
   par(i,nrOutChan
-    ,(((fofPhases,(fofPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(fofPhaseSpeed))))):>(par(j, nrBands,_*select2(i%2,1,-1))))):>bus(nrBands),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
-    :fofOscs)
+    ,(((fofPhases,(fofPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(fofPhaseSpeed))))):>(par(j, nrBands,_*select2(i%2,1,-1))))),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays,analizer(voice(audio),freq))
+    :fofOscs: gainNormalise :gainCompare(audio,freq,enableGainCompare))
   :FOFvocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,volume*0.3,1);

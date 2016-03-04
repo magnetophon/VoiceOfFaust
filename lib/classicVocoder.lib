@@ -91,18 +91,6 @@ AutosatArray(1) =
 vocoderCenters(freq) =
     VocoderFreqsChooser(vocoderBottom,vocoderMid,vocoderBand,vocoderTop,para):(par(i,nrBands, _,freq * vocoderOctave:*:min(SR/2):dezip));
 
-gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
-  compare(gain,gainedX) =
-    select2(gainCompEnable,
-      1,
-      ((((gain:max(0.01)):linear2db+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,dbPs,dbPs*-1)):min(36):db2linear))
-    );
-  dbPs = OSCgroup(vslider("[0]autospeed[style:knob]",	750, 0, 1000, 1))/SR;
-  };
-
-gainCompare(audio,freq,0) = bus(nrBands);
-gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
-
 
 endGainCompare(audio,freq) = (bus(nrOutChan),(voice(audio)<:bus(nrOutChan))):interleave(nrOutChan,2):par(i,nrOutChan,gainCompareElement);
 
