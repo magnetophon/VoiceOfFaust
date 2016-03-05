@@ -136,18 +136,9 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   dbPs = OSCgroup(vslider("[0]autospeed[style:knob]",	750, 0, 1000, 1))/SR;
   };
 
-InvgainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
-  compare(gain,gainedX) =
-    select2(1,
-      1,
-      ((((gain:max(0.01)):linear2db+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,dbPs,dbPs*-1)):min(36):db2linear))
-    );
-  dbPs = OSCgroup(vslider("[0]autospeed[style:knob]",	750, 0, 1000, 1))/SR;
-  };
-
 gainCompare(audio,freq,0) = bus(nrBands);
 gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
-gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,InvgainCompareElement);
+gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 
 
 //normal mixer without outputRouting
