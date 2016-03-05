@@ -3,7 +3,7 @@
 //-----------------------------------------------
 
 // general:
-nrBands                = 8;      // Number of bands for the vocoders.
+nrBands                = 16;      // Number of bands for the vocoders.
 nrOutChan              = 2;       // number of output
 maxNrOutRoutings       = select2(ambisonicsOn,6,3);
 ambisonicsOn           = 0;
@@ -15,9 +15,10 @@ enableGainCompare      = 1;
 gainCompEnable         = OSCgroup(checkbox("gainCompEnable"))*enableGainCompare;
 enableFeedback         = 0;
 enableAutosat          = 0;
-doubleOscs             = 1; //whether fofvocoder nrBands or nrBands*nrOutChan oscilators
+doubleOscs             = 1; //whether fofvocoder has nrBands or nrBands*nrOutChan oscilators
 enablePitchTracker     = 0; // internal pitch tracker
 enablePitchQuantise    = 0;
+enableFOFnoiseFilter   =  1;
 //todo: test or ask about smooth vs line:, efficiency and behaviour
 //minline              = 3;       // minimum line time in ms
 // MinInputPitch          = 61.7354;	// lowest expected note is a B1
