@@ -11,6 +11,7 @@ fundPhase(freq,oct, phase)= (4 * oct * masterIndex(freq)) - floor(4 * oct * mast
 //-----------------------------------------------
 // dezipper
 dezip(x) = x:smooth(0.999);
+dezipBands = par(i, nrBands, smooth(0.999));
 // minimum of n values
 minOfN(1) = _;
 minOfN(2) = min;

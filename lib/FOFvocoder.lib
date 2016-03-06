@@ -7,14 +7,14 @@
 fofFund(freq) =
     fund(freq,fofOctave);
 
-fofCenters = VocoderFreqsChooser(fofBottom,fofMid,fofBand,fofTop,para);
+fofCenters = VocoderFreqsChooser(fofBottom,fofMid,fofBand,fofTop,para):dezipBands;
 /*fofSkirts  = VocoderFreqs(fofSkirtBottom,fofSkirtTop);*/
 /*fofDecays  = VocoderFreqs(fofDecayBottom,fofDecayTop);*/
-fofSkirts  = VocoderFreqsChooser(fofSkirtBottom,fofSkirtMid,fofSkirtBand,fofSkirtTop,para);
-fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para);
-fofPhases = VocoderLinArrayChooser(fofPhaseBottom,fofPhaseMid,fofPhaseBand,fofPhaseTop,para);
-fofPhaseRands = VocoderLinArrayChooser(fofPhaseRandBottom,fofPhaseRandMid,fofPhaseRandBand,fofPhaseRandTop,para);
-fofNoiseFilterFreqs = VocoderFreqsChooser(fofNoiseFilterBottom,fofNoiseFilterMid,fofNoiseFilterBand,fofNoiseFilterTop,para);
+fofSkirts  = VocoderFreqsChooser(fofSkirtBottom,fofSkirtMid,fofSkirtBand,fofSkirtTop,para):dezipBands;
+fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para):dezipBands;
+fofPhases = VocoderLinArrayChooser(fofPhaseBottom,fofPhaseMid,fofPhaseBand,fofPhaseTop,para):dezipBands;
+fofPhaseRands = VocoderLinArrayChooser(fofPhaseRandBottom,fofPhaseRandMid,fofPhaseRandBand,fofPhaseRandTop,para):dezipBands;
+fofNoiseFilterFreqs = VocoderFreqsChooser(fofNoiseFilterBottom,fofNoiseFilterMid,fofNoiseFilterBand,fofNoiseFilterTop,para):dezipBands;
 
 fofOscs=
     interleave(nrBands,6):
