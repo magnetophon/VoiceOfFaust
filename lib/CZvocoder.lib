@@ -6,30 +6,22 @@
 //-----------------------------------------------
 
 //czCenters=     par(i,nrBands,   pow((pow((czTop/czBottom),1/15)),i)*czBottom);
-czFund(freq) =
-    fund(freq,czOctave);
+czFund(freq,phase) =
+    // (fund(freq,czOctave)+phase)-
+    // ((fund(freq,czOctave)+phase):floor);
+    (fund(freq,czOctave)+phase):decimal;
+
+czFunds(freq,i) =
+  (czNoises(i,freq,enableFOFnoiseFilter)):par(j, nrBands, czFund(freq));
 
 czCenters = VocoderFreqsChooser(czBottom,czMid,czBand,czTop,para):dezipBands;
-// czPhases = VocoderLinArrayChooser(czPhaseBottom,czPhaseMid,czPhaseBand,czPhaseTop,para):dezipBands;
-// czPhaseRands = VocoderLinArrayChooser(czPhaseRandBottom,czPhaseRandMid,czPhaseRandBand,czPhaseRandTop,para):dezipBands;
-// czNoiseFilterFreqs = VocoderFreqsChooser(czNoiseFilterBottom,czNoiseFilterMid,czNoiseFilterBand,czNoiseFilterTop,para):dezipBands;
+czPhases = VocoderLinArrayChooser(czPhaseBottom,czPhaseMid,czPhaseBand,czPhaseTop,para):dezipBands;
+czPhaseRands = VocoderLinArrayChooser(czPhaseRandBottom,czPhaseRandMid,czPhaseRandBand,czPhaseRandTop,para):dezipBands;
+czNoiseFilterFreqs = VocoderFreqsChooser(czNoiseFilterBottom,czNoiseFilterMid,czNoiseFilterBand,czNoiseFilterTop,para):dezipBands;
 
 czOscs=
     interleave(nrBands,2):
     par(i, nrBands, CZrestrap);
-
-
-//normal mixer
-// CZvocoderMixer(0) =bus(nrBands*nrOutChan)<:(
-//                (bus(nrBands*nrOutChan):>(par(i,nrOutChan,(outputRouting==0:dezip) *_)))
-//                ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(bus((nrBands)):>_*(outputRouting==1:dezip))))
-//                ,(par(i,nrOutChan, bus(nrBands):>(outputRouting==2:dezip) *_))
-//                ,(butterfly(nrBands*nrOutChan):>(par(i,nrOutChan,(outputRouting==3:dezip) *_)))
-//                ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly((nrBands)):>_*(outputRouting==4:dezip))))
-//                ,(bus(nrBands*nrOutChan):>butterfly(nrOutChan):par(i,nrOutChan,(outputRouting==5:dezip) *_))
-//                ,(par(i,nrOutChan, bus(nrBands):>(outputRouting==6:dezip) *_):butterfly(nrOutChan))
-//                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
-//              ):>bus(nrOutChan);
 
 //normal mixer without outputRouting
 // CZvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
@@ -73,7 +65,7 @@ czVocoder(audio,freq,0)=
   //the noises part is to make a different (low)freq modulation for each osc.
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
-  ((czFund(freq)<:bus(nrBands)),czCenters)
+  (czFunds(freq,0),czCenters)
   :czOscs
   :gainNormalise
   :((analizer(voice(audio),freq),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
@@ -85,7 +77,7 @@ czVocoder(audio,freq,1)=
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
   par(i,nrOutChan,
-    ((czFund(freq)<:bus(nrBands)),czCenters)
+    (czFunds(freq,i),czCenters)
     : czOscs
     : gainNormalise
     :((analizer(voice(audio),freq),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
