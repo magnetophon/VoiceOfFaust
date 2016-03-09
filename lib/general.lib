@@ -3,8 +3,8 @@
 //-----------------------------------------------
 // simple sawtooth waveform oscillator between 0 and 1
 masterIndex(freq)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
-fund(freq,oct)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq)); //choose octaves
-fundPhase(freq,oct, phase)= (4 * oct * masterIndex(freq)) - floor(4 * oct * masterIndex(freq)); //choose octaves and set phase
+fund(freq,oct)= (4 * oct * masterIndex(freq)) : decimal; //choose octaves
+fundPhase(freq,oct, phase)= (4 * oct * masterIndex(freq)) : decimal; //choose octaves and set phase
 
 //-----------------------------------------------
 // Some general functions
