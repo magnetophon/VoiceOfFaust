@@ -141,6 +141,28 @@ gainCompare(audio,freq,0) = bus(nrBands);
 gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 
+// scale the gain between 0 = all at avg, 1 = normal and 2 = expansion
+// expansion means:
+//   AvgVolume stays the same
+//   soft bands get softer
+//   loud bands  get louder
+gainScale(scale) =
+  bus(nrBands)<:par(i, nrBands, gain(i)) with {
+    gain(i) = bus(nrBands)<:
+      (
+         (xfadeSelector(scale,0)*AvgVolume)
+        ,(xfadeSelector(scale,1)*selector(i,nrBands))
+        ,(xfadeSelector(scale,2)*expander(i))
+      ):>_;
+    expander(i) =par(i, nrBands, max(0.0001):linear2db) <:
+      (
+        (( ((AvgVolume*-1)+selector(i,nrBands)) * vslider("scaleFactor", 1, 1, 10, 0.001) )+ (AvgVolume* vslider("scaleFactor", 1, 1, 10, 0.001)))
+      ):>db2linear;
+  };
+
+        AvgVolume = sumOfN(nrBands)/nrBands;
+        MinVolume = minOfN(nrBands);
+        MaxVolume = maxOfN(nrBands);
 
 //normal mixer without outputRouting
 vocoderMixer(0,0) = bus(nrBands):>bus(nrOutChan);

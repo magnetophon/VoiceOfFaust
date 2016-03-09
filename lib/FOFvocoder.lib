@@ -90,6 +90,7 @@ fofvocoder(audio,freq,1)=
     ,(fofNoises(i,freq,enableFOFnoiseFilter),fofCenters,(fofFund(freq)<:bus(nrBands)),fofSkirts,fofDecays)
     :fofOscs
     : gainNormalise
-    :((analizer(voice(audio),freq),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*)))
+    :((analizer(voice(audio),freq),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
+  )
   :FOFvocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,volume*0.1,1);
