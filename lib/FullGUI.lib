@@ -242,6 +242,49 @@ CZresMultLL        = LLCZparamsGroup(vslider("[5]resMult[tooltip: resonant frequ
 
 CZwidth            = CZparamsGroup(vslider("[5]width[tooltip: stereo width]",	0.25, 0, 1, 0.001):smooth(0.999));
 
+//-----------------------------------------------
+// Vocoder based on Casio CZ resonant oscilators
+//-----------------------------------------------
+czVocoderGroup(x)            = synthsGroup((hgroup("[4]CZvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
+czVocoderGroupLevel(x)       = czVocoderGroup((vgroup("[0]levels", x)));
+czVolume                     = czVocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+czNLKS                       = czVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+czpmFX                       = czVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+czOctave                     = czVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of cz
+
+czParamsGroup(x)   = czVocoderGroup(hgroup("[1]parameters", x));
+  czBottomGroup(x) = czParamsGroup(vgroup("[0]low frequencies",x));
+  czMidGroup(x)    = czParamsGroup(vgroup("[1]mid frequencies",x));
+  czBandGroup(x)   = czParamsGroup(vgroup("[2]mid band",x));
+  czTopGroup(x)    = czParamsGroup(vgroup("[3]high frequencies",x));
+
+czBottom          = czBottomGroup(    vslider("[1]frequency[style:knob][tooltip: the lowest frequency of the cz oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+czMid             = czMidGroup(       vslider("[1]frequency             [style:knob] [tooltip: the mid frequency of the cz oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+czBand            = czBandGroup(      vslider("[1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+czTop             = czTopGroup(       vslider("[1]frequency[style:knob][tooltip: the highest frequency of the cz oscillators]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
+czSkirtBottom     = czBottomGroup(    vslider("[2]skirtBottom[style:knob]", 4, 0.1, 9, 0.001)*-1+9:pow(4)*0.001);
+czSkirtMid        = czMidGroup(       vslider("[2]skirtMid[style:knob] [tooltip: the mid Skirt of the cz oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+czSkirtBand       = czBandGroup(      vslider("[2]skirtBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+czSkirtTop        = czTopGroup(       vslider("[2]skirtTop[style:knob]", 8, 0.1, 9, 0.001)*-1+8.9:pow(4)*0.001);
+czDecayBottom     = czBottomGroup(    vslider("[3]decayBottom[style:knob]", 3, 0.001, 4, 0.001)*-1+3.999:pow(4));
+czDecayMid        = czMidGroup(       vslider("[3]decayMid[style:knob]", 1.161, 0.001, 4, 0.001)*-1+3.999:pow(4));
+czDecayBand       = czBandGroup(      vslider("[3]decayBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+czDecayTop        = czTopGroup(       vslider("[3]decayTop[style:knob]", 0.5, 0, 4, 0.001)*-1+4:pow(4));
+
+//was used for formant phase:
+//czPhaseRand       = czparamsGroup(( vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:smooth(0.999));
+czPhaseBottom       = czBottomGroup(( vslider("[4]phase bottom[style:knob][tooltip: phase  of the low oscillators]", 0.5, 0, 1, 0.001)));
+czPhaseMid          = czMidGroup((    vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.5, 0, 1, 0.001)));
+czPhaseBand         = czBandGroup(    vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+czPhaseTop          = czTopGroup((    vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)));
+czPhaseRandBottom   = czBottomGroup(( vslider("[5]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
+czPhaseRandMid      = czMidGroup((    vslider("[5]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
+czPhaseRandBand     = czBandGroup(    vslider("[5]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+czPhaseRandTop      = czTopGroup((    vslider("[5]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
+czNoiseFilterBottom = czBottomGroup(  vslider("[6]noise frequency[style:knob][tooltip: the lowest frequency of the cz noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+czNoiseFilterMid    = czMidGroup(     vslider("[6]noise frequency             [style:knob] [tooltip: the mid frequency of the cz noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
+czNoiseFilterBand   = czBandGroup(    vslider("[6]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+czNoiseFilterTop    = czTopGroup(     vslider("[6]noise frequency[style:knob][tooltip: the highest frequency of the cz noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
 
 //-----------------------------------------------
 // input compression and expansion
