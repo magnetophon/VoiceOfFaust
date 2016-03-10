@@ -16,10 +16,9 @@ VocSynthFull
 classicVocoder
 stringSinger
 PAFvocoder
-FOFvocoder
+# FOFvocoder
 FMsinger
 subSinger
 CZringmod
 Karplus-StrongSinger
 Karplus-StrongSingerMaxi
-

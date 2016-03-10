@@ -1,0 +1,23 @@
+9.3095 0x00/OSC/Q
+750 0x00/OSC/autospeed
+70.7514 0x00/OSC/pitch
+1 0x00/OSC/gainCompEnable
+0.553 0x00/main_output_level
+-1 0x00/0x00/synths/vocoder/levels/octave
+0 0x00/0x00/synths/vocoder/oscillators/osc-noise
+1 0x00/0x00/synths/vocoder/oscillators/saw-pulse
+0.5225 0x00/0x00/synths/vocoder/oscillators/pulse-width
+0.585 0x00/0x00/synths/vocoder/oscillators/detune_mix
+0.345 0x00/0x00/synths/vocoder/oscillators/detune
+2 0x00/0x00/synths/vocoder/oscillators/width
+0.9475 0x00/0x00/synths/vocoder/filters/low_frequencies/frequency
+28.7895 0x00/0x00/synths/vocoder/filters/low_frequencies/Q
+11.275 0x00/0x00/synths/vocoder/filters/high_frequencies/frequency
+12.2315 0x00/0x00/synths/vocoder/filters/high_frequencies/Q
+8 0x00/0x00/effects/input_compression_and_expansion/factor
+-40 0x00/0x00/effects/input_compression_and_expansion/threshold
+1 0x00/0x00/effects/input_compression_and_expansion/attack
+20 0x00/0x00/effects/input_compression_and_expansion/release
+3 0x00/0x00/effects/routing_and_panning/input_routing
+4 0x00/0x00/effects/routing_and_panning/output_routing
+

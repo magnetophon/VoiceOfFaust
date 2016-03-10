@@ -143,26 +143,67 @@ gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nr
 
 // scale the gain between 0 = all at avg, 1 = normal and 2 = expansion
 // expansion means:
-//   AvgVolume stays the same
+//   the loudest band stays the same
 //   soft bands get softer
-//   loud bands  get louder
-gainScale(scale) =
-  bus(nrBands)<:par(i, nrBands, gain(i)) with {
-    gain(i) = bus(nrBands)<:
-      (
-         (xfadeSelector(scale,0)*AvgVolume)
-        ,(xfadeSelector(scale,1)*selector(i,nrBands))
-        ,(xfadeSelector(scale,2)*expander(i))
-      ):>_;
-    expander(i) =par(i, nrBands, max(0.0001):linear2db) <:
-      (
-        (( ((AvgVolume*-1)+selector(i,nrBands)) * vslider("scaleFactor", 1, 1, 10, 0.001) )+ (AvgVolume* vslider("scaleFactor", 1, 1, 10, 0.001)))
-      ):>db2linear;
-  };
+gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
+with {
+  gain(i) = par(i, nrBands, max(0.00000001):linear2db+ITUtable(freq(i)))<:
+    (
+       (xfadeSelector(scale,0)*AvgVolume)
+      ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
+      ,((scale>=1)*expander(i))
+    ):>_-ITUtable(freq(i)):db2linear;
+  freq(i) = analizerCenters(f):selector(i,nrBands);
+  expander(i) = bus(nrBands)<:
+    (
+      (scaledVolume(i)- scaleBack + MaxVolume)
+    ):>_;
+  scaledVolume(i) =  bus(nrBands)<:( ((AvgVolume*-1)+selector(i,nrBands)) * (scale:pow(3)) );
+  scaleBack =  bus(nrBands)<:(par(i, nrBands, scaledVolume(i)): MaxVolume);
+  AvgVolume = sumOfN(nrBands)/nrBands;
+  MinVolume = minOfN(nrBands);
+  MaxVolume = maxOfN(nrBands);
+};
 
-        AvgVolume = sumOfN(nrBands)/nrBands;
-        MinVolume = minOfN(nrBands);
-        MaxVolume = maxOfN(nrBands);
+// gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
+// with {
+//   gain(i) = par(i, nrBands,linear2db+ITUtable(freq(i)):max(-144))<:
+//     (
+//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144))
+//       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
+//       ,((scale>=1)*expander(i))
+//     ):>_:db2linear;
+//   freq(i) = analizerCenters(f):selector(i,nrBands);
+//   expander(i) = bus(nrBands)<:
+//     (
+//       (scaledVolume(i)- scaleBack + MaxVolume)
+//     ):>_-ITUtable(freq(i));
+//   scaledVolume(i) =  bus(nrBands)<:( ((AvgVolume*-1)+selector(i,nrBands)) * (scale:pow(3)) );
+//   scaleBack =  bus(nrBands)<:(par(i, nrBands, scaledVolume(i)): MaxVolume);
+//   AvgVolume = sumOfN(nrBands)/nrBands;
+//   MinVolume = minOfN(nrBands);
+//   MaxVolume = maxOfN(nrBands);
+// };
+// source: https://en.wikipedia.org/wiki/ITU-R_468_noise_weighting
+// :<math>R_{ITU}(f) = \frac{1.246332637532143\cdot10^{-4} \, f}{\sqrt{(h_1(f))^2 + (h_2(f))^2}}</math>
+// :<math>ITU(f) = 18.2+20\log_{10}\left(R_{ITU}(f)\right)</math>
+// where
+// :<math>h_1(f)=-4.737338981378384\cdot10^{-24} \, f^6 + 2.043828333606125\cdot10^{-15} \, f^4 - 1.363894795463638\cdot10^{-7} \, f^2 + 1</math>
+// :<math>h_2(f)=1.306612257412824\cdot10^{-19} \, f^5  - 2.118150887518656\cdot10^{-11} \, f^3 + 5.559488023498642\cdot10^{-4} \, f</math>
+
+// todo: values do not 100% match table from wikipedia:
+// OK till 2000 Hz,
+// peak at +-4500 Hz instead of 6300 Hz
+// 2nd 0dB point at +- 7500 Hz instead of 12500 Hz
+// 12500 Hz at -16dB instead  of 0dB
+// 20000 Hz at -30dB instead of -22,2dB
+ITUtable(f) = rdtable(int(SRmax/2)+1,ITUs,int(f:max(1):int(min(SRmax/2))));
+// ITUtable(f) = rdtable(20000,ITU,int(f:max(20)));
+ITUs = ITU(time);
+ITU(f) = 18.2+linear2db(rITU(f));
+rITU(f) = ( 1.246332637532143*(10:pow(-4))*f) / (sqrt( (h1(f):pow(2)) + (h2(f):pow(2)) ));
+h1(f) =   (-4.737338981378384*(10:pow(-24))*(f:pow(6)))+(2.043828333606125*(10:pow(-15))*(f:pow(4)))-(1.363894795463638*(10:pow(-7))*(f:pow(2)))+1;
+h2(f) =   ( 1.306612257412824*(10:pow(-19))*(f:pow(5)))+(2.118150887518656*(10:pow(-11))*(f:pow(3)))-(5.559488023498642*(10:pow(-4))*f);
 
 //normal mixer without outputRouting
 vocoderMixer(0,0) = bus(nrBands):>bus(nrOutChan);

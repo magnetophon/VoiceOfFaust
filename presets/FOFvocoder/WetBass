@@ -1,0 +1,23 @@
+750 0x00/OSC/autospeed
+67.3812 0x00/OSC/pitch
+1 0x00/OSC/gainCompEnable
+13.936 0x00/OSC/Q
+1.69 0x00/OSC/gainScale
+0.421 0x00/main_output_level
+-1 0x00/0x00/synths/FOFvocoder/levels/octave
+0.92388 0x00/0x00/synths/FOFvocoder/parameters/low_frequencies/frequency
+4 0x00/0x00/synths/FOFvocoder/parameters/low_frequencies/skirtBottom
+2.64034 0x00/0x00/synths/FOFvocoder/parameters/low_frequencies/decayBottom
+1 0x00/0x00/synths/FOFvocoder/parameters/low_frequencies/phase_bottom
+0.055 0x00/0x00/synths/FOFvocoder/parameters/low_frequencies/phase_rnd_bottom
+11.3137 0x00/0x00/synths/FOFvocoder/parameters/high_frequencies/frequency
+8 0x00/0x00/synths/FOFvocoder/parameters/high_frequencies/skirtTop
+2.62 0x00/0x00/synths/FOFvocoder/parameters/high_frequencies/decayTop
+0 0x00/0x00/synths/FOFvocoder/parameters/high_frequencies/phase_top
+0.25 0x00/0x00/synths/FOFvocoder/parameters/high_frequencies/phase_rnd_top
+8 0x00/0x00/effects/input_compression_and_expansion/factor
+-70 0x00/0x00/effects/input_compression_and_expansion/threshold
+1 0x00/0x00/effects/input_compression_and_expansion/attack
+20 0x00/0x00/effects/input_compression_and_expansion/release
+0 0x00/0x00/effects/routing_and_panning/output_routing
+

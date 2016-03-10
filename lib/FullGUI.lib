@@ -16,6 +16,9 @@ pitchQuantised          = OSCgroup(checkbox("[2]quantise pitch"));
 OSConset                = OSCgroup(nentry("[3]onset", 0, 0, 1,0.001 ));
 formant                 = OSCgroup(nentry("[4]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);
 ManualOnset             = OSCgroup(button("[5]trigger")); //button does not seem to recieve osc
+gainCompEnable          = OSCgroup(checkbox("[6]gainCompEnable"))*enableGainCompare;
+analizerQ               = OSCgroup( vslider("[7] [-99]Q [style:knob]",	7, 0.3, 49, 0.001));
+gainScaling             = OSCgroup(vslider("gainScale[style:knob]", 1, 0, 2, 0.0001));
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
 cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));
