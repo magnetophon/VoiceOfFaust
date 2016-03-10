@@ -145,6 +145,7 @@ gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nr
 // expansion means:
 //   the loudest band stays the same
 //   soft bands get softer
+
 gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
 with {
   gain(i) = par(i, nrBands, max(0.00000001):linear2db+ITUtable(freq(i)))<:
@@ -156,12 +157,32 @@ with {
   freq(i) = analizerCenters(f):selector(i,nrBands);
   expander(i) = bus(nrBands)<:
     (
-      (scaledVolume(i) + MaxVolume)
+      (scaledVolume(i) + MaxVolume) + (((scale:pow(3))-1):max(0))
     ):>_;
   scaledVolume(i) =  bus(nrBands)<:( ((MaxVolume*-1)+selector(i,nrBands)) * (scale:pow(3)) );
   AvgVolume = sumOfN(nrBands)/nrBands;
   MaxVolume = maxOfN(nrBands);
 };
+
+// gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
+// with {
+//   gain(i) = par(i, nrBands, max(0.00000001):linear2db+ITUtable(freq(i)))<:
+//     (
+//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144)+ITUtable(freq(i)))
+//       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
+//       ,((scale>=1)*(expander(i) - (scaleBack * ((scale-1):max(0)))) )
+//     ):>_-ITUtable(freq(i)):db2linear;
+//   freq(i) = analizerCenters(f):selector(i,nrBands);
+//   expander(i) = bus(nrBands)<:
+//     (
+//       (scaledVolume(i) )
+//     ):>_;
+// //scaledVolume(i) =  bus(nrBands)<:( ((MaxVolume*-1)+selector(i,nrBands)) * (scale:pow(3)) );
+//   scaledVolume(i) =  bus(nrBands)<: (( (selector(i,nrBands)-MaxVolume) * (scale:pow(3)) ) + MaxVolume);
+//   scaleBack =  bus(nrBands)<:(par(i, nrBands, scaledVolume(i)) : AvgVolume) - AvgVolume;
+//   AvgVolume = sumOfN(nrBands)/nrBands;
+//   MaxVolume = maxOfN(nrBands);
+// };
 
 // gainScale2(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
 // with {
