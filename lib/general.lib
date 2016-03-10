@@ -149,7 +149,7 @@ gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
 with {
   gain(i) = par(i, nrBands, max(0.00000001):linear2db+ITUtable(freq(i)))<:
     (
-       (xfadeSelector(scale,0)*AvgVolume)
+       (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144)+ITUtable(freq(i)))
       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
       ,((scale>=1)*expander(i))
     ):>_-ITUtable(freq(i)):db2linear;
