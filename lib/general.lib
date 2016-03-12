@@ -134,7 +134,6 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
       1,
       ((((gain:max(0.01)):linear2db+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,dbPs,dbPs*-1)):min(36):db2linear))
     );
-  dbPs = OSCgroup(vslider("[0]autospeed[style:knob]",	750, 0, 1000, 1))/SR;
   };
 
 gainCompare(audio,freq,0) = bus(nrBands);
@@ -148,12 +147,12 @@ gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nr
 
 gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
 with {
-  gain(i) = par(i, nrBands, max(0.00000001):linear2db+ITUtable(freq(i)))<:
+  gain(i) = par(i, nrBands, max(0.00000001):linear2db+freqWeighting(freq(i),weightingKind))<:
     (
-       (xfadeSelector(scale,0)*(par(j, nrBands, _) : AvgVolume)+ITUtable(freq(i))+  compresVolCompensate )
+       (xfadeSelector(scale,0)*(par(j, nrBands, _) : AvgVolume)+freqWeighting(freq(i),weightingKind)+  compresVolCompensate )
       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
       ,((scale>=1)*expander(i))
-    ):>_-ITUtable(freq(i)):db2linear;
+    ):>_-freqWeighting(freq(i),weightingKind):db2linear;
   freq(i) = analizerCenters(f):selector(i,nrBands);
   expander(i) = bus(nrBands)<:
     (
@@ -168,12 +167,12 @@ with {
 
 // gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
 // with {
-//   gain(i) = par(i, nrBands, max(0.00000001):linear2db+ITUtable(freq(i)))<:
+//   gain(i) = par(i, nrBands, max(0.00000001):linear2db+freqWeighting(freq(i),weightingKind))<:
 //     (
-//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144)+ITUtable(freq(i)))
+//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144)+freqWeighting(freq(i),weightingKind))
 //       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
 //       ,((scale>=1)*(expander(i) - (scaleBack * ((scale-1):max(0)))) )
-//     ):>_-ITUtable(freq(i)):db2linear;
+//     ):>_-freqWeighting(freq(i),weightingKind):db2linear;
 //   freq(i) = analizerCenters(f):selector(i,nrBands);
 //   expander(i) = bus(nrBands)<:
 //     (
@@ -188,12 +187,12 @@ with {
 
 // gainScale2(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
 // with {
-//   gain(i) = par(i, nrBands, max(0.00000001):linear2db+ITUtable(freq(i)))<:
+//   gain(i) = par(i, nrBands, max(0.00000001):linear2db+freqWeighting(freq(i),weightingKind))<:
 //     (
-//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144)+ITUtable(freq(i)))
+//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144)+freqWeighting(freq(i),weightingKind))
 //       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
 //       ,((scale>=1)*expander(i))
-//     ):>_-ITUtable(freq(i)):db2linear;
+//     ):>_-freqWeighting(freq(i),weightingKind):db2linear;
 //   freq(i) = analizerCenters(f):selector(i,nrBands);
 //   expander(i) = bus(nrBands)<:
 //     (
@@ -207,7 +206,7 @@ with {
 
 // gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
 // with {
-//   gain(i) = par(i, nrBands,linear2db+ITUtable(freq(i)):max(-144))<:
+//   gain(i) = par(i, nrBands,linear2db+freqWeighting(freq(i),weightingKind):max(-144))<:
 //     (
 //        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144))
 //       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
@@ -217,13 +216,25 @@ with {
 //   expander(i) = bus(nrBands)<:
 //     (
 //       (scaledVolume(i)- scaleBack + MaxVolume)
-//     ):>_-ITUtable(freq(i));
+//     ):>_-freqWeighting(freq(i),weightingKind);
 //   scaledVolume(i) =  bus(nrBands)<:( ((AvgVolume*-1)+selector(i,nrBands)) * (scale:pow(3)) );
 //   scaleBack =  bus(nrBands)<:(par(i, nrBands, scaledVolume(i)): MaxVolume);
 //   AvgVolume = sumOfN(nrBands)/nrBands;
 //   MinVolume = minOfN(nrBands);
 //   MaxVolume = maxOfN(nrBands);
 // };
+
+
+freqWeighting(f,weightingKind) =
+// Atable(f);
+// ITUtable(f);
+  (
+    (xfadeSelector(weightingKind,0)*-8),
+    (xfadeSelector(weightingKind,1)*Atable(f)),
+    (xfadeSelector(weightingKind,2)*ITUtable(f))
+  ):>_;
+
+
 // source: https://en.wikipedia.org/wiki/ITU-R_468_noise_weighting
 // :<math>R_{ITU}(f) = \frac{1.246332637532143\cdot10^{-4} \, f}{\sqrt{(h_1(f))^2 + (h_2(f))^2}}</math>
 // :<math>ITU(f) = 18.2+20\log_{10}\left(R_{ITU}(f)\right)</math>
@@ -244,6 +255,31 @@ ITU(f) = 18.2+linear2db(rITU(f));
 rITU(f) = ( 1.246332637532143*(10:pow(-4))*f) / (sqrt( (h1(f):pow(2)) + (h2(f):pow(2)) ));
 h1(f) =   (-4.737338981378384*(10:pow(-24))*(f:pow(6)))+(2.043828333606125*(10:pow(-15))*(f:pow(4)))-(1.363894795463638*(10:pow(-7))*(f:pow(2)))+1;
 h2(f) =   ( 1.306612257412824*(10:pow(-19))*(f:pow(5)))+(2.118150887518656*(10:pow(-11))*(f:pow(3)))-(5.559488023498642*(10:pow(-4))*f);
+
+myTable(f) = rdtable(int(SRmax/2)+1,my(time),int(f:max(1):int(min(SRmax/2))));
+my(f) =
+  (pow((pow((top/bottom),1/(nrElements-1))),(f:min(nrElements)))*bottom)
+  // +
+  // ((pow((pow((top2/bottom2),1/(nrElements2-1))),((f+1-nrElements):min(1)))*bottom2) * f>nrElements)
+  with {
+    top = 0;
+    bottom = -144;//vslider("basscut", -100, -200, 0, 1);
+    nrElements = 2000;
+    top2 = 24;
+    bottom2 = 0;
+    nrElements2 = int(SRmax/2)-nrElements;
+  };
+
+// ===A===
+// :<math>R_A(f)= {12200^2\cdot f^4\over (f^2+20.6^2)\quad\sqrt{(f^2+107.7^2)\,(f^2+737.9^2)}
+// \quad (f^2+12200^2)}\ ,</math>
+// :<math>A(f)=2.0+20\log_{10}\left(R_A(f)\right)</math>
+
+rA(freq) = ((12200:pow(2)) * (f:pow(4))) / ( ((f:pow(2)) + (20.6:pow(2))) * sqrt(((f:pow(2)) + (107.7:pow(2))) * ((f:pow(2)) + (737.9:pow(2)))) * ((f:pow(2)) + (12200:pow(2))))
+  with { f = (freq:max(20)(min(SRmax/4))); };
+A(f) = 2 + linear2db(rA(f));
+Atable(f) = rdtable(int(SRmax/2)+1,A(time),int(f:max(20):int(min(SRmax/4))));
+
 
 //normal mixer without outputRouting
 vocoderMixer(0,0) = bus(nrBands):>bus(nrOutChan);
