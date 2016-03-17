@@ -124,15 +124,15 @@ sigLen(x) = int(SR * log(0.001) / (-x * PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation
 // k = (+(1)~_) - 1;
-Doublek= lf_rawsaw(f0Period*2);
-quadK= lf_rawsaw(f0Period*4);
-k = (((quadK)/f0Period) : decimal)*f0Period; //choose octaves
+multi = 4;
+multiK(multi)= lf_rawsaw(f0Period*multi);
+k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves
 // k= lf_rawsaw(f0Period);
-expy(x) = exp(-x * PI * T)^(quadK/4); // exponential env (x = BW)
+expy(x) = exp(-x * PI * T)^(multiK(multi)/multi); // exponential env (x = BW)
 // bug in original: we don't want * SR.
-envAttack(y) = 0.5 * (1.0 - cos(y * (quadK) )); // attack discontinuity smoother (y=beta)
+envAttack(y) = 0.5 * (1.0 - cos(y * (multiK(multi)) )); // attack discontinuity smoother (y=beta)
 // envAttack(y) = 0.5 * (1.0 - cos(y * k * SR)); // attack discontinuity smoother (y=beta)
-sinus(z) = sin(2.0 * PI * z * (quadK) * T); // sinusoid (z=fc)
+sinus(z) = sin(2.0 * PI * z * (multiK(multi)) * T); // sinusoid (z=fc)
 
 // functions to calculate fof attack and decay sections
 fofStop(x) = k < sigLen(x); // gate
@@ -141,7 +141,7 @@ fofRemainder(w,x,z) = ml.db2linear(w) * expy(x) * sinus(z); // 2nd part of fof c
 // function to generate single fof
 // fof(v,w,x,y,z) = (fofAttack(w,x,y,z)); // v = k1
 // fof(v,w,x,y,z) = (k < int(PI/y)) *fofAttack(w,x,y,z); // v = k1
-fof(v,w,x,y,z) = (((quadK) < int(v)) * fofAttack(w,x,y,z)) + (((quadK) >= int(v)) * fofRemainder(w,x,z)); // v = k1
+fof(v,w,x,y,z) = (((multiK(multi)) < int(v)) * fofAttack(w,x,y,z)) + (((multiK(multi)) >= int(v)) * fofRemainder(w,x,z)); // v = k1
 // fof(v,w,x,y,z) = ((k >= int(v)) * fofRemainder(w,x,z)); // v = k1
 // function to play single fof
 // playFof(v,w,x,y,z) = fof(v,w,x,y,z) ;
@@ -160,7 +160,7 @@ volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : 
 // final process line: feed play button to volADSR to currently active vowel Fofs and then sum
 // process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_)
 process = (fof(k1,A,BW,beta,fc)
-*0.1),k/f0Period,quadK/(4*f0Period)
+*0.1),k/f0Period,multiK(multi)/(multi*f0Period)
 with {
 k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
 A = hslider("amp",0,-30,0,1):dezip;
