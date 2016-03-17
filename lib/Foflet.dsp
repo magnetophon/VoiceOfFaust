@@ -133,21 +133,21 @@ expy(fund,BW) = exp(-BW * PI * T)^(fund/multi); // exponential env (BW = BW)
 // bug in original: we don't want * SR.
 envAttack(fund,beta) = 0.5 * (1.0 - cos(beta * (fund) )); // attack discontinuity smoother (beta=beta)
 // envAttack(beta) = 0.5 * (1.0 - cos(beta * k * SR)); // attack discontinuity smoother (y=beta)
-sinus(fund,fc) = sin(2.0 * PI * fc * (fund) * T); // sinusoid (z=fc)
+sinus(fund,fc,phase) = sin((2.0 * PI * fc * (fund) * T)+phase); // sinusoid (z=fc)
 
 // functions to calculate fof attack and decay sections
 fofStop(BW) = k < sigLen(BW); // gate
-fofAttack(fund,A,BW,beta,fc) = ml.db2linear(A) * expy(fund,BW) * envAttack(fund,beta) * sinus(fund,fc); // first part of fof calculation
-fofRemainder(fund,A,BW,fc) = ml.db2linear(A) * expy(fund,BW) * sinus(fund,fc); // 2nd part of fof calculation
+fofAttack(fund,phase,BW,beta,fc) = expy(fund,BW) * envAttack(fund,beta) * sinus(fund,fc,phase); // first part of fof calculation
+fofRemainder(fund,phase,BW,fc) =   expy(fund,BW) * sinus(fund,fc,phase); // 2nd part of fof calculation
 // function to generate single fof
-// fof(k1,A,BW,beta,fc) = (fofAttack(A,BW,beta,fc)); // k1 = k1
-// fof(k1,A,BW,beta,fc) = (k < int(PI/beta)) *fofAttack(A,BW,beta,fc); // v = k1
-fofPart(fund,k1,A,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,A,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,A,BW,fc)) with {
+// fof(k1,phase,BW,beta,fc) = (fofAttack(phase,BW,beta,fc)); // k1 = k1
+// fof(k1,phase,BW,beta,fc) = (k < int(PI/beta)) *fofAttack(phase,BW,beta,fc); // v = k1
+fofPart(fund,k1,phase,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,phase,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,phase,BW,fc)) with {
   beta = PI / (float(k1));
 }; // v = k1
-fof(fund,k1,A,BW,fc,octaviation) =
-// fofPart(fundI(0),k1,A,BW,fc)
-par(i,multi,fofPart(fundI(i),k1,A,BW,fc)*OctMuliply(i)):>_
+fof(phase,fc,fund,k1,BW,octaviation) =
+// fofPart(fundI(0),k1,phase,BW,fc)
+par(i,multi,fofPart(fundI(i),k1,phase,BW,fc)*OctMuliply(i)):>_
 with {
   fundI(0) = fund;
   fundI(i) = (((fund/(multi*f0Period))+(i/multi)):decimal)*f0Period*multi;
@@ -161,12 +161,12 @@ with {
   // OctMuliply(0) = 1;
   // OctMuliply(i) = ((fmod(i,2:pow(octaviation))):min(1)*-1)+1;
 };
-// fof(k1,A,BW,beta,fc) = ((k >= int(k1)) * fofRemainder(A,BW,fc)); // v = k1
+// fof(k1,phase,BW,beta,fc) = ((k >= int(k1)) * fofRemainder(phase,BW,fc)); // v = k1
 // function to play single fof
-// playFof(k1,A,BW,beta,fc) = fof(k1,A,BW,beta,fc) ;
-playFof(k1,A,BW,beta,fc) = (+(fof(k1,A,BW,beta,fc) * fofStop(BW))~fdelay2(2048,f0Period-1.0));
+// playFof(k1,phase,BW,beta,fc) = fof(k1,phase,BW,beta,fc) ;
+playFof(k1,phase,BW,beta,fc) = (+(fof(k1,phase,BW,beta,fc) * fofStop(BW))~fdelay2(2048,f0Period-1.0));
 // function to play 5 fofs in parallel (5 fofs = 1 vowel
-allFofs(j) = par(i,5,playFof(k1(i),A((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-1)*5+i))) :>_;
+allFofs(j) = par(i,5,playFof(k1(i),phase((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-1)*5+i))) :>_;
 
 // adsr variables and controls
 attack = nentry("[1:]attack [style:knob]",1,0,4,0.1);
@@ -178,15 +178,17 @@ volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : 
 
 // final process line: feed play button to volADSR to currently active vowel Fofs and then sum
 // process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_)
-process = (fof(fund,k1,A,BW,fc,octaviation)
-*0.1),k/f0Period,fund/(multi*f0Period)
+process =
+(fof(phase,fc,fund,k1,BW,octaviation)*0.1),
+(fof(phase*-1,fc,fund,k1,BW,octaviation)*0.1)
+,fund
 with {
 fund = multiK(multi);
 k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
-A = hslider("amp",0,-30,0,1):dezip;
 BW = hslider("BW",20,2,2000,1)*multi:dezip;
 fc = hslider("fc",2,0.5,128,0.001)*f0:dezip;
 octaviation = hslider("octaviation",0,0,maxOctavation,0.001):dezip;
+phase = hslider("phase",0,0,1,0.001)*2*PI:dezip;
 };
 
 dezip = smooth(0.999);
