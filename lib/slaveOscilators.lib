@@ -230,8 +230,8 @@ with {
 //fof is based on work by Xavier Rodet on his CHANT program at IRCAM
 fof(phase,fReso,fund,skirt,decay) =
     select2((PHfund<skirt),
-        (0.5*(1-cos((PI/skirt)*PHfund))*exp((-decay/PI)*PHfund)*sin(fReso*PHfund+PH)),
-        exp((-decay/PI)*PHfund)*sin(fReso*PHfund+PH))
+        (0.5*(1-cos((PI/skirt)*PHfund))*exp((-decay/PI)*PHfund)*sinus(fReso)),
+        exp((-decay/PI)*PHfund)*sinus(fReso))
         with {
             arc(angle) = angle/360 * 2 * PI;
             PHfund = decimal(fund+phase);
@@ -239,4 +239,19 @@ fof(phase,fReso,fund,skirt,decay) =
             //PH = arc( sin(fReso*exp((-decay/PI))) / (phase -cos(fReso*exp((-decay/PI))) ));
             //sounds cool, but glithes when either the phase or one of the other params is moved, so:
             PH = 0;
+            sinus(z) = sin(2.0 * PI * z * PHfund ); // sinusoid (z=fc)
+            // sinus(z) = sin(z*PHfund+PH);
            };
+
+// fof(phase,fReso,fund,skirt,decay) =
+//     select2((PHfund<skirt),
+//         (0.5*(1-cos((PI/skirt)*PHfund))*exp((-decay/PI)*PHfund)*sin(fReso*PHfund+PH)),
+//         exp((-decay/PI)*PHfund)*sin(fReso*PHfund+PH))
+//         with {
+//             arc(angle) = angle/360 * 2 * PI;
+//             PHfund = decimal(fund+phase);
+//             //warning: phase is currently being re-used for the fundamentalosc phase, this is the formant phase
+//             //PH = arc( sin(fReso*exp((-decay/PI))) / (phase -cos(fReso*exp((-decay/PI))) ));
+//             //sounds cool, but glithes when either the phase or one of the other params is moved, so:
+//             PH = 0;
+//            };
