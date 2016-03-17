@@ -124,7 +124,7 @@ sigLen(BW) = int(SR * log(0.001) / (-BW * PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation
 // k = (+(1)~_) - 1;
-multi = 4;
+multi = 8;
 multiK(multi)= lf_rawsaw(f0Period*multi);
 k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves
 // k= lf_rawsaw(f0Period);
@@ -141,9 +141,15 @@ fofRemainder(fund,A,BW,fc) = ml.db2linear(A) * expy(fund,BW) * sinus(fund,fc); /
 // function to generate single fof
 // fof(k1,A,BW,beta,fc) = (fofAttack(A,BW,beta,fc)); // k1 = k1
 // fof(k1,A,BW,beta,fc) = (k < int(PI/beta)) *fofAttack(A,BW,beta,fc); // v = k1
-fof(fund,k1,A,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,A,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,A,BW,fc)) with {
+fofPart(fund,k1,A,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,A,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,A,BW,fc)) with {
   beta = PI / (float(k1));
 }; // v = k1
+fof(fund,k1,A,BW,fc) =
+// fofPart(fundI(1),k1,A,BW,fc)
+par(i,multi,fofPart(fundI(i),k1,A,BW,fc)):>_
+with {
+  fundI(i) = (((fund/(multi*f0Period))+(i/multi)):decimal)*f0Period*multi;
+};
 // fof(k1,A,BW,beta,fc) = ((k >= int(k1)) * fofRemainder(A,BW,fc)); // v = k1
 // function to play single fof
 // playFof(k1,A,BW,beta,fc) = fof(k1,A,BW,beta,fc) ;
@@ -167,7 +173,7 @@ with {
 fund = multiK(multi);
 k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
 A = hslider("amp",0,-30,0,1):dezip;
-BW = hslider("BW",20,2,2000,1):dezip;
+BW = hslider("BW",20,2,2000,1)*multi:dezip;
 fc = hslider("fc",2,0.5,128,0.001)*f0:dezip;
 };
 
