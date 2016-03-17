@@ -132,8 +132,11 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   compare(gain,gainedX) =
     select2(gainCompEnable,
       1,
-      ((((gain:max(0.01)):linear2db+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,dbPs,dbPs*-1)):min(36):db2linear))
+      ((((gain:max(0.001):linear2db)+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,up,down(gain,gainedX))):db2linear))
     );
+  up = dbPs;
+  down(gain,gainedX) = dbPs*-2;
+  // down(gain,gainedX) = (((gainedX:amp_follower_ud(0.002,0.004):linear2db)-(compGain:linear2db))*-1)-(gain:max(0.001):linear2db);
   };
 
 gainCompare(audio,freq,0) = bus(nrBands);
