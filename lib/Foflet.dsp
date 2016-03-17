@@ -151,8 +151,11 @@ par(i,multi,fofPart(fundI(i),k1,A,BW,fc)*OctMuliply(i)):>_
 with {
   fundI(0) = fund;
   fundI(i) = (((fund/(multi*f0Period))+(i/multi)):decimal)*f0Period*multi;
-  OctMuliply(i) = select2(i>0,1,
-    (((i % int(2:pow(int(octaviation))))):min(1)*-1)+1
+  OctMuliply(i) =
+    (OctMuliplyPart(i,floor(octaviation+1))*    decimal(octaviation)) +
+    (OctMuliplyPart(i,floor(octaviation  ))* (1-decimal(octaviation)));
+  OctMuliplyPart(i,oct) = select2(i>0,1,
+    (((i % int(2:pow(oct)))):min(1)*-1)+1
   );
 
   // OctMuliply(0) = 1;
