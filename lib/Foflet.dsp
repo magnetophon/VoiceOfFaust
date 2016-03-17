@@ -124,7 +124,8 @@ sigLen(BW) = int(SR * log(0.001) / (-BW * PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation
 // k = (+(1)~_) - 1;
-multi = 8;
+maxOctavation = 4;
+multi = 2:pow(maxOctavation);
 multiK(multi)= lf_rawsaw(f0Period*multi);
 k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves
 // k= lf_rawsaw(f0Period);
@@ -144,11 +145,18 @@ fofRemainder(fund,A,BW,fc) = ml.db2linear(A) * expy(fund,BW) * sinus(fund,fc); /
 fofPart(fund,k1,A,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,A,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,A,BW,fc)) with {
   beta = PI / (float(k1));
 }; // v = k1
-fof(fund,k1,A,BW,fc) =
-// fofPart(fundI(1),k1,A,BW,fc)
-par(i,multi,fofPart(fundI(i),k1,A,BW,fc)):>_
+fof(fund,k1,A,BW,fc,octaviation) =
+// fofPart(fundI(0),k1,A,BW,fc)
+par(i,multi,fofPart(fundI(i),k1,A,BW,fc)*OctMuliply(i)):>_
 with {
+  fundI(0) = fund;
   fundI(i) = (((fund/(multi*f0Period))+(i/multi)):decimal)*f0Period*multi;
+  OctMuliply(i) = select2(i>0,1,
+    (((i % int(2:pow(int(octaviation))))):min(1)*-1)+1
+  );
+
+  // OctMuliply(0) = 1;
+  // OctMuliply(i) = ((fmod(i,2:pow(octaviation))):min(1)*-1)+1;
 };
 // fof(k1,A,BW,beta,fc) = ((k >= int(k1)) * fofRemainder(A,BW,fc)); // v = k1
 // function to play single fof
@@ -167,7 +175,7 @@ volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : 
 
 // final process line: feed play button to volADSR to currently active vowel Fofs and then sum
 // process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_)
-process = (fof(fund,k1,A,BW,fc)
+process = (fof(fund,k1,A,BW,fc,octaviation)
 *0.1),k/f0Period,fund/(multi*f0Period)
 with {
 fund = multiK(multi);
@@ -175,6 +183,7 @@ k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
 A = hslider("amp",0,-30,0,1):dezip;
 BW = hslider("BW",20,2,2000,1)*multi:dezip;
 fc = hslider("fc",2,0.5,128,0.001)*f0:dezip;
+octaviation = hslider("octaviation",0,0,maxOctavation,0.001);
 };
 
 dezip = smooth(0.999);
