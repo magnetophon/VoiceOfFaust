@@ -120,7 +120,7 @@ t(4) = 0.000001;
 // beta(3) = PI / float(k1(3));
 // beta(4) = PI / float(k1(4));
 f0Period = SR / f0; // fund period length in fractional samples
-sigLen(x) = int(SR * log(0.001) / (-x * PI)) + 1; // foflet T60 in samples
+sigLen(BW) = int(SR * log(0.001) / (-BW * PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation
 // k = (+(1)~_) - 1;
@@ -128,24 +128,26 @@ multi = 4;
 multiK(multi)= lf_rawsaw(f0Period*multi);
 k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves
 // k= lf_rawsaw(f0Period);
-expy(x) = exp(-x * PI * T)^(multiK(multi)/multi); // exponential env (x = BW)
+expy(fund,BW) = exp(-BW * PI * T)^(fund/multi); // exponential env (BW = BW)
 // bug in original: we don't want * SR.
-envAttack(y) = 0.5 * (1.0 - cos(y * (multiK(multi)) )); // attack discontinuity smoother (y=beta)
-// envAttack(y) = 0.5 * (1.0 - cos(y * k * SR)); // attack discontinuity smoother (y=beta)
-sinus(z) = sin(2.0 * PI * z * (multiK(multi)) * T); // sinusoid (z=fc)
+envAttack(fund,beta) = 0.5 * (1.0 - cos(beta * (fund) )); // attack discontinuity smoother (beta=beta)
+// envAttack(beta) = 0.5 * (1.0 - cos(beta * k * SR)); // attack discontinuity smoother (y=beta)
+sinus(fund,fc) = sin(2.0 * PI * fc * (fund) * T); // sinusoid (z=fc)
 
 // functions to calculate fof attack and decay sections
-fofStop(x) = k < sigLen(x); // gate
-fofAttack(w,x,y,z) = ml.db2linear(w) * expy(x) * envAttack(y) * sinus(z); // first part of fof calculation
-fofRemainder(w,x,z) = ml.db2linear(w) * expy(x) * sinus(z); // 2nd part of fof calculation
+fofStop(BW) = k < sigLen(BW); // gate
+fofAttack(fund,A,BW,beta,fc) = ml.db2linear(A) * expy(fund,BW) * envAttack(fund,beta) * sinus(fund,fc); // first part of fof calculation
+fofRemainder(fund,A,BW,fc) = ml.db2linear(A) * expy(fund,BW) * sinus(fund,fc); // 2nd part of fof calculation
 // function to generate single fof
-// fof(v,w,x,y,z) = (fofAttack(w,x,y,z)); // v = k1
-// fof(v,w,x,y,z) = (k < int(PI/y)) *fofAttack(w,x,y,z); // v = k1
-fof(v,w,x,y,z) = (((multiK(multi)) < int(v)) * fofAttack(w,x,y,z)) + (((multiK(multi)) >= int(v)) * fofRemainder(w,x,z)); // v = k1
-// fof(v,w,x,y,z) = ((k >= int(v)) * fofRemainder(w,x,z)); // v = k1
+// fof(k1,A,BW,beta,fc) = (fofAttack(A,BW,beta,fc)); // k1 = k1
+// fof(k1,A,BW,beta,fc) = (k < int(PI/beta)) *fofAttack(A,BW,beta,fc); // v = k1
+fof(fund,k1,A,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,A,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,A,BW,fc)) with {
+  beta = PI / (float(k1));
+}; // v = k1
+// fof(k1,A,BW,beta,fc) = ((k >= int(k1)) * fofRemainder(A,BW,fc)); // v = k1
 // function to play single fof
-// playFof(v,w,x,y,z) = fof(v,w,x,y,z) ;
-playFof(v,w,x,y,z) = (+(fof(v,w,x,y,z) * fofStop(x))~fdelay2(2048,f0Period-1.0));
+// playFof(k1,A,BW,beta,fc) = fof(k1,A,BW,beta,fc) ;
+playFof(k1,A,BW,beta,fc) = (+(fof(k1,A,BW,beta,fc) * fofStop(BW))~fdelay2(2048,f0Period-1.0));
 // function to play 5 fofs in parallel (5 fofs = 1 vowel
 allFofs(j) = par(i,5,playFof(k1(i),A((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-1)*5+i))) :>_;
 
@@ -159,13 +161,13 @@ volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : 
 
 // final process line: feed play button to volADSR to currently active vowel Fofs and then sum
 // process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_)
-process = (fof(k1,A,BW,beta,fc)
-*0.1),k/f0Period,multiK(multi)/(multi*f0Period)
+process = (fof(fund,k1,A,BW,fc)
+*0.1),k/f0Period,fund/(multi*f0Period)
 with {
+fund = multiK(multi);
 k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
 A = hslider("amp",0,-30,0,1):dezip;
 BW = hslider("BW",20,2,2000,1):dezip;
-beta = PI / (float(k1));
 fc = hslider("fc",2,0.5,128,0.001)*f0:dezip;
 };
 
