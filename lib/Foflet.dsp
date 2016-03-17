@@ -11,7 +11,7 @@ T = 1.0/ml.SR;
 //****************** user inputs ******************/
 
 // fundmental frequency of tone with vibrato
-f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*osc(vibRate))); // fundamental freq (Hz)
+f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*osc(vibRate))):dezip; // fundamental freq (Hz)
 // choice of formant structure (vowel a,e,i,o and u)
 vow = hgroup("[1]",nentry("[5:]A_E_I_O_U",1,1,5,1));
 // vibrato rate
@@ -124,7 +124,7 @@ sigLen(BW) = int(SR * log(0.001) / (-BW * PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation
 // k = (+(1)~_) - 1;
-maxOctavation = 4;
+maxOctavation = 3;
 multi = 2:pow(maxOctavation);
 multiK(multi)= lf_rawsaw(f0Period*multi);
 k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves
@@ -186,7 +186,7 @@ k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
 A = hslider("amp",0,-30,0,1):dezip;
 BW = hslider("BW",20,2,2000,1)*multi:dezip;
 fc = hslider("fc",2,0.5,128,0.001)*f0:dezip;
-octaviation = hslider("octaviation",0,0,maxOctavation,0.001);
+octaviation = hslider("octaviation",0,0,maxOctavation,0.001):dezip;
 };
 
 dezip = smooth(0.999);
