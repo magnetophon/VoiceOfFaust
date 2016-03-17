@@ -126,6 +126,7 @@ sigLen(x) = int(SR * log(0.001) / (-x * PI)) + 1; // foflet T60 in samples
 // k = (+(1)~_) - 1;
 k= lf_rawsaw(f0Period);
 expy(x) = exp(-x * PI * T)^k; // exponential env (x = BW)
+// bug in original: we don't want * SR.
 envAttack(y) = 0.5 * (1.0 - cos(y * k )); // attack discontinuity smoother (y=beta)
 // envAttack(y) = 0.5 * (1.0 - cos(y * k * SR)); // attack discontinuity smoother (y=beta)
 sinus(z) = sin(2.0 * PI * z * k * T); // sinusoid (z=fc)
@@ -161,7 +162,7 @@ with {
 k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
 A = hslider("amp",0,-30,0,1):dezip;
 BW = hslider("BW",20,2,2000,1):dezip;
-beta = PI / (float(k1)):dezip;
+beta = PI / (float(k1));
 fc = hslider("fc",2,0.5,128,0.001)*f0:dezip;
 };
 
