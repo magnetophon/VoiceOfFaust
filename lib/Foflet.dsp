@@ -181,7 +181,7 @@ volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : 
 process =
 (fof(phase,fc,fund,k1,BW,octaviation)*0.1),
 (fof(phase*-1,fc,fund,k1,BW,octaviation)*0.1)
-,fund
+,fund/(multi*f0Period)
 with {
 fund = multiK(multi);
 k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
