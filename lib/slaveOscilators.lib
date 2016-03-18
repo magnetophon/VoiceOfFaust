@@ -239,8 +239,8 @@ fof(phase,fReso,fund,skirt,decay) =
             //PH = arc( sin(fReso*exp((-decay/PI))) / (phase -cos(fReso*exp((-decay/PI))) ));
             //sounds cool, but glithes when either the phase or one of the other params is moved, so:
             PH = 0;
-            sinus(z) = sin(2.0 * PI * z * PHfund ); // sinusoid (z=fc)
-            // sinus(z) = sin(z*PHfund+PH);
+            // sinus(z) = sin(2.0 * PI * z * PHfund ); // sinusoid (z=fc)
+            sinus(z) = sin(z*PHfund+PH);
            };
 
 // fof(phase,fReso,fund,skirt,decay) =
