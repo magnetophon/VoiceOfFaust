@@ -143,7 +143,7 @@ fofRemainder(fund,phase,BW,fc) =   expy(fund,BW) * sinus(fund,fc,phase); // 2nd 
 // function to generate single fof
 // fof(k1,phase,BW,beta,fc) = (fofAttack(phase,BW,beta,fc)); // k1 = k1
 // fof(k1,phase,BW,beta,fc) = (k < int(PI/beta)) *fofAttack(phase,BW,beta,fc); // v = k1
-fofPart(fund,k1,phase,BW,fc) = (((fund) < int(k1)) * fofAttack(phasedFund,phase,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(phasedFund,phase,BW,fc)) with {
+fofPart(fund,k1,phase,BW,fc) = (((phasedFund) < int(k1)) * fofAttack(phasedFund,phase,BW,beta,fc)) + (((phasedFund) >= int(k1)) * fofRemainder(phasedFund,phase,BW,fc)) with {
   beta = PI / (float(k1));
   phasedFund = (((fund/(multi*f0Period))+(phase)):decimal)*f0Period*multi;
 }; // v = k1
