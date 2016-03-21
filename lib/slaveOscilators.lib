@@ -228,7 +228,8 @@ with {
 // FOF oscilator
 //-----------------------------------------------
 //fof is based on work by Xavier Rodet on his CHANT program at IRCAM
-fof(phase,fReso,fund,skirt,decay) =
+import ("lib/Foflet.dsp");
+OLDfof(phase,fReso,fund,skirt,decay) =
     select2((PHfund<skirt),
         (0.5*(1-cos((PI/skirt)*PHfund))*exp((-decay/PI)*PHfund)*sinus(fReso)),
         exp((-decay/PI)*PHfund)*sinus(fReso))

@@ -27,7 +27,10 @@ with {
 };
 
 // ------ formant generator using uniform (phase-synchronous) oscillators -----//
-fupho(f0,a,b,c) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
+// fupho(f0,a,b,c) = ef
+// fupho(f0,a,b,c) = tbl(sc,(dec(ef*ph+m)))
+// fupho(f0,a,b,c) = tbl(sc,(dec(ef*ph+m)))
+// fupho(f0,a,b,c) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
 with {					// from f0, amp, bandwidth, center freq
   cf 	= c/f0;
   ci	= floor(cf);			// integer harmonic below center freq
@@ -73,4 +76,6 @@ with {
 
 // ------ vox synthesizer with single multiplexed control stream input -----//
 nf = 4;					// number of formants
-process = _<: par(i,nf,formant(i)) :>_;	// run formants in parallel, sum their outputs
+// process = _<: par(i,nf,formant(i)) :>_;	// run formants in parallel, sum their outputs
+process = formant(1);
+// process = fupho;

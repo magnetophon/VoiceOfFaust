@@ -11,7 +11,8 @@ T = 1.0/ml.SR;
 //****************** user inputs ******************/
 
 // fundmental frequency of tone with vibrato
-f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*osc(vibRate))):dezip; // fundamental freq (Hz)
+f0 = OSCpitch:smooth(PTsmooth);
+// f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*osc(vibRate))):dezip; // fundamental freq (Hz)
 // choice of formant structure (vowel a,e,i,o and u)
 vow = hgroup("[1]",nentry("[5:]A_E_I_O_U",1,1,5,1));
 // vibrato rate
@@ -50,31 +51,31 @@ fc(22) = 2400;
 fc(23) = 2675;
 fc(24) = 2950;
 // peak amplitudes
-A(0) = 0; // a
-A(1) = -7;
-A(2) = -9;
-A(3) = -9;
-A(4) = -20;
-A(5) = 0; // e
-A(6) = -12;
-A(7) = -9;
-A(8) = -12;
-A(9) = -18;
-A(10) = 0; // i
-A(11) = -30;
-A(12) = -16;
-A(13) = -22;
-A(14) = -28;
-A(15) = 0; // o
-A(16) = -11;
-A(17) = -21;
-A(18) = -20;
-A(19) = -40;
-A(20) = 0; // u
-A(21) = -20;
-A(22) = -32;
-A(23) = -28;
-A(24) = -36;
+// A(0) = 0; // a
+// A(1) = -7;
+// A(2) = -9;
+// A(3) = -9;
+// A(4) = -20;
+// A(5) = 0; // e
+// A(6) = -12;
+// A(7) = -9;
+// A(8) = -12;
+// A(9) = -18;
+// A(10) = 0; // i
+// A(11) = -30;
+// A(12) = -16;
+// A(13) = -22;
+// A(14) = -28;
+// A(15) = 0; // o
+// A(16) = -11;
+// A(17) = -21;
+// A(18) = -20;
+// A(19) = -40;
+// A(20) = 0; // u
+// A(21) = -20;
+// A(22) = -32;
+// A(23) = -28;
+// A(24) = -36;
 // formant peak bandwidths
 BW(0) = 60; // a
 BW(1) = 70;
@@ -133,7 +134,7 @@ expy(fund,BW) = exp(-BW * PI * T)^(fund/multi); // exponential env (BW = BW)
 // bug in original: we don't want * SR.
 envAttack(fund,beta) = 0.5 * (1.0 - cos(beta * (fund) )); // attack discontinuity smoother (beta=beta)
 // envAttack(beta) = 0.5 * (1.0 - cos(beta * k * SR)); // attack discontinuity smoother (y=beta)
-sinus(fund,fc,phase) = sin((2.0 * PI * fc * (fund) * T)+phase); // sinusoid (z=fc)
+sinus(fund,fc,phase) = sin((2.0 * PI * fc * (fund) * T)+(phase*0*PI)); // sinusoid (z=fc)
 
 // functions to calculate fof attack and decay sections
 fofStop(BW) = k < sigLen(BW); // gate
@@ -142,14 +143,14 @@ fofRemainder(fund,phase,BW,fc) =   expy(fund,BW) * sinus(fund,fc,phase); // 2nd 
 // function to generate single fof
 // fof(k1,phase,BW,beta,fc) = (fofAttack(phase,BW,beta,fc)); // k1 = k1
 // fof(k1,phase,BW,beta,fc) = (k < int(PI/beta)) *fofAttack(phase,BW,beta,fc); // v = k1
-fofPart(fund,k1,phase,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,phase,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,phase,BW,fc)) with {
+fofPart(fund,k1,phase,BW,fc) = (((fund) < int(k1)) * fofAttack(phasedFund,phase,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(phasedFund,phase,BW,fc)) with {
   beta = PI / (float(k1));
+  phasedFund = (((fund/(multi*f0Period))+(phase)):decimal)*f0Period*multi;
 }; // v = k1
 fof(phase,fc,fund,k1,BW,octaviation) =
 // fofPart(fundI(0),k1,phase,BW,fc)
 par(i,multi,fofPart(fundI(i),k1,phase,BW,fc)*OctMuliply(i)):>_
 with {
-  fundI(0) = fund;
   fundI(i) = (((fund/(multi*f0Period))+(i/multi)):decimal)*f0Period*multi;
   OctMuliply(i) =
     (OctMuliplyPart(i,floor(octaviation+1))*    decimal(octaviation)) +
@@ -169,26 +170,26 @@ playFof(k1,phase,BW,beta,fc) = (+(fof(k1,phase,BW,beta,fc) * fofStop(BW))~fdelay
 allFofs(j) = par(i,5,playFof(k1(i),phase((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-1)*5+i))) :>_;
 
 // adsr variables and controls
-attack = nentry("[1:]attack [style:knob]",1,0,4,0.1);
-decay = nentry("[2:]decay[style:knob]",0.3,0,1,0.001);
-sustain = nentry("[3:]sustain[style:knob]",0.5,0,1,0.01);
-release = nentry("[4:]release[style:knob]",0.5,0,4,0.1);
-// display group to group ADSR controls together
-volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : _));
+// attack = nentry("[1:]attack [style:knob]",1,0,4,0.1);
+// decay = nentry("[2:]decay[style:knob]",0.3,0,1,0.001);
+// sustain = nentry("[3:]sustain[style:knob]",0.5,0,1,0.01);
+// release = nentry("[4:]release[style:knob]",0.5,0,4,0.1);
+// // display group to group ADSR controls together
+// volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : _));
 
 // final process line: feed play button to volADSR to currently active vowel Fofs and then sum
 // process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_)
-process =
-(fof(phase,fc,fund,k1,BW,octaviation)*0.1),
-(fof(phase*-1,fc,fund,k1,BW,octaviation)*0.1)
-,fund/(multi*f0Period)
-with {
-fund = multiK(multi);
-k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
-BW = hslider("BW",20,2,2000,1)*multi:dezip;
-fc = hslider("fc",2,0.5,128,0.001)*f0:dezip;
-octaviation = hslider("octaviation",0,0,maxOctavation,0.001):dezip;
-phase = hslider("phase",0,0,1,0.001)*2*PI:dezip;
-};
+// process =
+// (fof(phase,fc,fund,k1,BW,octaviation)*0.1),
+// (fof(phase*-1,fc,fund,k1,BW,octaviation)*0.1)
+// ,fund/(multi*f0Period)
+// with {
+// fund = multiK(multi);
+// k1 = hslider("k1",2,0.1,10,0.001)*t(4)*SR*f0Period:dezip;
+// BW = hslider("BW",20,2,2000,1)*multi:dezip;
+// fc = hslider("fc",2,0.5,128,0.001)*f0:dezip;
+// octaviation = hslider("octaviation",0,0,maxOctavation,0.001):dezip;
+// phase = hslider("phase",0,0,1,0.001)*2*PI:dezip;
+// };
 
-dezip = smooth(0.999);
+// dezip = smooth(0.999);
