@@ -136,10 +136,13 @@ fofDecayTop        = fofTopGroup(       vslider("[3]decayTop[style:knob]", 20,2,
 
 //was used for formant phase:
 //fofPhaseRand       = fofparamsGroup(( vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:smooth(0.999));
-fofPhaseBottom       = fofBottomGroup(( vslider("[4]phase bottom[style:knob][tooltip: phase  of the low oscillators]", 0.5, 0, 1, 0.001)));
-fofPhaseMid          = fofMidGroup((    vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.5, 0, 1, 0.001)));
+// with doubleOscs disabled, phase goes from 0 to 1, otherwise from 0 to 0.5.
+// So in both cases, the max value means "back in phase again", and half means fully out of phase.
+// this is because with doubleOscs enabled, the right channel uses phase*-1
+fofPhaseBottom       = fofBottomGroup(( vslider("[4]phase bottom[style:knob][tooltip: phase  of the low oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
+fofPhaseMid          = fofMidGroup((    vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
 fofPhaseBand         = fofBandGroup(    vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-fofPhaseTop          = fofTopGroup((    vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)));
+fofPhaseTop          = fofTopGroup((    vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
 fofPhaseRandBottom   = fofBottomGroup(( vslider("[5]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
 fofPhaseRandMid      = fofMidGroup((    vslider("[5]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
 fofPhaseRandBand     = fofBandGroup(    vslider("[5]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
