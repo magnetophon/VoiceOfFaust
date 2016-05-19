@@ -11,8 +11,8 @@ T = 1.0/ml.SR;
 //****************** user inputs ******************/
 
 // fundmental frequency of tone with vibrato
-f0 = 110;
-//OSCpitch:smooth(PTsmooth);
+// f0 = 110;
+f0 = OSCpitch:smooth(PTsmooth);
 // f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*osc(vibRate))):dezip; // fundamental freq (Hz)
 // choice of formant structure (vowel a,e,i,o and u)
 vow = hgroup("[1]",nentry("[5:]A_E_I_O_U",1,1,5,1));
