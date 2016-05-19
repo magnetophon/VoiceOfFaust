@@ -69,7 +69,7 @@ with {
 // fofNoises(polarity,freq,enableFOFnoiseFilter) =
 //TODO: make true multichannel version
 fofNoises(i,freq,0) = (fofPhases,(fofPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(fofPhaseSpeed))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
-fofNoises(i,freq,1) =(fofPhases,((fofPhaseRands:par(j,nrBands,(_*(noise):lowpass(1,(fofNoiseFilterFreqs:selector(j,nrBands)*(freq*fofOctave*0.000001))))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
+fofNoises(i,freq,1) =(fofPhases,((fofPhaseRands:par(j,nrBands,(_*(noise):lowpass(1,(fofNoiseFilterFreqs:selector(j,nrBands)*(freq*0.00000025))))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
 
 // fofvocoder(audio,freq,doubleOscs)
 fofvocoder(audio,freq,0)=
