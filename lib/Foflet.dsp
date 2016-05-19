@@ -11,7 +11,8 @@ T = 1.0/ml.SR;
 //****************** user inputs ******************/
 
 // fundmental frequency of tone with vibrato
-f0 = OSCpitch:smooth(PTsmooth);
+f0 = 110;
+//OSCpitch:smooth(PTsmooth);
 // f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*osc(vibRate))):dezip; // fundamental freq (Hz)
 // choice of formant structure (vowel a,e,i,o and u)
 vow = hgroup("[1]",nentry("[5:]A_E_I_O_U",1,1,5,1));
@@ -110,16 +111,16 @@ t(3) = 0.000003;
 t(4) = 0.000001;
 
 // constants based on user input
-// k1(0) = t(0) * SR; // attack in samples
-// k1(1) = t(1) * SR;
-// k1(2) = t(2) * SR;
-// k1(3) = t(3) * SR;
-// k1(4) = t(4) * SR;
-// beta(0) = PI / float(k1(0)); // attack value needed for attack(i) function
-// beta(1) = PI / float(k1(1));
-// beta(2) = PI / float(k1(2));
-// beta(3) = PI / float(k1(3));
-// beta(4) = PI / float(k1(4));
+k1(0) = t(0) * SR; // attack in samples
+k1(1) = t(1) * SR;
+k1(2) = t(2) * SR;
+k1(3) = t(3) * SR;
+k1(4) = t(4) * SR;
+beta(0) = PI / float(k1(0)); // attack value needed for attack(i) function
+beta(1) = PI / float(k1(1));
+beta(2) = PI / float(k1(2));
+beta(3) = PI / float(k1(3));
+beta(4) = PI / float(k1(4));
 f0Period = SR / f0; // fund period length in fractional samples
 sigLen(BW) = int(SR * log(0.001) / (-BW * PI)) + 1; // foflet T60 in samples
 
@@ -175,10 +176,10 @@ allFofs(j) = par(i,5,playFof(k1(i),phase((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-
 // sustain = nentry("[3:]sustain[style:knob]",0.5,0,1,0.01);
 // release = nentry("[4:]release[style:knob]",0.5,0,4,0.1);
 // // display group to group ADSR controls together
-// volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : _));
+volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : _));
 
 // final process line: feed play button to volADSR to currently active vowel Fofs and then sum
-// process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_)
+// process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_);
 // process =
 // (fof(phase,fc,fund,k1,BW,octaviation)*0.1),
 // (fof(phase*-1,fc,fund,k1,BW,octaviation)*0.1)
