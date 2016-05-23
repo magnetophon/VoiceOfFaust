@@ -25,5 +25,5 @@ pafOscs=
 
 
 PAFvocoder(audio,freq)=
-  (pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer(ambisonicsOn)
+  (pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer(ambisonicsOn,outputRoutingEnabled)
            :postProc(nrOutChan,ambisonicsOn,volume*0.25,pafWidth);
