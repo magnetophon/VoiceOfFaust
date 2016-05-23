@@ -126,7 +126,6 @@ sigLen(BW) = int(SR * log(0.001) / (-BW * PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation
 // k = (+(1)~_) - 1;
-maxOctavation = 3;
 multi = 2:pow(maxOctavation);
 multiK(multi)= lf_rawsaw(f0Period*multi);
 k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves

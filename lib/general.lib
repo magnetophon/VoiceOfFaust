@@ -148,11 +148,14 @@ gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nr
 //   the loudest band stays the same
 //   soft bands get softer
 
-gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
+// gainScale(enableGainScale,scale,f)
+gainScale(0,scale,f) = bus(nrBands);
+gainScale(1,scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
 with {
   gain(i) = par(i, nrBands, max(0.00000001):linear2db+freqWeighting(freq(i),weightingKind))<:
     (
        (xfadeSelector(scale,0)*(par(j, nrBands, _) : AvgVolume)+freqWeighting(freq(i),weightingKind)+  compresVolCompensate )
+       // we use scale inside expander, so from scale=1 to 2 we don't want xfadeSelector
       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
       ,((scale>=1)*expander(i))
     ):>_-freqWeighting(freq(i),weightingKind):db2linear;

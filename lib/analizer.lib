@@ -39,4 +39,4 @@ analizer(audio,freq)=
   (audio<:bus(nrBands))
   ,(analizerCenters(freq)<:((bus(nrBands)<:(freq/2,par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
   ,(analizerQ<:bus(nrBands))
-):analizers : gainScale(gainScaling,freq);
+):analizers : gainScale(enableGainScale,gainScaling,freq);
