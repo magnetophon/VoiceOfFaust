@@ -22,5 +22,7 @@ import ("lib/FOFvocoder.lib");
 // process
 //-----------------------------------------------
 
+// compile with faust 1:
+// time faust2jack -t 99999 -time -osc -vec  FOFvocoder.dsp && timeout 10 ./FOFvocoder & sleep 2 && jack_connect system:capture_1 FOFvocoder:in_0 & jack_connect FOFvocoder:out_0 system:playback_1 & jack_connect FOFvocoder:out_1 system:playback_2
 process(audio) = fofvocoder(audio,PitchTracker(audio,enablePitchTracker),doubleOscs);
 //process = FOFvocoderMixer(ambisonicsOn,outputRoutingEnabled);
