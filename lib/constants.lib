@@ -21,7 +21,7 @@ enablePitchTracker     = 0; // internal pitch tracker
 enablePitchQuantise    = 0; // a simple 'autotune': only chromatic
 enableFOFnoise         = 1; // 0 = no noise   and 1 = noise modulates phase
 enableFOFnoiseFilter   = 1; // 0 = noise:smooth   and 1 = noise:lowpass
-noisesFilterN          = 1; // the order of the noise lowpass
+noisesFilterN          = 4; // the order of the noise lowpass
 maxOctavation          = 1; // to maximum number of octaves of the fof oscilators
 //todo: test or ask about smooth vs line:, efficiency and behaviour
 //minline              = 3;       // minimum line time in ms
