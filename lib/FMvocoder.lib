@@ -1,0 +1,33 @@
+
+//-----------------------------------------------
+// FM vocoder synthesis
+//-----------------------------------------------
+maxNrInRoutings = 3;
+//FMcenters=     par(i,nrBands,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
+FMcenters(freq) = VocoderFreqs(pafBottom,pafTop):par(i, nrBands, _*freq);
+
+pafIndexes = VocoderLinArray(pafIndexBottom,pafIndexTop);
+
+import("lib/myFMvox.dsp");
+
+FMoscs=
+    interleave(nrBands,5):
+    par(i, nrBands, fuphoSlave);
+    /*paf(pafCenter16,Fund,pafIndex,pafVol16)*/
+/*with {*/
+  /*routing =bus(nrBands)<:(*/
+               /*(bus(nrBands):(par(i,nrBands,(inputRouting==0:dezip) *_)))*/
+               /*,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==1:dezip) *_)))*/
+               /*,(butterfly(nrBands):(par(i,nrBands,(inputRouting==2:dezip) *_)))*/
+               /*,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==3:dezip) *_)))*/
+               /*[>,(hademar:>par(i,nrOutChan, (inputRouting==2) *_))<]*/
+             /*):>bus(nrBands);*/
+           /*};*/
+
+
+
+FMvocoder(audio,freq)=
+  // ((pafFund(freq)<:bus(nrBands)), (freq<:bus(nrBands)),analizer(voice(audio),freq),pafIndexes,FMcenters);
+
+  ((pafFund(freq)<:bus(nrBands)), (freq<:bus(nrBands)),analizer(voice(audio),freq),pafIndexes,FMcenters(freq)):FMoscs:vocoderMixer(ambisonicsOn,outputRoutingEnabled)
+           :postProc(nrOutChan,ambisonicsOn,volume*0.25,pafWidth);

@@ -84,27 +84,27 @@ with {
 };
 
 // ------ parser for stream with interleaved formant parameters -----//
-formant(f_num,ctlStream) = fsig		// applies parameters to formant generator
-with {
-  ctr	= frame(ctlStream<0);		// negative value flags start of a new frame
-  co(i)	= demux(i,ctr,ctlStream);	// demux using frame counter
-  f0 	= 1;				// f0 pitch in counter position 1
-  a 	= f0+1+f_num*3;			// f1 amp in position 2, f2 amp in 5...
-  b 	= a+1;				// f1 bandwidth in 3...
-  c 	= a+2;				// f1 center freq in 4...
- fsig 	= fupho(co(f0), co(a),		// signal for formant number f_num
-     co(b), co(c));
-};
+// formant(f_num,ctlStream) = fsig		// applies parameters to formant generator
+// with {
+//   ctr	= frame(ctlStream<0);		// negative value flags start of a new frame
+//   co(i)	= demux(i,ctr,ctlStream);	// demux using frame counter
+//   f0 	= 1;				// f0 pitch in counter position 1
+//   a 	= f0+1+f_num*3;			// f1 amp in position 2, f2 amp in 5...
+//   b 	= a+1;				// f1 bandwidth in 3...
+//   c 	= a+2;				// f1 center freq in 4...
+//  fsig 	= fupho(co(f0), co(a),		// signal for formant number f_num
+//      co(b), co(c));
+// };
 
 // ------ vox synthesizer with single multiplexed control stream input -----//
 nf = 4;					// number of formants
 // process = _<: par(i,nf,formant(i)) :>_;	// run formants in parallel, sum their outputs
 // process = formant(1);
-freq = vslider("freq", 110, 55, 440, 1):smooth(0.999);
-amp = vslider("amp", 0, 0, 1, 0.001):smooth(0.999);
-bandwidth = vslider("bandwidth", 1, 0, 100, 0.001):smooth(0.999);
-center =vslider("center", 110, 55, 440, 1):smooth(0.999);
+// freq = vslider("freq", 110, 55, 440, 1):smooth(0.999);
+// amp = vslider("amp", 0, 0, 1, 0.001):smooth(0.999);
+// bandwidth = vslider("bandwidth", 1, 0, 100, 0.001):smooth(0.999);
+// center =vslider("center", 110, 55, 440, 1):smooth(0.999);
 // process = fupho(freq,amp,bandwidth,center);
 import("oscillator.lib");
 import("effect.lib");
-process = fuphoSlave(lf_sawpos(freq),freq,amp,bandwidth,center);
+// process = fuphoSlave(lf_sawpos(freq),freq,amp,bandwidth,center);
