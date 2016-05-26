@@ -229,7 +229,7 @@ with {
 
 FMfreq(audio)=
     PitchTracker(audio,enablePitchTracker)*FMoctave;
-FMfund(freq) = fund(freq,FMoctave);
+FMfund(freq,phase) = fundPhase(freq,FMoctave,phase);
 
 //-----------------------------------------------
 // FOF oscilator

@@ -7,7 +7,7 @@ maxNrInRoutings = 3;
 FMcenters(freq) = VocoderFreqs(FMbottom,FMtop):par(i, nrBands, _*freq):dezipBands;
 
 FMindexes = VocoderFreqs(FMindexBottom,FMindexTop):dezipBands;
-// FMindexes = VocoderLinArray(FMindexBottom,FMindexTop);
+FMphases = VocoderLinArray(FMphaseBottom,FMphaseTop):dezipBands;
 
 import("lib/myFMvox.dsp");
 
@@ -15,8 +15,49 @@ FMoscs=
     interleave(nrBands,5):
     par(i, nrBands, fuphoSlave);
 
+FMfunds(freq,polarity) = par(i, nrBands, FMfund(freq,phase(i)) ) with {
+  phase(i) = FMphases:selector(i,nrBands)*select2(polarity%2,1,-1);
+};
+//normal mixer without outputRouting
+// FMvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
+FMvocoderMixer(0,0) = par(i,nrOutChan, bus(nrBands):>_);
+
+//normal mixer with outputRouting
+FMvocoderMixer(0,1) =bus(nrBands*nrOutChan)<:(
+                (par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,0):dezip) *_)))
+               ,(bus(nrBands*nrOutChan):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
+               ,(par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
+               ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(bus(nrBands):>_*((xfadeSelector(outputRouting,3):dezip)))))
+               ,(bus(nrBands*nrOutChan):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,4):dezip)) *_):cross(nrOutChan))
+               ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly(nrBands):>_*((xfadeSelector(outputRouting,5):dezip)))))
+               ,(butterfly(nrBands*nrOutChan):>(par(i,nrOutChan,((xfadeSelector(outputRouting,6):dezip) *_))))
+               /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
+             ):>bus(nrOutChan);
+
+// Ambisonics mixer.
+
+FMvocoderMixer(1, outputRoutingEnabled)  = routing(outputRoutingEnabled):((angles,bus(nrBands*nrOutChan)): interleave(nrBands*nrOutChan,2)) : par(i,nrBands*nrOutChan,myMap):>bus((ambisonicsOrder*2)+1)
+with {
+  myMap(a) = _<:encoder(ambisonicsOrder, _, a);
+  angles = par(i,nrBands*nrOutChan/2,   ((angleTop-angleBottom)*(i/(nrBands*nrOutChan/2)))+angleBottom)<:(bus(nrBands),par(i,nrBands,_*-1)):interleave(nrBands,2);
+  routing(0) = bus(nrBands*nrOutChan);
+  routing(1) =bus(nrBands*nrOutChan)<:(
+               (bus(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,0):dezip) *_)))
+               ,(interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,1):dezip) *_)))
+               ,(butterfly(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,2):dezip) *_)))
+               ,(butterfly(nrBands*nrOutChan):interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,3):dezip) *_)))
+               /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
+             ):>bus(nrBands*nrOutChan);
+};
 
 
-FMvocoder(audio,freq)=
-  ((FMfund(freq)<:bus(nrBands)), (freq<:bus(nrBands)),analizer(voice(audio),freq),FMindexes,FMcenters(freq)):FMoscs:vocoderMixer(ambisonicsOn,outputRoutingEnabled)
+// FMvocoder(audio,freq,doubleOscs)
+FMvocoder(audio,freq,0)=
+  (FMfunds(freq,0), (freq<:bus(nrBands)),analizer(voice(audio),freq),FMindexes,FMcenters(freq)):FMoscs:vocoderMixer(ambisonicsOn,outputRoutingEnabled)
            :postProc(nrOutChan,ambisonicsOn,volume*0.25,FMwidth);
+
+
+FMvocoder(audio,freq,1)=
+  par(i,nrOutChan,(FMfunds(freq,i), (freq<:bus(nrBands)),analizer(voice(audio),freq),FMindexes,FMcenters(freq)):FMoscs  )
+  :FMvocoderMixer(ambisonicsOn,outputRoutingEnabled)
+  :postProc(nrOutChan,ambisonicsOn,volume*0.1,1);
