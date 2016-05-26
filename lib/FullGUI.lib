@@ -128,14 +128,19 @@ FMvocoderParamsGroup(x)       = FMvocoderGroup((hgroup("[1]parameters", x)));
   FMmidGroup(x)    = FMvocoderParamsGroup(vgroup("[1]mid frequencies",x));
   FMbandGroup(x)   = FMvocoderParamsGroup(vgroup("[2]mid band",x));
   FMtopGroup(x)    = FMvocoderParamsGroup(vgroup("[3]high frequencies",x));
-FMtop                  = FMtopGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-FMbottom               = FMbottomGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-FMindexTop             = FMtopGroup(vslider("[3]indexTop[style:knob][tooltip: FM index of the highest oscillator]",	100, 0.000, 1000, 0.001)):max(0.00000001);
-FMindexBottom          = FMbottomGroup(vslider("[4]indexBottom[style:knob][tooltip: FM index of the lowest oscillator]",	0.000, 0.000, 20, 0.001)):max(0.00000001);
-FMphaseTop             = FMtopGroup(vslider("[3]phaseTop[style:knob][tooltip: FM phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-FMphaseBottom          = FMbottomGroup(vslider("[4]phaseBottom[style:knob][tooltip: FM phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-FMwidth                = FMvocoderParamsGroup(vslider("[5]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
-
+FMbottom      = FMbottomGroup(        vslider("[1]bottom[style:knob][tooltip: the highest formant frequency of the oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+FMmid         = FMmidGroup(           vslider("[1]mid[style:knob] [tooltip: the mid formant frequency of the of the oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+FMband        = FMbandGroup(          vslider("[1]band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+FMtop         = FMtopGroup(           vslider("[1]top[style:knob][tooltip: the lowest formant frequency of the oscillators]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+FMindexBottom = FMbottomGroup(        vslider("[2]indexBottom[style:knob][tooltip: FM index of the lowest oscillator]",	0.000, 0.000, 20, 0.001)):max(0.00000001);
+FMindexMid    = FMmidGroup(           vslider("[2]indexMid[style:knob] [tooltip: the mid FM index oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+FMindexBand   = FMbandGroup(          vslider("[2]indexBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+FMindexTop    = FMtopGroup(           vslider("[2]indexTop[style:knob][tooltip: FM index of the highest oscillator]",	100, 0.000, 1000, 0.001)):max(0.00000001);
+FMphaseBottom = FMbottomGroup(        vslider("[3]phaseBottom[style:knob][tooltip: phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+FMphaseMid    = FMmidGroup(           vslider("[3]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
+FMphaseBand   = FMbandGroup(          vslider("[3]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+FMphaseTop    = FMtopGroup(           vslider("[3]phaseTop[style:knob][tooltip: phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+FMwidth       = FMvocoderParamsGroup( vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
 //-----------------------------------------------
 // FOF
