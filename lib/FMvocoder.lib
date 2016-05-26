@@ -4,9 +4,10 @@
 //-----------------------------------------------
 maxNrInRoutings = 3;
 //FMcenters=     par(i,nrBands,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);
-FMcenters(freq) = VocoderFreqs(FMbottom,FMtop):par(i, nrBands, _*freq);
+FMcenters(freq) = VocoderFreqs(FMbottom,FMtop):par(i, nrBands, _*freq):dezipBands;
 
-FMindexes = VocoderLinArray(FMindexBottom,FMindexTop);
+FMindexes = VocoderFreqs(FMindexBottom,FMindexTop):dezipBands;
+// FMindexes = VocoderLinArray(FMindexBottom,FMindexTop);
 
 import("lib/myFMvox.dsp");
 
