@@ -70,9 +70,9 @@ with {
 //TODO: make true multichannel version
 fofNoises(i,freq,0,enableFOFnoiseFilter) = (fofPhases:(par(j, nrBands,_*select2(i%2,1,-1))));
 fofNoises(i,freq,1,0) = (fofPhases,(fofPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(fofPhaseSpeed))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
-fofNoises(i,freq,1,1) =(fofPhases,((fofPhaseRands:par(j,nrBands,(_*(noise):LP(j))))):>(par(j, nrBands,_*select2(i%2,1,-1))))
+fofNoises(i,freq,1,1) =(fofPhases,((fofPhaseRands:par(j,nrBands,(_*(noises(nrBands*nrOutChan,j*i)):LP(j))))):>(par(j, nrBands,_*select2(i%2,1,-1))))
 with {
-  LP(j) = seq(i, noisesFilterN, lowpass(1,(fofNoiseFilterFreqs:selector(j,nrBands)*(freq*0.25)))) ;
+  LP(j) = seq(i, noisesFilterN, lowpass(1,(fofNoiseFilterFreqs:selector(j,nrBands)*(freq*0.025)))) ;
   // LP(j) = lowpass(noisesFilterN,(fofNoiseFilterFreqs:selector(j,nrBands)*(freq*0.00000025)));
 };
 
