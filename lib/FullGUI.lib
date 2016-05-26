@@ -89,6 +89,13 @@ autoSatDCmid    = vocoderFilterMidGroup(    vslider(" [8]autoSat DC            [
 autoSatDCband   = vocoderFilterBandGroup(   vslider(" [8]autoSat DC band       [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
 autoSatDCtop    = vocoderFilterTopGroup(    vslider(" [8]autoSat DC            [style:knob] [tooltip: autoSat DC, high frequencies]", 0,-1,1,0.001));
 
+
+
+
+//-----------------------------------------------
+// PAF
+//-----------------------------------------------
+
 PAFvocoderGroup(x)      = synthsGroup((hgroup("[3]PAFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
 PAFvocoderGroupLevel(x) = PAFvocoderGroup((vgroup("[0]levels", x)));
 pafVolume               = PAFvocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
@@ -103,6 +110,25 @@ pafBottom               = PAFparamsGroup(vslider("[2]bottom[style:knob][tooltip:
 pafIndexTop             = PAFparamsGroup(vslider("[3]indexTop[style:knob][tooltip: PAF index of the highest oscillator]",	100, 0.001, 100, 0.001));
 pafIndexBottom          = PAFparamsGroup(vslider("[4]indexBottom[style:knob][tooltip: PAF index of the lowest oscillator]",	0.001, 0.001, 100, 0.001));
 pafWidth                = PAFparamsGroup(vslider("[5]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
+
+//-----------------------------------------------
+// FM vocoder
+//-----------------------------------------------
+
+FMvocoderGroup(x)      = synthsGroup((hgroup("[3]FMvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
+FMvocoderGroupLevel(x) = FMvocoderGroup((vgroup("[0]levels", x)));
+FMvolume               = FMvocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+FMnLKS                 = FMvocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+FMpmFX                 = FMvocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+FMoctave               = FMvocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of FM
+
+
+FMvocoderParamsGroup(x)       = FMvocoderGroup((vgroup("[1]parameters", x)));
+FMtop                  = FMvocoderParamsGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+FMbottom               = FMvocoderParamsGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+FMindexTop             = FMvocoderParamsGroup(vslider("[3]indexTop[style:knob][tooltip: FM index of the highest oscillator]",	100, 0.001, 100, 0.001));
+FMindexBottom          = FMvocoderParamsGroup(vslider("[4]indexBottom[style:knob][tooltip: FM index of the lowest oscillator]",	0.001, 0.001, 100, 0.001));
+FMwidth                = FMvocoderParamsGroup(vslider("[5]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
 
 //-----------------------------------------------

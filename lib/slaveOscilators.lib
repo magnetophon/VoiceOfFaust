@@ -201,8 +201,8 @@ CZrestrap(fund, res) =
 
 pafFreq(audio)=
     PitchTracker(audio,enablePitchTracker)*pafOctave;
-    pafFund(freq) = fund(freq,pafOctave);
-    sampleAndHold(sample) = select2((sample!=0):int) ~ _;
+pafFund(freq) = fund(freq,pafOctave);
+sampleAndHold(sample) = select2((sample!=0):int) ~ _;
 
 
 
@@ -223,6 +223,13 @@ with {
     cos12(c,f)      = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
     bell(f,i)       = (((f*0.5)-0.25:(_*2*PI:cos))*dezip(i))+100:bellcurve;
 };
+//-----------------------------------------------
+// FM fromant oscilator
+//-----------------------------------------------
+
+FMfreq(audio)=
+    PitchTracker(audio,enablePitchTracker)*FMoctave;
+FMfund(freq) = fund(freq,FMoctave);
 
 //-----------------------------------------------
 // FOF oscilator
