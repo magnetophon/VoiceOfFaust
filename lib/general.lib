@@ -326,11 +326,11 @@ autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 
 // postProc(nrOutChan,ambisonicsOn,enableAutosat,volume,width)
 // no ambisonics
-postProc(nrOutChan,0,enableAutosat,volume,width) = par(i, nrOutChan, _*(volume:dezip)):WidePanner(width,nrOutChan):par(i,nrOutChan,dcblocker:select2(enableAutosat,_,autoSat));
+postProc(nrOutChan,0,enableAutosat,volume,width) = par(i, nrOutChan, _*(volume:dezip)):WidePanner(width,nrOutChan):par(i,nrOutChan,dcblocker <:select2(enableAutosat,_,autoSat));
 // ambisonic
 postProc(nrOutChan,1,enableAutosat,volume,width) =
            wider(ambisonicsOrder,width) :rotate(ambisonicsOrder, rotation) :optimInPhase(ambisonicsOrder)
-           <:((decoderStereo(ambisonicsOrder):par(i,2,(_*volume):dcblocker: select2(enableAutosat,_,autoSat))), bus(2*ambisonicsOrder+1));
+           <:((decoderStereo(ambisonicsOrder):par(i,2,(_*volume):dcblocker<: select2(enableAutosat,_,autoSat))), bus(2*ambisonicsOrder+1));
 
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
