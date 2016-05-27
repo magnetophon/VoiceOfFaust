@@ -287,6 +287,18 @@ A(f) = 2 + linear2db(rA(f));
 Atable(f) = rdtable(int(SRmax/2)+1,A(time),int(f:max(20):int(min(SRmax/4))));
 
 
+chooseResonBP(stable,fc,Q,gain) = _<:select2(stable,resonbp(fc,Q,gain),resonbpStable(fc,Q,gain));
+
+// stable resonbp = 2nd-order bandpass
+resonbpStable(fc,Q,gain) = tf2snp(b2,b1,b0,a1,a0,wc)
+with {
+     wc = 2*PI*fc;
+     a1 = 2/Q;
+     a0 = 1;
+     b2 = 0;
+     b1 = gain;
+     b0 = 0;
+};
 //normal mixer without outputRouting
 vocoderMixer(0,0) = bus(nrBands):>bus(nrOutChan);
 

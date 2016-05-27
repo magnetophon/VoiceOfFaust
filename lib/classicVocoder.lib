@@ -29,7 +29,7 @@ vocoderOsc(freq) =
       };
 
 volFilter(f,prevC,c,v,q) =
-    f:resonbp(c:min((SR/2)-10),Q,v):resonbp(c:min((SR/2)-10),Q,compensate)
+    f:chooseResonBP(stableFilters,c:min((SR/2)-10),Q,v):chooseResonBP(stableFilters,c:min((SR/2)-10),Q,compensate)
     with {
     //compensate for one filter:
     //compensate = (tanh((1/(vocoderQ:min(1)))/2));
