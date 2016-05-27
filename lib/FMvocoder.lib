@@ -54,10 +54,10 @@ with {
 // FMvocoder(audio,freq,doubleOscs)
 FMvocoder(audio,freq,0)=
   (FMfunds(freq,0), (freq<:bus(nrBands)),analizer(voice(audio),freq),FMindexes,FMcenters(freq)):FMoscs:vocoderMixer(ambisonicsOn,outputRoutingEnabled)
-           :postProc(nrOutChan,ambisonicsOn,volume*0.25,FMwidth);
+           :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.25,FMwidth);
 
 
 FMvocoder(audio,freq,1)=
   par(i,nrOutChan,(FMfunds(freq,i), (freq<:bus(nrBands)),analizer(voice(audio),freq),FMindexes,FMcenters(freq)):FMoscs  )
   :FMvocoderMixer(ambisonicsOn,outputRoutingEnabled)
-  :postProc(nrOutChan,ambisonicsOn,volume*0.1,1);
+  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);

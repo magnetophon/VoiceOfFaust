@@ -62,9 +62,9 @@ StereoVolFilterBank(nrBands,1) = StereoVolFilterBankWithFeedback(nrBands);
 
 
 
-StereoVolFilterBankNoFeedback(nrBands)= (AutosatArray(enableAutosat),bus(nrBands*4)):(interleave(nrBands,5):par(i, nrBands, volFilter));
+StereoVolFilterBankNoFeedback(nrBands)= (AutosatArray(enableFilterAutosat),bus(nrBands*4)):(interleave(nrBands,5):par(i, nrBands, volFilter));
 
-StereoVolFilterBankWithFeedback(nrBands)= (((interleave(nrBands,2):par(i,nrBands,+):AutosatArray(enableAutosat)),bus(nrBands*4)):interleave(nrBands,5):par(i, nrBands, volFilter))~FBpath with {
+StereoVolFilterBankWithFeedback(nrBands)= (((interleave(nrBands,2):par(i,nrBands,+):AutosatArray(enableFilterAutosat)),bus(nrBands*4)):interleave(nrBands,5):par(i, nrBands, volFilter))~FBpath with {
   FBpath = bus(nrBands)<:(lowerFB,selfFB,higherFB,allFB):>bus(nrBands);
   lowerFB=
     bus(nrBands)
@@ -103,7 +103,7 @@ StereoVocoder(audio,freq)=
            :gainCompare(audio,freq,enableGainCompare)
            :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
            // :endGainCompare(audio,freq)
-           :postProc(nrOutChan,ambisonicsOn,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth);
+           :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth);
 
 
 //process(audio) = StereoVolFilterBank;
