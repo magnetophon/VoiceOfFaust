@@ -25,6 +25,7 @@ freq=3.33;
 oct=2;
 /*process=fund(freq,oct);*/
 process(audio) = FMvocoder(audio,PitchTracker(audio,enablePitchTracker),doubleOscs);
+// process = chooseResonBP;
 /*process(audio) =*/
   /*(pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer(ambisonicsOn)*/
   /*:postProc(nrOutChan,ambisonicsOn);*/

@@ -17,7 +17,8 @@ analizers=
 interleave(nrBands,4):par(i, nrBands,(autoQresonBP:amp_follower_ud(0.002 ,0.004)));
 
 autoQresonBP(f,prevC,c,q) =
-    f:resonbp(c:min((SR/2)-10),Q,1):resonbp(c:min((SR/2)-10),Q,compensate*0.2)
+    // f:resonbp(c:min((SR/2)-10),Q,1):resonbp(c:min((SR/2)-10),Q,compensate*0.2)
+    f:chooseResonBP(stableFilters,c:min((SR/2)-10),Q,1):chooseResonBP(stableFilters,c:min((SR/2)-10),Q,compensate*0.2)
     with {
       Q = ((((c-(prevC*autoQ)):max(20))*q)/(c:max(20)))*(1+(2*autoQ));
       BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0.001); //1.766
@@ -33,6 +34,18 @@ autoQresonBP(f,prevC,c,q) =
             :>_+1;
     };
 
+chooseResonBP(stable,fc,Q,gain) = _<:select2(stable,resonbp(fc,Q,gain),resonbpStable(fc,Q,gain));
+
+// resonbp = 2nd-order bandpass
+resonbpStable(fc,Q,gain) = tf2snp(b2,b1,b0,a1,a0,wc)
+with {
+     wc = 2*PI*fc;
+     a1 = 2/Q;
+     a0 = 1;
+     b2 = 0;
+     b1 = gain;
+     b0 = 0;
+};
 
 analizer(audio,freq)=
 (
