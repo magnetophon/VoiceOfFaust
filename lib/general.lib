@@ -299,6 +299,25 @@ with {
      b1 = gain;
      b0 = 0;
 };
+
+
+KalmanFilter(errorMeasurement,initialMeasurement,initialError,measurement) = KalmanFilterCalc(measurement)~(_,_):(_,!) with {
+  KalmanFilterCalc(measurement,prevEstimate,prevErrorEstimate) =
+    estimate(prevErrorEstimateT,prevEstimateT,measurement),
+    errorEstimate(prevErrorEstimateT) with {
+      KalmanGain(prevErrorEstimateT) = prevErrorEstimateT/(prevErrorEstimateT + errorMeasurement);
+      estimate(prevErrorEstimateT,prevEstimateT,measurement) = prevEstimateT +(KalmanGain( prevErrorEstimateT)*( measurement - prevEstimateT));
+      errorEstimate(prevErrorEstimateT) = (1- KalmanGain(prevErrorEstimateT))*prevErrorEstimateT;
+      time = 1+_~_;
+      prevEstimateT = select2((time==1),prevEstimate,initialMeasurement);
+      prevErrorEstimateT = select2((time==1),prevErrorEstimate,initialError);
+  };
+};
+
+gainedSmoother(gain,initialMeasurement,measurement) = gainedSmootherCalc(measurement)~(_) with {
+  gainedSmootherCalc(measurement,prevEstimate) =prevEstimate +(gain*( measurement - prevEstimate));
+};
+
 //normal mixer without outputRouting
 vocoderMixer(0,0) = bus(nrBands):>bus(nrOutChan);
 

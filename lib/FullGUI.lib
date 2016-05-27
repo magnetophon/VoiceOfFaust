@@ -11,7 +11,7 @@ tabs(x)        = (tgroup("[2]", x));
       //MeterGroup(x)  = (vgroup("[3]output level", x)); // To recieve OSC pitch and other messages
 
 OSCpitch                = OSCgroup(nentry("[00]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
-OSCfidelity             = OSCgroup(nentry("[01]fidelity", 0, 0, 1, 0.001));
+OSCfidelity             = OSCgroup(nentry("[01]fidelity[tooltip: the quality of the pitch estimate; determines the smoothness of the pitch curve]", 0.98, 0, 1, 0.001));
 pitchQuantised          = OSCgroup(checkbox("[02]quantise pitch"));
 OSConset                = OSCgroup(nentry("[03]onset", 0, 0, 1,0.001 ));
 formant                 = OSCgroup(nentry("[04]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);

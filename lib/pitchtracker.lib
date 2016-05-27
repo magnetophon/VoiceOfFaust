@@ -21,9 +21,9 @@ with  {
 pitchQuantise(0) = _;
 pitchQuantise(1) = _<:select2(pitchQuantised, _, (hz2pianokey : rint : pianokey2hz));
 
-PitchTracker(audio,0) = OSCpitch : pitchQuantise(enablePitchQuantise) : smooth(PTsmooth);
-PitchTracker(audio,1) = ((OSCpitchIsBad , OSCpitch, internal):select2) : pitchQuantise(enablePitchQuantise) : smooth(PTsmooth)
-//PitchTracker(audio,enablePitchTracker) = OSCpitch : smooth(PTsmooth)
+PitchTracker(audio,0) = OSCpitch : pitchQuantise(enablePitchQuantise) : smoother;
+// PitchTracker(audio,0) = OSCpitch : pitchQuantise(enablePitchQuantise) : smooth(PTsmooth);
+PitchTracker(audio,1) = ((OSCpitchIsBad , OSCpitch:smoother, internal:smooth(PTsmooth)):select2) : pitchQuantise(enablePitchQuantise)
 with	{
         internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(8.0): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
         OSCpitchIsBad  = (isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity));
@@ -32,3 +32,7 @@ with	{
         sames(x,time) = (prod(i,int(time),same(x,i+1)));
         intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
         };
+
+smoother = hz2pianokey<:select2(enablegainedSmootherPitch,smooth(PTsmooth),gainedSmoother(0.00217*(newFidelity:pow(42)),110)): pianokey2hz with {
+  newFidelity = OSCfidelity:sampleAndHold(_!=OSCpitch~_);
+};
