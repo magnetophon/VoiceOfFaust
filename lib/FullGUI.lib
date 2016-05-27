@@ -20,7 +20,7 @@ analizerQ               = OSCgroup( vslider("[06]Q [style:knob]",	7, 0.3, 49, 0.
 gainCompEnable          = OSCgroup(checkbox("[07]gainComp"))*enableGainCompare;
 dbPs                    = OSCgroup(vslider("[08]autospeed[style:knob]",	750, 0, 1000, 1))/SR;
 gainScaling             = OSCgroup(vslider("[09]gainScale[style:knob]", 1, 0, 2, 0.001));
-weightingKind           = OSCgroup(vslider("[10]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 1, 0, 2, 0.0001));
+weightingKind           = OSCgroup(vslider("[10]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0, 0, 2, 0.0001));
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
 cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));
@@ -132,10 +132,10 @@ FMbottom      = FMbottomGroup(        vslider("[1]bottom[style:knob][tooltip: th
 FMmid         = FMmidGroup(           vslider("[1]mid[style:knob] [tooltip: the mid formant frequency of the of the oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
 FMband        = FMbandGroup(          vslider("[1]band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
 FMtop         = FMtopGroup(           vslider("[1]top[style:knob][tooltip: the lowest formant frequency of the oscillators]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-FMindexBottom = FMbottomGroup(        vslider("[2]indexBottom[style:knob][tooltip: FM index of the lowest oscillator]",	0.000, 0.000, 20, 0.001)):max(0.00000001);
+FMindexBottom = FMbottomGroup(        vslider("[2]indexBottom[style:knob][tooltip: FM index of the lowest oscillator]",	1, 0, 20, 0.001)):max(0.00000001);
 FMindexMid    = FMmidGroup(           vslider("[2]indexMid[style:knob] [tooltip: the mid FM index oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
 FMindexBand   = FMbandGroup(          vslider("[2]indexBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-FMindexTop    = FMtopGroup(           vslider("[2]indexTop[style:knob][tooltip: FM index of the highest oscillator]",	100, 0.000, 1000, 0.001)):max(0.00000001);
+FMindexTop    = FMtopGroup(           vslider("[2]indexTop[style:knob][tooltip: FM index of the highest oscillator]",	100, 0, 1000, 0.001)):max(0.00000001);
 FMphaseBottom = FMbottomGroup(        vslider("[3]phaseBottom[style:knob][tooltip: phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
 FMphaseMid    = FMmidGroup(           vslider("[3]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
 FMphaseBand   = FMbandGroup(          vslider("[3]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
@@ -343,7 +343,7 @@ czNoiseFilterTop    = czTopGroup(     vslider("[6]noise frequency[style:knob][to
 
 qompanderGroup(x) = FXGroup(vgroup("[0]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
 factor            = qompanderGroup(hslider("[0]factor[unit::1][style:knob]",		8, 0.8, 8, 0.01):smooth(0.999));
-threshold         = qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-70, -96, -20, 0.01):smooth(0.999));
+threshold         = qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-42, -96, -20, 0.01):smooth(0.999));
 attack            = qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1, 1, 20, 0.01):smooth(0.999));
 release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):smooth(0.999));
 
