@@ -3,24 +3,28 @@
 //-----------------------------------------------
 
 OSCgroup(x)    = (hgroup("[0]OSC", x)); // To recieve OSC pitch and other messages
+analizerGroup(x)    = (hgroup("[1]analizer", x)); // To recieve OSC pitch and other messages
 //qompander    = [1]
-volume = hslider("[1]main output level", 1,0,4,0.001):volScale;
-tabs(x)        = (tgroup("[2]", x));
+volume = hslider("[2]main output level", 1,0,4,0.001):volScale;
+tabs(x)        = (tgroup("[3]", x));
   synthsGroup(x) = tabs(hgroup("[0]synths", x));
   FXGroup(x)     = tabs(hgroup("[1]effects", x));
       //MeterGroup(x)  = (vgroup("[3]output level", x)); // To recieve OSC pitch and other messages
 
-OSCpitch                = OSCgroup(nentry("[00]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
-OSCfidelity             = OSCgroup(nentry("[01]fidelity[tooltip: the quality of the pitch estimate; determines the smoothness of the pitch curve]", 0.98, 0, 1, 0.001));
-pitchQuantised          = OSCgroup(checkbox("[02]quantise pitch"));
-OSConset                = OSCgroup(nentry("[03]onset", 0, 0, 1,0.001 ));
-formant                 = OSCgroup(nentry("[04]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);
-ManualOnset             = OSCgroup(button("[05]trigger")); //button does not seem to recieve osc
-analizerQ               = OSCgroup( vslider("[06]Q [style:knob]",	7, 0.3, 49, 0.001));
-gainCompEnable          = OSCgroup(checkbox("[07]gainComp"))*enableGainCompare;
-dbPs                    = OSCgroup(vslider("[08]autospeed[style:knob]",	750, 0, 1000, 1))/SR;
-gainScaling             = OSCgroup(vslider("[09]gainScale[style:knob]", 1, 0, 2, 0.001));
-weightingKind           = OSCgroup(vslider("[10]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0, 0, 2, 0.0001));
+OSCpitch                = OSCgroup(nentry(   "[00]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
+OSCfidelity             = OSCgroup(nentry(   "[01]fidelity[tooltip: the quality of the pitch estimate; determines the smoothness of the pitch curve]", 0.98, 0, 1, 0.001));
+OSCminPitch             = OSCgroup(nentry(   "[02]min pitch[tooltip: minimum allowed pitch]", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
+OSCmaxPitch             = OSCgroup(nentry(   "[03]max pitch[tooltip: maximum allowed pitch]", 440, MinInputPitch, MaxInputPitch, 0.001));
+pitchQuantised          = OSCgroup(checkbox( "[04]quantise pitch"));
+OSConset                = OSCgroup(nentry(   "[05]onset", 0, 0, 1,0.001 ));
+formant                 = OSCgroup(nentry(   "[06]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);
+ManualOnset             = OSCgroup(button(   "[07]trigger")); //button does not seem to recieve osc
+
+analizerQ               = analizerGroup( vslider("[01]Q [tooltip: filter Q of the analizer] [style:knob]",	7, 0.3, 49, 0.001));
+gainCompEnable          = analizerGroup(checkbox("[02]normalize[tooltip: automatic gain correction]"))*enableGainCompare;
+dbPs                    = analizerGroup(vslider("[03]gain speed[style:knob][tooltip: speed af gain correction]",	750, 0, 1000, 1))/SR;
+gainScaling             = analizerGroup(vslider("[04]formant power[style:knob][tooltip: scale the relative gain of the bands between 0 = all at avg, 1 = normal and 2 = expansion]", 1, 0, 2, 0.001));
+weightingKind           = analizerGroup(vslider("[05]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0, 0, 2, 0.0001));
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
 cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));

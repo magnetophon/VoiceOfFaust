@@ -25,7 +25,7 @@ pitchQuantise(1) = _<:select2(pitchQuantised, _, (hz2pianokey : rint : pianokey2
 PitchTracker(audio,0) = OSCpitch : pitchQuantise(enablePitchQuantise) : smoother;
 PitchTracker(audio,1) = ((OSCpitchIsBad , (OSCpitch:smoother), (internal:smooth(PTsmooth))):select2) : pitchQuantise(enablePitchQuantise)
 with	{
-        internal = (audio:dcblockerat(MinInputPitch) : (lowpass(1) : Pitch(8.0): min(MaxInputPitch) )  ~ max(MinInputPitch*2)) : max(MinInputPitch);
+        internal = (audio:dcblockerat(OSCminPitch) : (lowpass(1) : Pitch(8.0): min(OSCmaxPitch) )  ~ max(OSCminPitch*2)) : max(OSCminPitch);
         OSCpitchIsBad  = (isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity));
         isSameTooLong(x,time) = (x@time)==x;
         same(x,time) =(x@time)==x;

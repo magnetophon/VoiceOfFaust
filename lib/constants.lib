@@ -14,7 +14,6 @@ para                      = 1; // whether we want a parametric mid
 enableGainCompare         = 1; // correct the loudness of the individual bands after they've been created
 enableGainScale           = 1; // expand or compress the spectrum: make it more or less resonant
 autoQ                     = 1; // enable correction of the filter-Q depending on the distance between the bands
-// stableFilters          = checkbox("stable");
 stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd pass filters
 enableFeedback            = 1; // feedback around the filters of the classicVocoder
 enableAutosat             = 0; // put a saturator at the output
@@ -27,15 +26,12 @@ enableFOFnoise            = 1; // 0 = no noise   and 1 = noise modulates phase
 enableFOFnoiseFilter      = 1; // 0 = noise:smooth   and 1 = noise:lowpass
 noisesFilterN             = 4; // the order of the noise lowpass
 maxOctavation             = 1; // to maximum number of octaves of the fof oscilators
-MinInputPitch             = 61.7354;	// lowest expected note is a B1
-// MaxInputPitch             = 493.6635;// highest expected note is a B4
-MaxInputPitch             = 1174.66; // high soprano reaches D6
+MinInputPitch             = 48.9994;	// = G1, the lowest frequency that helmholtz~ can track is 51 Hz
+MaxInputPitch             = 2093.00; // = C7, the highest frequency that helmholtz~ can track is 1992 Hz
 maxTimeWithoutPitch       = 2*SR;    // longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
 maxTimeWithoutFidelity    = 265*4 ;  // is 4*6ms @ 44100. the time between 4 fid messages
 analizerTop               = 128;     // using these two values with 16 bands, gives integer formant ratios
 analizerBottom            = (0.5*pow(2,0.5))+0.0;
-// analizerQ              = 7;       //(vslider("[3]Q[style:knob]",	9, 0.1, 50, 0.001):smooth(0.999)); //0.1 to 49 logarithmicly,
-//(   vslider(" [-98]autoQ                 [style:knob] [tooltip: link the Q to the freq]",	0, 0, 1, 0.001));
 SRmax                     = 96000.0;                          // assumed upper limit on sampling rate
 vocoderN                  = 2;
 defaultTop                = 128:pow(0.5);
