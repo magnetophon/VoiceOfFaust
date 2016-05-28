@@ -5,7 +5,7 @@
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(SR/2)));
 
 KPanalizer(audio,freq) =
-    analizer(audio,freq)
+    analizer(audio,freq,enableDeEsser)
     :par(i,nrBands,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
     :linear2db) );//adapt to eq instead of bandpass
 
@@ -120,6 +120,3 @@ stringloop(freq,audio,feedback,phase,DCnonlin) =
     /*P = SR/(freq*oct) ; // fundamental period in samples*/
     /*Pmax = 4096; // maximum P (for delay-line allocation)*/
     /*};*/
-
-
-

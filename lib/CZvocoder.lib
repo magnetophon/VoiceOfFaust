@@ -68,7 +68,7 @@ czVocoder(audio,freq,0)=
   (czFunds(freq,0),czCenters)
   :czOscs
   :gainNormalise
-  :((analizer(voice(audio),freq),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
+  :((analizer(voice(audio),freq,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);
 
@@ -80,7 +80,7 @@ czVocoder(audio,freq,1)=
     (czFunds(freq,i),czCenters)
     : czOscs
     : gainNormalise
-    :((analizer(voice(audio),freq),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
+    :((analizer(voice(audio),freq,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   )
   :CZvocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);

@@ -35,7 +35,9 @@ autoQresonBP(f,prevC,c,q) =
     };
 
 
-analizer(audio,freq)=deEssedAnalizer(audio,freq);
+// analizer(audio,freq,enableDeEsser)
+analizer(audio,freq,0)=simpleAnalizer(audio,freq);
+analizer(audio,freq,1)=deEssedAnalizer(audio,freq);
 
 simpleAnalizer(audio,freq)=
 (

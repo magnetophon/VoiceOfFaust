@@ -26,5 +26,5 @@ oct=2;
 /*process=fund(freq,oct);*/
 process(audio) = PAFvocoder(audio,PitchTracker(audio,enablePitchTracker));
 /*process(audio) =*/
-  /*(pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq)):pafOscs:vocoderMixer(ambisonicsOn)*/
+  /*(pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq,enableDeEsser)):pafOscs:vocoderMixer(ambisonicsOn)*/
   /*:postProc(nrOutChan,ambisonicsOn);*/

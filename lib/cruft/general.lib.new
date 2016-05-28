@@ -140,7 +140,7 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   };
 
 gainCompare(audio,freq,0) = bus(nrBands);
-gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
+gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq,enableDeEsser)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 
 // scale the gain between 0 = all at avg, 1 = normal and 2 = expansion

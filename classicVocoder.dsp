@@ -60,5 +60,5 @@ out ,6,7 ,8kaput
 /*process = StereoVolFilterBank(nrBands);*/
 /*process(audio) =  analizers(audio);*/
 /*process(audio) = (audio,_:bandEnv);*/
-/*process(freq,audio) =  (vocoderCenters(freq),(vocoderOsc(freq)<:bus(nrBands)),analizer(voice(audio),freq), (vocoderQ<:bus(nrBands))):StereoVolFilterBank(nrBands):vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth,nrOutChan);*/
+/*process(freq,audio) =  (vocoderCenters(freq),(vocoderOsc(freq)<:bus(nrBands)),analizer(voice(audio),freq,enableDeEsser), (vocoderQ<:bus(nrBands))):StereoVolFilterBank(nrBands):vocoderMixer:par(i, 2, _*0.01):WidePanner(vocoderWidth,nrOutChan);*/
 /*process = (bus(nrBands*4)):par(i, nrBands, volFilter);*/
