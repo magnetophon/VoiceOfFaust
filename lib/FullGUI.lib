@@ -352,9 +352,26 @@ attack            = qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1,
 release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):smooth(0.999));
 
 //-----------------------------------------------
+// multiband deEsser
+//-----------------------------------------------
+
+deEsserGroup(x)    = FXGroup(vgroup("[1] multiband deEsser", x));
+  deEssThreshold   = deEsserGroup(vslider("[0] threshold[style:knob][tooltip: how much S is too much]",	0, -60, 0, 1):smooth(0.999));
+  deEssStrenght    = deEsserGroup(vslider("[1] strenght[style:knob][tooltip: how much to reduce the S ]",	1, 0, 10, 0.001):smooth(0.999));
+  deEssCorner      = deEsserGroup(vslider("[2] corner[style:knob][tooltip: from where on is it an S ][unit:Hz]",	4000, 1000, 20000, 1));
+  deEssdBperOctave = deEsserGroup(vslider("[3] dBperOctave[style:knob][tooltip: now much to ignore sounds below corner ]",	18, 0, 60, 1));
+
+//-----------------------------------------------
+// multiband reEsser
+//-----------------------------------------------
+
+reEsserGroup(x) = FXGroup(vgroup("[2]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
+
+
+//-----------------------------------------------
 // routing and panning
 //-----------------------------------------------
-routingGroup(x) = FXGroup(vgroup("[1]routing and panning", x));
+routingGroup(x) = FXGroup(vgroup("[3]routing and panning", x));
 inputRouting    = routingGroup(hslider(
   "[1] input routing [tooltip: Change the routing between the oscillators and the filters]",
              4,0,maxNrInRoutings ,0.5));
@@ -369,7 +386,7 @@ rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo f
 // Karplus Strong as an effect
 //-----------------------------------------------
 
-KPgroup(x)        = FXGroup((vgroup("[2]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
+KPgroup(x)        = FXGroup((vgroup("[4]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level]",	1, 0, 1, 0.001):volScale);
 KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);
@@ -441,7 +458,7 @@ phaseLL           = LLoscModGroup(vslider("[3]phase[style:knob][tooltip: phase d
 //-----------------------------------------------
 // Phase Modulation as an effect
 //-----------------------------------------------
-pmFXgroup(x) = FXGroup(vgroup("[3]Phase Modulation[tooltip: delay lines modulated by an oscilator]",x));
+pmFXgroup(x) = FXGroup(vgroup("[5]Phase Modulation[tooltip: delay lines modulated by an oscilator]",x));
 //pmFXvolume = pmFXgroup(vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):volScale);
 pmFXi        = pmFXgroup(vslider("[1]amount [style:knob][tooltip: modulation amount]",0.5,0,4,0.001):volScale );
 pmFXr        = pmFXgroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.5,0,8,0.001):smooth(0.999) );
@@ -451,7 +468,7 @@ PMphase      = pmFXgroup(hslider("[3]phase[style:knob][tooltip: phase difference
 // chorus
 //-----------------------------------------------
 
-chorusGroup(x)  =  FXGroup(vgroup("[1]chorus", x));
+chorusGroup(x)  =  FXGroup(vgroup("[6]chorus", x));
 
 slowFreq	= chorusGroup(vslider("[0]slow freq [style:knob][tooltip: slow modulation frequency]",	0.5, 0, 5, 0.01):smooth(0.999));
 slowDepth	= chorusGroup(vslider("[1]slow depth [style:knob][tooltip: slow modulation amount]",	5, 0, 10, 0.01):volScale);

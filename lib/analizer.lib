@@ -35,9 +35,19 @@ autoQresonBP(f,prevC,c,q) =
     };
 
 
-analizer(audio,freq)=
+analizer(audio,freq)=deEssedAnalizer(audio,freq);
+
+simpleAnalizer(audio,freq)=
 (
   (audio<:bus(nrBands))
   ,(analizerCenters(freq)<:((bus(nrBands)<:(freq/2,par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
   ,(analizerQ<:bus(nrBands))
 ):analizers : gainScale(enableGainScale,gainScaling,freq);
+
+deEssedAnalizer(audio,freq) =
+  (simpleAnalizer(audio,freq), compressGains) : interleave(nrBands,2) : par(i, nrBands, (linear2db+_):db2linear)
+with {
+  highPassPreEmp = analizerCenters(freq):par(i, nrBands,  ( hz2pianokey - (deEssCorner:hz2pianokey) ) :min(0) * (deEssdBperOctave/12));
+  preEmp = ( simpleAnalizer(audio,freq) , highPassPreEmp):interleave(nrBands,2) : par(i, nrBands, linear2db+_);
+  compressGains = preEmp : par(i, nrBands, ((deEssThreshold-_) : min(0) * deEssStrenght ) );
+};
