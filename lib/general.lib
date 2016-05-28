@@ -130,15 +130,16 @@ tp=hslider("[3]top", 0, 0, 1, 0.001);
 
 gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   compare(gain,gainedX) =
-    select2(gainCompEnable,
+    select2((gainCompEnable ),
       1,
-      ((((gain:max(0.001):linear2db)+select2((gainedX:amp_follower_ud(0.002,0.004))>=compGain,up,down(gain,gainedX))):db2linear))
+        ((((gain:max(0.001):linear2db)+select2((gainedX:amp_follower_ud(0.002,0.004))>compGain,up,down)):min(maxGain):db2linear))
     );
   up = dbPs;
-  down(gain,gainedX) = dbPs*-2;
-  // down(gain,gainedX) = (((gainedX:amp_follower_ud(0.002,0.004):linear2db)-(compGain:linear2db))*-1)-(gain:max(0.001):linear2db);
+  down = dbPs*-2;
+  maxGain = (compGain:max(0.001):linear2db) - (x:abs:max(0.001):linear2db);
   };
 
+// gainCompare(audio,freq,enableGainCompare)
 gainCompare(audio,freq,0) = bus(nrBands);
 gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
