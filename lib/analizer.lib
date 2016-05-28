@@ -49,5 +49,6 @@ deEssedAnalizer(audio,freq) =
 with {
   highPassPreEmp = analizerCenters(freq):par(i, nrBands,  ( hz2pianokey - (deEssCorner:hz2pianokey) ) :min(0) * (deEssdBperOctave/12));
   preEmp = ( simpleAnalizer(audio,freq) , highPassPreEmp):interleave(nrBands,2) : par(i, nrBands, linear2db+_);
-  compressGains = preEmp : par(i, nrBands, ((deEssThreshold-_) : min(0) * deEssStrenght ) );
+  compressGains = preEmp : par(i, nrBands, ((deEssThreshold-_) : min(0) * (deEssStrenght*dynAmount) ) );
+  dynAmount = 1-(deEssDynStrenght*(newFidelity:pow(42):lag_ud(0.002,0.004)));
 };

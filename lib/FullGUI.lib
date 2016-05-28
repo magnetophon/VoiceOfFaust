@@ -23,8 +23,8 @@ ManualOnset             = OSCgroup(button(   "[07]trigger")); //button does not 
 analizerQ               = analizerGroup( vslider("[01]Q [tooltip: filter Q of the analizer] [style:knob]",	7, 0.3, 49, 0.001));
 gainCompEnable          = analizerGroup(checkbox("[02]normalize[tooltip: automatic gain correction]"))*enableGainCompare;
 dbPs                    = analizerGroup(vslider("[03]gain speed[style:knob][tooltip: speed af gain correction]",	750, 0, 1000, 1))/SR;
-gainScaling             = analizerGroup(vslider("[04]formant power[style:knob][tooltip: scale the relative gain of the bands between 0 = all at avg, 1 = normal and 2 = expansion]", 1, 0, 2, 0.001));
-weightingKind           = analizerGroup(vslider("[05]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0, 0, 2, 0.0001));
+gainScaling             = analizerGroup(vslider("[04]formant power[style:knob][tooltip: scale the relative gain of the bands between 0 = all at avg, 1 = normal and 2 = expansion]", 1.15, 0, 2, 0.001));
+weightingKind           = analizerGroup(vslider("[05]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0.6, 0, 2, 0.001));
 
 cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
 cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));
@@ -356,10 +356,11 @@ release           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	2
 //-----------------------------------------------
 
 deEsserGroup(x)    = FXGroup(vgroup("[1] multiband deEsser", x));
-  deEssThreshold   = deEsserGroup(vslider("[0] threshold[style:knob][tooltip: how much S is too much]",	0, -60, 0, 1):smooth(0.999));
-  deEssStrenght    = deEsserGroup(vslider("[1] strenght[style:knob][tooltip: how much to reduce the S ]",	1, 0, 10, 0.001):smooth(0.999));
-  deEssCorner      = deEsserGroup(vslider("[2] corner[style:knob][tooltip: from where on is it an S ][unit:Hz]",	4000, 1000, 20000, 1));
-  deEssdBperOctave = deEsserGroup(vslider("[3] dBperOctave[style:knob][tooltip: now much to ignore sounds below corner ]",	18, 0, 60, 1));
+  deEssThreshold   = deEsserGroup(vslider("[0] threshold[style:knob][tooltip: how much S is too much]",	-30, -60, 0, 1):smooth(0.999));
+  deEssStrenght    = deEsserGroup(vslider("[1] strenght[style:knob][tooltip: how much to reduce the S ]",	0.5, 0, 5, 0.001):smooth(0.999));
+  deEssDynStrenght = deEsserGroup(vslider("[2] noise strenght[style:knob][tooltip: varies strenght with fidelity ]",	1, 0, 1, 0.001):smooth(0.999));
+  deEssCorner      = deEsserGroup(vslider("[3] corner[style:knob][tooltip: from where on is it an S ][unit:Hz]",	3000, 1000, 20000, 1));
+  deEssdBperOctave = deEsserGroup(vslider("[4] dBperOctave[style:knob][tooltip: now much to ignore sounds below corner ]",	30, 0, 60, 1));
 
 //-----------------------------------------------
 // multiband reEsser
