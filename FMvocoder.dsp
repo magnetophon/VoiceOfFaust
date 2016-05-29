@@ -24,7 +24,11 @@ import ("lib/FMvocoder.lib");
 freq=3.33;
 oct=2;
 /*process=fund(freq,oct);*/
-process(audio) = FMvocoder(audio,PitchTracker(audio,enablePitchTracker),doubleOscs);
+process(audio) =
+(
+  FMvocoder(audio,PitchTracker(audio,enablePitchTracker),doubleOscs),
+  reEsser(voice(audio),PitchTracker(audio,enablePitchTracker),enableReEsser)
+):>bus(nrOutChan);
 // process = chooseResonBP;
 /*process(audio) =*/
   /*(pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq,enableDeEsser)):pafOscs:vocoderMixer(ambisonicsOn)*/

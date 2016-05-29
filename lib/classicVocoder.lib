@@ -57,6 +57,7 @@ volFilter(f,prevC,c,v,q) =
           :>_+1;
     };
 
+// StereoVolFilterBank(nrBands,enableFeedback)
 StereoVolFilterBank(nrBands,0) = StereoVolFilterBankNoFeedback(nrBands);
 StereoVolFilterBank(nrBands,1) = StereoVolFilterBankWithFeedback(nrBands);
 

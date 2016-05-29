@@ -14,7 +14,8 @@ para                      = 1; // whether we want a parametric mid
 enableGainCompare         = 1; // correct the loudness of the individual bands after they've been created
 enableGainScale           = 1; // expand or compress the spectrum: make it more or less resonant
 autoQ                     = 1; // enable correction of the filter-Q depending on the distance between the bands
-enableDeEsser             = 1; // enable the multi-band deEsser
+enableDeEsser             = 1+enableReEsser:min(1); // enable the multi-band deEsser, is needed for reEsser
+enableReEsser             = 0; // enable the multi-band reEsser
 stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd pass filters
 enableFeedback            = 1; // feedback around the filters of the classicVocoder
 enableAutosat             = 0; // put a saturator at the output
