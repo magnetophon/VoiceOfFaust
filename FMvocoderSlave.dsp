@@ -22,7 +22,8 @@ process(audio,index,fidelity) =
   // (FMfunds(freq,index,0), (freq<:bus(nrBands)),analizer(voice(audio,index),freq,fidelity,enableDeEsser),FMindexes,FMcenters(freq)):FMoscs:vocoderMixer(ambisonicsOn,outputRoutingEnabled)
   //          :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.025,FMwidth)
   // analizer(voice(audio,index),freq,fidelity,enableDeEsser)//:par(i, nrBands, meter)
-FMvocoder(audio,calculateFreq(index),index,fidelity,doubleOscs)
+FMvocoder(audio, masterPitch(audio,index),index,fidelity,doubleOscs)
+// masterPitch(audio,index)/MaxInputPitch
 // lf_sawpos(calculateFreq(index)/4)
 // my_lf_sawpos(calculateFreq(index)/4)
 with {
