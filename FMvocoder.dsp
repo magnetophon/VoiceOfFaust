@@ -17,6 +17,7 @@ import ("lib/common.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/FMvocoder.lib");
+import("lib/master.lib");
 
 //-----------------------------------------------
 // process
@@ -26,7 +27,7 @@ oct=2;
 /*process=fund(freq,oct);*/
 process(audio) =
 (
-  FMvocoder(audio,masterPitch(audio,index),doubleOscs),
+  FMvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
   reEsser(voice(audio,index),masterPitch(audio,index),enableReEsser)
 ):>bus(nrOutChan);
 // process = chooseResonBP;

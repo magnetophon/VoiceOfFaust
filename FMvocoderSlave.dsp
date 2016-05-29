@@ -23,13 +23,15 @@ process(audio,index,fidelity) =
   //          :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.025,FMwidth)
   // analizer(voice(audio,index),freq,fidelity,enableDeEsser)//:par(i, nrBands, meter)
 FMvocoder(audio, masterPitch(audio,index),index,fidelity,doubleOscs)
-// masterPitch(audio,index)/MaxInputPitch
+// (masterPitch(audio,index)/MaxInputPitch)
+// ,
+// ((((index-index')*SR*4) : sampleAndHold(index'):max(MinInputPitch):min(MaxInputPitch))/MaxInputPitch)
 // lf_sawpos(calculateFreq(index)/4)
-// my_lf_sawpos(calculateFreq(index)/4)
+// my_lf_sawpos((masterPitch(audio,index))/4)
 with {
 // --- lf_sawpos ---
 // simple sawtooth waveform oscillator between 0 and 1
-freq = masterPitch(audio,index);
+// freq = masterPitch(audio,index);
 my_lf_sawpos(freq) = decimal ~ +(freq/SR);
 };
 

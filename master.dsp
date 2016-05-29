@@ -11,6 +11,7 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 
 import ("lib/common.lib");
 import ("lib/FullGUI.lib");
+import("lib/master.lib");
 
 process(audio) =
   audio,
