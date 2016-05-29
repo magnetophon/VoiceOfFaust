@@ -55,9 +55,9 @@ pitchtracker is not installed.;
 #X obj 18 96 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
 #X obj 18 116 metro 2000;
-#N canvas 1280 43 1920 1021 PitchTracker 0;
+#N canvas 1280 50 1920 1021 PitchTracker 0;
 #X obj -379 -27 inlet~;
-#N canvas 1280 43 1920 1021 filters 0;
+#N canvas 1280 50 1920 1021 filters 0;
 #X obj 47 41 inlet~;
 #X obj 47 296 outlet~;
 #X text 49 126 DC filter;
@@ -260,7 +260,7 @@ harmonic interference components such as from cellphones.;
 #X obj -140 174 clip 60 80;
 #X obj -380 84 moses 60;
 #X obj 111 -40 nbx 4 14 51 200 1 1 empty empty empty 0 -8 0 10 -262144
--1 -1 60 256;
+-1 -1 51 256;
 #X obj 111 -10 * 1.33;
 #X text 158 -44 lowest note you produce;
 #X text 164 -11 the range above the lowest note that has flaky fidelity
@@ -430,7 +430,7 @@ harmonic interference components such as from cellphones.;
 #X obj 346 75 osc/pipelist;
 #X msg 72 222 send /*/OSC/min_pitch get;
 #X msg 73 192 send /*/OSC/max_pitch get;
-#X obj 346 109 osc/routeOSC /0x00/OSC/max_pitch /0x00/OSC/min_pitch
+#X obj 346 109 osc/routeOSC /VoiceOfFaust/OSC/max_pitch /VoiceOfFaust/OSC/min_pitch
 ;
 #X connect 0 0 14 0;
 #X connect 0 0 9 1;

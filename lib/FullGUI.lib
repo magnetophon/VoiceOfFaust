@@ -1,15 +1,15 @@
 //-----------------------------------------------
 // the GUI
 //-----------------------------------------------
-
-OSCgroup(x)    = (hgroup("[0]OSC", x)); // To recieve OSC pitch and other messages
-analizerGroup(x)    = (hgroup("[1]analizer", x)); // To recieve OSC pitch and other messages
-//qompander    = [1]
-volume = hslider("[2]main output level", 1,0,4,0.001):volScale;
-tabs(x)        = (tgroup("[3]", x));
-  synthsGroup(x) = tabs(hgroup("[0]synths", x));
-  FXGroup(x)     = tabs(hgroup("[1]effects", x));
-      //MeterGroup(x)  = (vgroup("[3]output level", x)); // To recieve OSC pitch and other messages
+VoFgroup(x)             = (hgroup("VoiceOfFaust", x)); // root adress for all osc messages, otherwise we get /0x00/
+  OSCgroup(x)           = VoFgroup(hgroup("[0]OSC", x)); // To recieve OSC pitch and other messages
+  analizerGroup(x)      = VoFgroup(hgroup("[1]analizer", x)); // To recieve OSC pitch and other messages
+  //qompander           = [1]
+  volume                = VoFgroup(hslider("[2]main output level", 1,0,4,0.001):volScale);
+  tabs(x)               = VoFgroup(tgroup("[3]", x));
+    synthsGroup(x)      = tabs(hgroup("[0]synths", x));
+    FXGroup(x)          = tabs(hgroup("[1]effects", x));
+        //MeterGroup(x) = (vgroup("[3]output level", x));
 
 OSCpitch                = OSCgroup(nentry(   "[00]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
 OSCfidelity             = OSCgroup(nentry(   "[01]fidelity[tooltip: the quality of the pitch estimate; determines the smoothness of the pitch curve]", 0.98, 0, 1, 0.001));
@@ -49,10 +49,10 @@ vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):oc
 vocoderParamsGroup(x)   = vocoderGroup(vgroup("[1]parameters", x));
   vocoderOscGroup(x)    = vocoderGroup(vgroup("[0]oscillators",x));
   vocoderFilterGroup(x) = vocoderGroup(hgroup("[1]filters",x));
-           vocoderFilterBottomGroup(x) = vocoderFilterGroup(vgroup("[0]low frequencies",x));
-           vocoderFilterMidGroup(x) = vocoderFilterGroup(vgroup("[1]mid frequencies",x));
-           vocoderFilterBandGroup(x) = vocoderFilterGroup(vgroup("[2]mid band",x));
-           vocoderFilterTopGroup(x) = vocoderFilterGroup(vgroup("[3]high frequencies",x));
+    vocoderFilterBottomGroup(x) = vocoderFilterGroup(vgroup("[0]low frequencies",x));
+    vocoderFilterMidGroup(x)    = vocoderFilterGroup(vgroup("[1]mid frequencies",x));
+    vocoderFilterBandGroup(x)   = vocoderFilterGroup(vgroup("[2]mid band",x));
+    vocoderFilterTopGroup(x)    = vocoderFilterGroup(vgroup("[3]high frequencies",x));
 
 vocoderOscNoise = vocoderOscGroup(          vslider(" [1]osc-noise             [style:knob] [tooltip: crossfade from osc to noise]", 0, 0, 1, 0.001)):smooth(0.999);
 vocoderSawPulse = vocoderOscGroup(          vslider(" [2]saw-pulse             [style:knob] [tooltip: crossfade from saw to pulse]", 0, 0, 1, 0.001)):pow(1.5):smooth(0.999);
