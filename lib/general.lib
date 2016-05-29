@@ -2,9 +2,9 @@
 // master index, all slave oscilators 'clock' to this.
 //-----------------------------------------------
 // simple sawtooth waveform oscillator between 0 and 1
-masterIndex(freq)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
-fund(freq,oct)=             (4 * oct * masterIndex(freq)) : decimal; //choose octaves
-fundPhase(freq,oct, phase)= (4 * oct * masterIndex(freq))+phase : decimal; //choose octaves and set phase
+// masterIndex(freq,index)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
+fund(freq,oct)=             (4 * oct * masterIndex(freq,index)) : decimal; //choose octaves
+fundPhase(freq,index,oct, phase)= (4 * oct * masterIndex(freq,index))+phase : decimal; //choose octaves and set phase
 
 //-----------------------------------------------
 // Some general functions
@@ -141,7 +141,7 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
 
 // gainCompare(audio,freq,enableGainCompare)
 gainCompare(audio,freq,0) = bus(nrBands);
-gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq,enableDeEsser)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
+gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio,index),freq,fidelity,enableDeEsser)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 
 // scale the gain between 0 = all at avg, 1 = normal and 2 = expansion
@@ -301,6 +301,31 @@ with {
      b0 = 0;
 };
 
+// highpass(N,fc) = lowpass0_highpass1(1,N,fc);
+// lowpass0_highpass1(s,N,fc) = lphpr(s,N,N,fc)
+// with {
+//   lphpr(s,0,N,fc) = _;
+//   lphpr(s,1,N,fc) = tf1s(s,1-s,1,2*PI*fc);
+//   lphpr(s,O,N,fc) = lphpr(s,(O-2),N,fc) : tf2s(s,0,1-s,a1s,1,w1) with {
+//     parity = N % 2;
+//     S = (O-parity)/2; // current section number
+//     a1s = -2*cos(-PI + (1-parity)*PI/(2*N) + (S-1+parity)*PI/N);
+//     w1 = 2*PI*fc;
+//   };
+// };
+// n needs to be even
+highpassStable(N,fc) = lphpr(N,N,fc)
+with {
+  lphpr(0,N,fc) = _;
+  lphpr(1,N,fc) = _;
+  lphpr(O,N,fc) = lphpr((O-2),N,fc) : tf2snp(1,0,0,a1s,1,w1) with {
+    parity = N % 2;
+    S = (O-parity)/2; // current section number
+    a1s = -2*cos(-PI + (1-parity)*PI/(2*N) + (S-1+parity)*PI/N);
+    w1 = 2*PI*fc;
+  };
+};
+
 
 KalmanFilter(errorMeasurement,initialMeasurement,initialError,measurement) = KalmanFilterCalc(measurement)~(_,_):(_,!) with {
   KalmanFilterCalc(measurement,prevEstimate,prevErrorEstimate) =
@@ -374,7 +399,7 @@ with {
 };
 // for mutichannel, bypass the widepanner.
 WidePanner(w,nr) = bus(nr);
-voice(audio) = qompander(audio:highpass(3,PitchTracker(audio,enablePitchTracker)*0.75),factor,threshold,attack,release);
+voice(audio,index) = qompander(audio:highpass(3,masterPitch(audio,index)*0.75),factor,threshold,attack,release);
 
 //is actually dual mono. on purpose; to try and keep the image in the center.
 //todo: make this stereo, and find a better way for  KP-FX to stay centered

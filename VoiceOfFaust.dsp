@@ -33,39 +33,39 @@ import ("lib/pmFX.lib");
 VoiceOfFaust(audio) =
     (
     cleanVolume,cleanNLKS,cleanpmFX,
-    (voice(audio)*4<:_,_),
+    (voice(audio,index)*4<:_,_),
 
     subVolume,subNLKS,subpmFX,
-    subSine(audio,PitchTracker(audio,enablePitchTracker)),
+    subSine(audio,masterPitch(audio,index)),
 
     vocoderVolume,vocoderNLKS,vocoderpmFX,
-    StereoVocoder(audio,PitchTracker(audio,enablePitchTracker)),
+    StereoVocoder(audio,masterPitch(audio,index)),
 
     pafVolume,pafNLKS,pafpmFX,
-    PAFvocoder(audio,PitchTracker(audio,enablePitchTracker)),
+    PAFvocoder(audio,masterPitch(audio,index)),
 
     fofVolume,fofNLKS,fofpmFX,
-    fofvocoder(audio,PitchTracker(audio,enablePitchTracker)),
+    fofvocoder(audio,masterPitch(audio,index)),
 
     FMvolume,fmNLKS,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio,enablePitchTracker),subLevel(audio)),
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),masterPitch(audio,index),subLevel(audio)),
 
     CZvolume,CZNLKS,CZpmFX,
-    CZringMod(audio,PitchTracker(audio,enablePitchTracker))
+    CZringMod(audio,masterPitch(audio,index))
 
     : mixerWithSends(nrChan,nrOutChan,nrSends)
 
     :_,_//No effect
 
-    ,(stringloopBank(PitchTracker(audio,enablePitchTracker),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
-    ,(stringloopBank(PitchTracker(audio,enablePitchTracker),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
+    ,(stringloopBank(masterPitch(audio,index),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
+    ,(stringloopBank(masterPitch(audio,index),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
 
-    ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,PMphase)
-    ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,0-PMphase)
+    ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,PMphase)
+    ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,0-PMphase)
 
     :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_))
 
-    :stereoLimiter(PitchTracker(audio,enablePitchTracker) * subOctave) //it needs the lowest pitch to adjust the decay time.
+    :stereoLimiter(masterPitch(audio,index) * subOctave) //it needs the lowest pitch to adjust the decay time.
     :VuMeter
     )
     with {

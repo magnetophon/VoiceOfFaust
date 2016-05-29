@@ -35,10 +35,10 @@ import ("lib/pmFX.lib");
 VoiceOfFaust(audio) =
   (
   cleanVolume,cleanChorus,cleanpmFX, //output volumes. The number of parameters should be nrSends
-  (voice(audio)<:bus(nrOutChan))
+  (voice(audio,index)<:bus(nrOutChan))
   ,
   vocoderVolume,vocoderChorus,vocoderpmFX,
-  StereoVocoder(audio,PitchTracker(audio,enablePitchTracker))
+  StereoVocoder(audio,masterPitch(audio,index))
 
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
@@ -47,13 +47,13 @@ VoiceOfFaust(audio) =
   ,par(i,nrOutChan/2,stereoChorus)
 
   ,par(i,nrOutChan/2,
-    (pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,PMphase)
-    ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,0-PMphase))
+    (pmFX(masterPitch(audio,index),pmFXr,pmFXi,PMphase)
+    ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,0-PMphase))
   )
 
   :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
-  //:stereoLimiter(PitchTracker(audio,enablePitchTracker) * vocoderOctave) //needs the pitch to adjust the decay time.
+  //:stereoLimiter(masterPitch(audio,index) * vocoderOctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   )
   with {
@@ -74,4 +74,4 @@ VoiceOfFaust(audio) =
 //-----------------------------------------------
 
 process(audio) = VoiceOfFaust(audio);
-//process(audio) = StereoVocoder(audio,PitchTracker(audio,enablePitchTracker));
+//process(audio) = StereoVocoder(audio,masterPitch(audio,index));

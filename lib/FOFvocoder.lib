@@ -84,7 +84,7 @@ fofvocoder(audio,freq,0)=
   (fofNoises(0,freq,enableFOFnoise,enableFOFnoiseFilter),fofCenters,(multiK(multi)<:bus(nrBands)),fofSkirts,fofDecays,fofOctavations)
   :fofOscs
   :gainNormalise
-  :((analizer(voice(audio),freq,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
+  :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);
 
@@ -96,7 +96,7 @@ fofvocoder(audio,freq,1)=
     ,(fofNoises(i,freq,enableFOFnoise,enableFOFnoiseFilter),fofCenters,(multiK(multi)<:bus(nrBands)),fofSkirts,fofDecays,fofOctavations)
     :fofOscs
     : gainNormalise
-    :((analizer(voice(audio),freq,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
+    :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   )
   :FOFvocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);

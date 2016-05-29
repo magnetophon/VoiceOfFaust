@@ -1,0 +1,6 @@
+import("lib/pitchtracker.lib");
+// master versions:
+OSCminPitch             = OSCgroup(nentry(   "[02]min pitch[tooltip: minimum allowed pitch]", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
+OSCmaxPitch             = OSCgroup(nentry(   "[03]max pitch[tooltip: maximum allowed pitch]", 440, MinInputPitch, MaxInputPitch, 0.001));
+
+masterIndex(freq,index)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap

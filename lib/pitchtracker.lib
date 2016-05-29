@@ -33,6 +33,6 @@ with	{
         intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
         };
 
-smoother = hz2pianokey<:select2(enablegainedSmootherPitch,smooth(PTsmooth),gainedSmoother(0.00217*(newFidelity:pow(42)),110)): pianokey2hz;
+smoother = hz2pianokey<:select2(enablegainedSmootherPitch,smooth(PTsmooth),gainedSmoother(0.00217*(fidelity:pow(42)),110)): pianokey2hz;
 // only trust fidelity after a new freq has come in
-newFidelity = OSCfidelity:sampleAndHold(_!=OSCpitch~_);
+fidelity = OSCfidelity:sampleAndHold(_!=OSCpitch~_);

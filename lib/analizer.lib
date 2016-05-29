@@ -3,7 +3,7 @@
 //-----------------------------------------------
 import("lib/classicVocoder.lib"); // for StereoVolFilterBankNoFeedback
 
-subLevel(audio) = voice(audio):gate_mono(threshold-15,0,0.1,0.05):lowpass(3,300):amp_follower_ud(0.003,0.005)*4:tanh;
+subLevel(audio) = voice(audio,index):gate_mono(threshold-15,0,0.1,0.05):lowpass(3,300):amp_follower_ud(0.003,0.005)*4:tanh;
 
 //subLevel(audio) = audio:lowpass(3,300):amp_follower_ud((vslider("up", 0, 0, 1, 0)*0.1),(vslider("down", 0, 0, 1, 0.001)*0.1))*6:tanh;
 
@@ -36,9 +36,9 @@ autoQresonBP(f,prevC,c,q) =
     };
 
 
-// analizer(audio,freq,enableDeEsser)
-analizer(audio,freq,0)=simpleAnalizer(audio,freq);
-analizer(audio,freq,1)=deEssedAnalizer(audio,freq);
+// analizer(audio,freq,fidelity,enableDeEsser)
+analizer(audio,freq,fidelity,0)=simpleAnalizer(audio,freq);
+analizer(audio,freq,fidelity,1)=deEssedAnalizer(audio,freq,fidelity);
 
 simpleAnalizer(audio,freq)=
 (
@@ -47,10 +47,10 @@ simpleAnalizer(audio,freq)=
   ,(analizerQ<:bus(nrBands))
 ):analizers : gainScale(enableGainScale,gainScaling,freq);
 
-deEssedAnalizer(audio,freq) =
+deEssedAnalizer(audio,freq,fidelity) =
   (simpleAnalizer(audio,freq), deEssGains(audio,freq,deEssStrenght*dynAmount)) : interleave(nrBands,2) : par(i, nrBands, (linear2db+_):db2linear)
 with {
-  dynAmount = 1-(deEssDynStrenght*(newFidelity:pow(42):lag_ud(0.002,0.004)));
+  dynAmount = 1-(deEssDynStrenght*(fidelity:pow(42):lag_ud(0.002,0.004)));
 };
 
 deEssGains(audio,freq,strenght) = preEmp : par(i, nrBands, ((deEssThreshold-_) : min(0) * strenght ) )

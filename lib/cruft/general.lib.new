@@ -2,9 +2,9 @@
 // master index, all slave oscilators 'clock' to this.
 //-----------------------------------------------
 // simple sawtooth waveform oscillator between 0 and 1
-masterIndex(freq)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
-fund(freq,oct)= (4 * oct * masterIndex(freq)) : decimal; //choose octaves
-fundPhase(freq,oct, phase)= (4 * oct * masterIndex(freq)) : decimal; //choose octaves and set phase
+masterIndex(freq,index)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
+fund(freq,oct)= (4 * oct * masterIndex(freq,index)) : decimal; //choose octaves
+fundPhase(freq,index,oct, phase)= (4 * oct * masterIndex(freq,index)) : decimal; //choose octaves and set phase
 
 //-----------------------------------------------
 // Some general functions
@@ -140,7 +140,7 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   };
 
 gainCompare(audio,freq,0) = bus(nrBands);
-gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio),freq,enableDeEsser)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
+gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio,index),freq,fidelity,enableDeEsser)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 
 // scale the gain between 0 = all at avg, 1 = normal and 2 = expansion
@@ -343,7 +343,7 @@ with {
 };
 // for mutichannel, bypass the widepanner.
 WidePanner(w,nr) = bus(nr);
-voice(audio) = qompander(audio:highpass(3,PitchTracker(audio,enablePitchTracker)*0.75),factor,threshold,attack,release);
+voice(audio,index) = qompander(audio:highpass(3,PitchTracker(audio,enablePitchTracker)*0.75),factor,threshold,attack,release);
 
 //is actually dual mono. on purpose; to try and keep the image in the center.
 //todo: make this stereo, and find a better way for  KP-FX to stay centered

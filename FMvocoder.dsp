@@ -26,10 +26,10 @@ oct=2;
 /*process=fund(freq,oct);*/
 process(audio) =
 (
-  FMvocoder(audio,PitchTracker(audio,enablePitchTracker),doubleOscs),
-  reEsser(voice(audio),PitchTracker(audio,enablePitchTracker),enableReEsser)
+  FMvocoder(audio,masterPitch(audio,index),doubleOscs),
+  reEsser(voice(audio,index),masterPitch(audio,index),enableReEsser)
 ):>bus(nrOutChan);
 // process = chooseResonBP;
 /*process(audio) =*/
-  /*(pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio),freq,enableDeEsser)):pafOscs:vocoderMixer(ambisonicsOn)*/
+  /*(pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio,index),freq,fidelity,enableDeEsser)):pafOscs:vocoderMixer(ambisonicsOn)*/
   /*:postProc(nrOutChan,ambisonicsOn);*/

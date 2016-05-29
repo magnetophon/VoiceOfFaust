@@ -200,7 +200,7 @@ CZrestrap(fund, res) =
 //-----------------------------------------------
 
 pafFreq(audio)=
-    PitchTracker(audio,enablePitchTracker)*pafOctave;
+    masterPitch(audio,index)*pafOctave;
 pafFund(freq) = fund(freq,pafOctave);
 sampleAndHold(sample) = select2((sample!=0):int) ~ _;
 
@@ -228,8 +228,8 @@ with {
 //-----------------------------------------------
 
 FMfreq(audio)=
-    PitchTracker(audio,enablePitchTracker)*FMoctave;
-FMfund(freq,phase) = fundPhase(freq,FMoctave,phase);
+    masterPitch(audio,index)*FMoctave;
+FMfund(freq,index,phase) = fundPhase(freq,index,FMoctave,phase);
 
 //-----------------------------------------------
 // FOF oscilator

@@ -1,7 +1,7 @@
 //-----------------------------------------------
 // the GUI
 //-----------------------------------------------
-VoFgroup(x)             = (hgroup("VoiceOfFaust", x)); // root adress for all osc messages, otherwise we get /0x00/
+VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all osc messages, otherwise we get /0x00/
   OSCgroup(x)           = VoFgroup(hgroup("[0]OSC", x)); // To recieve OSC pitch and other messages
   analizerGroup(x)      = VoFgroup(hgroup("[1]analizer", x)); // To recieve OSC pitch and other messages
   //qompander           = [1]
@@ -13,8 +13,8 @@ VoFgroup(x)             = (hgroup("VoiceOfFaust", x)); // root adress for all os
 
 OSCpitch                = OSCgroup(nentry(   "[00]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
 OSCfidelity             = OSCgroup(nentry(   "[01]fidelity[tooltip: the quality of the pitch estimate; determines the smoothness of the pitch curve]", 0.98, 0, 1, 0.001));
-OSCminPitch             = OSCgroup(nentry(   "[02]min pitch[tooltip: minimum allowed pitch]", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
-OSCmaxPitch             = OSCgroup(nentry(   "[03]max pitch[tooltip: maximum allowed pitch]", 440, MinInputPitch, MaxInputPitch, 0.001));
+// OSCminPitch             = OSCgroup(nentry(   "[02]min pitch[tooltip: minimum allowed pitch]", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
+// OSCmaxPitch             = OSCgroup(nentry(   "[03]max pitch[tooltip: maximum allowed pitch]", 440, MinInputPitch, MaxInputPitch, 0.001));
 pitchQuantised          = OSCgroup(checkbox( "[04]quantise pitch"));
 OSConset                = OSCgroup(nentry(   "[05]onset", 0, 0, 1,0.001 ));
 formant                 = OSCgroup(nentry(   "[06]formant", 440, MinInputPitch, 12000, 0.001)):smooth(0.999);

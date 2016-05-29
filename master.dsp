@@ -14,9 +14,9 @@ import ("lib/FullGUI.lib");
 
 process(audio) =
   audio,
-  masterIndex(freq),
-  newFidelity
+  masterIndex(freq,index),
+  fidelity
 with {
   // we want to tell the external pitchtracker the min and max
-  freq =  (PitchTracker(audio,enablePitchTracker):attach(OSCminPitch):attach(OSCmaxPitch));
+  freq =  (masterPitch(audio,index):attach(OSCminPitch):attach(OSCmaxPitch));
 };

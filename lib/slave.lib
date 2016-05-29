@@ -1,0 +1,8 @@
+OSCminPitch             = MinInputPitch;
+OSCmaxPitch             = MaxInputPitch;
+masterIndex(freq,index)                      = index;
+//only get a new val if the index is non zero
+calculateFreq(index) = ((index-index')*SR*4) : sampleAndHold(index):max(MinInputPitch):min(MaxInputPitch);
+
+masterPitch(audio,index) = calculateFreq(index);
+// sampleAndHold(sample) = select2((sample!=0):int) ~ _;

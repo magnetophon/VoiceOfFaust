@@ -15,7 +15,7 @@ FMoscs=
     interleave(nrBands,5):
     par(i, nrBands, fuphoSlave);
 
-FMfunds(freq,polarity) = par(i, nrBands, FMfund(freq,phase(i)) ) with {
+FMfunds(freq,index,polarity) = par(i, nrBands, FMfund(freq,index,phase(i)) ) with {
   phase(i) = FMphases:selector(i,nrBands)*select2(polarity%2,1,-1);
 };
 //normal mixer without outputRouting
@@ -51,13 +51,13 @@ with {
 };
 
 
-// FMvocoder(audio,freq,doubleOscs)
-FMvocoder(audio,freq,0)=
-  (FMfunds(freq,0), (freq<:bus(nrBands)),analizer(voice(audio),freq,enableDeEsser),FMindexes,FMcenters(freq)):FMoscs:vocoderMixer(ambisonicsOn,outputRoutingEnabled)
+// FMvocoder(audio,freq,index,doubleOscs)
+FMvocoder(audio,freq,index,fidelity,0)=
+  (FMfunds(freq,index,0), (freq<:bus(nrBands)),analizer(voice(audio,index),freq,fidelity,enableDeEsser),FMindexes,FMcenters(freq)):FMoscs:vocoderMixer(ambisonicsOn,outputRoutingEnabled)
            :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.025,FMwidth);
 
 
-FMvocoder(audio,freq,1)=
-  par(i,nrOutChan,(FMfunds(freq,i), (freq<:bus(nrBands)),analizer(voice(audio),freq,enableDeEsser),FMindexes,FMcenters(freq)):FMoscs  )
+FMvocoder(audio,freq,index,fidelity,1)=
+  par(i,nrOutChan,(FMfunds(freq,index,i), (freq<:bus(nrBands)),analizer(voice(audio,index),freq,fidelity,enableDeEsser),FMindexes,FMcenters(freq)):FMoscs  )
   :FMvocoderMixer(ambisonicsOn,outputRoutingEnabled)
   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.01,1);

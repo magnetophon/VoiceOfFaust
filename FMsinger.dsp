@@ -20,6 +20,6 @@ import ("lib/inputFM.lib");
 // process
 //-----------------------------------------------
 
-process(audio) = stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),PitchTracker(audio,enablePitchTracker),subLevel(audio))
- // :stereoLimiter(PitchTracker(audio,enablePitchTracker)*0.5)
+process(audio) = stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),masterPitch(audio,index),subLevel(audio))
+ // :stereoLimiter(masterPitch(audio,index)*0.5)
   ;

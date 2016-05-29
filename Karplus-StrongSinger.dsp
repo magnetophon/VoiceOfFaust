@@ -26,20 +26,20 @@ import ("lib/pmFX.lib");
 //KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output level]",	1, 0, 1, 0.001)*0.2:volScale);
 
 VoiceOfFaust(audio) =
-  (voice(audio)<:_,_)
+  (voice(audio,index)<:_,_)
   :
   (
-   pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,PMphase)
-  ,pmFX(PitchTracker(audio,enablePitchTracker),pmFXr,pmFXi,0-PMphase)
+   pmFX(masterPitch(audio,index),pmFXr,pmFXi,PMphase)
+  ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,0-PMphase)
   )
   :
   (
-   /*(_<:(_,stringloopBank(PitchTracker(audio,enablePitchTracker),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH)):>_)*/
-  /*,(_<:(_,stringloopBank(PitchTracker(audio,enablePitchTracker),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH)):>_)*/
-   (_<:(_,stringloop(PitchTracker(audio,enablePitchTracker)*KPoctave,audio,_,phaseM,DCnonlin+DCleftRight)):>_)
-  ,(_<:(_,stringloop(PitchTracker(audio,enablePitchTracker)*KPoctave,audio,_,0-phaseM,DCnonlin-DCleftRight)):>_)
+   /*(_<:(_,stringloopBank(masterPitch(audio,index),audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH)):>_)*/
+  /*,(_<:(_,stringloopBank(masterPitch(audio,index),audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH)):>_)*/
+   (_<:(_,stringloop(masterPitch(audio,index)*KPoctave,audio,_,phaseM,DCnonlin+DCleftRight)):>_)
+  ,(_<:(_,stringloop(masterPitch(audio,index)*KPoctave,audio,_,0-phaseM,DCnonlin-DCleftRight)):>_)
   )
-  :stereoLimiter(PitchTracker(audio,enablePitchTracker) * KPoctave) //needs the pitch to adjust the decay time.
+  :stereoLimiter(masterPitch(audio,index) * KPoctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   with {
     //swap the order of KP and PM, to reflect the routing here. Unfortunately, this doesn't work...
@@ -56,6 +56,6 @@ VoiceOfFaust(audio) =
 
     KPoctave          = mainKPgroup(vslider("[-1]octave",-1, -2, 2, 1):octaveMultiplier);
 process(audio) = VoiceOfFaust(audio);
-//process(audio) = audio:stringloop(PitchTracker(audio,enablePitchTracker),audio,_,phaseM,DCnonlin);
+//process(audio) = audio:stringloop(masterPitch(audio,index),audio,_,phaseM,DCnonlin);
 
- //process(audio) =  _<:(_,stringloop(PitchTracker(audio,enablePitchTracker)*KPoctave,audio,_,phaseM,DCnonlin+DCleftRight)):>_;
+ //process(audio) =  _<:(_,stringloop(masterPitch(audio,index)*KPoctave,audio,_,phaseM,DCnonlin+DCleftRight)):>_;

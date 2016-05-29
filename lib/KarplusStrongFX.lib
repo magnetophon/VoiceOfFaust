@@ -5,7 +5,7 @@
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(SR/2)));
 
 KPanalizer(audio,freq) =
-    analizer(audio,freq,enableDeEsser)
+    analizer(audio,freq,fidelity,enableDeEsser)
     :par(i,nrBands,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
     :linear2db) );//adapt to eq instead of bandpass
 
@@ -37,7 +37,7 @@ EQbank(Oscilator,q) =
            ((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume):
            select2;
         };
-KPvocoder(audio,feedback,freq)= (feedback,KPvocoderQ,KPanalizer(voice(audio),freq),KPcenters(freq,1)):EQbank*128;
+KPvocoder(audio,feedback,freq)= (feedback,KPvocoderQ,KPanalizer(voice(audio,index),freq),KPcenters(freq,1)):EQbank*128;
 
 stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
       //(( fdelay4(Pmax, P-2)))
@@ -73,7 +73,7 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
         };
     };
 
-feedbackADSR(audio) = tanh(voice(audio)*2:amp_follower(KPrelease)):pow(4);
+feedbackADSR(audio) = tanh(voice(audio,index)*2:amp_follower(KPrelease)):pow(4);
 
 stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH) =
     (_+feedback
