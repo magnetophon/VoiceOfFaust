@@ -1,8 +1,8 @@
-OSCminPitch             = MinInputPitch;
-OSCmaxPitch             = MaxInputPitch;
-masterIndex(freq,index)                      = index;
+OSCminPitch              = MinInputPitch;
+OSCmaxPitch              = MaxInputPitch;
+masterIndex(freq,index)  = index;
 
-// todo: find out why it crackles without the smooth:
-// it gives a pefect copy of the masterIndex whithout it, using my_lf_sawpos
-// also why does lf_sawpos give discontinious output without the smooth (haven't tested with it yet)
-masterPitch(audio,index) = ((index-index')*SR*4) : sampleAndHold(index>index'):max(MinInputPitch):min(MaxInputPitch):hz2pianokey:smooth(PTsmooth):pianokey2hz;
+index2freq(index)        = ((index-index')*SR) : sampleAndHold(abs(index-index')>(-0.9));
+// index2freq(index)        = ((index-index')*SR) : sampleAndHold((index-index')>(-1+(9/SR)));
+// index2freq(index)        = ((index-index')*SR) : sampleAndHold((index-index')!=-1);
+masterPitch(audio,index) = index2freq(index)*4:max(MinInputPitch):min(MaxInputPitch);
