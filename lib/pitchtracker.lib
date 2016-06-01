@@ -23,14 +23,19 @@ pitchQuantise(1) = _<:select2(pitchQuantised, _, (hz2pianokey : rint : pianokey2
 
 // PitchTracker(audio,enablePitchTracker)
 PitchTracker(audio,0) = OSCpitch : pitchQuantise(enablePitchQuantise) : smoother;
-PitchTracker(audio,1) = ((OSCpitchIsBad , (OSCpitch:smoother), (internal:smooth(PTsmooth))):select2) : pitchQuantise(enablePitchQuantise)
+PitchTracker(audio,1) =
+  ((OSCpitchIsBad , goodOSCpitch, internal):select2) : pitchQuantise(enablePitchQuantise)
 with	{
-        internal = (audio:dcblockerat(OSCminPitch) : (lowpass(1) : Pitch(8.0): min(OSCmaxPitch) )  ~ max(OSCminPitch*2)) : max(OSCminPitch);
-        OSCpitchIsBad  = (isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity));
+        internal = (audio:dcblockerat(OSCminPitch) : (lowpass(1) : Pitch(8.0): min(OSCmaxPitch) )  ~ max(OSCminPitch*2)) : max(OSCminPitch):smooth(PTsmooth);
+        OSCpitchIsBad  =
+          ((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)));
         isSameTooLong(x,time) = (x@time)==x;
+        hasVolume =
+          (audio:highpass(3,OSCminPitch):lowpass(3,OSCmaxPitch):abs)> db2linear(threshold);
+        // only take a new pitch when we have some volume and a new pitch has come in.
+        // the min and max are needed, otherwise smoother gets upset.
+        goodOSCpitch = OSCpitch:sampleAndHold( hasVolume & (_!=OSCpitch~_) ): min(OSCmaxPitch): max(OSCminPitch):smoother;
         same(x,time) =(x@time)==x;
-        sames(x,time) = (prod(i,int(time),same(x,i+1)));
-        intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
         };
 
 smoother = hz2pianokey<:select2(enablegainedSmootherPitch,smooth(PTsmooth),gainedSmoother(0.00217*(fidelity:pow(42)),110)): pianokey2hz;

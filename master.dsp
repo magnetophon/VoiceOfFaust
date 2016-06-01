@@ -19,5 +19,6 @@ process(audio) =
   fidelity
 with {
   // we want to tell the external pitchtracker the min and max
-  freq =  (masterPitch(audio,index):attach(OSCminPitch):attach(OSCmaxPitch));
+  // so don't optimize it out
+  freq = (masterPitch(audio,index):attach(OSCminPitch):attach(OSCmaxPitch));
 };
