@@ -27,13 +27,9 @@ with {
   s2 = rdtable(ts1,t,i+1);
 };
 
-MyMeter                 = _<:(_, (envelop :(OSCgroup(MeterGroup(hbargraph("[4]", 0, ts1))))):attach);
-i=hslider("i",0,0,ts,1);
+// MyMeter                 = _<:(_, (envelop :(OSCgroup(MeterGroup(hbargraph("[4]", 0, ts1))))):attach);
+// i=hslider("i",0,0,ts,1);
 // ------ formant generator using uniform (phase-synchronous) oscillators -----//
-// fupho(f0,a,b,c) = ef
-// fupho(f0,a,b,c) = rdtable(ts1,sc,int(phase(80)))
-// fupho(f0,a,b,c) = (tbl(sc,(dec(ef))))
-// fupho(f0,a,b,c) = (tbl(sc,(dec(ef*ph+m))))
 fupho(f0,a,b,c) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
 with {					// from f0, amp, bandwidth, center freq
   cf 	= c/f0;
@@ -64,7 +60,7 @@ with {					// from f0, amp, bandwidth, center freq
   comp	= 1-frac;
   oa 	= if(isEven,frac,comp);		// odd harmonic amplitude
   ea 	= if(isEven,comp,frac);		// even harmonic amplitude
-  ph 	= pha(f0);			// phasor signal at fundamental
+  // ph 	= pha(f0);			// phasor signal at fundamental
   m 	= tbl(sm,phasor):*(b);		// modulator sine signal
   even 	= ea:*(tbl(sc,(dec(ef*phasor+m)))); // even harmonic signal with phase modulation
   odd 	= oa:*(tbl(sc,(dec(of*phasor+m))));	// odd harmonic signal
