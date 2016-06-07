@@ -29,6 +29,9 @@ For optimal performance it is recommended to run the included puredata pitch tra
 The built in pitch-tracker is a bit crude, because faust cannot do FFT (yet).
 Consider it the backup/try-out pitch tracker.
 
+You need the faust from git, because the release versions have a bug in lf_sawpos.
+Otherwise, at least use my_lf_sawpos in lib/master.lib.
+
 The install.sh ‘ script is how I get it to compile for multi-core, but if your processor is powerful enough to run this beast on one core, you can compile it trough a simple:
 
 faust2jack -osc VocSynth.dsp
