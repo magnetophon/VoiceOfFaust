@@ -20,7 +20,7 @@ stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd 
 enableFeedback            = 1; // feedback around the filters of the classicVocoder
 enableAutosat             = 0; // put a saturator at the output
 enableFilterAutosat       = 1; // put a saturator in the filter of the classicVocoder
-doubleOscs                = 1; // whether fofvocoder has nrBands or nrBands*nrOutChan oscilators
+doubleOscs                = 1; // whether fofvocoder has nrBands or nrBands * nrOutChan oscilators
 enablePitchTracker        = 1; // internal pitch tracker
 enablePitchQuantise       = 0; // a simple 'autotune': only chromatic
 enablegainedSmootherPitch = 1; // choose between normal smoothing of th pitch (0), and a Kalman filter that looks at the fidelity

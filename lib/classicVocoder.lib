@@ -102,7 +102,7 @@ StereoVocoder(audio,freq)=
            ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):par(i,nrBands,dezip)))
            :StereoVolFilterBank(nrBands,enableFeedback)
            :gainCompare(audio,freq,enableGainCompare)
-           :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
+           :vocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
            // :endGainCompare(audio,freq)
            :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth);
 

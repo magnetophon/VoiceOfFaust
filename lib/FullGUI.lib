@@ -139,7 +139,7 @@ generalVocoderParamsGroup(x)       = ((hgroup("[1]parameters", x)));
     phaseMid    = midGroup(           vslider("[3]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
     phaseBand   = bandGroup(          vslider("[3]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
     phaseTop    = topGroup(           vslider("[3]phaseTop[style:knob][tooltip: phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-  width       = generalVocoderParamsGroup( vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
+  // width       = generalVocoderParamsGroup( vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
 //-----------------------------------------------
 // FM vocoder
@@ -147,10 +147,10 @@ generalVocoderParamsGroup(x)       = ((hgroup("[1]parameters", x)));
 
 FMvocoderGroup(x)      = synthsGroup((hgroup("[3]FMvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
 // FMvocoderGroupLevel(x) = ((vgroup("[0]levels", x)));
-FMvolume               = (dryVolume);
-FMnLKS                 = (nLKS);
-FMpmFX                 = (pmFX);
-FMoctave               = (octave);        // set the octave of FM
+// FMvolume               = (dryVolume);
+// FMnLKS                 = (nLKS);
+// FMpmFX                 = (pmFX);
+// FMoctave               = (octave);        // set the octave of FM
 
 
 // FMvocoderParamsGroup(x)       = ((hgroup("[1]parameters", x)));
@@ -410,7 +410,7 @@ outputRouting   = routingGroup(hslider(
            4,0,maxNrOutRoutings,0.5));
 angleTop        = routingGroup(hslider("[3]angle top [tooltip: the angle of the highs]", 2, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
 angleBottom     = routingGroup(hslider("[4]angle bottom [tooltip: the angle of the lows]", 2, 0, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
-           width           = routingGroup(hslider("[5]width[tooltip: stereo width]", 0.5, 0, 1, 0.001) : smooth(tau2pole(0.02)));
+width           = routingGroup(hslider("[5]width[tooltip: stereo width]", 0.5, 0, 2-ambisonicsOn, 0.001) : smooth(tau2pole(0.02)));
 rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo field]", 0, -6.28318530717959, 6.28318530717959, 0.001) : smooth(tau2pole(0.02)));
 //-----------------------------------------------
 // Karplus Strong as an effect

@@ -24,36 +24,36 @@ czOscs=
     par(i, nrBands, CZrestrap);
 
 //normal mixer without outputRouting
-// CZvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
-CZvocoderMixer(0,0) = par(i,nrOutChan, bus(nrBands):>_);
+// // CZvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
+// CZvocoderMixer(0,0) = par(i,nrOutChan, bus(nrBands):>_);
 
-//normal mixer with outputRouting
-CZvocoderMixer(0,1) =bus(nrBands*nrOutChan)<:(
-                (par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,0):dezip) *_)))
-               ,(bus(nrBands*nrOutChan):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
-               ,(par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
-               ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(bus(nrBands):>_*((xfadeSelector(outputRouting,3):dezip)))))
-               ,(bus(nrBands*nrOutChan):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,4):dezip)) *_):cross(nrOutChan))
-               ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly(nrBands):>_*((xfadeSelector(outputRouting,5):dezip)))))
-               ,(butterfly(nrBands*nrOutChan):>(par(i,nrOutChan,((xfadeSelector(outputRouting,6):dezip) *_))))
-               /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
-             ):>bus(nrOutChan);
+// //normal mixer with outputRouting
+// CZvocoderMixer(0,1) =bus(nrBands*nrOutChan)<:(
+//                 (par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,0):dezip) *_)))
+//                ,(bus(nrBands*nrOutChan):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
+//                ,(par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
+//                ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(bus(nrBands):>_*((xfadeSelector(outputRouting,3):dezip)))))
+//                ,(bus(nrBands*nrOutChan):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,4):dezip)) *_):cross(nrOutChan))
+//                ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly(nrBands):>_*((xfadeSelector(outputRouting,5):dezip)))))
+//                ,(butterfly(nrBands*nrOutChan):>(par(i,nrOutChan,((xfadeSelector(outputRouting,6):dezip) *_))))
+//                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
+//              ):>bus(nrOutChan);
 
-// Ambisonics mixer.
+// // Ambisonics mixer.
 
-CZvocoderMixer(1, outputRoutingEnabled)  = routing(outputRoutingEnabled):((angles,bus(nrBands*nrOutChan)): interleave(nrBands*nrOutChan,2)) : par(i,nrBands*nrOutChan,myMap):>bus((ambisonicsOrder*2)+1)
-with {
-  myMap(a) = _<:encoder(ambisonicsOrder, _, a);
-  angles = par(i,nrBands*nrOutChan/2,   ((angleTop-angleBottom)*(i/(nrBands*nrOutChan/2)))+angleBottom)<:(bus(nrBands),par(i,nrBands,_*-1)):interleave(nrBands,2);
-  routing(0) = bus(nrBands*nrOutChan);
-  routing(1) =bus(nrBands*nrOutChan)<:(
-               (bus(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,0):dezip) *_)))
-               ,(interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,1):dezip) *_)))
-               ,(butterfly(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,2):dezip) *_)))
-               ,(butterfly(nrBands*nrOutChan):interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,3):dezip) *_)))
-               /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
-             ):>bus(nrBands*nrOutChan);
-};
+// CZvocoderMixer(1, outputRoutingEnabled)  = routing(outputRoutingEnabled):((angles,bus(nrBands*nrOutChan)): interleave(nrBands*nrOutChan,2)) : par(i,nrBands*nrOutChan,myMap):>bus((ambisonicsOrder*2)+1)
+// with {
+//   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
+//   angles = par(i,nrBands*nrOutChan/2,   ((angleTop-angleBottom)*(i/(nrBands*nrOutChan/2)))+angleBottom)<:(bus(nrBands),par(i,nrBands,_*-1)):interleave(nrBands,2);
+//   routing(0) = bus(nrBands*nrOutChan);
+//   routing(1) =bus(nrBands*nrOutChan)<:(
+//                (bus(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,0):dezip) *_)))
+//                ,(interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,1):dezip) *_)))
+//                ,(butterfly(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,2):dezip) *_)))
+//                ,(butterfly(nrBands*nrOutChan):interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,3):dezip) *_)))
+//                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
+//              ):>bus(nrBands*nrOutChan);
+// };
 
 // czNoises(polarity,freq,enableCZnoiseFilter) =
 //TODO: make true multichannel version
@@ -69,7 +69,7 @@ czVocoder(audio,freq,0)=
   :czOscs
   :gainNormalise
   :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
-  :vocoderMixer(ambisonicsOn,outputRoutingEnabled)
+  :vocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);
 
 czVocoder(audio,freq,1)=
@@ -82,5 +82,5 @@ czVocoder(audio,freq,1)=
     : gainNormalise
     :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   )
-  :CZvocoderMixer(ambisonicsOn,outputRoutingEnabled)
+  :vocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);

@@ -353,10 +353,10 @@ gainedSmoother(gain,initialMeasurement,measurement) = gainedSmootherCalc(measure
 };
 
 //normal mixer without outputRouting
-vocoderMixer(0,0) = bus(nrBands):>bus(nrOutChan);
+vocoderMixer(0,0,0) = bus(nrBands):>bus(nrOutChan);
 
 //normal mixer with outputRouting
-vocoderMixer(0,1) =bus(nrBands)<:(
+vocoderMixer(0,1,0) =bus(nrBands)<:(
                 (par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,0):dezip) *_)))
                ,(bus(nrBands):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
                ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
@@ -368,7 +368,7 @@ vocoderMixer(0,1) =bus(nrBands)<:(
              ):>bus(nrOutChan);
 
 // Ambisonics mixer.
-vocoderMixer(1, outputRoutingEnabled)  = routing(outputRoutingEnabled):((angles,bus(nrBands)): interleave(nrBands,2)) : par(i,nrBands,myMap):>bus((ambisonicsOrder*2)+1)
+vocoderMixer(1, outputRoutingEnabled,0)  = routing(outputRoutingEnabled):((angles,bus(nrBands)): interleave(nrBands,2)) : par(i,nrBands,myMap):>bus((ambisonicsOrder*2)+1)
 with {
   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
   angles = par(i,nrBands/2,   ((angleTop-angleBottom)*(i/(nrBands/2)))+angleBottom)<:(bus(nrBands/2),par(i,nrBands/2,_*-1)):interleave(nrBands/2,2);
@@ -381,6 +381,43 @@ with {
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrBands);
 };
+
+
+//normal mixer without outputRouting, doubleOscs
+// FMvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
+vocoderMixer(0,0,1) = par(i,nrOutChan, bus(nrBands):>_);
+
+//normal mixer with outputRouting, doubleOscs
+vocoderMixer(0,1,1) =bus(nrBands*nrOutChan)<:(
+                (par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,0):dezip) *_)))
+               ,(bus(nrBands*nrOutChan):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
+               ,(par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
+               ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(bus(nrBands):>_*((xfadeSelector(outputRouting,3):dezip)))))
+               ,(bus(nrBands*nrOutChan):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,4):dezip)) *_):cross(nrOutChan))
+               ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly(nrBands):>_*((xfadeSelector(outputRouting,5):dezip)))))
+               ,(butterfly(nrBands*nrOutChan):>(par(i,nrOutChan,((xfadeSelector(outputRouting,6):dezip) *_))))
+               /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
+             ):>bus(nrOutChan);
+
+// Ambisonics mixer, doubleOscs
+vocoderMixer(1, outputRoutingEnabled,1)  = routing(outputRoutingEnabled):((angles,bus(nrBands*nrOutChan)): interleave(nrBands*nrOutChan,2)) : par(i,nrBands*nrOutChan,myMap):>bus((ambisonicsOrder*2)+1)
+with {
+  myMap(a) = _<:encoder(ambisonicsOrder, _, a);
+  angles = par(i,nrBands*nrOutChan/2,   ((angleTop-angleBottom)*(i/(nrBands*nrOutChan/2)))+angleBottom)<:(bus(nrBands),par(i,nrBands,_*-1)):interleave(nrBands,2);
+  routing(0) = bus(nrBands*nrOutChan);
+  routing(1) =bus(nrBands*nrOutChan)<:(
+               (bus(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,0):dezip) *_)))
+               ,(interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,1):dezip) *_)))
+               ,(butterfly(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,2):dezip) *_)))
+               ,(butterfly(nrBands*nrOutChan):interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,3):dezip) *_)))
+               /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
+             ):>bus(nrBands*nrOutChan);
+};
+
+
+
+
+
 // crossfade between multiple inputs (just the gain)
 xfadeSelector(sel,nr) =
 (((sel<=nr)*((sel-nr)+1):max(0))
