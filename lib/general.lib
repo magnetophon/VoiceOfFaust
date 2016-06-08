@@ -39,8 +39,16 @@ octaveMultiplier	=
         (_==2) * 4
     ):>_;
 
+centers(freq) = VocoderFreqsChooser(bottom,mid,band,top,para):par(i, nrBands, _*freq):dezipBands;
+
+phases = VocoderLinArrayChooser(phaseBottom,phaseMid,phaseBand,phaseTop,para):dezipBands;
+
+funds(freq,index,polarity) = par(i, nrBands, fundPhase(freq,index,octave,phase(i)) ) with {
+  phase(i) = phases:selector(i,nrBands)*select2(polarity%2,1,-1);
+};
       // make a log array of values, from bottom to top
 LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
+
 
 VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top);
 VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top);
