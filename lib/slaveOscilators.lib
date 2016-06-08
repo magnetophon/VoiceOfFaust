@@ -227,8 +227,6 @@ with {
 // FM fromant oscilator
 //-----------------------------------------------
 
-FMfreq(audio)=
-    masterPitch(audio,index)*FMoctave;
 FMfund(freq,index,phase) = fundPhase(freq,index,FMoctave,phase);
 
 //-----------------------------------------------
