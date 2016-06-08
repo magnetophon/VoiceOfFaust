@@ -6,18 +6,19 @@
 //-----------------------------------------------
 
 //czCenters=     par(i,nrBands,   pow((pow((czTop/czBottom),1/15)),i)*czBottom);
-czFund(freq,phase) =
+// czFund(freq,phase) =
     // (fund(freq,czOctave)+phase)-
     // ((fund(freq,czOctave)+phase):floor);
-    (fund(freq,czOctave)+phase):decimal;
+    // (fund(freq,czOctave)+phase):decimal;
 
-czFunds(freq,i) =
-  (czNoises(i,freq,enableFOFnoiseFilter)):par(j, nrBands, czFund(freq));
+czFunds(freq,index,i) =
+  (funds(freq,index,i,czVocoderGroup));
+  // (czNoises(i,freq,enablePhaseNoiseFilter)):par(j, nrBands, czFund(freq));
 
-czCenters = VocoderFreqsChooser(czBottom,czMid,czBand,czTop,para):dezipBands;
-czPhases = VocoderLinArrayChooser(czPhaseBottom,czPhaseMid,czPhaseBand,czPhaseTop,para):dezipBands;
-czPhaseRands = VocoderLinArrayChooser(czPhaseRandBottom,czPhaseRandMid,czPhaseRandBand,czPhaseRandTop,para):dezipBands;
-czNoiseFilterFreqs = VocoderFreqsChooser(czNoiseFilterBottom,czNoiseFilterMid,czNoiseFilterBand,czNoiseFilterTop,para):dezipBands;
+czCenters = centers(1,czVocoderGroup);
+// czPhases = VocoderLinArrayChooser(czPhaseBottom,czPhaseMid,czPhaseBand,czPhaseTop,para):dezipBands;
+// czPhaseRands = VocoderLinArrayChooser(czPhaseRandBottom,czPhaseRandMid,czPhaseRandBand,czPhaseRandTop,para):dezipBands;
+// czNoiseFilterFreqs = VocoderFreqsChooser(czNoiseFilterBottom,czNoiseFilterMid,czNoiseFilterBand,czNoiseFilterTop,para):dezipBands;
 
 czOscs=
     interleave(nrBands,2):
@@ -57,30 +58,30 @@ czOscs=
 
 // czNoises(polarity,freq,enableCZnoiseFilter) =
 //TODO: make true multichannel version
-czNoises(i,freq,0) = (czPhases,(czPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(czPhaseSpeed))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
-czNoises(i,freq,1) =(czPhases,((czPhaseRands:par(j,nrBands,(_*(noise):lowpass(1,(czNoiseFilterFreqs:selector(j,nrBands)*(freq*czOctave*0.000001))))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
+// czNoises(i,freq,0) = (czPhases,(czPhaseRands:par(j,nrBands,(_*(noise):smooth(tau2pole(PhaseSpeed))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
+// czNoises(i,freq,1) =(czPhases,((czPhaseRands:par(j,nrBands,(_*(noise):lowpass(1,(czNoiseFilterFreqs:selector(j,nrBands)*(freq*czOctave*0.000001))))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
 
 // czVocoder(audio,freq,doubleOscs)
-czVocoder(audio,freq,0)=
+czVocoder(audio,freq,index,fidelity,0)=
   //the noises part is to make a different (low)freq modulation for each osc.
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
-  (czFunds(freq,0),czCenters)
+  (czFunds(freq,index,0),czCenters)
   :czOscs
   :gainNormalise
   :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
-  :vocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
-  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);
+  :vocoderMixer(ambisonicsOn,outputRoutingEnabled,0)
+  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width);
 
-czVocoder(audio,freq,1)=
+czVocoder(audio,freq,index,fidelity,1)=
   //the noises part is to make a different (low)freq modulation for each osc.
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
   par(i,nrOutChan,
-    (czFunds(freq,i),czCenters)
+    (czFunds(freq,index,i),czCenters)
     : czOscs
     : gainNormalise
     :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   )
-  :vocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
-  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);
+  :vocoderMixer(ambisonicsOn,outputRoutingEnabled,1)
+  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width);

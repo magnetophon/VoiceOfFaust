@@ -210,22 +210,22 @@ fofPhaseBottom       = fofBottomGroup(( vslider("[4]phase bottom[style:knob][too
 fofPhaseMid          = fofMidGroup((    vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
 fofPhaseBand         = fofBandGroup(    vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
 fofPhaseTop          = fofTopGroup((    vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
-fofPhaseRandBottom   = fofBottomGroup(( vslider("[5]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*fofPhaseRandScale);
-fofPhaseRandMid      = fofMidGroup((    vslider("[5]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*fofPhaseRandScale);
-fofPhaseRandBand     = fofBandGroup(    vslider("[5]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-fofPhaseRandTop      = fofTopGroup((    vslider("[5]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.5, 0, 1, 0.001)):pow(2)*fofPhaseRandScale);
-fofNoiseFilterBottom = fofBottomGroup(  vslider("[6]noise frequency[style:knob][tooltip: the lowest frequency of the fof noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-fofNoiseFilterMid    = fofMidGroup(     vslider("[6]noise frequency             [style:knob] [tooltip: the mid frequency of the fof noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
-fofNoiseFilterBand   = fofBandGroup(    vslider("[6]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-fofNoiseFilterTop    = fofTopGroup(     vslider("[6]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
-fofPhaseRandScale    = select2(enableFOFnoiseFilter,80000,800); // scaling factor for the amount of noise modulation, depending on wether we use a smooth, or a filter. tweaked for  noisesFilterN=4
+phaseNoiseAmountBottom   = fofBottomGroup(( vslider("[5]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+phaseNoiseAmountMid      = fofMidGroup((    vslider("[5]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+phaseNoiseAmountBand     = fofBandGroup(    vslider("[5]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+phaseNoiseAmountTop      = fofTopGroup((    vslider("[5]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+phaseNoiseFreqBottom = fofBottomGroup(  vslider("[6]noise frequency[style:knob][tooltip: the lowest frequency of the fof noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+phaseNoiseFreqMid    = fofMidGroup(     vslider("[6]noise frequency             [style:knob] [tooltip: the mid frequency of the fof noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
+phaseNoiseFreqBand   = fofBandGroup(    vslider("[6]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+phaseNoiseFreqTop    = fofTopGroup(     vslider("[6]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
+phaseNoiseAmountScale    = select2(enablePhaseNoiseFilter,80000,800); // scaling factor for the amount of noise modulation, depending on wether we use a smooth, or a filter. tweaked for  noisesFilterN=4
 
 fofOctavationBottom = fofBottomGroup(  vslider("[7]octavation[style:knob][tooltip: ",	0,0,maxOctavation,0.001));			//0.25 to 49 logarithmicly
 fofOctavationMid    = fofMidGroup(     vslider("[7]octavation             [style:knob] [tooltip: ",	0,0,maxOctavation,0.001));
 fofOctavationBand   = fofBandGroup(    vslider("[7]octavation-band        [style:knob] [tooltip: ",	nrBands/2, 1, nrBands, 0.001));
 fofOctavationTop    = fofTopGroup(     vslider("[7]octavation[style:knob][tooltip: ",	0,0,maxOctavation,0.001));		//1 to 100 logarithmicly,
  octaviation = hslider("octaviation",0,0,maxOctavation,0.001):dezip;
-fofPhaseSpeed      = 64;//                 = fofparamsGroup((vslider("[7]phase speed[style:knob][tooltip: phase randomization speed]", 32, 3, 300, 1)):smooth(0.999));
+PhaseSpeed      = 64;//                 = fofparamsGroup((vslider("[7]phase speed[style:knob][tooltip: phase randomization speed]", 32, 3, 300, 1)):smooth(0.999));
 
 //fofWidth         = fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0.001):smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
 //width            = vslider("width", 3, 3, 100, 0.001)*0.001:smooth(0.999);

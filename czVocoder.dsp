@@ -24,6 +24,6 @@ import ("lib/CZvocoder.lib");
 //-----------------------------------------------
 
 
-process(audio) = czVocoder(audio,masterPitch(audio,index),doubleOscs);
+process(audio) = czVocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);
 
 // process(audio)= CZrestrap(masterIndex(100),(czBottom*100))<:bus2;
