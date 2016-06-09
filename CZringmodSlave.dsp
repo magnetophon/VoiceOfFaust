@@ -12,7 +12,7 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
 import ("lib/common.lib");
-import("lib/master.lib");
+import("lib/slave.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/CZringmod.lib");
@@ -21,5 +21,5 @@ import ("lib/CZringmod.lib");
 // process
 //-----------------------------------------------
 
-process(audio) =
+process(audio,index,fidelity) =
 CZringMod(audio,masterPitch(audio,index),index);
