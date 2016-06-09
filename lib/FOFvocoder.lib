@@ -24,52 +24,6 @@ fofNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter) = phaseNoises(i,freq,e
 fofOscs=
     interleave(nrBands,7):
     par(i, nrBands, (fof));
-//fof(fReso,fund,skirt,decay,phase,vol) =
-
-//normal mixer
-// FOFvocoderMixer(0) =bus(nrBands*nrOutChan)<:(
-//                (bus(nrBands*nrOutChan):>(par(i,nrOutChan,(outputRouting==0:dezip) *_)))
-//                ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(bus((nrBands)):>_*(outputRouting==1:dezip))))
-//                ,(par(i,nrOutChan, bus(nrBands):>(outputRouting==2:dezip) *_))
-//                ,(butterfly(nrBands*nrOutChan):>(par(i,nrOutChan,(outputRouting==3:dezip) *_)))
-//                ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly((nrBands)):>_*(outputRouting==4:dezip))))
-//                ,(bus(nrBands*nrOutChan):>butterfly(nrOutChan):par(i,nrOutChan,(outputRouting==5:dezip) *_))
-//                ,(par(i,nrOutChan, bus(nrBands):>(outputRouting==6:dezip) *_):butterfly(nrOutChan))
-//                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
-//              ):>bus(nrOutChan);
-
-//normal mixer without outputRouting
-// FOFvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
-// FOFvocoderMixer(0,0) = par(i,nrOutChan, bus(nrBands):>_);
-
-// //normal mixer with outputRouting
-// FOFvocoderMixer(0,1) =bus(nrBands*nrOutChan)<:(
-//                 (par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,0):dezip) *_)))
-//                ,(bus(nrBands*nrOutChan):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
-//                ,(par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
-//                ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(bus(nrBands):>_*((xfadeSelector(outputRouting,3):dezip)))))
-//                ,(bus(nrBands*nrOutChan):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,4):dezip)) *_):cross(nrOutChan))
-//                ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly(nrBands):>_*((xfadeSelector(outputRouting,5):dezip)))))
-//                ,(butterfly(nrBands*nrOutChan):>(par(i,nrOutChan,((xfadeSelector(outputRouting,6):dezip) *_))))
-//                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
-//              ):>bus(nrOutChan);
-
-// // Ambisonics mixer.
-
-// FOFvocoderMixer(1, outputRoutingEnabled)  = routing(outputRoutingEnabled):((angles,bus(nrBands*nrOutChan)): interleave(nrBands*nrOutChan,2)) : par(i,nrBands*nrOutChan,myMap):>bus((ambisonicsOrder*2)+1)
-// with {
-//   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
-//   angles = par(i,nrBands*nrOutChan/2,   ((angleTop-angleBottom)*(i/(nrBands*nrOutChan/2)))+angleBottom)<:(bus(nrBands),par(i,nrBands,_*-1)):interleave(nrBands,2);
-//   routing(0) = bus(nrBands*nrOutChan);
-//   routing(1) =bus(nrBands*nrOutChan)<:(
-//                (bus(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,0):dezip) *_)))
-//                ,(interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,1):dezip) *_)))
-//                ,(butterfly(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,2):dezip) *_)))
-//                ,(butterfly(nrBands*nrOutChan):interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,3):dezip) *_)))
-//                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
-//              ):>bus(nrBands*nrOutChan);
-// };
-
 
 // fofvocoder(audio,freq,doubleOscs)
 fofvocoder(audio,freq,index,fidelity,0)=
