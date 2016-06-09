@@ -199,12 +199,8 @@ CZrestrap(fund, res) =
 // PAF oscilator
 //-----------------------------------------------
 
-pafFreq(audio)=
-    masterPitch(audio,index)*pafOctave;
-pafFund(freq) = fund(freq,index,pafOctave);
+
 sampleAndHold(sample) = select2((sample!=0):int) ~ _;
-
-
 
 paf(c,f,i,v)=
 (((cos12(c,f))*bell(f,i)) * dezip(v)) * volumeCompensate

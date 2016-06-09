@@ -25,17 +25,4 @@ import ("lib/CZvocoder.lib");
 
 
 process(audio,index,fidelity) =
-
-    (czFunds(freq,0),czCenters)
-  // par(i,nrOutChan,
-  //   (czFunds(freq,i),czCenters)
-  //   : czOscs
-  //   : gainNormalise
-  //   :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
-  // )
-  // :CZvocoderMixer(ambisonicsOn,outputRoutingEnabled)
-  // :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1);
-  with { freq = masterPitch(audio,index); }
-  ;
-  // czVocoder(audio, masterPitch(audio,index),index,fidelity,doubleOscs);
-// process(audio)= CZrestrap(masterIndex(100),(czBottom*100))<:bus2;
+  czVocoder(audio, masterPitch(audio,index),index,fidelity,doubleOscs);
