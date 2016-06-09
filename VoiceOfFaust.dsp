@@ -39,7 +39,7 @@ VoiceOfFaust(audio) =
     subSine(audio,masterPitch(audio,index)),
 
     vocoderVolume,vocoderNLKS,vocoderpmFX,
-    StereoVocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
+    StereoVocoder(audio,masterPitch(audio,index),index,fidelity),
 
     pafVolume,pafNLKS,pafpmFX,
     PAFvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),

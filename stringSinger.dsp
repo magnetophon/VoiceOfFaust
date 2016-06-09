@@ -38,7 +38,7 @@ VoiceOfFaust(audio) =
   (voice(audio,index)<:bus(nrOutChan))
   ,
   vocoderVolume,vocoderChorus,vocoderpmFX,
-  StereoVocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs)
+  StereoVocoder(audio,masterPitch(audio,index),index,fidelity)
 
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
