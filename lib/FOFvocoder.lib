@@ -4,8 +4,8 @@
 //-----------------------------------------------
 
 //fofCenters=     par(i,nrBands,   pow((pow((fofTop/fofBottom),1/15)),i)*fofBottom);
-fofFund(freq) =
-    fund(freq,fofOctave);
+// fofFund(freq) =
+//     fund(freq,fofOctave);
 
 fofCenters(freq) = centers(freq,fofVocoderGroup);
 // fofCenters(freq) = centers(1,fofVocoderGroup):par(i, nrBands, pow(2)*freq); // original values

@@ -128,21 +128,23 @@ sigLen(BW) = int(SR * log(0.001) / (-BW * PI)) + 1; // foflet T60 in samples
 // k = (+(1)~_) - 1;
 multi = 2:pow(maxOctavation);
 multiK(multi)= lf_rawsaw(f0Period*multi);
-k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves
+// k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves
+// k = (lf_sawpos(f0*multi))*f0Period; //choose octaves
 // k= lf_rawsaw(f0Period);
 expy(fund,BW) = exp(-BW * PI * T)^(fund/multi); // exponential env (BW = BW)
 // bug in original: we don't want * SR.
 envAttack(fund,beta) = 0.5 * (1.0 - cos(beta * (fund) )); // attack discontinuity smoother (beta=beta)
 // envAttack(beta) = 0.5 * (1.0 - cos(beta * k * SR)); // attack discontinuity smoother (y=beta)
+// most interesting sounds with sine at phase 0 and envelope phased
 sinus(fund,fc,phase) = sin((2.0 * PI * fc * (fund) * T)+(phase*0*PI)); // sinusoid (z=fc)
 
 // functions to calculate fof attack and decay sections
-fofStop(BW) = k < sigLen(BW); // gate
+// fofStop(BW) = k < sigLen(BW); // gate
 fofAttack(fund,phase,BW,beta,fc) = expy(fund,BW) * envAttack(fund,beta) * sinus(fund,fc,phase); // first part of fof calculation
 fofRemainder(fund,phase,BW,fc) =   expy(fund,BW) * sinus(fund,fc,phase); // 2nd part of fof calculation
 // function to generate single fof
-// fof(k1,phase,BW,beta,fc) = (fofAttack(phase,BW,beta,fc)); // k1 = k1
-// fof(k1,phase,BW,beta,fc) = (k < int(PI/beta)) *fofAttack(phase,BW,beta,fc); // v = k1
+// most interesting sounds with sine at phase 0 and envelope phased:
+// fofPart(fund,k1,phase,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,phase,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,phase,BW,fc)) with {
 fofPart(fund,k1,phase,BW,fc) = (((phasedFund) < int(k1)) * fofAttack(phasedFund,phase,BW,beta,fc)) + (((phasedFund) >= int(k1)) * fofRemainder(phasedFund,phase,BW,fc)) with {
   beta = PI / (float(k1));
   phasedFund = (((fund/(multi*f0Period))+(phase)):decimal)*f0Period*multi;
@@ -165,7 +167,7 @@ with {
 // fof(k1,phase,BW,beta,fc) = ((k >= int(k1)) * fofRemainder(phase,BW,fc)); // v = k1
 // function to play single fof
 // playFof(k1,phase,BW,beta,fc) = fof(k1,phase,BW,beta,fc) ;
-playFof(k1,phase,BW,beta,fc) = (+(fof(k1,phase,BW,beta,fc) * fofStop(BW))~fdelay2(2048,f0Period-1.0));
+// playFof(k1,phase,BW,beta,fc) = (+(fof(k1,phase,BW,beta,fc) * fofStop(BW))~fdelay2(2048,f0Period-1.0));
 // function to play 5 fofs in parallel (5 fofs = 1 vowel
 allFofs(j) = par(i,5,playFof(k1(i),phase((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-1)*5+i))) :>_;
 
