@@ -39,3 +39,9 @@ Karplus-StrongSingerMaxi
 /tst
 /lib/cruft/FMvox
 /master
+/FMvocoderSlave
+/FOFvocoderSlave
+/PAFvocoderSlave
+/test.dsp
+/test.lv2
+/FMvocoderSlave.lv2
