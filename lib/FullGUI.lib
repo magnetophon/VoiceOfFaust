@@ -108,12 +108,14 @@ pafpmFX                 = PAFvocoderGroupLevel(vslider("[2]PM[tooltip: phase mod
 pafOctave               = PAFvocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of paf
 
 
-PAFparamsGroup(x)       = PAFvocoderGroup((vgroup("[1]parameters", x)));
-pafTop                  = PAFparamsGroup(vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-pafBottom               = PAFparamsGroup(vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-pafIndexTop             = PAFparamsGroup(vslider("[3]indexTop[style:knob][tooltip: PAF index of the highest oscillator]",	100, 0.001, 100, 0.001));
-pafIndexBottom          = PAFparamsGroup(vslider("[4]indexBottom[style:knob][tooltip: PAF index of the lowest oscillator]",	0.001, 0.001, 100, 0.001));
-pafWidth                = PAFparamsGroup(vslider("[5]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
+PAFparamsGroup(x) = PAFvocoderGroup((vgroup("[1]parameters", x)));
+// pafTop         = PAFparamsGroup( vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+// pafBottom      = PAFparamsGroup( vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+pafIndexTop       = topGroup(       vslider("[5]indexTop[style:knob][tooltip: PAF index of the highest oscillator]",	100, 0.001, 100, 0.001));
+pafIndexMid       = midGroup(       vslider("[5]indexMid[style:knob][tooltip PAF index of the mid oscillators]", 50, 0.001, 100, 0.001));
+pafIndexBand       = bandGroup(     vslider("[5]indexBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+pafIndexBottom    = bottomGroup(    vslider("[5]indexBottom[style:knob][tooltip: PAF index of the lowest oscillator]",	0.001, 0.001, 100, 0.001));
+// pafWidth       = PAFparamsGroup( vslider("[5]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
 //-----------------------------------------------
 // general vocoder parameters
@@ -135,18 +137,18 @@ generalVocoderParamsGroup(x)       = ((hgroup("[1]parameters", x)));
     mid         = midGroup(           vslider("[1]mid[style:knob] [tooltip: the mid formant frequency of the of the oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
     band        = bandGroup(          vslider("[1]band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
     top         = topGroup(           vslider("[1]top[style:knob][tooltip: the highest formant frequency of the oscillators]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-    phaseBottom = bottomGroup(        vslider("[3]phaseBottom[style:knob][tooltip: phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-    phaseMid    = midGroup(           vslider("[3]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
-    phaseBand   = bandGroup(          vslider("[3]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    phaseTop    = topGroup(           vslider("[3]phaseTop[style:knob][tooltip: phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-    phaseNoiseAmountBottom   = bottomGroup(( vslider("[5]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
-    phaseNoiseAmountMid      = midGroup((    vslider("[5]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
-    phaseNoiseAmountBand     = bandGroup(    vslider("[5]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    phaseNoiseAmountTop      = topGroup((    vslider("[5]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
-    phaseNoiseFreqBottom = bottomGroup(  vslider("[6]noise frequency[style:knob][tooltip: the lowest frequency of the fof noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-    phaseNoiseFreqMid    = midGroup(     vslider("[6]noise frequency             [style:knob] [tooltip: the mid frequency of the fof noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
-    phaseNoiseFreqBand   = bandGroup(    vslider("[6]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    phaseNoiseFreqTop    = topGroup(     vslider("[6]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
+    phaseBottom = bottomGroup(        vslider("[2]phaseBottom[style:knob][tooltip: phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+    phaseMid    = midGroup(           vslider("[2]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
+    phaseBand   = bandGroup(          vslider("[2]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+    phaseTop    = topGroup(           vslider("[2]phaseTop[style:knob][tooltip: phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+    phaseNoiseAmountBottom   = bottomGroup(( vslider("[3]phase noise amount bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+    phaseNoiseAmountMid      = midGroup((    vslider("[3]phase noise amount mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+    phaseNoiseAmountBand     = bandGroup(    vslider("[3]phase noise amount band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+    phaseNoiseAmountTop      = topGroup((    vslider("[3]phase noise amount top[style:knob][tooltip: phase randomization of the high oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+    phaseNoiseFreqBottom = bottomGroup(  vslider("[4]noise frequency[style:knob][tooltip: the lowest frequency of the fof noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+    phaseNoiseFreqMid    = midGroup(     vslider("[4]noise frequency             [style:knob] [tooltip: the mid frequency of the fof noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
+    phaseNoiseFreqBand   = bandGroup(    vslider("[4]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+    phaseNoiseFreqTop    = topGroup(     vslider("[4]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
     phaseNoiseAmountScale    = select2(enablePhaseNoiseFilter,80000,800); // scaling factor for the amount of noise modulation, depending on wether we use a smooth, or a filter. tweaked for  noisesFilterN=4
   // width       = generalVocoderParamsGroup( vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 

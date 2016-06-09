@@ -14,7 +14,7 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
 import ("lib/common.lib");
-import("lib/master.lib");
+import("lib/slave.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/PAFvocoder.lib");
@@ -22,4 +22,4 @@ import ("lib/PAFvocoder.lib");
 //-----------------------------------------------
 // process
 //-----------------------------------------------
-process(audio) = PAFvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);
+process(audio,index,fidelity) = PAFvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);
