@@ -39,19 +39,19 @@ VoiceOfFaust(audio) =
     subSine(audio,masterPitch(audio,index)),
 
     vocoderVolume,vocoderNLKS,vocoderpmFX,
-    StereoVocoder(audio,masterPitch(audio,index)),
+    StereoVocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
 
     pafVolume,pafNLKS,pafpmFX,
-    PAFvocoder(audio,masterPitch(audio,index)),
+    PAFvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
 
     fofVolume,fofNLKS,fofpmFX,
-    fofvocoder(audio,masterPitch(audio,index)),
+    fofvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
 
     FMvolume,fmNLKS,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),masterPitch(audio,index),subLevel(audio)),
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),masterPitch(audio,index),index,fidelity,doubleOscs,subLevel(audio)),
 
     CZvolume,CZNLKS,CZpmFX,
-    CZringMod(audio,masterPitch(audio,index))
+    CZringMod(audio,masterPitch(audio,index),index,fidelity,doubleOscs)
 
     : mixerWithSends(nrChan,nrOutChan,nrSends)
 

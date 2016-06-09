@@ -28,7 +28,7 @@ oct=2;
 process(audio) =
 (
   FMvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
-  reEsser(voice(audio,index),masterPitch(audio,index),enableReEsser)
+  reEsser(voice(audio,index),masterPitch(audio,index),index,fidelity,doubleOscs,enableReEsser)
 ):>bus(nrOutChan);
 // process = chooseResonBP;
 /*process(audio) =*/

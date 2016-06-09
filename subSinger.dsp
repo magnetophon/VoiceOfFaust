@@ -27,7 +27,7 @@ VoiceOfFaust(audio) =
     subSine(audio,masterPitch(audio,index))
     ,
     FMvolume,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),masterPitch(audio,index),subLevel(audio))
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),masterPitch(audio,index),index,fidelity,doubleOscs,subLevel(audio))
   )
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
@@ -60,4 +60,4 @@ VoiceOfFaust(audio) =
 //-----------------------------------------------
 
 process(audio) = VoiceOfFaust(audio);
-//process(audio) = StereoVocoder(audio,masterPitch(audio,index));
+//process(audio) = StereoVocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);
