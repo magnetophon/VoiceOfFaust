@@ -7,13 +7,17 @@
 fofFund(freq) =
     fund(freq,fofOctave);
 
-fofCenters = VocoderFreqsChooser(fofBottom,fofMid,fofBand,fofTop,para):dezipBands;
+fofCenters(freq) = centers(freq,fofVocoderGroup);
+// fofCenters(freq) = centers(1,fofVocoderGroup):par(i, nrBands, pow(2)*freq); // original values
 /*fofSkirts  = VocoderFreqs(fofSkirtBottom,fofSkirtTop);*/
 /*fofDecays  = VocoderFreqs(fofDecayBottom,fofDecayTop);*/
 fofSkirts  = VocoderFreqsChooser(fofSkirtBottom,fofSkirtMid,fofSkirtBand,fofSkirtTop,para):dezipBands;
 fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para):dezipBands;
-fofPhases = VocoderLinArrayChooser(fofPhaseBottom,fofPhaseMid,fofPhaseBand,fofPhaseTop,para):dezipBands;
+// fofPhases = VocoderLinArrayChooser(fofPhaseBottom,fofPhaseMid,fofPhaseBand,fofPhaseTop,para):dezipBands;
 fofOctavations = VocoderLinArrayChooser(fofOctavationBottom,fofOctavationMid,fofOctavationBand,fofOctavationTop,para):dezipBands;
+
+fofNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter) = phaseNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter,fofVocoderGroup);
+
 
 fofOscs=
     interleave(nrBands,6):
@@ -70,7 +74,7 @@ fofvocoder(audio,freq,0)=
   //the noises part is to make a different (low)freq modulation for each osc.
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
-  (fofNoises(0,freq,enableFOFnoise,enablePhaseNoiseFilter),fofCenters,(multiK(multi)<:bus(nrBands)),fofSkirts,fofDecays,fofOctavations)
+  (fofNoises(0,freq,enablePhasenoise,enablePhaseNoiseFilter),fofCenters(freq),(multiK(multi)<:bus(nrBands)),fofSkirts,fofDecays,fofOctavations)
   :fofOscs
   :gainNormalise
   :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
@@ -82,7 +86,7 @@ fofvocoder(audio,freq,1)=
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
   par(i,nrOutChan
-    ,(fofNoises(i,freq,enableFOFnoise,enablePhaseNoiseFilter),fofCenters,(multiK(multi)<:bus(nrBands)),fofSkirts,fofDecays,fofOctavations)
+    ,(fofNoises(i+1,freq,enablePhasenoise,enablePhaseNoiseFilter),fofCenters(freq),(multiK(multi)<:bus(nrBands)),fofSkirts,fofDecays,fofOctavations)
     :fofOscs
     : gainNormalise
     :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))

@@ -10,7 +10,7 @@ ambisonicsOn              = 0; // do we want an ambisonic synth.
 ambisonicsOrder           = 3; // order of the ambisonics
 outputRoutingEnabled      = 1; // have flexible routing between the bands and the outputs
 inputRoutingEnabled       = 1; // have flexible routing between the osclilators and the filters.
-para                      = 1; // whether we want a parametric mid
+para                      = 0; // whether we want a parametric mid
 enableGainCompare         = 1; // correct the loudness of the individual bands after they've been created
 enableGainScale           = 1; // expand or compress the spectrum: make it more or less resonant
 autoQ                     = 1; // enable correction of the filter-Q depending on the distance between the bands
@@ -24,7 +24,7 @@ doubleOscs                = 1; // whether fofvocoder has nrBands or nrBands * nr
 enablePitchTracker        = 1; // internal pitch tracker
 enablePitchQuantise       = 0; // a simple 'autotune': only chromatic
 enablegainedSmootherPitch = 1; // choose between normal smoothing of th pitch (0), and a Kalman filter that looks at the fidelity
-enableFOFnoise            = 1; // 0 = no noise   and 1 = noise modulates phase
+enablePhasenoise            = 1; // 0 = no noise   and 1 = noise modulates phase
 enablePhaseNoiseFilter      = 1; // 0 = noise:smooth   and 1 = noise:lowpass
 noisesFilterN             = 4; // the order of the noise lowpass
 maxOctavation             = 1; // to maximum number of octaves of the fof oscilators
@@ -35,7 +35,7 @@ maxTimeWithoutFidelity    = 265*4 ;  // is 4*6ms @ 44100. the time between 4 fid
 analizerTop               = 128;     // using these two values with 16 bands, gives integer formant ratios
 analizerBottom            = (0.5*pow(2,0.5))+0.0;
 SRmax                     = 96000.0;                          // assumed upper limit on sampling rate
-vocoderN                  = 2;
+vocoderN                  = 2; // order of anti aliasing
 defaultTop                = 128:pow(0.5);
 defaultBottom             = ((0.25*pow(2,0.5))+0.5):pow(0.5);
 PTsmooth                  = 0.9984;
