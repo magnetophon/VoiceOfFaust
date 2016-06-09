@@ -12,7 +12,7 @@ T = 1.0/ml.SR;
 
 // fundmental frequency of tone with vibrato
 // f0 = 110;
-f0 = OSCpitch:smooth(PTsmooth);
+// f0 = OSCpitch:smooth(PTsmooth);
 // f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*osc(vibRate))):dezip; // fundamental freq (Hz)
 // choice of formant structure (vowel a,e,i,o and u)
 vow = hgroup("[1]",nentry("[5:]A_E_I_O_U",1,1,5,1));
@@ -121,13 +121,13 @@ beta(1) = PI / float(k1(1));
 beta(2) = PI / float(k1(2));
 beta(3) = PI / float(k1(3));
 beta(4) = PI / float(k1(4));
-f0Period = SR / f0; // fund period length in fractional samples
+// f0Period = SR / f0; // fund period length in fractional samples
 sigLen(BW) = int(SR * log(0.001) / (-BW * PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation
 // k = (+(1)~_) - 1;
 multi = 2:pow(maxOctavation);
-multiK(multi)= lf_rawsaw(f0Period*multi);
+// multiK(multi)= lf_rawsaw(f0Period*multi);
 // k = (((multiK(multi))/f0Period) : decimal)*f0Period; //choose octaves
 // k = (lf_sawpos(f0*multi))*f0Period; //choose octaves
 // k= lf_rawsaw(f0Period);
@@ -145,13 +145,14 @@ fofRemainder(fund,phase,BW,fc) =   expy(fund,BW) * sinus(fund,fc,phase); // 2nd 
 // function to generate single fof
 // most interesting sounds with sine at phase 0 and envelope phased:
 // fofPart(fund,k1,phase,BW,fc) = (((fund) < int(k1)) * fofAttack(fund,phase,BW,beta,fc)) + (((fund) >= int(k1)) * fofRemainder(fund,phase,BW,fc)) with {
-fofPart(fund,k1,phase,BW,fc) = (((phasedFund) < int(k1)) * fofAttack(phasedFund,phase,BW,beta,fc)) + (((phasedFund) >= int(k1)) * fofRemainder(phasedFund,phase,BW,fc)) with {
+fofPart(fund,freq,k1,phase,BW,fc) = (((phasedFund) < int(k1)) * fofAttack(phasedFund,phase,BW,beta,fc)) + (((phasedFund) >= int(k1)) * fofRemainder(phasedFund,phase,BW,fc)) with {
   beta = PI / (float(k1));
   phasedFund = (((fund/(multi*f0Period))+(phase)):decimal)*f0Period*multi;
+  f0Period = SR/freq;
 }; // v = k1
-fof(phase,fc,fund,k1,BW,octaviation) =
+fof(phase,fc,fund,freq,k1,BW,octaviation) =
 // fofPart(fundI(0),k1,phase,BW,fc)
-par(i,multi,fofPart(fundI(i),k1,phase,BW,fc)*OctMuliply(i)):>_
+par(i,multi,fofPart(fundI(i),freq,k1,phase,BW,fc)*OctMuliply(i)):>_
 with {
   fundI(i) = (((fund/(multi*f0Period))+(i/multi)):decimal)*f0Period*multi;
   OctMuliply(i) =
@@ -161,6 +162,7 @@ with {
     (((i % int(2:pow(oct)))):min(1)*-1)+1
   );
 
+  f0Period = SR/freq;
   // OctMuliply(0) = 1;
   // OctMuliply(i) = ((fmod(i,2:pow(octaviation))):min(1)*-1)+1;
 };
@@ -169,7 +171,7 @@ with {
 // playFof(k1,phase,BW,beta,fc) = fof(k1,phase,BW,beta,fc) ;
 // playFof(k1,phase,BW,beta,fc) = (+(fof(k1,phase,BW,beta,fc) * fofStop(BW))~fdelay2(2048,f0Period-1.0));
 // function to play 5 fofs in parallel (5 fofs = 1 vowel
-allFofs(j) = par(i,5,playFof(k1(i),phase((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-1)*5+i))) :>_;
+// allFofs(j) = par(i,5,playFof(k1(i),phase((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-1)*5+i))) :>_;
 
 // adsr variables and controls
 // attack = nentry("[1:]attack [style:knob]",1,0,4,0.1);
@@ -177,7 +179,7 @@ allFofs(j) = par(i,5,playFof(k1(i),phase((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-
 // sustain = nentry("[3:]sustain[style:knob]",0.5,0,1,0.01);
 // release = nentry("[4:]release[style:knob]",0.5,0,4,0.1);
 // // display group to group ADSR controls together
-volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : _));
+// volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : _));
 
 // final process line: feed play button to volADSR to currently active vowel Fofs and then sum
 // process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_);
