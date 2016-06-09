@@ -2,12 +2,12 @@
 // Classic vocoder synthesis
 //-----------------------------------------------
 
-vocoderFund(freq)=
-    fund(freq,vocoderOctave);
+vocoderFund(freq,index) =
+    fund(freq,index,vocoderOctave);
 
-vocoderOsc(freq) =
+vocoderOsc(freq,index) =
   ( par(i,2,(noises(2,i)*sqrt((vocoderOscNoise))))
-  ,(stereosupersawpulse(vocoderN,vocoderFund(freq),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty):par(i,2,_*sqrt((1-vocoderOscNoise))))
+  ,(stereosupersawpulse(vocoderN,vocoderFund(freq,index),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty):par(i,2,_*sqrt((1-vocoderOscNoise))))
   ):> inputRouter(inputRoutingEnabled)
   with {
     inputRouter(0)= bus2<:bus(nrBands);
@@ -96,15 +96,16 @@ vocoderCenters(freq) =
 endGainCompare(audio,freq) = (bus(nrOutChan),(voice(audio,index)<:bus(nrOutChan))):interleave(nrOutChan,2):par(i,nrOutChan,gainCompareElement);
 
 StereoVocoder(audio,freq,index,fidelity) =
-           ((vocoderOsc(freq)<:bus(nrBands))
+           ((vocoderOsc(freq,index)<:bus(nrBands))
            ,(vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
            ,analizer(voice(audio,index),freq,fidelity,enableDeEsser)
            ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):par(i,nrBands,dezip)))
            :StereoVolFilterBank(nrBands,enableFeedback)
-           :gainCompare(audio,freq,enableGainCompare)
+           :gainCompare(audio,index,fidelity,freq,enableGainCompare)
            :vocoderMixer(ambisonicsOn,outputRoutingEnabled,0)
            // :endGainCompare(audio,freq)
            :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth);
+
 
 
 //process(audio) = StereoVolFilterBank;

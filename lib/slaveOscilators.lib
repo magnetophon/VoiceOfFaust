@@ -6,7 +6,7 @@
 // Sub sine
 //-----------------------------------------------
 
-subSine(audio,freq) = fund(freq,subOctave)*2*PI:sin * //(subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
+subSine(audio,freq) = fund(freq,index,subOctave)*2*PI:sin * //(subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
 (subLevel(audio))*2<:_,_;
 
 //---------------- Bandlimited Sawtooth sawN, saw2, ... ------------------
@@ -201,7 +201,7 @@ CZrestrap(fund, res) =
 
 pafFreq(audio)=
     masterPitch(audio,index)*pafOctave;
-pafFund(freq) = fund(freq,pafOctave);
+pafFund(freq) = fund(freq,index,pafOctave);
 sampleAndHold(sample) = select2((sample!=0):int) ~ _;
 
 

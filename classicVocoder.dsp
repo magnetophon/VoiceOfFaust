@@ -24,16 +24,3 @@ maxNrInRoutings = 5;
 
 process(audio) =
 StereoVocoder(audio,masterPitch(audio,index),index,fidelity);
-
-// (
-//            (vocoderOsc(freq)<:bus(nrBands))
-//            ,(vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
-//            ,analizer(voice(audio,index),freq,fidelity,enableDeEsser)
-//            ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):par(i,nrBands,dezip))
-//          )
-//            : StereoVolFilterBank(nrBands,enableFeedback)
-//            :gainCompare(audio,freq,enableGainCompare)
-//            :vocoderMixer(ambisonicsOn,outputRoutingEnabled,0)
-//            // :endGainCompare(audio,freq)
-//            :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth)
-//            with { freq = masterPitch(audio,index);};

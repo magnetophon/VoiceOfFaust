@@ -3,7 +3,7 @@
 //-----------------------------------------------
 // simple sawtooth waveform oscillator between 0 and 1
 // masterIndex(freq,index)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
-fund(freq,oct)=             (4 * oct * masterIndex(freq,index)) : decimal; //choose octaves
+fund(freq,index,oct)=             (4 * oct * masterIndex(freq,index)) : decimal; //choose octaves
 fundPhase(freq,index,oct, phase)= (4 * oct * masterIndex(freq,index))+phase : decimal; //choose octaves and set phase
 
 //-----------------------------------------------
@@ -162,9 +162,9 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   maxGain = (compGain:max(0.001):linear2db) - (x:abs:max(0.001):linear2db);
   };
 
-// gainCompare(audio,freq,enableGainCompare)
-gainCompare(audio,freq,0) = bus(nrBands);
-gainCompare(audio,freq,1) = (bus(nrBands),analizer(voice(audio,index),freq,fidelity,enableDeEsser)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
+// gainCompare(audio,freq,fidelity,enableGainCompare)
+gainCompare(audio,index,fidelity,freq,0) = bus(nrBands);
+gainCompare(audio,index,fidelity,freq,1) = (bus(nrBands),analizer(voice(audio,index),freq,fidelity,enableDeEsser)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
 
 // scale the gain between 0 = all at avg, 1 = normal and 2 = expansion

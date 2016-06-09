@@ -24,7 +24,7 @@ import("lib/master.lib");
 //-----------------------------------------------
 freq=3.33;
 oct=2;
-/*process=fund(freq,oct);*/
+/*process=fund(freq,index,oct);*/
 process(audio) =
 (
   FMvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
