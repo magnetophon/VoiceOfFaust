@@ -73,7 +73,7 @@ stringloopBank(freq,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCn
     )
     :>KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
 //  feedback path
-    ( compressor_mono(100,KPtresh,0,(1/(freq * subOctave ))))
+    ( compressor_mono(100,KPtresh,0,(1/(freq * 0.25 ))))
     :_*KPvolume
     with {
 

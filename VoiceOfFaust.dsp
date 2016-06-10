@@ -65,7 +65,7 @@ VoiceOfFaust(audio) =
 
     :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_))
 
-    :stereoLimiter(masterPitch(audio,index) * subOctave) //it needs the lowest pitch to adjust the decay time.
+    :stereoLimiter(masterPitch(audio,index) * 0.25) //it needs the lowest pitch to adjust the decay time.
     :VuMeter
     )
     with {
