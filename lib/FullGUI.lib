@@ -44,35 +44,35 @@ subOctave               = subGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octav
 //-----------------------------------------------
 
 generalVocoderGroupLevel(x) = ((vgroup("[0]levels", x)));
-  dryVolume            = generalVocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-  nLKS                 = generalVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-  pmFX                 = generalVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
-  octave               = generalVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of FM
+  dryVolume                 = generalVocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+  nLKSVolume                = generalVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+  pmFXVolume                = generalVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+  octaveVolume              = generalVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of FM
 
 
-generalVocoderParamsGroup(x)       = ((hgroup("[1]parameters", x)));
-  bottomGroup(x) = generalVocoderParamsGroup(vgroup("[0]low frequencies",x));
-  midGroup(x)    = generalVocoderParamsGroup(vgroup("[1]mid frequencies",x));
-  bandGroup(x)   = generalVocoderParamsGroup(vgroup("[2]mid band",x));
-  topGroup(x)    = generalVocoderParamsGroup(vgroup("[3]high frequencies",x));
-    bottom      = bottomGroup(        vslider("[1]bottom[style:knob][tooltip: the lowest formant frequency of the oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-    mid         = midGroup(           vslider("[1]mid[style:knob] [tooltip: the mid formant frequency of the of the oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
-    band        = bandGroup(          vslider("[1]band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    top         = topGroup(           vslider("[1]top[style:knob][tooltip: the highest formant frequency of the oscillators]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-    phaseBottom = bottomGroup(        vslider("[2]phaseBottom[style:knob][tooltip: phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-    phaseMid    = midGroup(           vslider("[2]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
-    phaseBand   = bandGroup(          vslider("[2]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    phaseTop    = topGroup(           vslider("[2]phaseTop[style:knob][tooltip: phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+generalVocoderParamsGroup(x) = ((hgroup("[1]parameters", x)));
+  bottomGroup(x)             = generalVocoderParamsGroup(vgroup("[0]low frequencies",x));
+  midGroup(x)                = generalVocoderParamsGroup(vgroup("[1]mid frequencies",x));
+  bandGroup(x)               = generalVocoderParamsGroup(vgroup("[2]mid band",x));
+  topGroup(x)                = generalVocoderParamsGroup(vgroup("[3]high frequencies",x));
+    bottom                   = bottomGroup(        vslider("[1]bottom[style:knob][tooltip: the lowest formant frequency of the oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+    mid                      = midGroup(           vslider("[1]mid[style:knob] [tooltip: the mid formant frequency of the of the oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+    band                     = bandGroup(          vslider("[1]band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+    top                      = topGroup(           vslider("[1]top[style:knob][tooltip: the highest formant frequency of the oscillators]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+    phaseBottom              = bottomGroup(        vslider("[2]phaseBottom[style:knob][tooltip: phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+    phaseMid                 = midGroup(           vslider("[2]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
+    phaseBand                = bandGroup(          vslider("[2]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+    phaseTop                 = topGroup(           vslider("[2]phaseTop[style:knob][tooltip: phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
     phaseNoiseAmountBottom   = bottomGroup(( vslider("[3]phase noise amount bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
     phaseNoiseAmountMid      = midGroup((    vslider("[3]phase noise amount mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
     phaseNoiseAmountBand     = bandGroup(    vslider("[3]phase noise amount band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
     phaseNoiseAmountTop      = topGroup((    vslider("[3]phase noise amount top[style:knob][tooltip: phase randomization of the high oscillators]", 0.5, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
-    phaseNoiseFreqBottom = bottomGroup(  vslider("[4]noise frequency[style:knob][tooltip: the lowest frequency of the fof noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-    phaseNoiseFreqMid    = midGroup(     vslider("[4]noise frequency             [style:knob] [tooltip: the mid frequency of the fof noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
-    phaseNoiseFreqBand   = bandGroup(    vslider("[4]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    phaseNoiseFreqTop    = topGroup(     vslider("[4]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
+    phaseNoiseFreqBottom     = bottomGroup(  vslider("[4]noise frequency[style:knob][tooltip: the lowest frequency of the fof noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+    phaseNoiseFreqMid        = midGroup(     vslider("[4]noise frequency             [style:knob] [tooltip: the mid frequency of the fof noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
+    phaseNoiseFreqBand       = bandGroup(    vslider("[4]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+    phaseNoiseFreqTop        = topGroup(     vslider("[4]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
     phaseNoiseAmountScale    = select2(enablePhaseNoiseFilter,80000,800); // scaling factor for the amount of noise modulation, depending on wether we use a smooth, or a filter. tweaked for  noisesFilterN=4
-  // width       = generalVocoderParamsGroup( vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
+  // width                   = generalVocoderParamsGroup( vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
 //-----------------------------------------------
 // classicVocoder
@@ -424,7 +424,7 @@ rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo f
 KPgroup(x)        = FXGroup((vgroup("[4]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level]",	1, 0, 1, 0.001):volScale);
-KPrelease         = mainKPgroup(vslider("[1]decay[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*3):smooth(0.999);
+KPrelease         = mainKPgroup(vslider("[1]decay time[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*8):smooth(0.999);
 KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 21, -33, 33, 0.1)):smooth(0.999);
 vocoderKPgroup(x) = mainKPgroup((hgroup("[3]vocoder[tooltip: an EQ based vocoder in the feedback loop]", x)));
 KPvocoderStrength = vocoderKPgroup(vslider("[0]strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0.72, 0, 1, 0.001):smooth(0.999));

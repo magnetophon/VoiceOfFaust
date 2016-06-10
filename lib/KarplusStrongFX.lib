@@ -43,11 +43,10 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
       //(( fdelay4(Pmax, P-2)))
   (( NLFM : fdelay4(Pmax, P-2) : loopfilter))
     with {
-    nlfOrder = 16;
     P = SR/(freq*oct) ; // fundamental period in samples
     Pmax = 4096; // maximum P (for delay-line allocation)
 
-    rho = pow(0.001,1.0/(freq*oct*feedback)); // multiplies loop-gain
+    rho = pow(0.001,1.0/(freq*oct*feedback*8)); // multiplies loop-gain
 
     // Original EKS damping filter:
     b1 = 0.5*bright; b0 = 1.0-b1; // S and 1-S
@@ -120,3 +119,14 @@ stringloop(freq,audio,feedback,phase,DCnonlin) =
     /*P = SR/(freq*oct) ; // fundamental period in samples*/
     /*Pmax = 4096; // maximum P (for delay-line allocation)*/
     /*};*/
+
+    MyNonLinearModulator(nonlinearity,freq,phase,DC) =
+        //theta is modulated by a sine wave
+        _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)))
+        with{
+            //theta is modulated by a sine wave generator
+            tosc = (nonlinearity*PI*PHosci(freq,phase))+DC;
+
+            //incoming signal is sent to the nonlinear passive allpass ladder filter
+            //nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
+        };

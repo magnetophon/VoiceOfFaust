@@ -28,6 +28,7 @@ enablePhasenoise          = 1; // 0 = no noise   and 1 = noise modulates phase
 enablePhaseNoiseFilter    = 1; // 0 = noise:smooth   and 1 = noise:lowpass
 noisesFilterN             = 4; // the order of the noise lowpass
 maxOctavation             = 1; // to maximum number of octaves of the fof oscilators
+nlfOrder                  = 16;
 MinInputPitch             = 48.9994;	// = G1, the lowest frequency that helmholtz~ can track is 51 Hz
 MaxInputPitch             = 2093.00; // = C7, the highest frequency that helmholtz~ can track is 1992 Hz
 maxTimeWithoutPitch       = 2*SR;    // longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
