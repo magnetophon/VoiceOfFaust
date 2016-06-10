@@ -435,9 +435,27 @@ with {
 
 // crossfade between multiple inputs (just the gain)
 xfadeSelector(sel,nr) =
-(((sel<=nr)*((sel-nr)+1):max(0))
-+ ((sel>nr)*((nr-sel)+1):max(0))
-);
+((sel<=nr)*((sel-nr)+1):max(0)) + ((sel>nr)*((nr-sel)+1):max(0));
+
+
+// select at run-time how many instances of 'expression' you want in series.
+// expression can have any number of inputs, but obviously must have the same number of outputs
+// i; the selector, can be a float, so clickless fades are possible.
+// N is the maximum number of expressions
+varSeq(i,N, expression) =
+  sequential(N,expression)
+  :select
+with {
+  inNr = inputs(expression);
+  seqPart(0,expression) = bus(inNr);
+  seqPart(1,expression) = bus(inNr)<:(bus(inNr),expression);
+  seqPart(N,expression) = bus(inNr*(N-1)) , seqPart(1,expression);
+  sequential(N,expression) = seq(i, N+1, seqPart(i,expression) );
+  busSelect(i,j) = par(k, inNr, _*xfadeSelector(i,j));
+  select = par(j,N+1,busSelect(i,j) ):>bus(inNr);
+};
+
+
 
 autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 

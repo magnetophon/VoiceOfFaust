@@ -43,44 +43,33 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
       //(( fdelay4(Pmax, P-2)))
   (( NLFM : fdelay4(Pmax, P-2) : loopfilter))
     with {
-    P = SR/(freq*oct) ; // fundamental period in samples
-    Pmax = 4096; // maximum P (for delay-line allocation)
+      P = SR/(freq*oct) ; // fundamental period in samples
+      Pmax = 4096; // maximum P (for delay-line allocation)
 
-    rho = pow(0.001,1.0/(freq*oct*feedback*8)); // multiplies loop-gain
+      rho = pow(0.001,1.0/(freq*oct*feedback*8)); // multiplies loop-gain
 
-    // Original EKS damping filter:
-    b1 = 0.5*bright; b0 = 1.0-b1; // S and 1-S
-    dampingfilter1(x) = rho * ((b0 * x) + (b1 * x'));
-    // Linear phase FIR3 damping filter:
-    h0 = (1.0 + bright)/2; h1 = (1.0 - bright)/4;
-    dampingfilter2(x) = rho * (h0 * x' + h1*(x+x''));
+      // Original EKS damping filter:
+      b1 = 0.5*bright; b0 = 1.0-b1; // S and 1-S
+      dampingfilter1(x) = rho * ((b0 * x) + (b1 * x'));
+      // Linear phase FIR3 damping filter:
+      h0 = (1.0 + bright)/2; h1 = (1.0 - bright)/4;
+      dampingfilter2(x) = rho * (h0 * x' + h1*(x+x''));
 
-    loopfilter = _*rho;//:dampingfilter1; // or dampingfilter2
+      loopfilter = _*rho;//:dampingfilter1; // or dampingfilter2
 
-    //nonlinear allpass filter (nonLinearModulator is declared in instrument.lib)
-    NLFM =  MyNonLinearModulator(nonLinearity,frequencyMod*freq*oct,phase);
-
-    MyNonLinearModulator(nonlinearity,freq,phase) =
-        //theta is modulated by a sine wave
-        _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)))
-        with{
-            //theta is modulated by a sine wave generator
-            tosc = (nonlinearity*PI*PHosci(freq,phase))+DC;
-
-            //incoming signal is sent to the nonlinear passive allpass ladder filter
-            //nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
-        };
+      //nonlinear allpass filter (nonLinearModulator is declared in instrument.lib)
+      NLFM =  MyNonLinearModulator(nonLinearity,frequencyMod*freq*oct,phase,DC);
     };
 
 feedbackADSR(audio,index) = tanh(voice(audio,index)*2:amp_follower(KPrelease)):pow(4);
 
-stringloopBank(freq,audio,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH) =
+stringloopBank(freq,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH) =
     (_+feedback
-    <:(    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio),phaseLL,nonLinLL,frequencyModLL,DCnonlinLL),
-    stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio),phaseL,nonLinL,frequencyModL,DCnonlinL),
-    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio),phase,nonLin,frequencyMod,DCnonlin),
-    stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio),phaseH,nonLinH,frequencyModH,DCnonlinH),
-    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
+    <:(    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio,index),phaseLL,nonLinLL,frequencyModLL,DCnonlinLL),
+    stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio,index),phaseL,nonLinL,frequencyModL,DCnonlinL),
+    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio,index),phase,nonLin,frequencyMod,DCnonlin),
+    stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio,index),phaseH,nonLinH,frequencyModH,DCnonlinH),
+    stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio,index),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
     )
     :>KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
 //  feedback path
@@ -121,12 +110,14 @@ stringloop(freq,audio,index,feedback,phase,DCnonlin) =
     /*};*/
 
     MyNonLinearModulator(nonlinearity,freq,phase,DC) =
-        //theta is modulated by a sine wave
-        _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)))
-        with{
-            //theta is modulated by a sine wave generator
-            tosc = (nonlinearity*PI*PHosci(freq,phase))+DC;
+      //theta is modulated by a sine wave
+      allpassnn(nlfOrder,(par(i,nlfOrder,tosc)))
+      with{
+        //theta is modulated by a sine wave generator
+        tosc = (nonlinearity*PI*PHosci(freq,phase))+DC;
 
-            //incoming signal is sent to the nonlinear passive allpass ladder filter
-            //nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
-        };
+        //incoming signal is sent to the nonlinear passive allpass ladder filter
+        //nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
+      };
+
+// varSeq(i,N, expression)
