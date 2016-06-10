@@ -423,7 +423,7 @@ rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo f
 
 KPgroup(x)        = FXGroup((vgroup("[4]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((hgroup("[1]main", x)));
-KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level]",	1, 0, 1, 0.001):volScale);
+KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output-level of the delay]",	0.6, 0, 1, 0.001):volScale);
 KPrelease         = mainKPgroup(vslider("[1]decay time[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*8):smooth(0.999);
 KPtresh           = mainKPgroup(vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 21, -33, 33, 0.1)):smooth(0.999);
 vocoderKPgroup(x) = mainKPgroup((hgroup("[3]vocoder[tooltip: an EQ based vocoder in the feedback loop]", x)));
@@ -462,9 +462,9 @@ KPvol             = MKPgroup(vslider("[0]volume [style:knob]"     , 1, 0, 1, 0.0
 feedbackM         = MKPgroup(vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
 MmodGroup(y)      = MKPgroup((hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]"              , y)));
 DCnonlin          = MmodGroup(vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]"         , 0, -2, 2, 0.001):pow(3):smooth(0.999)); //-9 to 9 logarithmicly
-DCleftRight       = MmodGroup(vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]", 0.5, -2, 2, 0.001):pow(3):smooth(0.999)); //-9 to 9 logarithmicly
+DCleftRight       = MmodGroup(vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]", 0.25, -2, 2, 0.001):pow(3):smooth(0.999)); //-9 to 9 logarithmicly
 MoscModGroup(y)   = MKPgroup((hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]"              , y)));
-nonLin            = MoscModGroup(vslider("[1]amount [style:knob][tooltip: modulation amount]"    , 0,0,1,0.001) : pow(3) : smooth(0.999));
+nonLin            = MoscModGroup(vslider("[1]amount [style:knob][tooltip: modulation amount]"    , 0.25,0,1,0.001) : pow(3) : smooth(0.999));
 frequencyMod      = MoscModGroup(vslider("[2]frequency [style:knob][tooltip: modulation frequency]" , 1,0,8,0.001) : smooth(0.999));
 phaseM            = MoscModGroup(vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]"      , 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 

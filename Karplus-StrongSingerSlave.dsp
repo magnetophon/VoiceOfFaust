@@ -12,7 +12,7 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
 import ("lib/common.lib");
-import("lib/master.lib");
+import("lib/slave.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/classicVocoder.lib");
@@ -43,10 +43,11 @@ VoiceOfFaust(audio,index) =
     DryVol =  mainKPgroup(vslider("[-1]dry vol[style:knob]", 0.6, 0, 1, 0.001):volScale);
     // add octave slider:
     KPoctave          = mainKPgroup(vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
+    KPvolume          = mainKPgroup(vslider("[0]wet volume [style:knob][tooltip: the output-level of the delay]",	0.4, 0, 1, 0.001):volScale);
     freq = masterPitch(audio,index);
   };
 //-----------------------------------------------
 // process
 //-----------------------------------------------
 
-process(audio) = VoiceOfFaust(audio,index);
+process(audio,index) = VoiceOfFaust(audio,index);
