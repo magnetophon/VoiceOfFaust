@@ -66,9 +66,13 @@ phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,
 LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
 
 
-VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top): par(i, nrBands, hz2pianokey ): dezipBands : par(i, nrBands, pianokey2hz) ;
-VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top): par(i, nrBands, hz2pianokey ): dezipBands : par(i, nrBands, pianokey2hz);
+VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top): dezipBands;
+VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top): dezipBands;
 
+// Do the smoothing in the linear domain:
+// Too expensive, not enough difference in the sound.
+// VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top): par(i, nrBands, hz2pianokey ): dezipBands : par(i, nrBands, pianokey2hz) ;
+// VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top): par(i, nrBands, hz2pianokey ): dezipBands : par(i, nrBands, pianokey2hz);
 
 VocoderFreqs(bottom,top) = LogArray(bottom,top,nrBands);
 
