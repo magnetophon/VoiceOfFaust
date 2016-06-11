@@ -25,4 +25,4 @@ FMvocoder(audio,freq,index,fidelity,1)=
     ((funds(freq,index,i,FMvocoderGroup)), (freq<:bus(nrBands)),analizer(voice(audio,index),freq,fidelity,enableDeEsser),FMvocoderGroup(FMindexes),(FMcenters(freq))):FMoscs
   )
   :vocoderMixer(ambisonicsOn,outputRoutingEnabled,1)
-  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.01,1);
+  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.01,width);
