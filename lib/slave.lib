@@ -3,6 +3,4 @@ OSCmaxPitch              = MaxInputPitch;
 masterIndex(freq,index)  = index;
 
 index2freq(index)        = ((index-index')*SR) : sampleAndHold(abs(index-index')<(0.9));
-// index2freq(index)        = ((index-index')*SR) : sampleAndHold((index-index')>(-1+(9/SR)));
-// index2freq(index)        = ((index-index')*SR) : sampleAndHold((index-index')!=-1);
 masterPitch(audio,index) = index2freq(index)*4:max(MinInputPitch):min(MaxInputPitch);

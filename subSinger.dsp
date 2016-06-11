@@ -60,4 +60,3 @@ VoiceOfFaust(audio) =
 //-----------------------------------------------
 
 process(audio) = VoiceOfFaust(audio);
-//process(audio) = StereoVocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);

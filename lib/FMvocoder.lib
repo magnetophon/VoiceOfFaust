@@ -2,21 +2,14 @@
 //-----------------------------------------------
 // FM vocoder synthesis
 //-----------------------------------------------
-// maxNrInRoutings = 3;
-// FMcenters(freq) = VocoderFreqsChooser(FMbottom,FMmid,FMband,FMtop,para):par(i, nrBands, _*freq);
 
 FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,para);
-// FMphases = VocoderLinArrayChooser(FMphaseBottom,FMphaseMid,FMphaseBand,FMphaseTop,para);
 
 import("lib/myFMvox.dsp");
 
 FMoscs=
     interleave(nrBands,5):
     par(i, nrBands, fuphoSlave);
-
-// FMfunds(freq,index) = par(i, nrBands, FMfund(freq,index,phase(i)) ) with {
-//   phase(i) = FMphases:selector(i,nrBands)*select2(polarity%2,1,-1);
-// };
 
 FMcenters(freq) = centers(freq,FMvocoderGroup);
 
@@ -33,8 +26,3 @@ FMvocoder(audio,freq,index,fidelity,1)=
   )
   :vocoderMixer(ambisonicsOn,outputRoutingEnabled,1)
   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.01,1);
-
-// FMvocoder(audio,freq,index,fidelity,1)= FMvocoderGroup(
-//   par(i,nrOutChan,(funds(freq,index,i), (freq<:bus(nrBands)),analizer(voice(audio,index),freq,fidelity,enableDeEsser),FMindexes,centers(freq)):FMoscs  )
-//   :FMvocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
-//   :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.01,1));

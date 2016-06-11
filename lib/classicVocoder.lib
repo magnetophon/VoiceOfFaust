@@ -105,8 +105,3 @@ StereoVocoder(audio,freq,index,fidelity) =
            :vocoderMixer(ambisonicsOn,outputRoutingEnabled,0)
            // :endGainCompare(audio,freq)
            :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*select2(gainCompEnable,0.001,0.02),vocoderWidth);
-
-
-
-//process(audio) = StereoVolFilterBank;
-//vocoderOsc(masterPitch(audio,index));

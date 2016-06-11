@@ -12,17 +12,6 @@ pafIndexes  =PAFvocoderGroup(VocoderLinArrayChooser(pafIndexBottom,pafIndexMid,p
 pafOscs=
     interleave(nrBands,4):
     par(i, nrBands, paf);
-    /*paf(pafCenter16,Fund,pafIndex,pafVol16)*/
-/*with {*/
-  /*routing =bus(nrBands)<:(*/
-               /*(bus(nrBands):(par(i,nrBands,(inputRouting==0:dezip) *_)))*/
-               /*,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==1:dezip) *_)))*/
-               /*,(butterfly(nrBands):(par(i,nrBands,(inputRouting==2:dezip) *_)))*/
-               /*,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(inputRouting==3:dezip) *_)))*/
-               /*[>,(hademar:>par(i,nrOutChan, (inputRouting==2) *_))<]*/
-             /*):>bus(nrBands);*/
-           /*};*/
-
 
 
 // PAFvocoder(audio,freq,index,fidelity,doubleOscs)

@@ -24,8 +24,6 @@ import ("lib/pmFX.lib");
 //-----------------------------------------------
 
 
-//KPvolume          = mainKPgroup(vslider("[0]volume [style:knob][tooltip: the output level]",	1, 0, 1, 0.001)*0.2:volScale);
-
 VoiceOfFaust(audio,index) =
   (voice(audio,index)<:_,_)
   :

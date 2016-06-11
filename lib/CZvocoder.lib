@@ -1,6 +1,5 @@
 
 //res= 0.5 to 64. this is multiplied by the fundamental pitch
-//CZrestrap(fund, res) =
 //-----------------------------------------------
 // CZ vocoder synthesis
 //-----------------------------------------------

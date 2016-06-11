@@ -15,16 +15,9 @@ eqOfN(1) = bus(4)<:(selector(1,4),selector(2,4),selector(3,4),selector(0,4)):pea
 eqOfN(n) = (eqOfN(n-1),_,_,_):eqOfN(1);
 
 EQbank(Oscilator,q) =
-    /*((bus(nrBands)<:(par(i, nrBands, (selector(i,nrBands), par(j,nrBands, selector(j,nrBands)))))),bus(nrBands))*/
     ((bus(nrBands)<:(bus(nrBands),OffSet)<:(par(i, nrBands, (selector(i,nrBands+1)+selector(nrBands,nrBands+1))))),bus(nrBands))
     :(bus(2*nrBands),(q<:bus(nrBands)))
-    /*((bus(nrBands)<:(bus(nrBands),interleave(nrBands,nrBands)):interleave(nrBands,nrBands+1)),bus(nrBands))*/
-    /*((bus(nrBands)<:(par(i, nrBands, (selector(i,nrBands), par(j,nrBands, selector(j,nrBands)))))),bus(nrBands))*/
-    /*:(par(i,nrBands,_+OffSet),bus(nrBands),(q<:bus(nrBands)))*/
     :((Oscilator,interleave(nrBands,3)):eqOfN(nrBands))
-    /*(*/
-    /*//lowshelf(N,Volume1+OffSet,Center1):*/
-    /*peak_eq_cq(OffSet,q):*/
     with {
         N = 3; //uneven only: 1,3,5
         AvgVolume = sumOfN(nrBands)/nrBands;
@@ -103,11 +96,6 @@ stringloop(freq,audio,index,feedback,phase,DCnonlin) =
     dampingfilter2(x) = (h0 * x' + h1*(x+x''));
     };
 
-/*simpleStringLoop = (_+feedback : fdelay4(Pmax, P-2):vocoder)~_:( compressor_mono(100,KPtresh,0,(1/(freq *0.5 ))))*/
-  /*with {*/
-    /*P = SR/(freq*oct) ; // fundamental period in samples*/
-    /*Pmax = 4096; // maximum P (for delay-line allocation)*/
-    /*};*/
 
     MyNonLinearModulator(nonlinearity,freq,phase,DC) =
       //theta is modulated by a sine wave

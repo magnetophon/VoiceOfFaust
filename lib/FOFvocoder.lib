@@ -3,19 +3,11 @@
 // FOF vocoder synthesis
 //-----------------------------------------------
 
-//fofCenters=     par(i,nrBands,   pow((pow((fofTop/fofBottom),1/15)),i)*fofBottom);
-// fofFund(freq) =
-//     fund(freq,fofOctave);
-
 fofCenters(freq) = centers(freq,fofVocoderGroup);
-// fofCenters(freq) = centers(1,fofVocoderGroup):par(i, nrBands, pow(2)*freq); // original values
-/*fofSkirts  = VocoderFreqs(fofSkirtBottom,fofSkirtTop);*/
-/*fofDecays  = VocoderFreqs(fofDecayBottom,fofDecayTop);*/
 fofSkirts(freq)  =
   VocoderFreqsChooser(fofSkirtBottom,fofSkirtMid,fofSkirtBand,fofSkirtTop,para)
   :par(i, nrBands, _*t(4)*(SR/freq*SR));
 fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para);
-// fofPhases = VocoderLinArrayChooser(fofPhaseBottom,fofPhaseMid,fofPhaseBand,fofPhaseTop,para);
 fofOctavations = VocoderLinArrayChooser(fofOctavationBottom,fofOctavationMid,fofOctavationBand,fofOctavationTop,para);
 
 fofNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter) = phaseNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter,fofVocoderGroup);

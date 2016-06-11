@@ -40,7 +40,6 @@ VoiceOfFaust(audio,index) =
   with {
     DryPath(phase,DC) =  MyNonLinearModulator(nonLinDry,frequencyModDry*freq,phase,DC)*KPvolDry;
 
-    // DryVol =  mainKPgroup(vslider("[-1]dry vol[style:knob]", 0.6, 0, 1, 0.001):volScale);
     // add octave slider:
     KPoctave          = mainKPgroup(vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
     freq = masterPitch(audio,index);

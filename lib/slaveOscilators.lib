@@ -146,31 +146,6 @@ stereosupersawpulse(N,fund,freq,detune,mix,SawPulse,duty) =
 supersawpulse(N,fund,freq,detune,mix,SawPulse,duty),
 supersawpulse(N,fund,freq,detune*-1,mix,SawPulse,duty);
 
-/*
-saws(fund,freq,detuner(detune)):mixer(mix)
-with {
-    detuner (detune) =
-      (((detune*0.2),(detune<0.6)):*),
-      ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
-      ((((detune-0.95)*12+0.4),(detune>0.95)):*)
-      :>_;
-    saws(fund,freq,det) =
-        sawpulseN(N,(det * -0.110023+1)*freq,SawPulse,duty),
-        sawpulseN(N,(det * -0.0628844+1)*freq,SawPulse,duty),
-        sawpulseN(N,(det * -0.0195236+1)*freq,SawPulse,duty),
-        sawpulseNws(N,fund,freq,SawPulse,duty)*db2linear(-3),
-        sawpulseN(N,(det * 0.0199122+1)*freq,SawPulse,duty),
-        sawpulseN(N,(det * 0.0621654+1)*freq,SawPulse,duty),
-        sawpulseN(N,(det * 0.107452+1)*freq,SawPulse,duty);
-    mainmix = (mix  -0.55366 + 0.99785):smooth(0.999);
-    detunemix = (mix:pow(2) * -0.73764)+(mix * 1.2841):smooth(0.999);
-    //*-1 to get it into phase with my other synths
-//    mixer(mix) = (_*mainmix),par(i, 6, _*detunemix):>_*-1;
-    mixer(mix) =
-        par(i, 3, _*detunemix),(_*mainmix<:_,_),par(i, 3, _*detunemix)
-        :((bus4:>_*-1),(bus4:>_*-1));
-    };
-*/
 
 //todo:Window Function Synthesis:
 //see also: http://dspwiki.com/index.php?title=Physical_Modeling_Synthesis
@@ -211,7 +186,6 @@ with {
       curve 	= time:(((_-100)/25)<:exp((_*_)*-1));
     };
 
-/*bellcurve = (((_-100)/25)<:exp((_*_)*-1));*/
     volumeCompensate = 0.666+(i/300);
     wrap            = _<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
     centerWrap(c,f) = dezip(c):sampleAndHold(f)<:wrap;

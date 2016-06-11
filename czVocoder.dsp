@@ -10,8 +10,6 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //-----------------------------------------------
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
-//qompander	= component("qompander/qompander.dsp");
-//KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
 import ("lib/common.lib");
 import("lib/master.lib");

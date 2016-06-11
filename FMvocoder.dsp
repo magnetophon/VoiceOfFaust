@@ -10,8 +10,6 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //-----------------------------------------------
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
-//qompander	= component("qompander/qompander.dsp");
-//KarplusStrongFX		= component("KarplusStrongFX.dsp");
 
 import ("lib/common.lib");
 // specific to this synth:
@@ -22,15 +20,8 @@ import("lib/master.lib");
 //-----------------------------------------------
 // process
 //-----------------------------------------------
-freq=3.33;
-oct=2;
-/*process=fund(freq,index,oct);*/
 process(audio) =
 (
   FMvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
   reEsser(voice(audio,index),masterPitch(audio,index),index,fidelity,doubleOscs,enableReEsser)
 ):>bus(nrOutChan);
-// process = chooseResonBP;
-/*process(audio) =*/
-  /*(pafCenters,(pafFund(freq)<:bus(nrBands)),pafIndexes,analizer(voice(audio,index),freq,fidelity,enableDeEsser)):pafOscs:vocoderMixer(ambisonicsOn)*/
-  /*:postProc(nrOutChan,ambisonicsOn);*/

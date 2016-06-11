@@ -3,6 +3,7 @@
 //-----------------------------------------------
 // simple sawtooth waveform oscillator between 0 and 1
 // masterIndex(freq,index)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
+// defined in master.lib and slave.lib
 fund(freq,index,oct)=             (4 * oct * masterIndex(freq,index)) : decimal; //choose octaves
 fundPhase(freq,index,oct, phase)= (4 * oct * masterIndex(freq,index))+phase : decimal; //choose octaves and set phase
 
@@ -94,9 +95,6 @@ VocoderFreqsParametricMid(bottom,mid,band,top) =
   midVal(band)=
   ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
   + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
-
-  /*((mid>0)*(((mid*(top-origMid(band)))+origMid(band))))*/
-  /*+ ((mid<=0)*(((mid)*(origMid(band)-bottom))+origMid(band)));*/
   origMid(band) = (VocoderFreqs(bottom,top):selector(band-1,nrBands)):>_;
   };
 
@@ -195,66 +193,6 @@ with {
   expandVolCompensate = ((scale-1):max(0)*8);
 };
 
-// gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
-// with {
-//   gain(i) = par(i, nrBands, max(0.00000001):linear2db+freqWeighting(freq(i),weightingKind))<:
-//     (
-//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144)+freqWeighting(freq(i),weightingKind))
-//       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
-//       ,((scale>=1)*(expander(i) - (scaleBack * ((scale-1):max(0)))) )
-//     ):>_-freqWeighting(freq(i),weightingKind):db2linear;
-//   freq(i) = analizerCenters(f):selector(i,nrBands);
-//   expander(i) = bus(nrBands)<:
-//     (
-//       (scaledVolume(i) )
-//     ):>_;
-// //scaledVolume(i) =  bus(nrBands)<:( ((MaxVolume*-1)+selector(i,nrBands)) * (scale:pow(3)) );
-//   scaledVolume(i) =  bus(nrBands)<: (( (selector(i,nrBands)-MaxVolume) * (scale:pow(3)) ) + MaxVolume);
-//   scaleBack =  bus(nrBands)<:(par(i, nrBands, scaledVolume(i)) : AvgVolume) - AvgVolume;
-//   AvgVolume = sumOfN(nrBands)/nrBands;
-//   MaxVolume = maxOfN(nrBands);
-// };
-
-// gainScale2(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
-// with {
-//   gain(i) = par(i, nrBands, max(0.00000001):linear2db+freqWeighting(freq(i),weightingKind))<:
-//     (
-//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144)+freqWeighting(freq(i),weightingKind))
-//       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
-//       ,((scale>=1)*expander(i))
-//     ):>_-freqWeighting(freq(i),weightingKind):db2linear;
-//   freq(i) = analizerCenters(f):selector(i,nrBands);
-//   expander(i) = bus(nrBands)<:
-//     (
-//       (scaledVolume(i)- scaleBack + MaxVolume)
-//     ):>_;
-//   scaledVolume(i) =  bus(nrBands)<:( ((AvgVolume*-1)+selector(i,nrBands)) * (scale:pow(3)) );
-//   scaleBack =  bus(nrBands)<:(par(i, nrBands, scaledVolume(i)): MaxVolume);
-//   AvgVolume = sumOfN(nrBands)/nrBands;
-//   MaxVolume = maxOfN(nrBands);
-// };
-
-// gainScale(scale,f) = bus(nrBands)<:par(i, nrBands, gain(i))
-// with {
-//   gain(i) = par(i, nrBands,linear2db+freqWeighting(freq(i),weightingKind):max(-144))<:
-//     (
-//        (xfadeSelector(scale,0)*(par(j, nrBands, _+144) : AvgVolume-144))
-//       ,(xfadeSelector(scale,1)*(scale<1)*selector(i,nrBands))
-//       ,((scale>=1)*expander(i))
-//     ):>_:db2linear;
-//   freq(i) = analizerCenters(f):selector(i,nrBands);
-//   expander(i) = bus(nrBands)<:
-//     (
-//       (scaledVolume(i)- scaleBack + MaxVolume)
-//     ):>_-freqWeighting(freq(i),weightingKind);
-//   scaledVolume(i) =  bus(nrBands)<:( ((AvgVolume*-1)+selector(i,nrBands)) * (scale:pow(3)) );
-//   scaleBack =  bus(nrBands)<:(par(i, nrBands, scaledVolume(i)): MaxVolume);
-//   AvgVolume = sumOfN(nrBands)/nrBands;
-//   MinVolume = minOfN(nrBands);
-//   MaxVolume = maxOfN(nrBands);
-// };
-
-
 freqWeighting(f,weightingKind) =
 // Atable(f);
 // ITUtable(f);
@@ -289,8 +227,6 @@ h2(f) =   ( 1.306612257412824*(10:pow(-19))*(f:pow(5)))+(2.118150887518656*(10:p
 myTable(f) = rdtable(int(SRmax/2)+1,my(time),int(f:max(1):int(min(SRmax/2))));
 my(f) =
   (pow((pow((top/bottom),1/(nrElements-1))),(f:min(nrElements)))*bottom)
-  // +
-  // ((pow((pow((top2/bottom2),1/(nrElements2-1))),((f+1-nrElements):min(1)))*bottom2) * f>nrElements)
   with {
     top = 0;
     bottom = -144;//vslider("basscut", -100, -200, 0, 1);
@@ -326,6 +262,7 @@ with {
      b0 = 0;
 };
 
+// WIP stable highpass
 // highpass(N,fc) = lowpass0_highpass1(1,N,fc);
 // lowpass0_highpass1(s,N,fc) = lphpr(s,N,N,fc)
 // with {
@@ -401,7 +338,6 @@ with {
 
 
 //normal mixer without outputRouting, doubleOscs
-// FMvocoderMixer(0,0) = bus(nrBands*nrOutChan):>bus(nrOutChan);
 vocoderMixer(0,0,1) = par(i,nrOutChan, bus(nrBands):>_);
 
 //normal mixer with outputRouting, doubleOscs
