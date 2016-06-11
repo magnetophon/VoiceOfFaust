@@ -3,7 +3,10 @@ VoiceOfFaust
 
 A voice synthesizer/effects machine.
 
-Partly a port of https://github.com/magnetophon/VocSynth to faust (http://faust.grame.fr), partly adding in some new stuff that is not possible in puredata.
+It turns any monophonic sound into a synthesizer.
+The name was chosen because I use it mostly to turn my voice into a singing robot, and it's made in [faust](http://faust.grame.fr)
+
+It started life as a port of [VocSynth](https://github.com/magnetophon/VocSynth) to faust (http://faust.grame.fr), partly adding in some new stuff that is not possible in puredata.
 
 More information on how it works can be found here:
 
