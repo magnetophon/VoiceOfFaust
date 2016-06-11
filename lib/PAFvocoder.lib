@@ -7,7 +7,7 @@ maxNrInRoutings = 3;
 pafCenters = centers(1,PAFvocoderGroup);
 
 // pafIndexes = VocoderLinArray(pafIndexBottom,pafIndexTop);
-pafIndexes  =PAFvocoderGroup(VocoderLinArrayChooser(pafIndexBottom,pafIndexMid,pafIndexBand,pafIndexTop,para):dezipBands);
+pafIndexes  =PAFvocoderGroup(VocoderLinArrayChooser(pafIndexBottom,pafIndexMid,pafIndexBand,pafIndexTop,para));
 
 pafOscs=
     interleave(nrBands,4):

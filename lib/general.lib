@@ -11,7 +11,7 @@ fundPhase(freq,index,oct, phase)= (4 * oct * masterIndex(freq,index))+phase : de
 //-----------------------------------------------
 // dezipper
 dezip(x) = x:smooth(0.999);
-dezipBands = par(i, nrBands, smooth(0.999));
+dezipBands = par(i, nrBands, dezip);
 // minimum of n values
 minOfN(1) = _;
 minOfN(2) = min;
@@ -39,9 +39,9 @@ octaveMultiplier	=
         (_==2) * 4
     ):>_;
 
-centers(freq,group) = group(VocoderFreqsChooser(bottom,mid,band,top,para)):par(i, nrBands, _*freq):dezipBands;
+centers(freq,group) = group(VocoderFreqsChooser(bottom,mid,band,top,para)):par(i, nrBands, _*freq);
 
-phases = VocoderLinArrayChooser(phaseBottom,phaseMid,phaseBand,phaseTop,para):dezipBands;
+phases = VocoderLinArrayChooser(phaseBottom,phaseMid,phaseBand,phaseTop,para);
 
 // phaseNoises(polarity,freq,enablePhasenoise,enablePhaseNoiseFilter,group) =
 //TODO: make true multichannel version
@@ -58,15 +58,15 @@ funds(freq,index,polarity,group) = par(i, nrBands, fundPhase(freq,index,group(oc
 };
 
 
-phaseNoiseAmounts = VocoderLinArrayChooser(phaseNoiseAmountBottom,phaseNoiseAmountMid,phaseNoiseAmountBand,phaseNoiseAmountTop,para):dezipBands;
-phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,phaseNoiseFreqBand,phaseNoiseFreqTop,para):dezipBands;
+phaseNoiseAmounts = VocoderLinArrayChooser(phaseNoiseAmountBottom,phaseNoiseAmountMid,phaseNoiseAmountBand,phaseNoiseAmountTop,para);
+phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,phaseNoiseFreqBand,phaseNoiseFreqTop,para);
 
       // make a log array of values, from bottom to top
 LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
 
 
-VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top);
-VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top);
+VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top): par(i, nrBands, hz2pianokey ): dezipBands : par(i, nrBands, pianokey2hz) ;
+VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top): par(i, nrBands, hz2pianokey ): dezipBands : par(i, nrBands, pianokey2hz);
 
 
 VocoderFreqs(bottom,top) = LogArray(bottom,top,nrBands);
@@ -107,8 +107,8 @@ VocoderFreqsParametricMid(bottom,mid,band,top) =
 LinArray(bottom,top,0) =   0:! ;
 LinArray(bottom,top,nrElements) =     par(i,nrElements,   ((top-bottom)*(i/(nrElements-1)))+bottom);
 
-VocoderLinArrayChooser(bottom,mid,band,top,0) = VocoderLinArray(bottom,top);
-VocoderLinArrayChooser(bottom,mid,band,top,1) = VocoderLinArrayParametricMid(bottom,mid,band,top);
+VocoderLinArrayChooser(bottom,mid,band,top,0) = VocoderLinArray(bottom,top):dezipBands ;
+VocoderLinArrayChooser(bottom,mid,band,top,1) = VocoderLinArrayParametricMid(bottom,mid,band,top):dezipBands ;
 
 VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
       // doesn't compile:
@@ -311,8 +311,10 @@ A(f) = 2 + linear2db(rA(f));
 Atable(f) = rdtable(int(SRmax/2)+1,A(time),int(f:max(20):int(min(SRmax/4))));
 
 
-chooseResonBP(stable,fc,Q,gain) = _<:select2(stable,resonbp(fc,Q,gain),resonbpStable(fc,Q,gain));
-
+chooseResonBP(stable,fc,Q,gain) = filter
+with {
+  filter = _<:select2(stable,resonbp(fc,Q,gain),resonbpStable(fc,Q,gain));
+};
 // stable resonbp = 2nd-order bandpass
 resonbpStable(fc,Q,gain) = tf2snp(b2,b1,b0,a1,a0,wc)
 with {

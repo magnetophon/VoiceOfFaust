@@ -13,10 +13,10 @@ fofCenters(freq) = centers(freq,fofVocoderGroup);
 /*fofDecays  = VocoderFreqs(fofDecayBottom,fofDecayTop);*/
 fofSkirts(freq)  =
   VocoderFreqsChooser(fofSkirtBottom,fofSkirtMid,fofSkirtBand,fofSkirtTop,para)
-  :par(i, nrBands, _*t(4)*(SR/freq*SR)):dezipBands;
-fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para):dezipBands;
-// fofPhases = VocoderLinArrayChooser(fofPhaseBottom,fofPhaseMid,fofPhaseBand,fofPhaseTop,para):dezipBands;
-fofOctavations = VocoderLinArrayChooser(fofOctavationBottom,fofOctavationMid,fofOctavationBand,fofOctavationTop,para):dezipBands;
+  :par(i, nrBands, _*t(4)*(SR/freq*SR));
+fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para);
+// fofPhases = VocoderLinArrayChooser(fofPhaseBottom,fofPhaseMid,fofPhaseBand,fofPhaseTop,para);
+fofOctavations = VocoderLinArrayChooser(fofOctavationBottom,fofOctavationMid,fofOctavationBand,fofOctavationTop,para);
 
 fofNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter) = phaseNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter,fofVocoderGroup);
 

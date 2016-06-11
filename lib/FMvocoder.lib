@@ -3,10 +3,10 @@
 // FM vocoder synthesis
 //-----------------------------------------------
 // maxNrInRoutings = 3;
-// FMcenters(freq) = VocoderFreqsChooser(FMbottom,FMmid,FMband,FMtop,para):par(i, nrBands, _*freq):dezipBands;
+// FMcenters(freq) = VocoderFreqsChooser(FMbottom,FMmid,FMband,FMtop,para):par(i, nrBands, _*freq);
 
-FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,para):dezipBands;
-// FMphases = VocoderLinArrayChooser(FMphaseBottom,FMphaseMid,FMphaseBand,FMphaseTop,para):dezipBands;
+FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,para);
+// FMphases = VocoderLinArrayChooser(FMphaseBottom,FMphaseMid,FMphaseBand,FMphaseTop,para);
 
 import("lib/myFMvox.dsp");
 

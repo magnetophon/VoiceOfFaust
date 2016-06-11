@@ -16,9 +16,9 @@ czFunds(freq,index,i) =
   // (czNoises(i,freq,enablePhaseNoiseFilter)):par(j, nrBands, czFund(freq));
 
 czCenters = centers(1,czVocoderGroup);
-// czPhases = VocoderLinArrayChooser(czPhaseBottom,czPhaseMid,czPhaseBand,czPhaseTop,para):dezipBands;
-// czPhaseRands = VocoderLinArrayChooser(czPhaseRandBottom,czPhaseRandMid,czPhaseRandBand,czPhaseRandTop,para):dezipBands;
-// czNoiseFilterFreqs = VocoderFreqsChooser(czNoiseFilterBottom,czNoiseFilterMid,czNoiseFilterBand,czNoiseFilterTop,para):dezipBands;
+// czPhases = VocoderLinArrayChooser(czPhaseBottom,czPhaseMid,czPhaseBand,czPhaseTop,para);
+// czPhaseRands = VocoderLinArrayChooser(czPhaseRandBottom,czPhaseRandMid,czPhaseRandBand,czPhaseRandTop,para);
+// czNoiseFilterFreqs = VocoderFreqsChooser(czNoiseFilterBottom,czNoiseFilterMid,czNoiseFilterBand,czNoiseFilterTop,para);
 
 czOscs=
     interleave(nrBands,2):
