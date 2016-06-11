@@ -70,7 +70,7 @@ czVocoder(audio,freq,index,fidelity,0)=
   :gainNormalise
   :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   :vocoderMixer(ambisonicsOn,outputRoutingEnabled,0)
-  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width);
+  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width);
 
 czVocoder(audio,freq,index,fidelity,1)=
   //the noises part is to make a different (low)freq modulation for each osc.
@@ -83,4 +83,4 @@ czVocoder(audio,freq,index,fidelity,1)=
     :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   )
   :vocoderMixer(ambisonicsOn,outputRoutingEnabled,1)
-  :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width);
+  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width);

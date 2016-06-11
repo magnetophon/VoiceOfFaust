@@ -74,4 +74,9 @@ reEsser(audio,freq,1) =
   :>bus(nrOutChan)
 with {
   reEssgains(audio,freq)= deEssGains(audio,freq,-reEssAmount*2) : par(i, nrBands, (_-144) : db2linear);
+  Q(i) = ((((c-(prevC(i)*autoQ)):max(20))*q)/(c:max(20)))*(1+(2*autoQ)) with {
+    c = analizerCenters(freq):selector(i,nrBands);
+    prevC(0) = freq/2;
+    prevC(i) = analizerCenters(freq):selector(i-1,nrBands);
+  };
 };

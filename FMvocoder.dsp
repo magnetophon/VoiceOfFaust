@@ -21,7 +21,4 @@ import("lib/master.lib");
 // process
 //-----------------------------------------------
 process(audio) =
-(
-  FMvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs),
-  reEsser(voice(audio,index),masterPitch(audio,index),index,fidelity,doubleOscs,enableReEsser)
-):>bus(nrOutChan);
+  FMvocoder(audio, masterPitch(audio,index),index,fidelity,doubleOscs);
