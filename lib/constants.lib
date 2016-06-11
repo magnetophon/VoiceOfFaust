@@ -31,6 +31,8 @@ PTsmooth                  = 0.9984; // smooth() factor for simple pitch smoother
 // analizer:
 analizerTop               = 128;
 analizerBottom            = (0.5*pow(2,0.5))+0.0;
+// analizerTop               = defaultTop;
+// analizerBottom            = defaultBottom;
 // classicVocoder:
 enableFeedback            = 1; // feedback around the filters of the classicVocoder
 enableFilterAutosat       = 1; // put a saturator in the filter of the classicVocoder
