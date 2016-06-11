@@ -71,7 +71,7 @@ stringloopBank(freq,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCn
     stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio,index),phaseH,nonLinH,frequencyModH,DCnonlinH),
     stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio,index),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
     )
-    :>KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
+    :> KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
 //  feedback path
     ( compressor_mono(100,KPtresh,0,(1/(freq * 0.25 ))))
     :_*KPvolume
@@ -119,5 +119,3 @@ stringloop(freq,audio,index,feedback,phase,DCnonlin) =
         //incoming signal is sent to the nonlinear passive allpass ladder filter
         //nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
       };
-
-// varSeq(i,N, expression)

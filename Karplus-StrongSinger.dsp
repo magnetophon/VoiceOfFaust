@@ -32,15 +32,15 @@ VoiceOfFaust(audio,index) =
   )
   :
   (
-   (_<:(DryPath(phaseM,DCnonlin+DCleftRight),stringloop(freq*KPoctave,audio,index,_,phaseM,DCnonlin+DCleftRight)):>_)
-  ,(_<:(DryPath(0-phaseM,DCnonlin-DCleftRight),stringloop(freq*KPoctave,audio,index,_,0-phaseM,DCnonlin-DCleftRight)):>_)
+   (_<:(DryPath(phaseDry,DCnonlinDry+DCleftRightDry),stringloop(freq*KPoctave,audio,index,_,phaseM,DCnonlin+DCleftRight)):>_)
+  ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloop(freq*KPoctave,audio,index,_,0-phaseM,DCnonlin-DCleftRight)):>_)
   )
   :stereoLimiter(freq * KPoctave) //needs the pitch to adjust the decay time.
   // :VuMeter
   with {
-    DryPath(phase,DC) =  MyNonLinearModulator(nonLin,frequencyMod*freq*KPoctave,phase,DC)*DryVol;
+    DryPath(phase,DC) =  MyNonLinearModulator(nonLinDry,frequencyModDry*freq,phase,DC)*KPvolDry;
 
-    DryVol =  mainKPgroup(vslider("[-1]dry vol[style:knob]", 0.6, 0, 1, 0.001):volScale);
+    // DryVol =  mainKPgroup(vslider("[-1]dry vol[style:knob]", 0.6, 0, 1, 0.001):volScale);
     // add octave slider:
     KPoctave          = mainKPgroup(vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
     freq = masterPitch(audio,index);
