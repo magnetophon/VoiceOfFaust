@@ -25,21 +25,3 @@ import ("lib/FOFvocoder.lib");
 // time faust2jack -t 99999 -time -osc -vec  FOFvocoder.dsp && timeout 10 ./FOFvocoder & sleep 2 && jack_connect system:capture_1 FOFvocoder:in_0 & jack_connect FOFvocoder:out_0 system:playback_1 & jack_connect FOFvocoder:out_1 system:playback_2
 process(audio,index,fidelity) =
 fofvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);
-// process = fof;
-
-  //the noises part is to make a different (low)freq modulation for each osc.
-  //noises(nrBands,0):smooth(tau2pole(32))
-  //"(i+1)*" is to make each band different
-  // par(i,nrOutChan,
-    // (fofNoises(i+1,freq,enablePhasenoise,enablePhaseNoiseFilter),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
-    // :
-    // fofOscs
-    // : gainNormalise
-    // :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
-  // )
-  // :vocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
-  // :postProc(nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,1)
-// with {
-//   multiK = lf_rawsaw(SR/freq*multi);
-//   freq =110;
-// };
