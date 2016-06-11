@@ -3,7 +3,7 @@
 // FM vocoder synthesis
 //-----------------------------------------------
 
-FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,para);
+FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,para): dezipBands;
 
 import("lib/myFMvox.dsp");
 

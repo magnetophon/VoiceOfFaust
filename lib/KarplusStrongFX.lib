@@ -2,7 +2,7 @@
 // Karplus-Strong effect
 //-----------------------------------------------
 
-KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(SR/2)));
+KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(SR/2):dezip));
 
 KPanalizer(audio,freq) =
     analizer(audio,freq,fidelity,enableDeEsser)

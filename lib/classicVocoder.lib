@@ -81,7 +81,7 @@ AutosatArray(1) =
   (
     (
        bus(nrBands),
-       (VocoderLinArrayChooser(autoSatBottom,autoSatMid,autoSatBand,autoSatTop,para):par(i,nrBands,dezip))
+       (VocoderLinArrayChooser(autoSatBottom,autoSatMid,autoSatBand,autoSatTop,para):dezipBands)
     )
        :interleave(nrBands,2)
   )
@@ -99,7 +99,7 @@ StereoVocoder(audio,freq,index,fidelity) =
            ((vocoderOsc(freq,index)<:bus(nrBands))
            ,(vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
            ,analizer(voice(audio,index),freq,fidelity,enableDeEsser)
-           ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):par(i,nrBands,dezip)))
+           ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):dezipBands))
            :StereoVolFilterBank(nrBands,enableFeedback)
            :gainCompare(audio,index,fidelity,freq,enableGainCompare)
            :vocoderMixer(ambisonicsOn,outputRoutingEnabled,0)

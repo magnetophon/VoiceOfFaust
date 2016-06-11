@@ -40,9 +40,9 @@ octaveMultiplier	=
         (_==2) * 4
     ):>_;
 
-centers(freq,group) = group(VocoderFreqsChooser(bottom,mid,band,top,para)):par(i, nrBands, _*freq);
+centers(freq,group) = group(VocoderFreqsChooser(bottom,mid,band,top,para)):par(i, nrBands, _*freq): dezipBands;
 
-phases = VocoderLinArrayChooser(phaseBottom,phaseMid,phaseBand,phaseTop,para);
+phases = VocoderLinArrayChooser(phaseBottom,phaseMid,phaseBand,phaseTop,para): dezipBands;
 
 // phaseNoises(polarity,freq,enablePhasenoise,enablePhaseNoiseFilter,group) =
 //TODO: make true multichannel version
@@ -59,15 +59,15 @@ funds(freq,index,polarity,group) = par(i, nrBands, fundPhase(freq,index,group(oc
 };
 
 
-phaseNoiseAmounts = VocoderLinArrayChooser(phaseNoiseAmountBottom,phaseNoiseAmountMid,phaseNoiseAmountBand,phaseNoiseAmountTop,para);
-phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,phaseNoiseFreqBand,phaseNoiseFreqTop,para);
+phaseNoiseAmounts = VocoderLinArrayChooser(phaseNoiseAmountBottom,phaseNoiseAmountMid,phaseNoiseAmountBand,phaseNoiseAmountTop,para): dezipBands;
+phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,phaseNoiseFreqBand,phaseNoiseFreqTop,para): dezipBands;
 
       // make a log array of values, from bottom to top
 LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
 
 
-VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top): dezipBands;
-VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top): dezipBands;
+VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top);
+VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top);
 
 // Do the smoothing in the linear domain:
 // Too expensive, not enough difference in the sound.
@@ -99,6 +99,7 @@ VocoderFreqsParametricMid(bottom,mid,band,top) =
   midVal(band)=
   ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
   + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
+  // todo: maybe dezip ?
   origMid(band) = (VocoderFreqs(bottom,top):selector(band-1,nrBands)):>_;
   };
 
@@ -109,8 +110,8 @@ VocoderFreqsParametricMid(bottom,mid,band,top) =
 LinArray(bottom,top,0) =   0:! ;
 LinArray(bottom,top,nrElements) =     par(i,nrElements,   ((top-bottom)*(i/(nrElements-1)))+bottom);
 
-VocoderLinArrayChooser(bottom,mid,band,top,0) = VocoderLinArray(bottom,top):dezipBands ;
-VocoderLinArrayChooser(bottom,mid,band,top,1) = VocoderLinArrayParametricMid(bottom,mid,band,top):dezipBands ;
+VocoderLinArrayChooser(bottom,mid,band,top,0) = VocoderLinArray(bottom,top);
+VocoderLinArrayChooser(bottom,mid,band,top,1) = VocoderLinArrayParametricMid(bottom,mid,band,top);
 
 VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
       // doesn't compile:

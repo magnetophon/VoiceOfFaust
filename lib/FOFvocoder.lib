@@ -6,9 +6,9 @@
 fofCenters(freq) = centers(freq,fofVocoderGroup);
 fofSkirts(freq)  =
   VocoderFreqsChooser(fofSkirtBottom,fofSkirtMid,fofSkirtBand,fofSkirtTop,para)
-  :par(i, nrBands, _*t(4)*(SR/freq*SR));
-fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para);
-fofOctavations = VocoderLinArrayChooser(fofOctavationBottom,fofOctavationMid,fofOctavationBand,fofOctavationTop,para);
+  :par(i, nrBands, _*t(4)*(SR/freq*SR):dezip);
+fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para): dezipBands;
+fofOctavations = VocoderLinArrayChooser(fofOctavationBottom,fofOctavationMid,fofOctavationBand,fofOctavationTop,para): dezipBands;
 
 fofNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter) = phaseNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter,fofVocoderGroup);
 

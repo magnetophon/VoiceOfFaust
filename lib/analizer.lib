@@ -9,7 +9,7 @@ subLevel(audio) = voice(audio,index):gate_mono(threshold-15,0,0.1,0.05):lowpass(
 
 //analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,nrBands, _,freq:*:min(SR/2)));
 
-analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands, _,freq:*:min(SR/2)));
+analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands, _,freq:*:min(SR/2):dezip));
 
 //amp_follower_ud params set for minimal distortion
 //also sounds cool to vary between this and 0
