@@ -447,7 +447,7 @@ nonLinDry         = DryOscModGroup( vslider("[1]amount [style:knob][tooltip: mod
 frequencyModDry   = DryOscModGroup( vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.250,0,8,0.001) : smooth(0.999));
 phaseDry          = DryOscModGroup( vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
-HHKPgroup(x)      = KPgroup((     hgroup("[2]+2 oct", x)));
+HHKPgroup(x)      = KPgroup((     hgroup("[3]+2 oct", x)));
 KPvolHH           = HHKPgroup(      vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
 feedbackHH        = HHKPgroup(      vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
 HHmodGroup(y)     = HHKPgroup((   hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
@@ -458,7 +458,7 @@ nonLinHH          = HHoscModGroup(  vslider("[1]amount [style:knob][tooltip: mod
 frequencyModHH    = HHoscModGroup(  vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : smooth(0.999));
 phaseHH           = HHoscModGroup(  vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
-HKPgroup(x)       = KPgroup((     hgroup("[3]+1 oct", x)));
+HKPgroup(x)       = KPgroup((     hgroup("[4]+1 oct", x)));
 KPvolH            = HKPgroup(       vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
 feedbackH         = HKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
 HmodGroup(y)      = HKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
@@ -469,7 +469,7 @@ nonLinH           = HoscModGroup(   vslider("[1]amount [style:knob][tooltip: mod
 frequencyModH     = HoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : smooth(0.999));
 phaseH            = HoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
-MKPgroup(x)       = KPgroup((     hgroup("[4]0 oct"                    , x)));
+MKPgroup(x)       = KPgroup((     hgroup("[5]0 oct"                    , x)));
 KPvol             = MKPgroup(       vslider("[0]volume [style:knob]"     , 1, 0, 1, 0.001):volScale);
 feedbackM         = MKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
 MmodGroup(y)      = MKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]"              , y)));
@@ -480,7 +480,7 @@ nonLin            = MoscModGroup(   vslider("[1]amount [style:knob][tooltip: mod
 frequencyMod      = MoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]" , 1,0,8,0.001) : smooth(0.999));
 phaseM            = MoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]"      , 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
-LKPgroup(x)       = KPgroup((     hgroup("[5]-1 oct", x)));
+LKPgroup(x)       = KPgroup((     hgroup("[6]-1 oct", x)));
 KPvolL            = LKPgroup(       vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
 feedbackL         = LKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale;  // -60db decay time (sec)
 LmodGroup(y)      = LKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
@@ -491,7 +491,7 @@ nonLinL           = LoscModGroup(   vslider("[1]amount [style:knob][tooltip: mod
 frequencyModL     = LoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : smooth(0.999));
 phaseL            = LoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:smooth(0.999));
 
-LLKPgroup(x)      = KPgroup((     hgroup("[6]-2 oct", x)));
+LLKPgroup(x)      = KPgroup((     hgroup("[7]-2 oct", x)));
 KPvolLL           = LLKPgroup(      vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
 feedbackLL        = LLKPgroup(      vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
 LLmodGroup(y)     = LLKPgroup((   hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
