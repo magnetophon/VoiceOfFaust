@@ -81,7 +81,7 @@ stringloopBank(freq,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCn
 stringloop(freq,audio,index,feedback,phase,DCnonlin) =
     ((_+feedback
     :
-    stringloopFBpath(freq,1,feedbackM*feedbackADSR(audio,index),phase,nonLin,frequencyMod,DCnonlin)
+    stringloopFBpath(freq,1,feedbackSimple*feedbackADSR(audio,index),phase,nonLin,frequencyMod,DCnonlin)
     )~ //or dampingfilter2
       //:KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
            ( compressor_mono(100,KPtresh,0,1/(freq *0.5 ))))

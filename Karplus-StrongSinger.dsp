@@ -41,8 +41,11 @@ VoiceOfFaust(audio,index) =
     DryPath(phase,DC) =  MyNonLinearModulator(nonLinDry,frequencyModDry*freq,phase,DC)*KPvolDry;
 
     // add octave slider:
-    KPoctave          = mainKPgroup(vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
-    freq = masterPitch(audio,index);
+    KPoctave       = mainKPgroup( vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
+    // is used in stringloop. has a different default value than feedbackM
+    // so when we only have one FB loop, turn it on!
+    feedbackSimple = MKPgroup(    vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+    freq           = masterPitch(audio,index);
   };
 //-----------------------------------------------
 // process

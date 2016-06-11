@@ -46,4 +46,4 @@ VoiceOfFaust(audio,index) =
 // process
 //-----------------------------------------------
 
-process(audio,index) = VoiceOfFaust(audio,index);
+process(audio) = VoiceOfFaust(audio,index);
