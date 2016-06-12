@@ -24,7 +24,7 @@ import ("lib/pmFX.lib");
 //-----------------------------------------------
 
 
-VoiceOfFaust(audio,index) =
+VoiceOfFaust(audio,index,fidelity) =
   (voice(audio,freq)<:_,_)
   :
   (
@@ -33,8 +33,8 @@ VoiceOfFaust(audio,index) =
   )
   :
   (
-   (_<:(DryPath(phaseDry,DCnonlinDry+DCleftRightDry),stringloopBank(freq,audio,index,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH)):>_)
-  ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloopBank(freq,audio,index,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH)):>_)
+   (_<:(DryPath(phaseDry,DCnonlinDry+DCleftRightDry),stringloopBank(freq,fidelity,audio,index,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH)):>_)
+  ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloopBank(freq,fidelity,audio,index,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH)):>_)
   )
   :stereoLimiter(freq * 0.25) //needs the pitch to adjust the decay time.
   //:VuMeter
@@ -46,4 +46,4 @@ VoiceOfFaust(audio,index) =
 // process
 //-----------------------------------------------
 
-process(audio) = VoiceOfFaust(audio,index);
+process(audio) = VoiceOfFaust(audio,index,fidelity);
