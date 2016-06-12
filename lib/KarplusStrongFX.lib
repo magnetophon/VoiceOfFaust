@@ -4,7 +4,7 @@
 
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(SR/2):dezip));
 
-KPanalizer(audio,freq) =
+KPanalizer(audio,freq,fidelity) =
     analizer(audio,freq,fidelity,enableDeEsser)
     :par(i,nrBands,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
     :linear2db) );//adapt to eq instead of bandpass
@@ -30,7 +30,7 @@ EQbank(Oscilator,q) =
            ((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume):
            select2;
         };
-KPvocoder(audio,feedback,freq)= (feedback,KPvocoderQ,KPanalizer(voice(audio,freq),freq),KPcenters(freq,1)):EQbank;
+KPvocoder(audio,feedback,freq,fidelity)= (feedback,KPvocoderQ,KPanalizer(voice(audio,freq),freq,fidelity),KPcenters(freq,1)):EQbank;
 
 stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
       //(( fdelay4(Pmax, P-2)))
@@ -56,7 +56,7 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
 
 feedbackADSR(audio,freq) = tanh(voice(audio,freq)*2:amp_follower(KPrelease)):pow(4);
 
-stringloopBank(freq,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH) =
+stringloopBank(freq,fidelity,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH) =
     (_+feedback
     <:(    stringloopFBpath(freq,0.25,feedbackLL*feedbackADSR(audio,freq),phaseLL,nonLinLL,frequencyModLL,DCnonlinLL),
     stringloopFBpath(freq,0.5,feedbackL*feedbackADSR(audio,freq),phaseL,nonLinL,frequencyModL,DCnonlinL),
@@ -64,7 +64,7 @@ stringloopBank(freq,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCn
     stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio,freq),phaseH,nonLinH,frequencyModH,DCnonlinH),
     stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio,freq),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
     )
-    :> KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
+    :> KPvocoder(audio,_,freq,fidelity):dampingfilter1)~ //or dampingfilter2
 //  feedback path
     ( compressor_mono(100,KPtresh,0,(1/(freq * 0.25 ))))
     :_*KPvolume
