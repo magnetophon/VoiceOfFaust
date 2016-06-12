@@ -1,31 +1,28 @@
-fix volumes
-benchmark meters+limiters: +/- 10%
-choose FX
-benchmark qompander
 
-split up:
-* classicVocoder
-* stringSinger
-* PAF
-* FOF
-* FM
-* CZ RM
-* Sub
-* SubSinger = clean+sub FM+chorus+limiter
-* Karplus-Strong-Singer
-* PM
 
-nix-installer
-* pkg vocsynth
-* router
-* 
+check PAF glitches -> interpolate like FM?
 
+test or remove combined .dsp's
+
+make Karplus-StrongSingerMaxi slave
+ also StringSinger, VoiceOfFaust, FMsinger and SubSinger
 demo
 txt
 video
 
-PR puredata
-
 make each synth use it's own osc port
 
 put back formant tracker
+
+make true multichannel of everything
+(phases with LinArray(nrOutChan,-1,1) )
+
+inputrouting on phases
+
+autoQ in KPvocoder
+
+separate plugin MB deesser.
+
+fix weighting
+
+attack release out of analyzer, via top/bottom in synth

@@ -6,11 +6,12 @@ A voice synthesizer/effects machine.
 It turns any monophonic sound into a synthesizer.
 The name was chosen because I use it mostly to turn my voice into a singing robot, and it's made in [faust](http://faust.grame.fr)
 
-It started life as a port of [VocSynth](https://github.com/magnetophon/VocSynth) to faust (http://faust.grame.fr), partly adding in some new stuff that is not possible in puredata.
+It started life as a port of [VocSynth](https://github.com/magnetophon/VocSynth). ([documentation])
 
 More information on how it works can be found here:
 
 https://github.com/magnetophon/VocSynth/blob/master/A%20realtime%20synthesizer%20controlled%20by%20singing%20and%20beatboxing.pdf
+
 
 Caribean.mp3 is a demo song
 
