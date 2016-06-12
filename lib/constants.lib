@@ -7,12 +7,12 @@ nrBands                   = 16;// Number of bands for the vocoders.
 nrOutChan                 = 2; // number of outputs
 ambisonicsOn              = 0; // do we want an ambisonic synth.
 ambisonicsOrder           = 3; // order of the ambisonics
-para                      = 0; // whether we want a parametric mid
+para                      = 1; // whether we want a parametric mid
 enableGainCompare         = 1; // correct the loudness of the individual bands after they've been created
 enableGainScale           = 1; // expand or compress the spectrum: make it more or less resonant
 autoQ                     = 1; // enable correction of the filter-Q depending on the distance between the bands
 enableDeEsser             = 1+ enableReEsser:min(1); // enable the multi-band deEsser, is needed for reEsser
-enableReEsser             = 0; // enable the multi-band reEsser
+enableReEsser             = 0; // enable the multi-band reEsser: experimental: not well tested in multichannel and ambisonics
 stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd pass filters
 enableAutosat             = 0; // put a saturator at the output
 outputRoutingEnabled      = 1; // have flexible routing between the bands and the outputs
@@ -20,7 +20,7 @@ inputRoutingEnabled       = 1; // have flexible routing between the osclilators 
 maxNrOutRoutings          = select2(ambisonicsOn,6,3); // the maximum amount of different output routings
 SRmax                     = 96000.0;                          // assumed upper limit on sampling rate
 // pitch tracking:
-enablePitchTracker        = 0; // internal pitch tracker
+enablePitchTracker        = 1; // internal pitch tracker
 enablePitchQuantise       = 0; // a simple 'autotune': only chromatic
 enablegainedSmootherPitch = 1; // choose between normal smoothing of th pitch (0), and a  psuedo Kalman filter that looks at the fidelity
 MinInputPitch             = 48.9994;	// = G1, the lowest frequency that helmholtz~ can track is 51 Hz

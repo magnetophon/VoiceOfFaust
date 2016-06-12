@@ -26,7 +26,7 @@ fofvocoder(audio,freq,index,fidelity,0)=
   :fofOscs
   :gainNormalise
   :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
-  :vocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
+  :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,doubleOscs)
   :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width)
 with {
   multiK = lf_rawsaw(SR/freq*multi);
@@ -42,7 +42,7 @@ fofvocoder(audio,freq,index,fidelity,1)=
     : gainNormalise
     :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   )
-  :vocoderMixer(ambisonicsOn,outputRoutingEnabled,doubleOscs)
+  :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,doubleOscs)
   :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width)
 with {
   multiK = lf_rawsaw(SR/freq*multi);

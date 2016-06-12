@@ -60,23 +60,25 @@ with {
 };
 
 
-// reEsser(audio,freq,enableReEsser) =
-reEsser(audio,freq,0) = par(i, nrOutChan, 0);
-reEsser(audio,freq,1) =
-  (
-    (noise<:bus(nrBands))
-    // (multinoise(nrBands))
-    ,(analizerCenters(freq)<:((bus(nrBands)<:(freq/2,par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
-    ,reEssgains(audio,freq)
-    ,(analizerQ<:bus(nrBands))
-  )
-  :(interleave(nrBands,5):par(i, nrBands, volFilter))
-  :>bus(nrOutChan)
+// reEsser(audio,freq,doubleOscs,enableReEsser)
+reEsser(audio,freq,doubleOscs,0) = bus(nrBands*(doubleOscs+1));
+reEsser(audio,freq,doubleOscs,1) =
+// bus(nrOuts)
+    (
+      bus(nrOuts),
+      (
+        (
+          (noise<:bus(nrBands))
+          // (multinoise(nrBands))
+          ,(analizerCenters(freq)<:((bus(nrBands)<:(freq/2,par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
+          ,reEssgains(audio,freq)
+          ,(analizerQ<:bus(nrBands))
+        )
+        :(interleave(nrBands,5):par(i, nrBands, volFilter))<:bus(nrOuts)
+      )
+    )
+    :>bus(nrOuts)
 with {
   reEssgains(audio,freq)= deEssGains(audio,freq,-reEssAmount*2) : par(i, nrBands, (_-144) : db2linear);
-  Q(i) = ((((c-(prevC(i)*autoQ)):max(20))*q)/(c:max(20)))*(1+(2*autoQ)) with {
-    c = analizerCenters(freq):selector(i,nrBands);
-    prevC(0) = freq/2;
-    prevC(i) = analizerCenters(freq):selector(i-1,nrBands);
-  };
+  nrOuts = select2(doubleOscs,nrBands,nrBands*nrOutChan);
 };

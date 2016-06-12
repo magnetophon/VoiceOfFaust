@@ -102,6 +102,6 @@ StereoVocoder(audio,freq,index,fidelity) =
            ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):dezipBands))
            :StereoVolFilterBank(nrBands,enableFeedback)
            :gainCompare(audio,index,fidelity,freq,enableGainCompare)
-           :vocoderMixer(ambisonicsOn,outputRoutingEnabled,0)
+           :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,0)
            // :endGainCompare(audio,freq)
            :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*select2(gainCompEnable,0.001,0.02),width);
