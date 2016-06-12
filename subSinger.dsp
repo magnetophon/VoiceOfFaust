@@ -12,6 +12,7 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
 import ("lib/common.lib");
+import("lib/master.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/inputFM.lib");
@@ -27,7 +28,7 @@ VoiceOfFaust(audio) =
     subSine(audio,freq)
     ,
     FMvolume,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),freq,index,fidelity,doubleOscs,subLevel(audio,freq))
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),freq,subLevel(audio,freq))
   )
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
@@ -38,7 +39,7 @@ VoiceOfFaust(audio) =
 
   :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
-  :stereoLimiter(freq * vocoderOctave) //needs the pitch to adjust the decay time.
+  :stereoLimiter(freq * subOctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   )
   with {
@@ -46,9 +47,9 @@ VoiceOfFaust(audio) =
     nrOutChan = 2;
     nrSends    = 2;
 
-    cleanpmFX  = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0.5, 0, 1, 0.001):volScale);
+    cleanpmFX  = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0.25, 0, 1, 0.001):volScale);
 
-    subVolume  = subGroupLevel(vslider("[0]volume[style:knob]",	1, 0, 1, 0.001):volScale);
+    subVolume  = subGroupLevel(vslider("[0]volume[style:knob]",	0.5, 0, 1, 0.001):volScale);
 
     FMvolM     = HFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	1, 0, 1, 0.001):volScale);
     FMvolLL    = LLFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]", 0, 0, 1, 0.001):volScale);
