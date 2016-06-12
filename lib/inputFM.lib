@@ -1,7 +1,7 @@
 //-----------------------------------------------
 // input->FM synth
 //-----------------------------------------------
-FM(audio,freq) = osc(freq/2+audio* 5000)*subLevel(audio);
+FM(audio,freq) = osc(freq/2+audio* 5000)*subLevel(audio,freq);
 
 //compressor_mono(ratio,thresh,att,rel,x)
 extremeLimiter = compressor_mono(100,-54,0.0008,0.002)*70;
@@ -29,4 +29,4 @@ FMSynth(limited, unlimited,freq,gain) =
     ):>_
     ;
 
-stereoFMSynth(limited, unlimited,freq,gain) = FMSynth(limited, unlimited,freq,gain) ,FMSynth(limited*-1, unlimited*-1,freq,gain);
+stereoFMSynth(limited, unlimited,freq,gain) = FMSynth(limited, unlimited,freq,gain*0.25) ,FMSynth(limited*-1, unlimited*-1,freq,gain*0.25);

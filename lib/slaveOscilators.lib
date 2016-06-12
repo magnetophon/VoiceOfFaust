@@ -7,7 +7,7 @@
 //-----------------------------------------------
 
 subSine(audio,freq) = fund(freq,index,subOctave)*2*PI:sin * //(subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
-(subLevel(audio))*2<:_,_;
+(subLevel(audio,freq))*2<:_,_;
 
 //---------------- Bandlimited Sawtooth sawN, saw2, ... ------------------
 // METHOD: Differentiated Polynomial Waves (DPW) (for aliasing suppression)

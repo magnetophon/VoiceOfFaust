@@ -12,13 +12,14 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
 import ("lib/common.lib");
+import("lib/master.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/classicVocoder.lib");
 import ("lib/chorus.lib");
 import ("lib/pmFX.lib");
 
-5axNrInRoutings = 5;
+maxNrInRoutings = 5;
 
 //-----------------------------------------------
 // GUI changes
@@ -35,10 +36,10 @@ import ("lib/pmFX.lib");
 VoiceOfFaust(audio) =
   (
   cleanVolume,cleanChorus,cleanpmFX, //output volumes. The number of parameters should be nrSends
-  (voice(audio,index)<:bus(nrOutChan))
+  (voice(audio,freq)<:bus(nrOutChan))
   ,
   vocoderVolume,vocoderChorus,vocoderpmFX,
-  StereoVocoder(audio,masterPitch(audio,index),index,fidelity)
+  StereoVocoder(audio,freq,index,fidelity)
 
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
@@ -47,13 +48,13 @@ VoiceOfFaust(audio) =
   ,par(i,nrOutChan/2,stereoChorus)
 
   ,par(i,nrOutChan/2,
-    (pmFX(masterPitch(audio,index),pmFXr,pmFXi,PMphase)
-    ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,0-PMphase))
+    (pmFX(freq,pmFXr,pmFXi,PMphase)
+    ,pmFX(freq,pmFXr,pmFXi,0-PMphase))
   )
 
   :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
-  //:stereoLimiter(masterPitch(audio,index) * vocoderOctave) //needs the pitch to adjust the decay time.
+  //:stereoLimiter(freq * vocoderOctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   )
   with {
@@ -61,11 +62,12 @@ VoiceOfFaust(audio) =
     nrSends    = 3;
 
     cleanChorus             = cleanGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0, 0, 1, 0.001):volScale);
-    cleanpmFX               = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0.5, 0, 1, 0.001):volScale);
+    cleanpmFX               = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 
     vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0.75, 0, 1, 0.001):volScale);
     vocoderChorus           = vocoderGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0.5, 0, 1, 0.001):volScale);
     vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0.5, 0, 1, 0.001):volScale); // 0 to 1
+    freq = masterPitch(audio,index);
     };
 
 
@@ -74,4 +76,4 @@ VoiceOfFaust(audio) =
 //-----------------------------------------------
 
 process(audio) = VoiceOfFaust(audio);
-//process(audio) = StereoVocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);
+//process(audio) = StereoVocoder(audio,freq,index,fidelity,doubleOscs);

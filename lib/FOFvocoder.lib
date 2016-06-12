@@ -25,7 +25,7 @@ fofvocoder(audio,freq,index,fidelity,0)=
   (fofNoises(0,freq,enablePhasenoise,enablePhaseNoiseFilter),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
   :fofOscs
   :gainNormalise
-  :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
+  :((analizer(voice(audio,freq),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,doubleOscs)
   :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width)
 with {
@@ -40,7 +40,7 @@ fofvocoder(audio,freq,index,fidelity,1)=
     ,(fofNoises(i+1,freq,enablePhasenoise,enablePhaseNoiseFilter),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
     :fofOscs
     : gainNormalise
-    :((analizer(voice(audio,index),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
+    :((analizer(voice(audio,freq),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
   )
   :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,doubleOscs)
   :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.1,width)

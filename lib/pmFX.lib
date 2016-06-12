@@ -13,8 +13,8 @@ PHosci(freq,PH)	= s1 + d * (s2 - s1)
 
       // modulator:
       // usage:
-      // ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,PMphase)
-      // ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,0-PMphase)
+      // ,pmFX(freq,pmFXr,pmFXi,PMphase)
+      // ,pmFX(freq,pmFXr,pmFXi,0-PMphase)
 pmFX(fc,r,I,PH,x) = x : fdelay3(1 << 17, dt + 1)
     with {
     k = 8.0 ; // pitch-tracking analyzing cycles number

@@ -21,24 +21,24 @@ VoiceOfFaust(audio) =
   (
   (
     cleanVolume,cleanpmFX, //output volumes. The number of parameters should be nrSends
-    (voice(audio,index)<:_,_)
+    (voice(audio,freq)<:_,_)
     ,
     subVolume,subpmFX,
-    subSine(audio,masterPitch(audio,index))
+    subSine(audio,freq)
     ,
     FMvolume,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),masterPitch(audio,index),index,fidelity,doubleOscs,subLevel(audio))
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),freq,index,fidelity,doubleOscs,subLevel(audio,freq))
   )
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
   :_,_//No effect
 
-  ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,PMphase)
-  ,pmFX(masterPitch(audio,index),pmFXr,pmFXi,0-PMphase)
+  ,pmFX(freq,pmFXr,pmFXi,PMphase)
+  ,pmFX(freq,pmFXr,pmFXi,0-PMphase)
 
   :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
-  :stereoLimiter(masterPitch(audio,index) * vocoderOctave) //needs the pitch to adjust the decay time.
+  :stereoLimiter(freq * vocoderOctave) //needs the pitch to adjust the decay time.
   //:VuMeter
   )
   with {
@@ -52,6 +52,7 @@ VoiceOfFaust(audio) =
 
     FMvolM     = HFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	1, 0, 1, 0.001):volScale);
     FMvolLL    = LLFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]", 0, 0, 1, 0.001):volScale);
+    freq = masterPitch(audio,index);
     };
 
 

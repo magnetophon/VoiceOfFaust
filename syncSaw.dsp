@@ -24,7 +24,7 @@ process(audio,index,fidelity) =
 //   ,
 // (sync_sawN(2,frequency,syncer)*0.5)
   // index,
-  // my_lf_sawpos(masterPitch(audio,index)/4)
+  // my_lf_sawpos(freq/4)
 
 with {
   my_lf_sawpos(freq) = decimal ~ +((freq/SR));

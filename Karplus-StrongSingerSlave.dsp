@@ -24,7 +24,7 @@ import ("lib/pmFX.lib");
 //-----------------------------------------------
 
 VoiceOfFaust(audio,index) =
-  (voice(audio,index)<:_,_)
+  (voice(audio,freq)<:_,_)
   :
   (
    pmFX(freq,pmFXr,pmFXi,PMphase)

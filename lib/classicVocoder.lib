@@ -93,12 +93,12 @@ vocoderCenters(freq) =
     VocoderFreqsChooser(vocoderBottom,vocoderMid,vocoderBand,vocoderTop,para):(par(i,nrBands, _,freq * vocoderOctave:*:min(SR/2):dezip));
 
 
-endGainCompare(audio,freq) = (bus(nrOutChan),(voice(audio,index)<:bus(nrOutChan))):interleave(nrOutChan,2):par(i,nrOutChan,gainCompareElement);
+endGainCompare(audio,freq) = (bus(nrOutChan),(voice(audio,freq)<:bus(nrOutChan))):interleave(nrOutChan,2):par(i,nrOutChan,gainCompareElement);
 
 StereoVocoder(audio,freq,index,fidelity) =
            ((vocoderOsc(freq,index)<:bus(nrBands))
            ,(vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
-           ,analizer(voice(audio,index),freq,fidelity,enableDeEsser)
+           ,analizer(voice(audio,freq),freq,fidelity,enableDeEsser)
            ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):dezipBands))
            :StereoVolFilterBank(nrBands,enableFeedback)
            :gainCompare(audio,index,fidelity,freq,enableGainCompare)

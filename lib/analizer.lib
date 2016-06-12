@@ -3,7 +3,7 @@
 //-----------------------------------------------
 import("lib/classicVocoder.lib"); // for StereoVolFilterBankNoFeedback
 
-subLevel(audio) = voice(audio,index):gate_mono(threshold-15,0,0.1,0.05):lowpass(3,300):amp_follower_ud(0.003,0.005)*4:tanh;
+subLevel(audio,freq) = voice(audio,freq):gate_mono(threshold-15,0,0.1,0.05):lowpass(3,300):amp_follower_ud(0.003,0.005)*4:tanh;
 
 //subLevel(audio) = audio:lowpass(3,300):amp_follower_ud((vslider("up", 0, 0, 1, 0)*0.1),(vslider("down", 0, 0, 1, 0.001)*0.1))*6:tanh;
 
