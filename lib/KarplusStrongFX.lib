@@ -78,10 +78,10 @@ stringloopBank(freq,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCn
     dampingfilter2(x) = (h0 * x' + h1*(x+x''));
     };
 
-stringloop(freq,audio,index,feedback,phase,DCnonlin) =
+stringloop(freq,audio,index,feedbackAmount,feedback,phase,DCnonlin) =
     ((_+feedback
     :
-    stringloopFBpath(freq,1,feedbackSimple*feedbackADSR(audio,freq),phase,nonLin,frequencyMod,DCnonlin)
+    stringloopFBpath(freq,1,feedbackAmount*feedbackADSR(audio,freq),phase,nonLin,frequencyMod,DCnonlin)
     )~ //or dampingfilter2
       //:KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
            ( compressor_mono(100,KPtresh,0,1/(freq *0.5 ))))

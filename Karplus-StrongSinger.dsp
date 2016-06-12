@@ -32,8 +32,8 @@ VoiceOfFaust(audio,index) =
   )
   :
   (
-   (_<:(DryPath(phaseDry,DCnonlinDry+DCleftRightDry),stringloop(freq*KPoctave,audio,index,_,phaseM,DCnonlin+DCleftRight)):>_)
-  ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloop(freq*KPoctave,audio,index,_,0-phaseM,DCnonlin-DCleftRight)):>_)
+   (_<:(DryPath(phaseDry,DCnonlinDry+DCleftRightDry),stringloop(freq*KPoctave,audio,index,feedbackAmount,_,phaseM,DCnonlin+DCleftRight)):>_)
+  ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloop(freq*KPoctave,audio,index,feedbackAmount,_,0-phaseM,DCnonlin-DCleftRight)):>_)
   )
   :stereoLimiter(freq * KPoctave) //needs the pitch to adjust the decay time.
   // :VuMeter
@@ -44,7 +44,7 @@ VoiceOfFaust(audio,index) =
     KPoctave       = mainKPgroup( vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
     // is used in stringloop. has a different default value than feedbackM
     // so when we only have one FB loop, turn it on!
-    feedbackSimple = MKPgroup(    vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+    feedbackAmount  = MKPgroup(    vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
     freq           = masterPitch(audio,index);
   };
 //-----------------------------------------------

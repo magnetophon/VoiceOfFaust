@@ -12,6 +12,7 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
 import ("lib/common.lib");
+import("lib/master.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/classicVocoder.lib");
@@ -46,17 +47,20 @@ VoiceOfFaust(audio) =
     fofvocoder(audio,freq,index,fidelity,doubleOscs),
 
     FMvolume,fmNLKS,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),freq,index,fidelity,doubleOscs,subLevel(audio,freq)),
+    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),freq,subLevel(audio,freq)),
 
     CZvolume,CZNLKS,CZpmFX,
-    CZringMod(audio,freq,index,fidelity,doubleOscs)
+    CZringMod(audio,freq,index)
 
     : mixerWithSends(nrChan,nrOutChan,nrSends)
 
     :_,_//No effect
 
-    ,(stringloopBank(freq,audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
-    ,(stringloopBank(freq,audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
+    ,(stringloop(freq*KPoctave,audio,index,feedbackAmount,_,phaseM,DCnonlin+DCleftRight))
+    ,(stringloop(freq*KPoctave,audio,index,feedbackAmount,_,0-phaseM,DCnonlin-DCleftRight))
+    // too CPU heavy:
+    // ,(stringloopBank(freq,audio,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH))
+    // ,(stringloopBank(freq,audio,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH))
 
     ,pmFX(freq,pmFXr,pmFXi,PMphase)
     ,pmFX(freq,pmFXr,pmFXi,0-PMphase)
@@ -64,9 +68,11 @@ VoiceOfFaust(audio) =
     :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_))
 
     :stereoLimiter(freq * 0.25) //it needs the lowest pitch to adjust the decay time.
-    :VuMeter
+    // :VuMeter
     )
     with {
+          KPoctave       = mainKPgroup( vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
+          feedbackAmount  = MKPgroup(    vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
           nrChan     = 7;
           nrOutChan = 2;
           nrSends    = 3;
