@@ -9,7 +9,7 @@ VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all os
   tabs(x)               = VoFgroup(tgroup("[3]", x));
     synthsGroup(x)      = tabs(hgroup("[0]synths", x));
     FXGroup(x)          = tabs(hgroup("[1]effects", x));
-        //MeterGroup(x) = (vgroup("[3]output level", x));
+  MeterGroup(x)         = VoFgroup(vgroup("[3]output level", x));
 
 OSCpitch                = OSCgroup(nentry(   "[00]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
 OSCfidelity             = OSCgroup(nentry(   "[01]fidelity[tooltip: the quality of the pitch estimate; determines the smoothness of the pitch curve]", 0.98, 0, 1, 0.001));

@@ -28,7 +28,7 @@ sumOfN(n) = (sumOfN(n-1),_):+;
 // cheaper than actual dB calculations:
 volScale=_:pow(2):smooth(0.999);
 envelop                 = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
-VuMeter                 = par(i,2,_<:(_, (envelop :(OSCgroup(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, +6))))):attach));
+VuMeter                 = par(i,2,_<:(_, (envelop :(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, +6))))):attach));
 
 octaveMultiplier	=
     _<:
