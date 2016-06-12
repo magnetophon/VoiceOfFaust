@@ -41,7 +41,7 @@ vocoderN                  = 2; // order of anti aliasing
 defaultTop                = 128:pow(0.5); // using these two values with 16 bands, gives integer formant ratios
 defaultBottom             = ((0.25*pow(2,0.5))+0.5):pow(0.5);
 doubleOscs                = 1; // whether a vocoder has nrBands or nrBands * nrOutChan oscilators
-enablePhasenoise          = 1; // 0 = no noise   and 1 = noise modulates phase
+enablePhaseNoise          = 1; // 0 = no noise   and 1 = noise modulates phase
 enablePhaseNoiseFilter    = 1; // 0 = noise:smooth(fixed)   and 1 = noise:lowpass(variable)
 noisesFilterN             = 4; // the order of the noise lowpass
 // FOF

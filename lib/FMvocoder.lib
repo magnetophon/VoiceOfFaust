@@ -11,6 +11,8 @@ FMoscs=
     interleave(nrBands,5):
     par(i, nrBands, fuphoSlave);
 
+FMfunds(freq,index,i,group) = phasedFunds(freq,index,i,group);
+
 FMcenters(freq) = centers(freq,FMvocoderGroup);
 
 // FMvocoder(audio,freq,index,fidelity,doubleOscs)

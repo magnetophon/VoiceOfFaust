@@ -10,7 +10,7 @@ fofSkirts(freq)  =
 fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para): dezipBands;
 fofOctavations = VocoderLinArrayChooser(fofOctavationBottom,fofOctavationMid,fofOctavationBand,fofOctavationTop,para): dezipBands;
 
-fofNoises(i,freq) = phaseNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter,fofVocoderGroup);
+fofNoises(i,freq) = phaseNoises(i,freq,enablePhaseNoise,enablePhaseNoiseFilter,fofVocoderGroup);
 
 
 fofOscs=
