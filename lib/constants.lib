@@ -3,11 +3,11 @@
 //-----------------------------------------------
 
 // general:
-nrBands                   = 16;// Number of bands for the vocoders.
+nrBands                   = 16;// Number of bands for the vocoders, needs to be even, minumum 8 for most vocoders
 nrOutChan                 = 2; // number of outputs
 ambisonicsOn              = 0; // do we want an ambisonic synth.
 ambisonicsOrder           = 3; // order of the ambisonics
-para                      = 1; // whether we want a parametric mid
+para                      = 0; // whether we want a parametric mid
 enableGainCompare         = 1; // correct the loudness of the individual bands after they've been created
 enableGainScale           = 1; // expand or compress the spectrum: make it more or less resonant
 autoQ                     = 1; // enable correction of the filter-Q depending on the distance between the bands
