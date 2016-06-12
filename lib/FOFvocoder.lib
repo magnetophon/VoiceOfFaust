@@ -10,7 +10,7 @@ fofSkirts(freq)  =
 fofDecays  = VocoderLinArrayChooser(fofDecayBottom,fofDecayMid,fofDecayBand,fofDecayTop,para): dezipBands;
 fofOctavations = VocoderLinArrayChooser(fofOctavationBottom,fofOctavationMid,fofOctavationBand,fofOctavationTop,para): dezipBands;
 
-fofNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter) = phaseNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter,fofVocoderGroup);
+fofNoises(i,freq) = phaseNoises(i,freq,enablePhasenoise,enablePhaseNoiseFilter,fofVocoderGroup);
 
 
 fofOscs=
@@ -22,7 +22,7 @@ fofvocoder(audio,freq,index,fidelity,0)=
   //the noises part is to make a different (low)freq modulation for each osc.
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
-  (fofNoises(0,freq,enablePhasenoise,enablePhaseNoiseFilter),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
+  (fofNoises(0,freq),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
   :fofOscs
   :gainNormalise
   :((analizer(voice(audio,freq),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
@@ -37,7 +37,7 @@ fofvocoder(audio,freq,index,fidelity,1)=
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
   par(i,nrOutChan
-    ,(fofNoises(i+1,freq,enablePhasenoise,enablePhaseNoiseFilter),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
+    ,(fofNoises(i+1,freq),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
     :fofOscs
     : gainNormalise
     :((analizer(voice(audio,freq),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
