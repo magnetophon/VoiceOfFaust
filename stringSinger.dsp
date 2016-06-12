@@ -58,16 +58,16 @@ VoiceOfFaust(audio,index,fidelity) =
   //:VuMeter
   )
   with {
-    nrChan     = 2;
-    nrSends    = 3;
+    nrChan        = 2;
+    nrSends       = 3;
 
-    cleanChorus             = cleanGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0, 0, 1, 0.001):volScale);
-    cleanpmFX               = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+    cleanChorus   = cleanGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0, 0, 1, 0.001):volScale);
+    cleanpmFX     = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 
-    vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0.75, 0, 1, 0.001):volScale);
-    vocoderChorus           = vocoderGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0.5, 0, 1, 0.001):volScale);
-    vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0.5, 0, 1, 0.001):volScale); // 0 to 1
-    freq = masterPitch(audio,index);
+    vocoderVolume = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0.75, 0, 1, 0.001):volScale);
+    vocoderChorus = vocoderGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0.5, 0, 1, 0.001):volScale);
+    vocoderpmFX   = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0.5, 0, 1, 0.001):volScale); // 0 to 1
+    freq          = masterPitch(audio,index);
     };
 
 
@@ -76,4 +76,3 @@ VoiceOfFaust(audio,index,fidelity) =
 //-----------------------------------------------
 
 process(audio) = VoiceOfFaust(audio,index,fidelity);
-//process(audio) = StereoVocoder(audio,freq,index,fidelity,doubleOscs);

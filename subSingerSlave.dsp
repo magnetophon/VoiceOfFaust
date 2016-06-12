@@ -62,4 +62,3 @@ VoiceOfFaust(audio,index) =
 //-----------------------------------------------
 
 process(audio,index) = VoiceOfFaust(audio,index);
-// process(audio,index,fidelity) = VoiceOfFaust(audio,index:attach(fidelity));
