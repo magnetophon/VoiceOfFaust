@@ -46,16 +46,18 @@ phases = VocoderLinArrayChooser(phaseBottom,phaseMid,phaseBand,phaseTop,para): d
 
 // phaseNoises(polarity,freq,enablePhaseNoise,enablePhaseNoiseFilter,group) =
 //TODO: make true multichannel version
-phaseNoises(i,freq,0,enablePhaseNoiseFilter,group) = group(phases:(par(j, nrBands,_*select2(i%2,1,-1))));
-phaseNoises(i,freq,1,0,group) = group(phases,(phaseNoiseAmounts:par(j,nrBands,(_*(noise):smooth(tau2pole(PhaseSpeed))))):>(par(j, nrBands,_*select2(i%2,1,-1))));
-phaseNoises(i,freq,1,1,group) =(group(phases),((group(phaseNoiseAmounts):par(j,nrBands,(_*(noises(nrBands*nrOutChan,j*i)):LP(j))))):>(par(j, nrBands,_*select2(i%2,1,-1))))
+phaseNoises(polarity,freq,0,enablePhaseNoiseFilter,group) = group(phases:(par(j, nrBands,_*select2(polarity%2,1,-1))));
+phaseNoises(polarity,freq,1,0,group) = group(phases,(phaseNoiseAmounts:par(j,nrBands,(_*(noise):smooth(tau2pole(PhaseSpeed))))):>(par(j, nrBands,_*select2(polarity%2,1,-1))));
+phaseNoises(polarity,freq,1,1,group) =(group(phases),((group(phaseNoiseAmounts):par(j,nrBands,(_*(noises(nrBands,j)):LP(j))))):>(par(j, nrBands,_*select2(polarity%2,1,-1))))
 with {
   LP(j) = seq(i, noisesFilterN, lowpass(1,(group(phaseNoiseFreqs)   :selector(j,nrBands)*(freq*0.025)))) ;
+  // somehow doesn't work:
   // LP(j) = lowpass(noisesFilterN,(phaseNoiseFreqs   :selector(j,nrBands)*(freq*0.00000025)));
 };
 
-funds(freq,index,polarity,group) = par(i, nrBands, fundPhase(freq,index,group(octave),phase(i)) ) with {
-  phase(i) = group(phases:selector(i,nrBands)*select2(polarity%2,1,-1));
+funds(freq,index,polarity,group) = par(i, nrBands, fundPhase(freq,index,group(octave),phase(i,polarity)) ) with {
+  // phase(i) = group(phases:selector(i,nrBands)*select2(polarity%2,1,-1));
+  phase(i,polarity) = phaseNoises(polarity,freq,enablePhaseNoise,enablePhaseNoiseFilter,group):selector(i,nrBands);
 };
 
 
