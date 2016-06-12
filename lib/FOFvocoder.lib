@@ -37,7 +37,7 @@ fofvocoder(audio,freq,index,fidelity,1)=
   //noises(nrBands,0):smooth(tau2pole(32))
   //"(i+1)*" is to make each band different
   par(i,nrOutChan
-    ,(fofNoises(i+1,freq),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
+    ,(fofNoises(i,freq),fofCenters(freq),(multiK<:bus(nrBands)),(freq<:bus(nrBands)),fofSkirts(freq),fofDecays,fofOctavations)
     :fofOscs
     : gainNormalise
     :((analizer(voice(audio,freq),freq,fidelity,enableDeEsser),par(i, nrBands, _)):interleave(nrBands,2):par(i, nrBands,*))
