@@ -1,8 +1,15 @@
-
+////////////////////////////////////////////////////////
+// now
+////////////////////////////////////////////////////////
 
 check PAF glitches -> interpolate like FM?
 
 test or remove combined .dsp's
+
+
+make limiter modular
+
+fix vu
 
 make Karplus-StrongSingerMaxi slave
  also StringSinger, VoiceOfFaust, FMsinger and SubSinger
@@ -10,6 +17,9 @@ demo
 txt
 video
 
+////////////////////////////////////////////////////////
+// later
+////////////////////////////////////////////////////////
 make each synth use it's own osc port
 
 put back formant tracker
@@ -26,3 +36,4 @@ separate plugin MB deesser.
 fix weighting
 
 attack release out of analyzer, via top/bottom in synth
+ - make sure it doesn't mess with gainScale
