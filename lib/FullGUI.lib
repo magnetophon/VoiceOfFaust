@@ -225,10 +225,10 @@ fofDecayTop        = fofTopGroup(       vslider("[3]decayTop[style:knob]", 400,2
 // fofPhaseBand         = fofBandGroup(    vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
 // fofPhaseTop          = fofTopGroup((    vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
 
-fofOctavationBottom = fofBottomGroup(  vslider("[7]octavation[style:knob][tooltip: ",	0,0,maxOctavation,0.001));			//0.25 to 49 logarithmicly
-fofOctavationMid    = fofMidGroup(     vslider("[7]octavation             [style:knob] [tooltip: ",	0,0,maxOctavation,0.001));
-fofOctavationBand   = fofBandGroup(    vslider("[7]octavation-band        [style:knob] [tooltip: ",	nrBands/2, 1, nrBands, 0.001));
-fofOctavationTop    = fofTopGroup(     vslider("[7]octavation[style:knob][tooltip: ",	0,0,maxOctavation,0.001));		//1 to 100 logarithmicly,
+fofOctavationBottom = fofBottomGroup(  vslider("[7]octavation[style:knob][tooltip: octaviation index, normally zero. If greater than zero, lowers the effective frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.",	1,0,maxOctavation,0.001));			//0.25 to 49 logarithmicly
+fofOctavationMid    = fofMidGroup(     vslider("[7]octavation             [style:knob] [tooltip:  octavation of the mid band",	1,0,maxOctavation,0.001));
+fofOctavationBand   = fofBandGroup(    vslider("[7]octavation-band        [style:knob] [tooltip:  the band that has the value of mid",	nrBands/2, 1, nrBands, 0.001));
+fofOctavationTop    = fofTopGroup(     vslider("[7]octavation[style:knob][tooltip: octaviation index, normally zero. If greater than zero, lowers the effective frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.",	1,0,maxOctavation,0.001));		//1 to 100 logarithmicly,
  octaviation = hslider("octaviation",0,0,maxOctavation,0.001):dezip;
 PhaseSpeed      = 64;//                 = fofparamsGroup((vslider("[7]phase speed[style:knob][tooltip: phase randomization speed]", 32, 3, 300, 1)):smooth(0.999));
 

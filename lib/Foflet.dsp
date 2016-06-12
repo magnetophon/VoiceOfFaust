@@ -150,6 +150,9 @@ fofPart(fund,freq,k1,phase,BW,fc) = (((phasedFund) < int(k1)) * fofAttack(phased
   phasedFund = (((fund/(multi*f0Period))+(phase)):decimal)*f0Period*multi;
   f0Period = SR/freq;
 }; // v = k1
+// combines multiple fofParts to create octavation:
+// octaviation index, normally zero. If greater than zero, lowers the effective xfund frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.
+// source: https://csound.github.io/docs/manual/fof2.html
 fof(phase,fc,fund,freq,k1,BW,octaviation) =
 // fofPart(fundI(0),k1,phase,BW,fc)
 par(i,multi,fofPart(fundI(i),freq,k1,phase,BW,fc)*OctMuliply(i)):>_
