@@ -33,7 +33,7 @@ maxNrInRoutings = 5;
 //mixerWithSends(nrChan,nrOutChan,nrSends)
 
 
-VoiceOfFaust(audio) =
+VoiceOfFaust(audio,index,fidelity) =
   (
   cleanVolume,cleanChorus,cleanpmFX, //output volumes. The number of parameters should be nrSends
   (voice(audio,freq)<:bus(nrOutChan))
@@ -75,5 +75,5 @@ VoiceOfFaust(audio) =
 // process
 //-----------------------------------------------
 
-process(audio) = VoiceOfFaust(audio);
+process(audio) = VoiceOfFaust(audio,index,fidelity);
 //process(audio) = StereoVocoder(audio,freq,index,fidelity,doubleOscs);

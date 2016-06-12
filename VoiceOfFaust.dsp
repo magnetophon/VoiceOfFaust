@@ -29,13 +29,13 @@ import ("lib/pmFX.lib");
 
 //mixerWithSends(nrChan,nrOutChan,nrSends)
 
-VoiceOfFaust(audio) =
+VoiceOfFaust(audio,index,fidelity) =
     (
     cleanVolume,cleanNLKS,cleanpmFX,
     (voice(audio,freq)*4<:_,_),
 
     subVolume,subNLKS,subpmFX,
-    subSine(audio,freq),
+    subSine(audio,freq,index),
 
     vocoderVolume,vocoderNLKS,vocoderpmFX,
     StereoVocoder(audio,freq,index,fidelity),
@@ -84,4 +84,4 @@ VoiceOfFaust(audio) =
 // process
 //-----------------------------------------------
 
-process(audio) = VoiceOfFaust(audio);
+process(audio) = VoiceOfFaust(audio,index,fidelity);

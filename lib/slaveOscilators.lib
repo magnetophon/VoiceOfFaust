@@ -6,7 +6,7 @@
 // Sub sine
 //-----------------------------------------------
 
-subSine(audio,freq) = fund(freq,index,subOctave)*2*PI:sin * //(subLevel(audio):lowpass(1,freq*subOctave))<:_,_;
+subSine(audio,freq,index) = fund(freq,index,subOctave)*2*PI:sin *
 (subLevel(audio,freq))*2<:_,_;
 
 //---------------- Bandlimited Sawtooth sawN, saw2, ... ------------------
