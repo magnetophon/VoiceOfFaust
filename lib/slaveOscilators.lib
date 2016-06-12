@@ -178,7 +178,7 @@ CZrestrap(fund, res) =
 sampleAndHold(sample) = select2((sample!=0):int) ~ _;
 
 paf(c,f,i,v)=
-(((cos12(c,f))*bell(f,i)) * dezip(v)) * volumeCompensate
+(((cos12(c,f))*bell(f,i)) * v) * volumeCompensate
 with {
     bellcurve(x) = int(x):rdtable(belltablesize+1,curve,_)
     with 	{
