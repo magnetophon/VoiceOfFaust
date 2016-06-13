@@ -329,6 +329,11 @@ with {
 //   };
 // };
 // n needs to be even
+
+// highpassChooser(N,fc,stableFilters) =
+highpassChooser(N,fc,0) = highpass(N,fc);
+highpassChooser(N,fc,1) = highpassStable(N,fc);
+
 highpassStable(N,fc) = lphpr(N,N,fc)
 with {
   lphpr(0,N,fc) = _;
@@ -408,7 +413,7 @@ with {
 };
 // for mutichannel, bypass the widepanner.
 WidePanner(w,nr) = bus(nr);
-voice(audio,freq) = qompander(audio:highpass(3,freq*0.75),factor,threshold,attack,release);
+voice(audio,freq) = qompander(audio:highpassChooser(3,freq*0.75,stableFilters),factor,threshold,attack,release);
 
 //is actually dual mono. on purpose; to try and keep the image in the center.
 //todo: make this stereo, and find a better way for  KP-FX to stay centered

@@ -31,7 +31,7 @@ with	{
           ((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)));
         isSameTooLong(x,time) = (x@time)==x;
         hasVolume =
-          (audio:highpass(3,OSCminPitch):lowpass(3,OSCmaxPitch):abs)> db2linear(threshold);
+          (audio:highpassChooser(3,OSCminPitch,stableFilters):lowpass(3,OSCmaxPitch):abs)> db2linear(threshold);
         // only take a new pitch when we have some volume and a new pitch has come in.
         // the min and max are needed, otherwise smoother gets upset.
         goodOSCpitch = OSCpitch:sampleAndHold( hasVolume & (_!=OSCpitch~_) ): min(OSCmaxPitch): max(OSCminPitch):smoother;
