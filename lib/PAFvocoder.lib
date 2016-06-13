@@ -11,7 +11,7 @@ pafIndexes  =PAFvocoderGroup(VocoderLinArrayChooser(pafIndexBottom,pafIndexMid,p
 
 pafOscs=
     interleave(nrBands,4):
-    par(i, nrBands, paf);
+    par(i, nrBands, glitchfreePAF);
 
 
 // PAFvocoder(audio,freq,index,fidelity,doubleOscs)
@@ -28,4 +28,4 @@ PAFvocoder(audio,freq,index,fidelity,1)=
     :pafOscs
   )
   :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,1)
-  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.25,width);
+  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.125,width);

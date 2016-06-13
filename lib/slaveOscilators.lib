@@ -175,8 +175,27 @@ CZrestrap(fund, res) =
 //-----------------------------------------------
 
 
+// deglitch code by Chris Chafe:
+// http://chrischafe.net/glitch-free-fm-vocal-synthesis/
+// center, fund, index, volume
+glitchfreePAF(c,f,i,v) =
+paf(ef,f,i,ea)+
+paf(of,f,i,oa)
+  with {
+  ci     = int(floor(c));          // integer harmonic below center freq
+  ci1    = ci+1;                   // and above
+  isEven = if(((ci%2)<1),1,0);     // below is even?
+  ef     = if(isEven,ci,ci1);      // then set even harmonic to lowest
+  of     = if(isEven,ci1,ci);      // and odd harmonic to highest
+  frac   = c-ci;                   // fractional frequency remainder
+  comp   = 1-frac;                 // and it's complement
+  oa     = if(isEven,frac,comp)*v; // odd harmonic amplitude
+  ea     = if(isEven,comp,frac)*v; // even harmonic amplitude
+};
+
 sampleAndHold(sample) = select2((sample!=0):int) ~ _;
 
+// center, fund, index, volume
 paf(c,f,i,v)=
 (((cos12(c,f))*bell(f,i)) * v) * volumeCompensate
 with {
@@ -185,13 +204,12 @@ with {
       belltablesize 	= 200;
       curve 	= time:(((_-100)/25)<:exp((_*_)*-1));
     };
-
     volumeCompensate = 0.666+(i/300);
     wrap            = _<:(_>0,(_,1:fmod)+1,(_,1:fmod)):select2;
-    centerWrap(c,f) = dezip(c):sampleAndHold(f)<:wrap;
+    centerWrap(c,f) = c:sampleAndHold(f)<:wrap;
     centerMin(c,f)  = c:sampleAndHold(f)-centerWrap(c,f);
     cos12(c,f)      = (centerMin(c,f)*f<:(_*2*PI:cos)<:(_,_((_,(_+f:(_*2*PI:cos))):_-_:(_*centerWrap(c,f))) )):_+_;
-    bell(f,i)       = (((f*0.5)-0.25:(_*2*PI:cos))*dezip(i))+100:bellcurve;
+    bell(f,i)       = (((f*0.5)-0.25:(_*2*PI:cos))*i)+100:bellcurve;
 };
 //-----------------------------------------------
 // FM fromant oscilator
