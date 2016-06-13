@@ -86,7 +86,7 @@ VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mi
 
 VocoderFreqs(bottom,top) = LogArray(bottom,top,nrBands);
 
-VocoderFreqsParametricMid(bottom,mid,band,top) =
+OLDVocoderFreqsParametricMid(bottom,mid,band,top) =
   (
     (
     (LogArray(midVal(1),top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
@@ -137,6 +137,44 @@ VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
 /*ArrayPart(nrBands)   = LinArray(bottom,mid,nrBands);*/
 
 VocoderLinArrayParametricMid(bottom,mid,band,top) =
+  par(i, nrBands, select2(band<=i+1,midToBottomVal(i),midToTopVal(i)))
+  with {
+    midToBottomVal(i) = (midToBottom(i)*bottom) + (((midToBottom(i)*-1)+1)*mid);
+    midToBottom(i) = (band-(i+1))/(band-1);
+
+    midToTopVal(i) = (midToTop(i)*top) + (((midToTop(i)*-1)+1)*mid);
+    midToTop(i) = (i+1-band)/(nrBands-band);
+  };
+
+VocoderFreqsParametricMid(bottom,mid,band,top) =
+  VocoderLinArrayParametricMid(hz2pianokey(bottom),midVal,band,hz2pianokey(top))
+  : par(i, nrBands, pianokey2hz)
+  with {
+    // midVal(band) = (decimal(band)*val(floor(band+1))) + ((1-decimal(band))*val(floor(band)));
+    // val(band) = VocoderFreqs(bottom,top):selector(2,nrBands):hz2pianokey;
+    // val(b) = VocoderFreqs(bottom,top):selector(int(b:max(2):min(2)),nrBands):hz2pianokey;
+    origMid = VocoderFreqs(bottom,top): par(i, nrBands, hz2pianokey*xfadeSelector(band,i+1)):>_;
+//  origMid =
+  //   case {
+  //     (1) => bottom;
+  //     (nrBands) => top;
+  //     (band) => 100;
+  // };
+
+    // VocoderFreqs(bottom,top): par(i, nrBands, hz2pianokey*xfadeSelector(band,i+1)):>_;
+
+    // origMid(band) = VocoderFreqs(bottom,top): par(i, nrBands, hz2pianokey*xfadeSelector(band,i+1)):>_;
+    // origMid(band) = VocoderFreqs(bottom,top): par(i, nrBands, hz2pianokey*xfadeSelector(band,i+1)):>_;
+    midVal =
+      (origMid * (1-abs(mid))) + (mid:max(0)*hz2pianokey(top)) + (mid:min(0)*-1*hz2pianokey(bottom)) ;
+    // midVal(band)=
+    //   ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
+    //   + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
+    // todo: maybe dezip ?
+    // origMid(band) = (VocoderFreqs(bottom,top):par(i, nrBands, hz2pianokey*xfadeSelector(band-1,i))):>pianokey2hz;
+  };
+
+OLDVocoderLinArrayParametricMid(bottom,mid,band,top) =
 (
   (
   (LinArray(mid,top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
