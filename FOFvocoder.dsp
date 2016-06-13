@@ -24,4 +24,9 @@ import ("lib/FOFvocoder.lib");
 // compile with faust 1:
 // time faust2jack -t 99999 -time -osc -vec  FOFvocoder.dsp && timeout 10 ./FOFvocoder & sleep 2 && jack_connect system:capture_1 FOFvocoder:in_0 & jack_connect FOFvocoder:out_0 system:playback_1 & jack_connect FOFvocoder:out_1 system:playback_2
 process(audio) =
-fofvocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);
+  fofvocoder(audio,freq,index,fidelity,doubleOscs)
+with {
+  freq =
+    masterPitch(audio,index)
+    *((2:pow(((maxOctavation+1)/2):max(1)))/2);
+};
