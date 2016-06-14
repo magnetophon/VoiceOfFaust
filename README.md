@@ -10,21 +10,21 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
 ### Features:
 
 * pitch tracker
-* [compressor/expander](http://www.katjaas.nl/compander/compander.html)
+* compressor/expander ported from [here](http://www.katjaas.nl/compander/compander.html)
 * lot's of different DSP:
   * normal channel vocoder with a "super-saw" that can be cross-faded to a "super-pulse"
-  * a couple of vocoders based on oscillators with controllable formants
+  * a couple of vocoders based on oscillators with controllable formants,
     so IOW: oscillators that sound like they have a band pass filter on them.
     The types of oscillator used in these, are:
-    * FOF, ported from [here](http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program)
+    * FOF, ported from [here](http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
     * PAF, ported from [here](http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html)
     * [FM](http://chrischafe.net/glitch-free-fm-vocal-synthesis/)
     * CZ resonant oscillators, ported from [here](http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators)
   * FM, with modulation by the voice
   * ring-modulation with an emulation of Casio CZ-oscillators
-  * Karplus-Strong used as an effect
+  * [Karplus-Strong](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
   * Phase modulation used as an effect
-* powerful [parameter control system][]
+* powerful [parameter control system][#parameter control system]
 * All synths and effects are spatialized at their core: sounds are generated in stereo, multichannel or ambisonics format,
   not made in mono and afterwards given a stereo width with effects, as is usually the case.
 * formant compression and expansion:
