@@ -24,7 +24,7 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
   * ring-modulation with an emulation of Casio CZ-oscillators
   * [Karplus-Strong](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
   * Phase modulation used as an effect
-* powerful [[#parameter control system][parameter control system]]
+* powerful [parameter control system](#parameter control system)
 * All synths and effects are spatialized at their core: sounds are generated in stereo, multichannel or ambisonics format,
   not made in mono and afterwards given a stereo width with effects, as is usually the case.
 * formant compression and expansion:
