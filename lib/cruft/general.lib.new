@@ -343,7 +343,7 @@ with {
 };
 // for mutichannel, bypass the widepanner.
 WidePanner(w,nr) = bus(nr);
-voice(audio,index) = qompander(audio:highpass(3,PitchTracker(audio,enablePitchTracker)*0.75),factor,threshold,attack,release);
+voice(audio,index) = qompander(audio:highpass(3,PitchTracker(audio,enablePitchTracker)*0.75),qfactor,qThreshold,qAttack,qRelease);
 
 //is actually dual mono. on purpose; to try and keep the image in the center.
 //todo: make this stereo, and find a better way for  KP-FX to stay centered

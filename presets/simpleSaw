@@ -40,10 +40,9 @@
 0 0x00/0x00/synths/vocoder/filters/high_frequencies/all_filter_FB
 0 0x00/0x00/synths/vocoder/filters/high_frequencies/autoSat
 0 0x00/0x00/synths/vocoder/filters/high_frequencies/autoSat_DC
-8 0x00/0x00/effects/input_compression_and_expansion/factor
--40 0x00/0x00/effects/input_compression_and_expansion/threshold
-1 0x00/0x00/effects/input_compression_and_expansion/attack
-20 0x00/0x00/effects/input_compression_and_expansion/release
+8 0x00/0x00/effects/input_compression_and_expansion/qfactor
+-40 0x00/0x00/effects/input_compression_and_expansion/qThreshold
+1 0x00/0x00/effects/input_compression_and_expansion/qAttack
+20 0x00/0x00/effects/input_compression_and_expansion/qRelease
 4 0x00/0x00/effects/routing_and_panning/input_routing
 6 0x00/0x00/effects/routing_and_panning/output_routing
-

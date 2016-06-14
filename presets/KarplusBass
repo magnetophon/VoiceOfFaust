@@ -3,10 +3,10 @@
 1.77 0x00/OSC/gainScale
 0.77 0x00/OSC/weighting_kind
 -1 0x00/0x00/synths/sub/levels/octave
-8 0x00/0x00/effects/input_compression_and_expansion/factor
--96 0x00/0x00/effects/input_compression_and_expansion/threshold
-1 0x00/0x00/effects/input_compression_and_expansion/attack
-20 0x00/0x00/effects/input_compression_and_expansion/release
+8 0x00/0x00/effects/input_compression_and_expansion/qfactor
+-96 0x00/0x00/effects/input_compression_and_expansion/qThreshold
+1 0x00/0x00/effects/input_compression_and_expansion/qAttack
+20 0x00/0x00/effects/input_compression_and_expansion/qRelease
 -1 0x00/0x00/effects/Karplus-Strong/main/octave
 0.37 0x00/0x00/effects/Karplus-Strong/main/volume
 0.485515 0x00/0x00/effects/Karplus-Strong/main/decay
@@ -50,4 +50,3 @@
 0.4 0x00/0x00/effects/Phase_Modulation/amount
 0.5 0x00/0x00/effects/Phase_Modulation/frequency
 0.666 0x00/0x00/effects/Phase_Modulation/phase
-

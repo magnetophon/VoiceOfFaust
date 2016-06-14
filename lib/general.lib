@@ -332,6 +332,7 @@ with {
 
 // highpassChooser(N,fc,stableFilters) =
 highpassChooser(N,fc,0) = highpass(N,fc);
+// highpassChooser(N,fc,1) = highpass(N,fc);
 highpassChooser(N,fc,1) = highpassStable(N,fc);
 
 highpassStable(N,fc) = lphpr(N,N,fc)
@@ -397,7 +398,11 @@ autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 // postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume,width)
 // no ambisonics
 postProc(audio,freq,nrOutChan,0,enableAutosat,volume,width) =
-  ( par(i, nrOutChan, _*(volume:dezip)):WidePanner(width,nrOutChan):par(i,nrOutChan,dcblocker <:select2(enableAutosat,_,autoSat)) );
+  ( par(i, nrOutChan, _*(volume:dezip)):WidePanner(width,nrOutChan)
+  :par(i,nrOutChan,dcblocker <:select2(enableAutosat,_,autoSat)) )
+  :limiter(freq * vocoderOctave) //needs the pitch to adjust the decay time.
+  // :VuMeter
+;
 // ambisonic
 postProc(audio,freq,nrOutChan,1,enableAutosat,volume,width) =
            wider(ambisonicsOrder,width) :rotate(ambisonicsOrder, rotation) :optimInPhase(ambisonicsOrder)
@@ -413,30 +418,30 @@ with {
 };
 // for mutichannel, bypass the widepanner.
 WidePanner(w,nr) = bus(nr);
-voice(audio,freq) = qompander(audio:highpassChooser(3,freq*0.75,stableFilters),factor,threshold,attack,release);
+
+voice(audio,freq) = qompander(audio:highpassChooser(3,freq*0.75,stableFilters),qfactor,qThreshold,qAttack,qRelease);
 
 //is actually dual mono. on purpose; to try and keep the image in the center.
 //todo: make this stereo, and find a better way for  KP-FX to stay centered
 oldstereoLimiter(pitch)=
-  (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)),
-  (dcblocker*0.5:compressor_mono(100,-12,decay*0.5,decay)):
-  (compressor_mono(100,-6,0.001,decay*0.5)),
-  (compressor_mono(100,-6,0.001,decay*0.5))
+  (dcblocker*0.5:compressor_mono(100,-12,release*0.5,release)),
+  (dcblocker*0.5:compressor_mono(100,-12,release*0.5,release)):
+  (compressor_mono(100,-6,0.001,release*0.5)),
+  (compressor_mono(100,-6,0.001,release*0.5))
   with {
-    decay                                = (1/pitch);
-    same(x,time)                         = (x@time) == x;
-    intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
-    blockNoise                           = par(i,2,(intervalTester(pitch,2,265)*-1+1:smooth(0.999))*_);
+    release = (1/pitch);
     };
 
 monoLimiter(pitch)=
-  (dcblocker:compressor_mono(100,-6,decay*0.5,decay)):
-  (compressor_mono(100,-3,0,decay*0.5))
+  (dcblocker:compressor_mono(100,-6,release*0.5,release)):
+  (compressor_mono(100,-3,0,release*0.5))
   with {
-    decay                                = (1/pitch);
-    same(x,time)                         = (x@time) == x;
-    intervalTester(x,nrSamples,interval) = (prod(i,nrSamples,same(x,i*interval+1)));
-    blockNoise                           = par(i,2,(intervalTester(pitch,2,265)*-1+1:smooth(0.999))*_);
+    release = (1/pitch);
+    };
+
+limiter(freq) = FFcompressor_N_chan(1,-3,0,limrelease,12,1,0,_,nrOutChan)
+  with {
+    limrelease = (1/freq);
     };
 
 stereoLimiter(pitch) =monoLimiter(pitch),monoLimiter(pitch);

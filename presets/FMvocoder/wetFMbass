@@ -17,9 +17,8 @@
 16 0x00/0x00/synths/FMvocoder/parameters/high_frequencies/top
 230 0x00/0x00/synths/FMvocoder/parameters/high_frequencies/indexTop
 0.5 0x00/0x00/synths/FMvocoder/parameters/high_frequencies/phaseTop
-8 0x00/0x00/effects/input_compression_and_expansion/factor
--42 0x00/0x00/effects/input_compression_and_expansion/threshold
-1 0x00/0x00/effects/input_compression_and_expansion/attack
-20 0x00/0x00/effects/input_compression_and_expansion/release
+8 0x00/0x00/effects/input_compression_and_expansion/qfactor
+-42 0x00/0x00/effects/input_compression_and_expansion/qThreshold
+1 0x00/0x00/effects/input_compression_and_expansion/qAttack
+20 0x00/0x00/effects/input_compression_and_expansion/qRelease
 4 0x00/0x00/effects/routing_and_panning/output_routing
-

@@ -15,9 +15,8 @@
 0.9 0x00/0x00/synths/FOFvocoder/parameters/high_frequencies/decayTop
 1 0x00/0x00/synths/FOFvocoder/parameters/high_frequencies/phase_top
 0.125 0x00/0x00/synths/FOFvocoder/parameters/high_frequencies/phase_rnd_top
-8 0x00/0x00/effects/input_compression_and_expansion/factor
--70 0x00/0x00/effects/input_compression_and_expansion/threshold
-1 0x00/0x00/effects/input_compression_and_expansion/attack
-20 0x00/0x00/effects/input_compression_and_expansion/release
+8 0x00/0x00/effects/input_compression_and_expansion/qfactor
+-70 0x00/0x00/effects/input_compression_and_expansion/qThreshold
+1 0x00/0x00/effects/input_compression_and_expansion/qAttack
+20 0x00/0x00/effects/input_compression_and_expansion/qRelease
 4 0x00/0x00/effects/routing_and_panning/output_routing
-
