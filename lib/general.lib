@@ -28,7 +28,9 @@ sumOfN(n) = (sumOfN(n-1),_):+;
 // cheaper than actual dB calculations:
 volScale=_:pow(2):smooth(0.999);
 envelop                 = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
-VuMeter                 = par(i,2,_<:(_, (envelop :(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, +6))))):attach);
+// VuMeter(N,enableVUmeter) =
+VuMeter(N,0) = bun(N);
+VuMeter(N,1) = par(i,N,_<:(_, (envelop :(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, 0))))):attach);
 
 octaveMultiplier	=
     _<:
@@ -200,7 +202,7 @@ bd=hslider("[2]band", nrBands/2, 1, nrBands, 0.001);
 tp=hslider("[3]top", 0, 0, 1, 0.001);
 
   GRmeter_group(x)  = vgroup("[3] GR [tooltip: gain reduction in dB]", x);
-    meter(nr)           = GRmeter_group(  _<:(_,(_:min(1):max(0):( (hbargraph("%nr", 0, 1))))):attach);
+    GRmeter(nr)           = GRmeter_group(  _<:(_,(_:min(1):max(0):( (hbargraph("%nr", 0, 1))))):attach);
 
 gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   compare(gain,gainedX) =
@@ -332,8 +334,8 @@ with {
 
 // highpassChooser(N,fc,stableFilters) =
 highpassChooser(N,fc,0) = highpass(N,fc);
-// highpassChooser(N,fc,1) = highpass(N,fc);
-highpassChooser(N,fc,1) = highpassStable(N,fc);
+highpassChooser(N,fc,1) = highpass(N,fc);
+// highpassChooser(N,fc,1) = highpassStable(N,fc);
 
 highpassStable(N,fc) = lphpr(N,N,fc)
 with {
@@ -400,13 +402,32 @@ autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 postProc(audio,freq,nrOutChan,0,enableAutosat,volume,width) =
   ( par(i, nrOutChan, _*(volume:dezip)):WidePanner(width,nrOutChan)
   :par(i,nrOutChan,dcblocker <:select2(enableAutosat,_,autoSat)) )
-  :limiter(freq * vocoderOctave) //needs the pitch to adjust the decay time.
-  // :VuMeter
+  // <:select2(enableLimiter,
+  //   bus(nrOutChan)
+  //   ,limiter(freq * 0.25,nrOutChan)) //needs the pitch to adjust the decay time.
+    :limiter(freq * 0.25,nrOutChan,enableLimiter) //needs the pitch to adjust the decay time.
+  // <:select2(enableVUmeter,
+  //   bus(nrOutChan)
+  //   ,VuMeter(nrOutChan))
+    // :VuMeter(nrOutChan,enableVUmeter)
 ;
 // ambisonic
 postProc(audio,freq,nrOutChan,1,enableAutosat,volume,width) =
-           wider(ambisonicsOrder,width) :rotate(ambisonicsOrder, rotation) :optimInPhase(ambisonicsOrder)
-           <:((decoderStereo(ambisonicsOrder):par(i,2,(_*volume):dcblocker<: select2(enableAutosat,_,autoSat))), bus(2*ambisonicsOrder+1));
+  wider(ambisonicsOrder,width)
+  :rotate(ambisonicsOrder, rotation)
+  :optimInPhase(ambisonicsOrder)
+  // :limiter(freq*0.25 , 2*ambisonicsOrder+1) //needs the pitch to adjust the decay time.
+  <:select2(enableLimiter,
+    bus(nrAmbisonicsChan)
+    ,limiter(freq * 0.25,nrAmbisonicsChan)) //needs the pitch to adjust the decay time.
+  <:select2(enableVUmeter,
+    bus(nrAmbisonicsChan)
+    ,VuMeter(nrAmbisonicsChan))
+  <:((decoderStereo(ambisonicsOrder):par(i,2,(_*volume):dcblocker<: select2(enableAutosat,_,autoSat))), bus(nrAmbisonicsChan))
+  with {
+    nrAmbisonicsChan = 2*ambisonicsOrder+1;
+  };
+
 
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
@@ -419,7 +440,7 @@ with {
 // for mutichannel, bypass the widepanner.
 WidePanner(w,nr) = bus(nr);
 
-voice(audio,freq) = qompander(audio:highpassChooser(3,freq*0.75,stableFilters),qfactor,qThreshold,qAttack,qRelease);
+voice(audio,freq) = qompander(audio:highpassChooser(2,freq*0.75,stableFilters),qfactor,qThreshold,qAttack,qRelease);
 
 //is actually dual mono. on purpose; to try and keep the image in the center.
 //todo: make this stereo, and find a better way for  KP-FX to stay centered
@@ -439,9 +460,12 @@ monoLimiter(pitch)=
     release = (1/pitch);
     };
 
-limiter(freq) = FFcompressor_N_chan(1,-3,0,limrelease,12,1,0,_,nrOutChan)
-  with {
-    limrelease = (1/freq);
-    };
+// limiter(freq,N,enableLimiter) =
+limiter(freq,N,0) = bus(N);
+limiter(freq,N,1) =
+  FFcompressor_N_chan(1,-3,0,limrelease,12,1,0,_,N)
+with {
+  limrelease = (1/freq);
+};
 
 stereoLimiter(pitch) =monoLimiter(pitch),monoLimiter(pitch);
