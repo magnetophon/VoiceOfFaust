@@ -29,7 +29,7 @@ sumOfN(n) = (sumOfN(n-1),_):+;
 volScale=_:pow(2):smooth(0.999);
 envelop                 = abs : max ~ -(1.0/SR) : max(db2linear(-70)) : linear2db;
 // VuMeter(N,enableVUmeter) =
-VuMeter(N,0) = bun(N);
+VuMeter(N,0) = bus(N);
 VuMeter(N,1) = par(i,N,_<:(_, (envelop :(MeterGroup(hbargraph("[4][unit:dB][tooltip: output level in dB]", -70, 0))))):attach);
 
 octaveMultiplier	=
@@ -406,10 +406,7 @@ postProc(audio,freq,nrOutChan,0,enableAutosat,volume,width) =
   //   bus(nrOutChan)
   //   ,limiter(freq * 0.25,nrOutChan)) //needs the pitch to adjust the decay time.
     :limiter(freq * 0.25,nrOutChan,enableLimiter) //needs the pitch to adjust the decay time.
-  // <:select2(enableVUmeter,
-  //   bus(nrOutChan)
-  //   ,VuMeter(nrOutChan))
-    // :VuMeter(nrOutChan,enableVUmeter)
+    :VuMeter(nrOutChan,enableVUmeter)
 ;
 // ambisonic
 postProc(audio,freq,nrOutChan,1,enableAutosat,volume,width) =
