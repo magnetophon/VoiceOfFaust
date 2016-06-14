@@ -2,7 +2,7 @@
 
 ## A voice synthesizer/effects machine.
 
-It turns any monophonic sound into a synthesizer.
+It turns any monophonic sound into a synthesizer.  
 The name was chosen because I use it mostly to turn my voice into a singing robot, and it's made in [faust](http://faust.grame.fr)
 
 [These](http://magnetophon.nl/sounds/magnetophon/oldCombo.flac) [are](https://github.com/magnetophon/VoiceOfFaust/blob/MasterSlave/Caribean.mp3) some silly demo songs.
@@ -11,7 +11,7 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
 
 * pitch tracker
 * compressor/expander ported from [here](http://www.katjaas.nl/compander/compander.html)
-* lot's of different DSP:
+* 7 synthesizer and two effect algorithms:
   * normal channel vocoder with a "super-saw" that can be cross-faded to a "super-pulse"
   * a couple of vocoders based on oscillators with controllable formants,
     so IOW: oscillators that sound like they have a band pass filter on them.
@@ -24,15 +24,13 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
   * ring-modulation with an emulation of Casio CZ-oscillators
   * [Karplus-Strong](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
   * Phase modulation used as an effect
-* powerful [[#parameter-control-system][parameter control system]]
-* powerful [#parameter-control-system][parameter control system]
 * powerful [parameter control system](#parameter-control-system)
 * All synths and effects are spatialized at their core: sounds are generated in stereo, multichannel or ambisonics format,
-  not made in mono and afterwards given a stereo width with effects, as is usually the case.
+  not made in mono and afterwards given some stereo width with effects.
 * formant compression and expansion:
   Make the output spectrum more flat or more resonant, at the twist of a knob.
-* flexible [in and output routing][], totally changing the character of your synth.
-* multi-band [deEsser][] and [reEsser][]
+* flexible [in and output routing](#in and output routing), totally changing the character of your synth.
+* multi-band [deEsser](#deEsser) and [reEsser](#reEsser)
 * Optionally use as a master-slave pair:
   * The master is a small program that receives the audio and the OSC messages from the external pitch tracker,
     and outputs:
@@ -44,15 +42,15 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
     and be used as song building blocks, without needing the pitch tracker.
     Now you are 100% free to switch synths, automate parameters, etc.
 * [configuration file](lib/constants.lib)
-  Through this file, lot's of options can be turned on and off at compile time.
+  Through this file, lot's of options can be set at compile time.
   Some of the highlights:
   * number of bands of the vocoders
   * number of output channels
   * whether we want [ambisonics](https://en.wikipedia.org/wiki/Ambisonics) output
   * whether a vocoder has nrBands or nrBands * nrOutChan oscillators
-* Lots more, described in [Detailed features][].
+* Lots more, described in [Detailed features](#Detailed features).
 
-### Usage:
+### Building and running:
 
 
 You need faust from git, because version 0.9.73 and earlier have a bug in lf_sawpos.
@@ -106,21 +104,31 @@ we can do various mid-side variations
 we can even do a full [Hadamard matrix](https://en.wikipedia.org/wiki/Hadamard_matrix).
 All of these, and more, can be clicklessly cross-faded between.
 
-In the [classicVocoder][], a similar routing matrix is between the oscillators and the filters.
+In the [classicVocoder](#classicVocoder), a similar routing matrix is between the oscillators and the filters.
 
 ##### deEsser
 
-To tame harch esses, especially when using some [formant compression/expansion][], there is a deEsser:
+To tame harsh esses, especially when using some [formant compression/expansion](#formant compression/expansion), there is a deEsser:
 It has all the usual controlls, but since we already are working on a signals that are split up in bands, with known volumes,
 it was implemented rather differently:
 * multiband, yet much cheaper,
 * without additional filters, even for the sidechain,
 * and with a db per octave knob for the sidechain, from 0dB/oct (bypass), to 60dB/oct (fully ignore the lows).
 
-
-
 #### classicVocoder
 
+The classicVocoder has two sections:
+* oscillators
+  Containing the parameters for the carrier oscillators.
+  These are regular virtual analog oscillators, with the following parameters:
+  * cross-fade between oscillators and noise
+  * cross-fade between sawtooth and pulse wave
+  * width of the pulse wave
+  * mix between a single oscilators and multiple detuned ones
+  * detuning amount
+* filters
+  Containig
+a variable:
 
 
 
