@@ -28,4 +28,4 @@ PAFvocoder(audio,freq,index,fidelity,1)=
     :pafOscs
   )
   :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,1)
-  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.125,width);
+  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.075,width);
