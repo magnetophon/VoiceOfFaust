@@ -37,7 +37,7 @@ VoiceOfFaust(audio,index,fidelity) =
   ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloopBank(freq,fidelity,audio,index,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH)):>_)
   )
   :stereoLimiter(freq * 0.25) //needs the pitch to adjust the decay time.
-  //:VuMeter
+  :VuMeter(2,enableVUmeter)
   with {
     DryPath(phase,DC) =  MyNonLinearModulator(nonLinDry,frequencyModDry*freq,phase,DC)*KPvolDry;
     freq = masterPitch(audio,index);
