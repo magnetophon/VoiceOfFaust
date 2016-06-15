@@ -22,7 +22,7 @@ VoiceOfFaust consists of:
     * [CZ resonant](#czvocoder) oscillators, ported from a pd patch by [Mike Moser-Booth](http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators)
     * [PAF](#pafvocoder), ported from a pd patch by [Miller Puckette](http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html)
     * [FM](#fmvocoder), based on code by [Chris Chafe](http://chrischafe.net/glitch-free-fm-vocal-synthesis/)
-    * [FOF](#fofvocoder),based on code by [Michael Jørgen Olsen](https://ccrma.stanford.edu/~mjolsen/220a/fp/Foflet.dsp) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
+    * [FOF](#fofvocoder), based on code by [Michael Jørgen Olsen](https://ccrma.stanford.edu/~mjolsen/220a/fp/Foflet.dsp) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
   * [FM](#fmsinger), with modulation by the voice
   * [ring-modulation](#czringmod) with a few other CZ-oscillators
   * [Karplus-Strong](#karplus-strongSinger): The famous [synthesis technique](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
