@@ -7,8 +7,10 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
 
 ## Overview:
 
-* pitch tracker
-* compressor/expander ported from [here](http://www.katjaas.nl/compander/compander.html)
+VoiceOfFaust consists of:
+
+* An external pitch tracker: [helmholtz~](#http://www.katjaas.nl/helmholtz/helmholtz.html) by Katja Vetter
+* compressor/expander, also ported from [Katja](http://www.katjaas.nl/compander/compander.html)
 * 7 synthesizer and two effect algorithms:
   * [channel vocoder](#classicvocoder) with:
     * a "super-saw" that can be cross-faded to a "super-pulse"
@@ -26,7 +28,8 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
   * [Karplus-Strong](#karplus-strongSinger): The famous [synthesis technique](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
   * [Phase modulation](#pmfx) used as an effect
 * All oscillators are synchronized to a single saw-wave, so they stay in phase, [unless you don't want them to!](#phase-parameters)
-* powerful [parameter mapping system](#parameter-mapping-system)
+* powerful [parameter mapping system](#parameter-mapping-system)  
+  Lets you set different parameter values for each band, without having to set them all separately
 * All synths are spatialized at their core: sounds are generated in stereo, multichannel or ambisonics format,  
   not made in mono and afterwards given some stereo width with effects.
 * [formant compression/expansion](#formant-compression/expansion):  
@@ -60,6 +63,7 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
                 - [parameter mapping system](#parameter-mapping-system)
                 - [formant compression/expansion](#formant-compressionexpansion)
                 - [deEsser](#deesser)
+                - [reEsser](#reesser)
                 - [doubleOscs](#doubleoscs)
                 - [in and output routing](#in-and-output-routing)
                 - [phase parameters](#phase-parameters)
@@ -70,6 +74,10 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
                 - [FMvocoder](#fmvocoder)
                 - [FOFvocoder](#fofvocoder)
         - [other synthesizers](#other-synthesizers)
+            - [FMsinger](#fmsinger)
+            - [CZringmod](#czringmod)
+            - [Karplus-StrongSinger](#karplus-strongsinger)
+            - [Karplus-StrongSingerMaxi](#karplus-strongsingermaxi)
         - [master-slave](#master-slave)
 
 <!-- markdown-toc end -->
@@ -138,6 +146,14 @@ it was implemented rather differently:
 * multiband, yet much cheaper,
 * without additional filters, even for the sidechain,
 * and with a db per octave knob for the sidechain, from 0dB/oct (bypass), to 60dB/oct (fully ignore the lows).
+It also has a (badly named) noise strenght parameter: it uses the fidelity parameter from the external pitchtracker to judge if a sound is an S.
+When you turn it up, the deEsser gets disabled when the pitchtracker claims a sound is pitched.
+See the [site](#http://www.katjaas.nl/helmholtz/helmholtz.html) of the pitchtracker for more info.
+
+##### reEsser
+
+Disabled by default, but can be enabled in the [configuration file](lib/constants.lib).
+It replaces or augments the reduced highs caused by the 
 
 ##### doubleOscs
 
@@ -282,6 +298,7 @@ You can adjust it's
 * top and bottom frequencies
 * Q factor
 
+It loses the octave slider, and instead has a separate delay and modulation for each octave.
 
 
 ### master-slave
@@ -297,8 +314,6 @@ You can adjust it's
   * The outputs of the master can be recorded into a looper or DAW,  
     and be used as song building blocks, without needing the pitch tracker.  
     Now you are 100% free to switch synths, automate parameters, etc.  
-
-
 
 
 VoiceOfFaust started life as a port of [VocSynth](https://github.com/magnetophon/VocSynth).
