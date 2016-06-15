@@ -5,15 +5,15 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
 
 [These](http://magnetophon.nl/sounds/magnetophon/oldCombo.flac) [are](https://raw.githubusercontent.com/magnetophon/VoiceOfFaust/master/Caribean.mp3) some silly demo songs.
 
-## Overview:
+## Overview
 
 VoiceOfFaust consists of:
 
-* An external pitch tracker: [helmholtz](#http://www.katjaas.nl/helmholtz/helmholtz.html) by Katja Vetter
+* An external pitch tracker: [helmholtz~](http://www.katjaas.nl/helmholtz/helmholtz.html) by Katja Vetter
 * compressor/expander, also by [Katja](http://www.katjaas.nl/compander/compander.html), ported to faust.
 * 7 synthesizer and two effect algorithms:
   * [channel vocoder](#classicvocoder) with:
-    * a "super-saw" that can be cross-faded to a "super-pulse", free after [Adam Szabo](#https://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf)
+    * a "super-saw" that can be cross-faded to a "super-pulse", free after [Adam Szabo](https://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf)
     * flexible Q and frequency setting for the filters
     * an elaborate feedback and distortion matrix around the filters
   * a couple of vocoders based on oscillators with controllable formants,  
@@ -22,9 +22,9 @@ VoiceOfFaust consists of:
     * [CZ resonant](#czvocoder) oscillators, ported from a pd patch by [Mike Moser-Booth](http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators)
     * [PAF](#pafvocoder), ported from a pd patch by [Miller Puckette](http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html)
     * [FM](#fmvocoder), based on code by [Chris Chafe](http://chrischafe.net/glitch-free-fm-vocal-synthesis/)
-    * [FOF](#fofvocoder),based on code by [Michael Olsen](#https://ccrma.stanford.edu/~mjolsen/220a/fp/Foflet.dsp) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
+    * [FOF](#fofvocoder),based on code by [Michael Jørgen Olsen](https://ccrma.stanford.edu/~mjolsen/220a/fp/Foflet.dsp) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
   * [FM](#fmsinger), with modulation by the voice
-  * [ring-modulation](#czringmod) with an emulation of Casio CZ-oscillators
+  * [ring-modulation](#czringmod) with a few other CZ-oscillators
   * [Karplus-Strong](#karplus-strongSinger): The famous [synthesis technique](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
   * [Phase modulation](#pmfx) used as an effect
 * All oscillators are synchronized to a single saw-wave, so they stay in phase, [unless you don't want them to!](#phase-parameters)
@@ -55,8 +55,8 @@ VoiceOfFaust consists of:
 **Table of Contents**
 
 - [VoiceOfFaust](#voiceoffaust)
-    - [Overview:](#overview)
-    - [Building and running:](#building-and-running)
+    - [Overview](#overview)
+    - [Building and running](#building-and-running)
     - [Features](#features)
         - [Vocoders](#vocoders)
             - [features of all vocoders](#features-of-all-vocoders)
@@ -83,7 +83,7 @@ VoiceOfFaust consists of:
 <!-- markdown-toc end -->
 
 
-## Building and running:
+## Building and running
 
 
 You need faust from git, because version 0.9.73 and earlier have a bug in lf_sawpos. 
@@ -269,7 +269,7 @@ Again five octaves, with each octave containing three different oscillators:
 
 #### Karplus-StrongSinger
 
-This takes the idea of a [Karplus Strong algorithm](#https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis), but instead of noise, it uses the input signal.
+This takes the idea of a [Karplus Strong algorithm](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis), but instead of noise, it uses the input signal.
 The feedback is ran trough an allpass filter, modulated with an LFO; adapted from the nonLinearModulator in instrument.lib.
 To keep the level from going out of control, there is a limiter in the feedback path.
 Parallel to the delay is a separate nonLinearModulator.
