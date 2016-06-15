@@ -24,7 +24,7 @@ qompander(x,factor,threshold,attack,release) =
     magnitude = (threshold):db2linear;
     exponent = log(magnitude)/log(sin(factor*magnitude*PI/2));
 
-    // to go from puredata biquad coefficients to max/msp and faust notation: the first two parameters are negated and put last
+    // to go from puredata biquad coefficients to max/msp and Faust notation: the first two parameters are negated and put last
     olli1(x) = x:		tf2(0.161758, 0, -1, 0, -0.161758):tf2(0.733029, 0, -1, 0, -0.733029):tf2(0.94535 , 0, -1, 0, -0.94535 ):tf2(0.990598, 0, -1, 0, -0.990598);
     olli2(x) = x:mem:	tf2(0.479401, 0, -1, 0, -0.479401):tf2(0.876218, 0, -1, 0, -0.876218):tf2(0.976599, 0, -1, 0, -0.976599):tf2(0.9975  , 0, -1, 0, -0.9975  );
 

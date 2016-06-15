@@ -1,4 +1,4 @@
-<VoiceOfFaust, a realtime voice controlled synth written in faust>
+<VoiceOfFaust, a realtime voice controlled synth written in Faust>
     Copyright (C) <2014>  <Bart Brouns>
 
     This program is free software: you can redistribute it and/or modify

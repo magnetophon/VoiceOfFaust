@@ -64,7 +64,7 @@ my_compression_gain_mono(strength,thresh,att,rel,knee,prePost) =
 
 // It uses a strength parameter instead of the traditional ratio, in order to be able to
 // function as a hard limiter.
-// For that you'd need a ratio of infinity:1, and you cannot express that in faust
+// For that you'd need a ratio of infinity:1, and you cannot express that in Faust
 
 // Sometimes even bigger ratios are usefull:
 // For example a group recording where one instrument is recorded with both a close microphone and a room microphone,

@@ -152,7 +152,7 @@ supersawpulse(N,fund,freq,detune*-1,mix,SawPulse,duty);
 //todo: vector PM osclators
 
 //-----------------------------------------------
-// CZ oscilators by Mike Moser-Booth. ported from pd to faust by Bart Brouns
+// CZ oscilators by Mike Moser-Booth. ported from pd to Faust by Bart Brouns
 //-----------------------------------------------
 
 //index= 0 to 1

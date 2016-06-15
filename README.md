@@ -10,7 +10,7 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
 VoiceOfFaust consists of:
 
 * An external pitch tracker: [helmholtz~](http://www.katjaas.nl/helmholtz/helmholtz.html) by Katja Vetter
-* compressor/expander, also by [Katja](http://www.katjaas.nl/compander/compander.html), ported to faust.
+* compressor/expander, also by [Katja](http://www.katjaas.nl/compander/compander.html), ported to Faust.
 * 7 synthesizer and two effect algorithms:
   * [channel vocoder](#classicvocoder) with:
     * a "super-saw" that can be cross-faded to a "super-pulse", free after [Adam Szabo](https://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf)

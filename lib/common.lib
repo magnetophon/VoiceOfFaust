@@ -1,4 +1,4 @@
-// faust standard libs:
+// Faust standard libs:
 import ("oscillator.lib");
 import ("maxmsp.lib");
 import ("effect.lib");
