@@ -334,8 +334,11 @@ with {
 
 // highpassChooser(N,fc,stableFilters) =
 highpassChooser(N,fc,0) = highpass(N,fc);
-// highpassChooser(N,fc,1) = highpass(N,fc);
-highpassChooser(N,fc,1) = highpassStable(N,fc);
+// the actual stable filter somehow takes very long to compile,
+// but only in the context of VoiceOfFaust, somehow...
+// WIP...
+highpassChooser(N,fc,1) = highpass(N,fc);
+// highpassChooser(N,fc,1) = highpassStable(N,fc);
 
 highpassStable(N,fc) = lphpr(N,N,fc)
 with {
