@@ -64,7 +64,8 @@ stringloopBank(freq,fidelity,audio,index,feedback,phaseLL,phaseL,phase,phaseH,ph
     stringloopFBpath(freq,2,feedbackH*feedbackADSR(audio,freq),phaseH,nonLinH,frequencyModH,DCnonlinH),
     stringloopFBpath(freq,4,feedbackHH*feedbackADSR(audio,freq),phaseHH,nonLinHH,frequencyModHH,DCnonlinHH)
     )
-    :> KPvocoder(audio,_,freq,fidelity):dampingfilter1)~ //or dampingfilter2
+    :> KPvocoder(audio,_,freq,fidelity))~ //no damping needed
+    // :> KPvocoder(audio,_,freq,fidelity):dampingfilter1)~ //or dampingfilter2
 //  feedback path
     ( compressor_mono(100,KPtresh,0,(1/(freq * 0.25 ))))
     :_*KPvolume
