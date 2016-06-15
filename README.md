@@ -10,31 +10,31 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
 * pitch tracker
 * compressor/expander ported from [here](http://www.katjaas.nl/compander/compander.html)
 * 7 synthesizer and two effect algorithms:
-  * [channel vocoder](#classicVocoder) with:
+  * [channel vocoder](#classicvocoder) with:
     * a "super-saw" that can be cross-faded to a "super-pulse"
     * flexible Q and frequency setting for the filters
     * an elaborate feedback and distortion matrix around the filters
   * a couple of vocoders based on oscillators with controllable formants,  
     so IOW: oscillators that sound like they have a band pass filter on them.  
     The types of oscillator used in these, are:
-    * [CZ resonant](#czVocoder) oscillators, ported from [here](http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators)
-    * [PAF](#PAFvocoder), ported from [here](http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html)
-    * [FM](#FMvocoder), based on code by [Chris Chafe](http://chrischafe.net/glitch-free-fm-vocal-synthesis/)
-    * [FOF](#FOFvocoder), ported from [here](http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
-  * [FM](#FMsinger), with modulation by the voice
-  * [ring-modulation](#CZringMod) with an emulation of Casio CZ-oscillators
-  * [Karplus-Strong](#Karplus-StrongSinger): The famous [synthesis technique](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
-  * [Phase modulation](#PMfx) used as an effect
+    * [CZ resonant](#czvocoder) oscillators, ported from [here](http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators)
+    * [PAF](#pafvocoder), ported from [here](http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html)
+    * [FM](#fmvocoder), based on code by [Chris Chafe](http://chrischafe.net/glitch-free-fm-vocal-synthesis/)
+    * [FOF](#fofvocoder), ported from [here](http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
+  * [FM](#fmsinger), with modulation by the voice
+  * [ring-modulation](#czringMod) with an emulation of Casio CZ-oscillators
+  * [Karplus-Strong](#karplus-strongSinger): The famous [synthesis technique](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
+  * [Phase modulation](#pmfx) used as an effect
 * All oscillators are synchronized to a single saw-wave, so they stay in phase, [unless you don't want them to!](#phase-parameters)
 * powerful [parameter mapping system](#parameter-mapping-system)
 * All synths are spatialized at their core: sounds are generated in stereo, multichannel or ambisonics format,  
   not made in mono and afterwards given some stereo width with effects.
 * [formant compression/expansion](#formant-compression/expansion):  
   Make the output spectrum more flat or more resonant, at the twist of a knob.
-* flexible [in and output routing](#in-and-output routing), totally changing the character of your synth.
+* flexible [in and output routing](#in-and-output-routing), totally changing the character of your synth.
 * all parameters, including routing, are step-less, meaning any 'preset' can morph into any other, with the only exception of the octave setting
   (though for some of the synths even that one is continuously variable)
-* multi-band [deEsser](#deEsser) and [reEsser](#reEsser)
+* multi-band [deEsser](#deesser) and [reEsser](#reesser)
 * Optionally use as a [master-slave](#master-slave) pair  
   * This is a workaround for the need for an external pitchtracker, making it possible to use these as plugins.  
     It has the nice side effect that your sounds become fully deterministic:  
@@ -46,7 +46,7 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
   * number of output channels
   * whether we want [ambisonics](https://en.wikipedia.org/wiki/Ambisonics) output
   * whether a vocoder has nrBands or nrBands * nrOutChan oscillators. [more info](#doubleOscs) 
-* Lots more, described in [Features](#Features).
+* Lots more, described in [Features](#features).
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
@@ -153,17 +153,17 @@ we can alternate the bands between left and right,
 we can do various mid-side variations  
 we can even do a full [Hadamard matrix](https://en.wikipedia.org/wiki/Hadamard_matrix).  
 All of these, and more, can be clicklessly cross-faded between.
-
-In the [classicVocoder](#classicVocoder), a similar routing matrix is between the oscillators and the filters.
+                       
+In the [classicVocoder](#classicvocoder), a similar routing matrix is between the oscillators and the filters.
 
 
 ##### phase parameters
 
 Since all(*) formants are made by separate oscillators that are synced to a single master oscillator, you can set their phases, relative to each other.
-(*) except for the [classicVocoder](#classicVocoder)
+(*) except for the [classicVocoder](#classicvocoder)
 This allows them to sound like one oscillator when they have static phase relationships, and to sound like many detuned oscillators when their phases are moving.
 
-Together with the [output routing](#output-routing), it can also create interesting cancellation effects.
+Together with the [output routing](#in-and-output-routing), it can also create interesting cancellation effects.
 For example, with the default settings for the FMvocoder, the formants are one octave up from where you'd expect them to be.
 When you change the phase or the output routing, they drop down.
 
