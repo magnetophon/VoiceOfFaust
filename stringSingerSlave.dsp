@@ -1,5 +1,5 @@
 declare name      "stringSinger";
-declare version   "0.7";
+declare version   "1.0";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
