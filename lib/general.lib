@@ -458,6 +458,7 @@ monoLimiter(pitch)=
     };
 
 // limiter(freq,N,enableLimiter) =
+//is actually multi mono. on purpose; to try and keep the image in the center.
 limiter(freq,N,0) = bus(N);
 limiter(freq,N,1) =
   FFcompressor_N_chan(1,-3,0,limrelease,12,1,0,_,N)
@@ -465,4 +466,5 @@ with {
   limrelease = (1/freq);
 };
 
-stereoLimiter(pitch) =monoLimiter(pitch),monoLimiter(pitch);
+stereoLimiter(pitch) = limiter(freq,2,enableLimiter);
+//monoLimiter(pitch),monoLimiter(pitch);
