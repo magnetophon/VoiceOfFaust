@@ -326,7 +326,7 @@ CZpulseIxLL        = LLCZparamsGroup( vslider("[3]pulseIx[tooltip: morph from si
 CZresLL            = LLCZparamsGroup( vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):smooth(0.999));
 CZresMultLL        = LLCZparamsGroup( vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):smooth(0.999));
 
-CZwidth            = CZparamsGroup(   vslider("[5]width[tooltip: stereo width]",	0.25, 0, 1, 0.001):smooth(0.999));
+CZwidth            = CZparamsGroup(   hslider("[5]width[tooltip: stereo width]",	0.25, 0, 1, 0.001):smooth(0.999));
 
 //-----------------------------------------------
 // Vocoder based on Casio CZ resonant oscilators
