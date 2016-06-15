@@ -13,7 +13,7 @@ VoiceOfFaust consists of:
 * compressor/expander, also by [Katja](http://www.katjaas.nl/compander/compander.html), ported to faust.
 * 7 synthesizer and two effect algorithms:
   * [channel vocoder](#classicvocoder) with:
-    * a "super-saw" that can be cross-faded to a "super-pulse"
+    * a "super-saw" that can be cross-faded to a "super-pulse", free after [Adam Szabo](#https://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf)
     * flexible Q and frequency setting for the filters
     * an elaborate feedback and distortion matrix around the filters
   * a couple of vocoders based on oscillators with controllable formants,  
