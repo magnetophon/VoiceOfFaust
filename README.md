@@ -9,8 +9,8 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
 
 VoiceOfFaust consists of:
 
-* An external pitch tracker: [helmholtz~](#http://www.katjaas.nl/helmholtz/helmholtz.html) by Katja Vetter
-* compressor/expander, also ported from [Katja](http://www.katjaas.nl/compander/compander.html)
+* An external pitch tracker: [helmholtz](#http://www.katjaas.nl/helmholtz/helmholtz.html) by Katja Vetter
+* compressor/expander, also by [Katja](http://www.katjaas.nl/compander/compander.html), ported to faust.
 * 7 synthesizer and two effect algorithms:
   * [channel vocoder](#classicvocoder) with:
     * a "super-saw" that can be cross-faded to a "super-pulse"
@@ -19,10 +19,10 @@ VoiceOfFaust consists of:
   * a couple of vocoders based on oscillators with controllable formants,  
     so IOW: oscillators that sound like they have a band pass filter on them.  
     The types of oscillator used in these, are:
-    * [CZ resonant](#czvocoder) oscillators, ported from [here](http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators)
-    * [PAF](#pafvocoder), ported from [here](http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html)
+    * [CZ resonant](#czvocoder) oscillators, ported from a pd patch by [Mike Moser-Booth](http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators)
+    * [PAF](#pafvocoder), ported from a pd patch by [Miller Puckette](http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html)
     * [FM](#fmvocoder), based on code by [Chris Chafe](http://chrischafe.net/glitch-free-fm-vocal-synthesis/)
-    * [FOF](#fofvocoder),based on code by [Michael Jørgen Olsen](#https://ccrma.stanford.edu/~mjolsen/220a/fp/Foflet.dsp) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
+    * [FOF](#fofvocoder),based on code by [Michael Olsen](#https://ccrma.stanford.edu/~mjolsen/220a/fp/Foflet.dsp) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
   * [FM](#fmsinger), with modulation by the voice
   * [ring-modulation](#czringmod) with an emulation of Casio CZ-oscillators
   * [Karplus-Strong](#karplus-strongSinger): The famous [synthesis technique](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
