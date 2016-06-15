@@ -20,9 +20,9 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
     * [CZ resonant](#czvocoder) oscillators, ported from [here](http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators)
     * [PAF](#pafvocoder), ported from [here](http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html)
     * [FM](#fmvocoder), based on code by [Chris Chafe](http://chrischafe.net/glitch-free-fm-vocal-synthesis/)
-    * [FOF](#fofvocoder), ported from [here](http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
+    * [FOF](#fofvocoder),based on code by [Michael Jørgen Olsen](#https://ccrma.stanford.edu/~mjolsen/220a/fp/Foflet.dsp) and extended as inspired by [Csound](https://csound.github.io/docs/manual/fof2.html)
   * [FM](#fmsinger), with modulation by the voice
-  * [ring-modulation](#czringMod) with an emulation of Casio CZ-oscillators
+  * [ring-modulation](#czringmod) with an emulation of Casio CZ-oscillators
   * [Karplus-Strong](#karplus-strongSinger): The famous [synthesis technique](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis) used as an effect
   * [Phase modulation](#pmfx) used as an effect
 * All oscillators are synchronized to a single saw-wave, so they stay in phase, [unless you don't want them to!](#phase-parameters)
@@ -215,20 +215,72 @@ Same parameters, different sound.
 
 ##### FOFvocoder
 
+Original idea by [Xavier Rodet](http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program).
 Also has frequencies and phases, but adds:
 * skirt and decay:  
   Two settings that influence the brightness of each band
 * Octavation index  
   Normally zero. If greater than zero, lowers the effective frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.
+  Inspired by [Csound](https://csound.github.io/docs/manual/fof2.html).
 
 ### other synthesizers
 
+#### FMsinger
 
+A sine wave that modulates its frequency with the input signal.
+There are five of these, one per octave, and each one has:
+* volume
+* modulation index
+* modulation dynamics  
+  This fades between 3 settings:
+  * no dynamics: the amount of modulation stays constant with varying input signal
+  * normal dynamics: more input volume equals more modulation
+  * inverted dynamics: more input equals less modulation.
+  
+  
+#### CZringmod
 
+Ringmodulates the input audio with emulations of Casio CZ oscillators.
+Again five octaves, with each octave containing three different oscillators:
+* square and pulse, each having volume and index (brightness) controls
+* reso, having a volume and a resonance multiplier:  
+  This is a formant oscillator, and it's resonant frequency is resMult is multiplied by the formant setting top right.
+  It is intended to be used with an external formant tracker.
+* There is a global width parameter that controls a delay on the oscillators for one output.
+  The delay time is relative to the frequency.
+  Because this delay is applied to just the oscillators, and before the ringmodulation, the sound of both output channels arrives simultaneously.
+  This creates a mono-compatible widening of the stereo image.
 
+#### Karplus-StrongSinger
 
+This takes the idea of a [Karplus Strong algorithm](#https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis), but instead of noise, it uses the input signal.
+The feedback is ran trough an allpass filter, modulated with an LFO; adapted from the nonLinearModulator in instrument.lib.
+To keep the level from going out of control, there is a limiter in the feedback path.
+Parallel to the delay is a separate nonLinearModulator.
+Globally you can set:
+* octave
+* output volume
+* threshold of the limiter
+For the allpass filters you can set:
+* amount of phase shift
+* difference in phase shift between left and right (yeah, I lied, there are two of everything)
+* amount of modulation by the LFO
+* frequency of the LFO, relative to the main pitch
+* phase offset between the left and right LFO's.
+To round things off there is a volume for the dry path and a feedback amount for the delayed one.
 
+#### Karplus-StrongSingerMaxi
 
+To have more voice control of the spectrum, this one has a kind of vocoder in the feedback path.
+Since we don't want the average volume of the feedback path changing much, only the volumes relative to the other bands, the vocoder is made out of equalizers, not bandpass filters.
+You can adjust it's
+* strength: from bypass to 'fully equalized'
+* cut/boost; steplessly vary between
+  * -1 = all bands have negative gain, except the strongest, which is at 0
+  * 0  = the average gain of the bands is 0.
+  * +1 = the all bands have positive gain, except the weakest, which is at 0
+* top and bottom frequencies
+* Q factor
 
 
 
