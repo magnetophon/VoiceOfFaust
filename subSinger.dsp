@@ -40,7 +40,7 @@ VoiceOfFaust(audio,index) =
   :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
   :stereoLimiter(freq * subOctave) //needs the pitch to adjust the decay time.
-  //:VuMeter
+  :VuMeter(2,enableVUmeter)
   )
   with {
     nrChan     = 3;
