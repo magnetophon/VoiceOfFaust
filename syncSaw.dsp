@@ -15,14 +15,16 @@ process(audio,index,fidelity) =
   // ,
   // my_lf_sawpos(fr)
   // ,
-  my_lf_sawpos( index2freq(my_lf_sawpos(fr)) )
-  ,
-  my_lf_sawpos(fr)
+  // my_lf_sawpos( index2freq(my_lf_sawpos(fr)) )
+  // ,
+  // my_lf_sawpos(fr)
 
 // , (my_lf_sawpos(fr))
-//   ((soft_sync_lf_sawpos(frequency,syncer)*0.25)+0.5)
-//   ,
-// (sync_sawN(2,frequency,syncer)*0.5)
+  ((soft_sync_lf_sawpos(frequency,syncer)*0.25)+0.5)
+  ,
+
+
+(sync_sawN(2,frequency,syncer)*0.5)
   // index,
   // my_lf_sawpos(freq/4)
 
