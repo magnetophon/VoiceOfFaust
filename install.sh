@@ -53,8 +53,8 @@ sed -i "s|tabs(x)               = VoFgroup(tgroup|tabs(x)               = VoFgro
 for i in "${slaves[@]}"
 do
     echo "compiling lv2 from:" $i
-    echo "time faust2lv2 -ui -t 99999 -time -osc -vec" $i
-    time faust2lv2 -ui -t 99999 -time -osc -vec $i
+    echo "time faust2lv2 -gui -t 99999 -time -osc -vec" $i
+    time faust2lv2 -gui -t 99999 -time -osc -vec $i
 done
 
 echo "undo patching tgroup for lv2:"
