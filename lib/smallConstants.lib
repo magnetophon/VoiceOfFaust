@@ -3,26 +3,26 @@
 //-----------------------------------------------
 
 // general:
-nrBands                   = 16:max(4*nrOutChan);// Number of bands for the vocoders
-nrOutChan                 = 2; // number of outputs
+nrBands                   = 4:max(4*nrOutChan);// Number of bands for the vocoders
+nrOutChan                 = 1; // number of outputs
 ambisonicsOn              = 0; // do we want an ambisonic synth.
 ambisonicsOrder           = 3; // order of the ambisonics
-para                      = 1; // whether we want a parametric mid
-enableGainCompare         = 1; // correct the loudness of the individual bands after they've been created
-enableGainScale           = 1; // expand or compress the spectrum: make it more or less resonant
-autoQ                     = 1; // enable correction of the filter-Q depending on the distance between the bands
-enableDeEsser             = 1+ enableReEsser:min(1); // enable the multi-band deEsser, is needed for reEsser
+para                      = 0; // whether we want a parametric mid
+enableGainCompare         = 0; // correct the loudness of the individual bands after they've been created
+enableGainScale           = 0; // expand or compress the spectrum: make it more or less resonant
+autoQ                     = 0; // enable correction of the filter-Q depending on the distance between the bands
+enableDeEsser             = 0+ enableReEsser:min(1); // enable the multi-band deEsser, is needed for reEsser
 enableReEsser             = 0; // enable the multi-band reEsser: experimental: not well tested in multichannel and ambisonics
 stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd pass filters
 enableAutosat             = 0; // put a saturator at the output
-enableLimiter             = 1; // put a limiter at the output
-enableVUmeter             = 1; // put a VU meter at the output
-outputRoutingEnabled      = 1; // have flexible routing between the bands and the outputs
-inputRoutingEnabled       = 1; // have flexible routing between the osclilators and the filters.
+enableLimiter             = 0; // put a limiter at the output
+enableVUmeter             = 0; // put a VU meter at the output
+outputRoutingEnabled      = 0; // have flexible routing between the bands and the outputs
+inputRoutingEnabled       = 0; // have flexible routing between the osclilators and the filters.
 maxNrOutRoutings          = select2(ambisonicsOn,6,3); // the maximum amount of different output routings
 SRmax                     = 96000.0;                          // assumed upper limit on sampling rate
 // pitch tracking:
-enablePitchTracker        = 1; // internal pitch tracker
+enablePitchTracker        = 0; // internal pitch tracker
 enablePitchQuantise       = 0; // a simple 'autotune': only chromatic
 enablegainedSmootherPitch = 1; // choose between normal smoothing of th pitch (0), and a  psuedo Kalman filter that looks at the fidelity
 MinInputPitch             = 48.9994;	// = G1, the lowest frequency that helmholtz~ can track is 51 Hz
@@ -36,12 +36,12 @@ analizerBottom            = (0.5*pow(2,0.5))+0.0;
 // analizerTop               = defaultTop;
 // analizerBottom            = defaultBottom;
 // classicVocoder:
-enableFeedback            = 1; // feedback around the filters of the classicVocoder
-enableFilterAutosat       = 1; // put a saturator in the filter of the classicVocoder
+enableFeedback            = 0; // feedback around the filters of the classicVocoder
+enableFilterAutosat       = 0; // put a saturator in the filter of the classicVocoder
 vocoderN                  = 2; // order of anti aliasing
 // vocoders based on oscilators
-doubleOscs                = 1; // whether a vocoder has nrBands or nrBands * nrOutChan oscilators
-enablePhaseNoise          = 1; // 0 = no noise   and 1 = noise modulates phase
+doubleOscs                = 0; // whether a vocoder has nrBands or nrBands * nrOutChan oscilators
+enablePhaseNoise          = 0; // 0 = no noise   and 1 = noise modulates phase
 enablePhaseNoiseFilter    = 1; // 0 = noise:smooth(fixed)   and 1 = noise:lowpass(variable)
 noisesFilterN             = 4; // the order of the noise lowpass
 defaultTop                = 128:pow(0.5); // using these two values with 16 bands, gives integer formant ratios

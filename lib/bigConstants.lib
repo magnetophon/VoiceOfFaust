@@ -13,7 +13,7 @@ enableGainScale           = 1; // expand or compress the spectrum: make it more 
 autoQ                     = 1; // enable correction of the filter-Q depending on the distance between the bands
 enableDeEsser             = 1+ enableReEsser:min(1); // enable the multi-band deEsser, is needed for reEsser
 enableReEsser             = 0; // enable the multi-band reEsser: experimental: not well tested in multichannel and ambisonics
-stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd pass filters
+stableFilters             = 0; // 0=unstable band pass filters, 1 = stable bamd pass filters
 enableAutosat             = 0; // put a saturator at the output
 enableLimiter             = 1; // put a limiter at the output
 enableVUmeter             = 1; // put a VU meter at the output
