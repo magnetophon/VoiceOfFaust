@@ -15,7 +15,7 @@ analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands
 //also sounds cool to vary between this and 0
 
 analizers=
-interleave(nrBands,4):par(i, nrBands,(autoQresonBP:amp_follower_ud(0.002 ,0.004)));
+badInterleave(nrBands,4):par(i, nrBands,(autoQresonBP:amp_follower_ud(0.002 ,0.004)));
 
 autoQresonBP(f,prevC,c,q) =
     // f:resonbp(c:min((SR/2)-10),Q,1):resonbp(c:min((SR/2)-10),Q,compensate*0.2)
@@ -48,7 +48,7 @@ simpleAnalizer(audio,freq)=
 ):analizers : gainScale(enableGainScale,gainScaling,freq);
 
 deEssedAnalizer(audio,freq,fidelity) =
-  (simpleAnalizer(audio,freq), deEssGains(audio,freq,deEssStrenght*dynAmount)) : interleave(nrBands,2) : par(i, nrBands, (linear2db+_):db2linear)
+  (simpleAnalizer(audio,freq), deEssGains(audio,freq,deEssStrenght*dynAmount)) : badInterleave(nrBands,2) : par(i, nrBands, (linear2db+_):db2linear)
 with {
   dynAmount = 1-(deEssDynStrenght*(fidelity:pow(42):lag_ud(0.002,0.004)));
 };
@@ -56,7 +56,7 @@ with {
 deEssGains(audio,freq,strenght) = preEmp : par(i, nrBands, ((deEssThreshold-_) : min(0) * strenght ) )
 with {
   highPassPreEmp = analizerCenters(freq):par(i, nrBands,  ( hz2pianokey - (deEssCorner:hz2pianokey) ) :min(0) * (deEssdBperOctave/12));
-  preEmp = ( simpleAnalizer(audio,freq) , highPassPreEmp):interleave(nrBands,2) : par(i, nrBands, linear2db+_);
+  preEmp = ( simpleAnalizer(audio,freq) , highPassPreEmp):badInterleave(nrBands,2) : par(i, nrBands, linear2db+_);
 };
 
 
@@ -74,7 +74,7 @@ reEsser(audio,freq,doubleOscs,1) =
           ,reEssgains(audio,freq)
           ,(analizerQ<:bus(nrBands))
         )
-        :(interleave(nrBands,5):par(i, nrBands, volFilter))<:bus(nrOuts)
+        :(badInterleave(nrBands,5):par(i, nrBands, volFilter))<:bus(nrOuts)
       )
     )
     :>bus(nrOuts)

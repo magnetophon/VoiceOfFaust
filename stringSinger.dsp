@@ -52,7 +52,7 @@ VoiceOfFaust(audio,index,fidelity) =
     ,pmFX(freq,pmFXr,pmFXi,0-PMphase))
   )
 
-  :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
+  :badInterleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
 
   //:stereoLimiter(freq * vocoderOctave) //needs the pitch to adjust the decay time.
   //:VuMeter

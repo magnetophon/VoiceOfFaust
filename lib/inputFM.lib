@@ -14,7 +14,7 @@ equalpower = _<:			//3dB equal power curve
 dynamics(limited, unlimited,dyn) =
     ((dyn*2:min(1):equalpower),
     (dyn-0.5:max(0)*2:equalpower:(_,_*-1):cross(2)))
-    :interleave(2,2):(bus2:>_),(bus2:>_)
+    :badInterleave(2,2):(bus2:>_),(bus2:>_)
     :_*limited,_*unlimited:>_;
 
 FMvoc(limited, unlimited,freq,vol,index,dyn) = osc((dynamics(limited, unlimited,dyn)*index)+freq)*vol;

@@ -17,7 +17,7 @@ eqOfN(n) = (eqOfN(n-1),_,_,_):eqOfN(1);
 EQbank(Oscilator,q) =
     ((bus(nrBands)<:(bus(nrBands),OffSet)<:(par(i, nrBands, (selector(i,nrBands+1)+selector(nrBands,nrBands+1))))),bus(nrBands))
     :(bus(2*nrBands),(q<:bus(nrBands)))
-    :((Oscilator,interleave(nrBands,3)):eqOfN(nrBands))
+    :((Oscilator,badInterleave(nrBands,3)):eqOfN(nrBands))
     with {
         N = 3; //uneven only: 1,3,5
         AvgVolume = sumOfN(nrBands)/nrBands;

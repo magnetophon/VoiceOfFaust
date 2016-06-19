@@ -18,13 +18,13 @@ declare copyright 	"(c) Bart Brouns 2014";
 
 //make a channel with nrSends outputs.
 //The inputs are: volumes,audio
-monoChannel(nrSends) = (bus(nrSends),(_<:bus(nrSends))):interleave(nrSends,2):par(o,nrSends,_*_);
+monoChannel(nrSends) = (bus(nrSends),(_<:bus(nrSends))):badInterleave(nrSends,2):par(o,nrSends,_*_);
 
 
 //make a bus with nrOutChan channels, each having nrSends sends
 //inputs: nrSends volumes followed by nrOutChan audio inputs
 //outputs: lr,lr,lr
-busWithSends(nrOutChan,nrSends)= bus(nrOutChan+nrSends)<:par(i,nrOutChan,sel(nrOutChan,nrSends,i)):par(i,nrOutChan,monoChannel(nrSends)):interleave(nrSends,nrOutChan)
+busWithSends(nrOutChan,nrSends)= bus(nrOutChan+nrSends)<:par(i,nrOutChan,sel(nrOutChan,nrSends,i)):par(i,nrOutChan,monoChannel(nrSends)):badInterleave(nrSends,nrOutChan)
 with {
 sel(nrOutChan,nrSends,i) = (par(i,nrSends,_),par(i,nrOutChan,!),(selector(i+nrSends,nrOutChan+nrSends)));
 };
@@ -50,7 +50,7 @@ sel(nrOutChan,nrSends,i) = (par(i,nrSends,_),par(i,nrOutChan,!),(selector(i+nrSe
 //send1L,send1R.send2L.send2R,send3L.send3R,
 //carefull; no send4L or send4R will be created, as 4 is the number of inputchannels, not the nr of sends
 mixerWithSends(nrChan,nrOutChan,nrSends) =
-par(i,nrChan,busWithSends(nrOutChan,nrSends)):interleave(nrSends*nrOutChan,nrChan):mix
+par(i,nrChan,busWithSends(nrOutChan,nrSends)):badInterleave(nrSends*nrOutChan,nrChan):mix
 with {
 mix=par(i,nrOutChan*nrSends,(bus(nrChan):>_));
 };
@@ -72,9 +72,9 @@ vocoderMixer(audio,freq,0,1,0) = reEsser(audio,freq,0,enableReEsser) <:(
                 (par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,0):dezip) *_)))
                ,(bus(nrBands):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
                ,(par(i,nrOutChan, bus(nrBands/nrOutChan):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,3):dezip)))))
+               ,(badInterleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(bus(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,3):dezip)))))
                ,(bus(nrBands):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,4):dezip)) *_):cross(nrOutChan))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,5):dezip)))))
+               ,(badInterleave(nrBands/nrOutChan,nrOutChan):par(i, nrOutChan,(butterfly(nrBands/nrOutChan):>_*((xfadeSelector(outputRouting,5):dezip)))))
                ,(butterfly(nrBands):>(par(i,nrOutChan,((xfadeSelector(outputRouting,6):dezip) *_))))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrOutChan);
@@ -83,17 +83,17 @@ vocoderMixer(audio,freq,0,1,0) = reEsser(audio,freq,0,enableReEsser) <:(
 vocoderMixer(audio,freq,1, outputRoutingEnabled,0)  =
   reEsser(audio,freq,0,enableReEsser)
   :routing(outputRoutingEnabled)
-  :((angles,bus(nrBands)): interleave(nrBands,2))
+  :((angles,bus(nrBands)): badInterleave(nrBands,2))
   : par(i,nrBands,myMap):>bus((ambisonicsOrder*2)+1)
 with {
   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
-  angles = par(i,nrBands/2,   ((angleTop-angleBottom)*(i/(nrBands/2)))+angleBottom)<:(bus(nrBands/2),par(i,nrBands/2,_*-1)):interleave(nrBands/2,2);
+  angles = par(i,nrBands/2,   ((angleTop-angleBottom)*(i/(nrBands/2)))+angleBottom)<:(bus(nrBands/2),par(i,nrBands/2,_*-1)):badInterleave(nrBands/2,2);
   routing(0) = bus(nrBands);
   routing(1) =bus(nrBands)<:(
                (bus(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,0):dezip) *_)))
-               ,(interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,1):dezip) *_)))
+               ,(badInterleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,1):dezip) *_)))
                ,(butterfly(nrBands):(par(i,nrBands,(xfadeSelector(outputRouting,2):dezip) *_)))
-               ,(butterfly(nrBands):interleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,3):dezip) *_)))
+               ,(butterfly(nrBands):badInterleave(nrBands/nrOutChan,nrOutChan):(par(i,nrBands,(xfadeSelector(outputRouting,3):dezip) *_)))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrBands);
 };
@@ -107,9 +107,9 @@ vocoderMixer(audio,freq,0,1,1) = reEsser(audio,freq,1,enableReEsser) <:(
                 (par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,0):dezip) *_)))
                ,(bus(nrBands*nrOutChan):>(par(i,nrOutChan, (xfadeSelector(outputRouting,1):dezip)*_)))
                ,(par(i,nrOutChan, bus(nrBands):>((xfadeSelector(outputRouting,2):dezip)) *_):butterfly(nrOutChan))
-               ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(bus(nrBands):>_*((xfadeSelector(outputRouting,3):dezip)))))
+               ,(badInterleave(nrBands,nrOutChan):par(i, nrOutChan,(bus(nrBands):>_*((xfadeSelector(outputRouting,3):dezip)))))
                ,(bus(nrBands*nrOutChan):>butterfly(nrOutChan):par(i,nrOutChan,((xfadeSelector(outputRouting,4):dezip)) *_):cross(nrOutChan))
-               ,(interleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly(nrBands):>_*((xfadeSelector(outputRouting,5):dezip)))))
+               ,(badInterleave(nrBands,nrOutChan):par(i, nrOutChan,(butterfly(nrBands):>_*((xfadeSelector(outputRouting,5):dezip)))))
                ,(butterfly(nrBands*nrOutChan):>(par(i,nrOutChan,((xfadeSelector(outputRouting,6):dezip) *_))))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrOutChan);
@@ -118,17 +118,17 @@ vocoderMixer(audio,freq,0,1,1) = reEsser(audio,freq,1,enableReEsser) <:(
 vocoderMixer(audio,freq,1, outputRoutingEnabled,1)  =
   reEsser(audio,freq,1,enableReEsser)
   :routing(outputRoutingEnabled)
-  :((angles,bus(nrBands*nrOutChan)) : interleave(nrBands*nrOutChan,2))
+  :((angles,bus(nrBands*nrOutChan)) : badInterleave(nrBands*nrOutChan,2))
   : par(i,nrBands*nrOutChan,myMap):>bus((ambisonicsOrder*2)+1)
 with {
   myMap(a) = _<:encoder(ambisonicsOrder, _, a);
-  angles = par(i,nrBands*nrOutChan/2,   ((angleTop-angleBottom)*(i/(nrBands*nrOutChan/2)))+angleBottom)<:(bus(nrBands),par(i,nrBands,_*-1)):interleave(nrBands,2);
+  angles = par(i,nrBands*nrOutChan/2,   ((angleTop-angleBottom)*(i/(nrBands*nrOutChan/2)))+angleBottom)<:(bus(nrBands),par(i,nrBands,_*-1)):badInterleave(nrBands,2);
   routing(0) = bus(nrBands*nrOutChan);
   routing(1) =bus(nrBands*nrOutChan)<:(
                (bus(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,0):dezip) *_)))
-               ,(interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,1):dezip) *_)))
+               ,(badInterleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,1):dezip) *_)))
                ,(butterfly(nrBands*nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,2):dezip) *_)))
-               ,(butterfly(nrBands*nrOutChan):interleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,3):dezip) *_)))
+               ,(butterfly(nrBands*nrOutChan):badInterleave(nrBands,nrOutChan):(par(i,nrBands*nrOutChan,(xfadeSelector(outputRouting,3):dezip) *_)))
                /*,(hademar:>par(i,nrOutChan, (outputRouting==2) *_))*/
              ):>bus(nrBands*nrOutChan);
 };

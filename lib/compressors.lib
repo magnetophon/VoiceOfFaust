@@ -174,7 +174,7 @@ compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,1) =
 // to link/unlink channels
 compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N) =
   par(i, N, my_compression_gain_mono(strength,thresh,att,rel,knee,prePost))
-  <:(bus(N),(minimum(N)<:bus(N))):interleave(N,2):par(i,N,(crossfade(link)));
+  <:(bus(N),(minimum(N)<:bus(N))):badInterleave(N,2):par(i,N,(crossfade(link)));
 
 // an RMS versions of the above
 RMS_compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,1) =
@@ -182,20 +182,20 @@ RMS_compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,1) =
 
 RMS_compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N) =
   par(i, N, RMS_compression_gain_mono(strength,thresh,att,rel,knee,prePost))
-  <:(bus(N),(minimum(N)<:bus(N))):interleave(N,2):par(i,N,(crossfade(link)));
+  <:(bus(N),(minimum(N)<:bus(N))):badInterleave(N,2):par(i,N,(crossfade(link)));
 
 // feed forward compressor
 FFcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,meter,N) =
   (bus(N) <:
     (compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N),bus(N))
   )
-  :(interleave(N,2):par(i,N,meter*_));
+  :(badInterleave(N,2):par(i,N,meter*_));
 
 // feed back compressor
 FBcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,meter,N) =
   (
     (compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N),bus(N))
-    :(interleave(N,2):par(i,N,meter*_))
+    :(badInterleave(N,2):par(i,N,meter*_))
   )~bus(N);
 
 // feed back and/or forward compressor
@@ -204,9 +204,9 @@ FBFFcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,FBFF,meter,N) =
   bus(N) <: bus(N*2):
   (
     ((
-      (par(i, 2, compression_gain_N_chan(strength*(1+((i==0)*2)),thresh,att,rel,knee,prePost,link,N)):interleave(N,2):par(i, N, crossfade(FBFF)))
+      (par(i, 2, compression_gain_N_chan(strength*(1+((i==0)*2)),thresh,att,rel,knee,prePost,link,N)):badInterleave(N,2):par(i, N, crossfade(FBFF)))
       ,bus(N))
-      :(interleave(N,2):par(i,N,meter*_))
+      :(badInterleave(N,2):par(i,N,meter*_))
     )~bus(N)
   );
 
@@ -221,10 +221,10 @@ RMS_FBFFcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,FBFF,meter,N
   (
     (
       (
-        (interleave(N,2):par(i, N*2, abs) :par(i, N, crossfade(FBFF)) : RMS_compression_gain_N_chan(strength*(1+(((FBFF*-1)+1)*1)),thresh,att,rel,knee,prePost,link,N))
+        (badInterleave(N,2):par(i, N*2, abs) :par(i, N, crossfade(FBFF)) : RMS_compression_gain_N_chan(strength*(1+(((FBFF*-1)+1)*1)),thresh,att,rel,knee,prePost,link,N))
         ,bus(N)
       )
-    :(interleave(N,2):par(i,N,meter*_))
+    :(badInterleave(N,2):par(i,N,meter*_))
     )~bus(N)
   );
 
@@ -240,7 +240,7 @@ RMS_FBcompressor_peak_limiter_N_chan(strength,thresh,threshLim,att,rel,knee,link
       (
         (RMS_compression_gain_N_chan(strength,thresh,att,rel,knee,0,link,N))
         ,bus(N)
-      ):(interleave(N,2):par(i,N,meter*_))
+      ):(badInterleave(N,2):par(i,N,meter*_))
     ):FFcompressor_N_chan(1,threshLim,0,att:min(rel),knee*0.5,0,link,meter,N)
   )~bus(N);
 
@@ -253,14 +253,14 @@ crossfade(x,a,b) = a*(1-x),b*x : +;
 bypass(bp,e) = bus(N) <: ((inswitch:e),bus(N)) : outswitch with {
   N = inputs(e);
   inswitch =par(i, N, select2(bp,_,0));
-  outswitch = interleave(N,2) : par(i, N, select2(bp) );
+  outswitch = badInterleave(N,2) : par(i, N, select2(bp) );
 };
 
 // here bp can be a float between 0 and 1
 crossfade_bypass(bp,e) = bus(N) <: ((inswitch:e),bus(N)) : outswitch with {
   N = inputs(e);
   inswitch = par(i, N, crossfade(bp,_,0));
-  outswitch = interleave(N,2) : par(i, N, crossfade(bp) );
+  outswitch = badInterleave(N,2) : par(i, N, crossfade(bp) );
 };
 
 // get the minimum of N inputs:
@@ -385,7 +385,7 @@ N = 8;
 
 drumDuxpander =  bus(nrChan)<: (drumDuck, bus(nrChan)):drumExpand;
 
-drumDuck =  SCfilters <: ( bus(nrChan), ( duckGainReductions <: par(i, nrChan, meDuckGR(i))) : interleave(nrChan,2)): par(i, nrChan, *);
+drumDuck =  SCfilters <: ( bus(nrChan), ( duckGainReductions <: par(i, nrChan, meDuckGR(i))) : badInterleave(nrChan,2)): par(i, nrChan, *);
 
 duckGainReductions = par(i, nrChan, duckGainReduction(i));
 
@@ -393,7 +393,7 @@ duckGainReduction(i) = chanGroup(i+1, my_compression_gain_mono(duck_strength,thr
 
 meDuckGR(i) = chanGroup(i+1, par(j, nrChan, (linear2db*(i!=j))):>db2linear:meter);
 
-drumExpand =  interleave(nrChan,2) : par(i, nrChan, chanGroup(i+1, SCexpander(expand_strength,threshold,knee,attack,release)));
+drumExpand =  badInterleave(nrChan,2) : par(i, nrChan, chanGroup(i+1, SCexpander(expand_strength,threshold,knee,attack,release)));
 
 SCfilters =  par(i, nrChan, chanGroup(i+1, (highpass(N,HPfreq): lowpass(N,LPfreq))));
 

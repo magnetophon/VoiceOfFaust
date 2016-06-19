@@ -10,7 +10,7 @@ pafCenters = centers(1,PAFvocoderGroup);
 pafIndexes  =PAFvocoderGroup(VocoderLinArrayChooser(pafIndexBottom,pafIndexMid,pafIndexBand,pafIndexTop,para)):dezipBands ;
 
 pafOscs=
-    interleave(nrBands,4):
+    badInterleave(nrBands,4):
     par(i, nrBands, glitchfreePAF);
 
 

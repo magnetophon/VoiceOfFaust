@@ -8,7 +8,7 @@ FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,
 import("lib/myFMvox.dsp");
 
 FMoscs=
-    interleave(nrBands,5):
+    badInterleave(nrBands,5):
     par(i, nrBands, fuphoSlave);
 
 FMfunds(freq,index,i,group) = phasedFunds(freq,index,i,group);

@@ -55,7 +55,7 @@ phaseNoises(polarity,freq,1,1,group) =
 // ((group(phases),(group(phaseNoiseAmounts):par(j,nrBands,_*noises(nrBands,j):LP(j)))):>(par(j, nrBands,_*select2(polarity%2,1,-1))))
 with {
   filteredNoise = ((group(phaseNoiseAmounts):par(j,nrBands,_*noises(nrBands,j))):LPblock);
-  LPblock = (freqs, bus(nrBands)) : interleave(nrBands,2) : par(i, nrBands, LP);
+  LPblock = (freqs, bus(nrBands)) : badInterleave(nrBands,2) : par(i, nrBands, LP);
   LP(LPfreq) = seq(i, noisesFilterN, lowpass(1,LPfreq)) ;
   freqs = (group(phaseNoiseFreqs)   :par(i, nrBands, _*(freq*0.025)) );
   // somehow doesn't work:
@@ -217,8 +217,8 @@ gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
 
 // gainCompare(audio,freq,fidelity,enableGainCompare)
 gainCompare(audio,index,fidelity,freq,0) = bus(nrBands);
-gainCompare(audio,index,fidelity,freq,1) = (bus(nrBands),analizer(voice(audio,freq),freq,fidelity,enableDeEsser)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
-gainNormalise = (bus(nrBands),par(i, nrBands, 1)):interleave(nrBands,2):par(i,nrBands,gainCompareElement);
+gainCompare(audio,index,fidelity,freq,1) = (bus(nrBands),analizer(voice(audio,freq),freq,fidelity,enableDeEsser)):badInterleave(nrBands,2):par(i,nrBands,gainCompareElement);
+gainNormalise = (bus(nrBands),par(i, nrBands, 1)):badInterleave(nrBands,2):par(i,nrBands,gainCompareElement);
 
 // scale the gain between 0 = all at avg, 1 = normal and 2 = expansion
 // expansion means:
@@ -471,3 +471,5 @@ with {
 
 stereoLimiter(freq) = limiter(freq,2,enableLimiter);
 //monoLimiter(pitch),monoLimiter(pitch);
+
+badInterleave(row,col) = bus(row*col);
