@@ -44,6 +44,7 @@ Karplus-StrongSingerMaxi
 /PAFvocoderSlave
 /test.dsp
 /*.lv2
+/*.lv2.*
 /classicVocoderSlave
 /czVocoderSlave
 /CZringmodSlave
