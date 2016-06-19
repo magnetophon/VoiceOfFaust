@@ -469,5 +469,5 @@ with {
   limrelease = (1/freq);
 };
 
-stereoLimiter(pitch) = limiter(freq,2,enableLimiter);
+stereoLimiter(freq) = limiter(freq,2,enableLimiter);
 //monoLimiter(pitch),monoLimiter(pitch);
