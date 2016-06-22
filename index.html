@@ -326,7 +326,11 @@ When you change the phase or the output routing, they drop down.</p>
 <h5>
 <a id="classicvocoder" class="anchor" href="#classicvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>classicVocoder</h5>
 
-<p>The classicVocoder has two sections:</p>
+<p>Here is a block diagram:</p>
+<object data="images/classicVocoder-svg/process.svg" codetype="image/svg+xml"></object> </p>
+<p>Click on the dark blue blocks to see what's inside, and on the background to go up a level again.</p>
+
+<p>The gui of the classicVocoder has two sections:</p>
 
 <ul>
 <li>oscillators
@@ -365,7 +369,9 @@ Containing the parameters for the synthesis filters:
 <h5>
 <a id="czvocoder" class="anchor" href="#czvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CZvocoder</h5>
 
-<p>This is the simplest of the vocoders made out of formant oscilators.
+<p>This is the simplest of the vocoders made out of formant oscilators. </p>
+<p>Simple is of course a relative term. With most options turned on, it looks like this:</p>
+<object data="images/czVocoder-svg/process.svg" codetype="image/svg+xml"></object> </p>
 You can adjust:</p>
 
 <ul>
@@ -377,16 +383,19 @@ You can adjust:</p>
 <h5>
 <a id="pafvocoder" class="anchor" href="#pafvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PAFvocoder</h5>
 
+<object data="images/PAFvocoder-svg/process.svg" codetype="image/svg+xml"></object> </p>
 <p>Also has frequencies and phases, but adds index for brightness.</p>
 
 <h5>
 <a id="fmvocoder" class="anchor" href="#fmvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FMvocoder</h5>
 
+<object data="images/FMvocoder-svg/process.svg" codetype="image/svg+xml"></object> </p>
 <p>Same parameters, different sound.</p>
 
 <h5>
 <a id="fofvocoder" class="anchor" href="#fofvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FOFvocoder</h5>
 
+<object data="images/FOFvocoder-svg/process.svg" codetype="image/svg+xml"></object> </p>
 <p>Original idea by <a href="http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program">Xavier Rodet</a>.
 Also has frequencies and phases, but adds:</p>
 
@@ -405,6 +414,7 @@ Inspired by <a href="https://csound.github.io/docs/manual/fof2.html">Csound</a>.
 <a id="fmsinger" class="anchor" href="#fmsinger" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FMsinger</h4>
 
 <p>A sine wave that modulates its frequency with the input signal.
+<object data="images/FMsinger-svg/process.svg" codetype="image/svg+xml"></object> </p>
 There are five of these, one per octave, and each one has:</p>
 
 <ul>
@@ -425,6 +435,10 @@ This fades between 3 settings:
 <a id="czringmod" class="anchor" href="#czringmod" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CZringmod</h4>
 
 <p>Ringmodulates the input audio with emulations of Casio CZ oscillators.
+
+
+<object data="images/CZringmod-svg/process.svg" codetype="image/svg+xml"></object> </p>
+
 Again five octaves, with each octave containing three different oscillators:</p>
 
 <ul>
@@ -442,6 +456,7 @@ This creates a mono-compatible widening of the stereo image.</li>
 <a id="karplus-strongsinger" class="anchor" href="#karplus-strongsinger" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Karplus-StrongSinger</h4>
 
 <p>This takes the idea of a <a href="https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis">Karplus Strong algorithm</a>, but instead of noise, it uses the input signal.
+<object data="images/Karplus-StrongSinger-svg/process.svg" codetype="image/svg+xml"></object> </p>
 The feedback is ran trough an allpass filter, modulated with an LFO; adapted from the nonLinearModulator in instrument.lib.
 To keep the level from going out of control, there is a limiter in the feedback path.
 Parallel to the delay is a separate nonLinearModulator.
@@ -464,6 +479,8 @@ To round things off there is a volume for the dry path and a feedback amount for
 <a id="karplus-strongsingermaxi" class="anchor" href="#karplus-strongsingermaxi" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Karplus-StrongSingerMaxi</h4>
 
 <p>To have more voice control of the spectrum, this one has a kind of vocoder in the feedback path.
+
+<object data="images/Karplus-StrongSingerMaxi-svg/process.svg" codetype="image/svg+xml"></object> </p>
 Since we don't want the average volume of the feedback path changing much, only the volumes relative to the other bands, the vocoder is made out of equalizers, not bandpass filters.
 You can adjust it's</p>
 
@@ -505,6 +522,11 @@ and be used as song building blocks, without needing the pitch tracker.<br>
 Now you are 100% free to switch synths, automate parameters, etc.<br>
 </li>
 </ul>
+
+<p>And the obligatory block diagram:</p>
+<object data="images/master-svg/process.svg" codetype="image/svg+xml"></object> </p>
+
+
 
 <p>VoiceOfFaust started life as a port of <a href="https://github.com/magnetophon/VocSynth">VocSynth</a>.
 <a href="https://github.com/magnetophon/VocSynth/blob/master/A%20realtime%20synthesizer%20controlled%20by%20singing%20and%20beatboxing.pdf">Here</a> is some in depth documentation fot that project.</p>
