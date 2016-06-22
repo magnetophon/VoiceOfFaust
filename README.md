@@ -192,7 +192,9 @@ These settings are available:
 
 ##### classicVocoder
 
-The classicVocoder has two sections:
+<img src="https://magnetophon.github.io/VoiceOfFaust/images/classicVocoder-svg/process.svg">
+
+The gui of the classicVocoder has two sections:
 * oscillators
   Containing the parameters for the carrier oscillators.
   These are regular virtual analog oscillators, with the following parameters:
