@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Voiceoffaust : Turn your voice into a synthesizer!">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Voiceoffaust</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/magnetophon/VoiceOfFaust">View on GitHub</a>
+
+          <h1 id="project_title">Voiceoffaust</h1>
+          <h2 id="project_tagline">Turn your voice into a synthesizer!</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/magnetophon/VoiceOfFaust/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/magnetophon/VoiceOfFaust/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="voiceoffaust" class="anchor" href="#voiceoffaust" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VoiceOfFaust</h1>
+
+<p>Turns any monophonic sound into a synthesizer, preserving the pitch and spectral dynamics of the input.<br>
+The name was chosen because I use it mostly to turn my voice into a singing robot, and it's made in <a href="http://faust.grame.fr">Faust</a>.</p>
+
+<p><a href="http://magnetophon.nl/sounds/magnetophon/oldCombo.flac">These</a> <a href="https://raw.githubusercontent.com/magnetophon/VoiceOfFaust/master/Caribean.mp3">are</a> some silly demo songs.</p>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>VoiceOfFaust consists of:</p>
+
+<ul>
+<li>An external pitch tracker: <a href="http://www.katjaas.nl/helmholtz/helmholtz.html">helmholtz~</a> by Katja Vetter</li>
+<li>compressor/expander, also by <a href="http://www.katjaas.nl/compander/compander.html">Katja</a>, ported to Faust.</li>
+<li>7 synthesizer and two effect algorithms:
+
+<ul>
+<li>
+<a href="#classicvocoder">channel vocoder</a> with:
+
+<ul>
+<li>a "super-saw" that can be cross-faded to a "super-pulse", free after <a href="https://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf">Adam Szabo</a>
+</li>
+<li>flexible Q and frequency setting for the filters</li>
+<li>an elaborate feedback and distortion matrix around the filters</li>
+</ul>
+</li>
+<li>a couple of vocoders based on oscillators with controllable formants,<br>
+so IOW: oscillators that sound like they have a band pass filter on them.<br>
+The types of oscillator used in these, are:
+
+<ul>
+<li>
+<a href="#czvocoder">CZ resonant</a> oscillators, ported from a pd patch by <a href="http://forum.pdpatchrepo.info/topic/5992/casio-cz-oscillators">Mike Moser-Booth</a>
+</li>
+<li>
+<a href="#pafvocoder">PAF</a>, ported from a pd patch by <a href="http://msp.ucsd.edu/techniques/v0.11/book-html/node96.html">Miller Puckette</a>
+</li>
+<li>
+<a href="#fmvocoder">FM</a>, based on code by <a href="http://chrischafe.net/glitch-free-fm-vocal-synthesis/">Chris Chafe</a>
+</li>
+<li>
+<a href="#fofvocoder">FOF</a>, based on code by <a href="https://ccrma.stanford.edu/%7Emjolsen/220a/fp/Foflet.dsp">Michael Jørgen Olsen</a> and extended as inspired by <a href="https://csound.github.io/docs/manual/fof2.html">Csound</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#fmsinger">FM</a>, with modulation by the voice</li>
+<li>
+<a href="#czringmod">ring-modulation</a> with a few other CZ-oscillators</li>
+<li>
+<a href="#karplus-strongSinger">Karplus-Strong</a>: The famous <a href="https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis">synthesis technique</a> used as an effect</li>
+<li>
+<a href="#pmfx">Phase modulation</a> used as an effect</li>
+</ul>
+</li>
+<li>All oscillators are synchronized to a single saw-wave, so they stay in phase, <a href="#phase-parameters">unless you don't want them to!</a>
+</li>
+<li>powerful <a href="#parameter-mapping-system">parameter mapping system</a><br>
+Lets you set different parameter values for each band, without having to set them all separately</li>
+<li>All synths are spatialized at their core: sounds are generated in stereo, multichannel or ambisonics format,<br>
+not made in mono and afterwards given some stereo width with effects.</li>
+<li>
+<a href="#formant-compression/expansion">formant compression/expansion</a>:<br>
+Make the output spectrum more flat or more resonant, at the twist of a knob.</li>
+<li>flexible <a href="#in-and-output-routing">in and output routing</a>, totally changing the character of your synth.</li>
+<li>all parameters, including routing, are step-less, meaning any 'preset' can morph into any other, with the only exception of the octave setting
+(though for some of the synths even that one is continuously variable)</li>
+<li>multi-band <a href="#deesser">deEsser</a> and <a href="#reesser">reEsser</a>
+</li>
+<li>Optionally use as a <a href="#master-slave">master-slave</a> pair<br>
+
+<ul>
+<li>This is a workaround for the need for an external pitchtracker, making it possible to use these as plugins.<br>
+It has the nice side effect that your sounds become fully deterministic:<br>
+because a pitchtracker will always output slightly different data, or at least at slightly different moments relative to the audio, the output audio can sometimes change quite a bit from run to run.</li>
+</ul>
+</li>
+<li>
+<a href="lib/constants.lib">configuration file</a><br>
+Through this file, lot's of options can be set at compile time, allowing you to adapt the synth to the amount of CPU power and screen real-estate available.<br>
+Some of the highlights:
+
+<ul>
+<li>number of bands of the vocoders</li>
+<li>number of output channels</li>
+<li>whether we want <a href="https://en.wikipedia.org/wiki/Ambisonics">ambisonics</a> output</li>
+<li>whether a vocoder has nrBands or nrBands * nrOutChan oscillators. <a href="#doubleOscs">more info</a> </li>
+</ul>
+</li>
+<li>Lots more, described in <a href="#features">Features</a>.</li>
+</ul>
+
+
+
+<p><strong>Table of Contents</strong></p>
+
+<ul>
+<li>
+<a href="#voiceoffaust">VoiceOfFaust</a>
+
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#building-and-running">Building and running</a></li>
+<li>
+<a href="#features">Features</a>
+
+<ul>
+<li>
+<a href="#vocoders">Vocoders</a>
+
+<ul>
+<li>
+<a href="#features-of-all-vocoders">features of all vocoders</a>
+
+<ul>
+<li><a href="#parameter-mapping-system">parameter mapping system</a></li>
+<li><a href="#formant-compressionexpansion">formant compression/expansion</a></li>
+<li><a href="#deesser">deEsser</a></li>
+<li><a href="#reesser">reEsser</a></li>
+<li><a href="#doubleoscs">doubleOscs</a></li>
+<li><a href="#in-and-output-routing">in and output routing</a></li>
+<li><a href="#phase-parameters">phase parameters</a></li>
+</ul>
+</li>
+<li>
+<a href="#features-of-individual-vocoders">features of individual vocoders</a>
+
+<ul>
+<li><a href="#classicvocoder">classicVocoder</a></li>
+<li><a href="#czvocoder">CZvocoder</a></li>
+<li><a href="#pafvocoder">PAFvocoder</a></li>
+<li><a href="#fmvocoder">FMvocoder</a></li>
+<li><a href="#fofvocoder">FOFvocoder</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<a href="#other-synthesizers">other synthesizers</a>
+
+<ul>
+<li><a href="#fmsinger">FMsinger</a></li>
+<li><a href="#czringmod">CZringmod</a></li>
+<li><a href="#karplus-strongsinger">Karplus-StrongSinger</a></li>
+<li><a href="#karplus-strongsingermaxi">Karplus-StrongSingerMaxi</a></li>
+</ul>
+</li>
+<li><a href="#master-slave">master-slave</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+
+<h2>
+<a id="building-and-running" class="anchor" href="#building-and-running" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building and running</h2>
+
+<p>You need Faust from git, because version 0.9.73 and earlier have a bug in lf_sawpos. 
+Otherwise, at least use my_lf_sawpos in lib/master.lib.</p>
+
+<p>Then run <code>./install.sh</code> to compile. (It doesn't actually install anything.)</p>
+
+<p>It is recommended to run the included puredata pitch tracker.<br>
+Run it with:
+<code>pd -nodac -nomidi -jack  -nogui /path/to//VoiceOfFaust/PureData/OscSendVoc.pd</code>
+The built in pitch-tracker is a bit crude, because Faust cannot do FFT (yet).<br>
+Consider it the backup/try-out pitch tracker.</p>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
+
+<h3>
+<a id="vocoders" class="anchor" href="#vocoders" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vocoders</h3>
+
+<h4>
+<a id="features-of-all-vocoders" class="anchor" href="#features-of-all-vocoders" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>features of all vocoders</h4>
+
+<h5>
+<a id="parameter-mapping-system" class="anchor" href="#parameter-mapping-system" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>parameter mapping system</h5>
+
+<p>The parameters for the vocoders use a very flexible control system:<br>
+Each parameter has a bottom and a top knob, where the bottom changes the value at the lowest formant band,<br>
+and the top the value at the highest formant band.<br>
+The rest of the formant bands get values that ere evenly spaced in between.<br>
+For some of them that means linear spacing, for others logarithmic spacing.</p>
+
+<p>For even more flexibility there is a parametric mid:<br>
+You set it's value and band number and the parameter values are now:</p>
+
+<ul>
+<li>'bottom' at the lowest band, going to:</li>
+<li>'mid value' at band nr 'mid band', going to:</li>
+<li>'top value' at the highest band.
+Kind of like a parametric mid in equalizers.<br>
+If that's all a bit too much, just set <code>para</code> to 0 in the <a href="lib/constants.lib">configuration file</a>,<br>
+and you'll have just the top and bottom settings.</li>
+</ul>
+
+<h5>
+<a id="formant-compressionexpansion" class="anchor" href="#formant-compressionexpansion" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>formant compression/expansion</h5>
+
+<p>Scale the volume of each band relative to the others:</p>
+
+<ul>
+<li>0 = all bands at average volume</li>
+<li>1 = normal</li>
+<li>2 = expansion
+expansion here means:</li>
+<li>the loudest band stays the same</li>
+<li>soft bands get softer</li>
+</ul>
+
+<p>Because low frequencies contain more energy than high ones, a lot of expansion will make your sound duller.
+To counteract that, you can apply a weighting filter, settable from</p>
+
+<ul>
+<li>0 = no weighting</li>
+<li>1 = A-weighting</li>
+<li>2 = ITU-R 468 weighting</li>
+</ul>
+
+<h5>
+<a id="deesser" class="anchor" href="#deesser" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>deEsser</h5>
+
+<p>To tame harsh esses, especially when using some <a href="#formant%20compression/expansion">formant compression/expansion</a>, there is a deEsser:
+It has all the usual controlls, but since we already are working on a signals that are split up in bands, with known volumes,
+it was implemented rather differently:</p>
+
+<ul>
+<li>multiband, yet much cheaper,</li>
+<li>without additional filters, even for the sidechain,</li>
+<li>and with a db per octave knob for the sidechain, from 0dB/oct (bypass), to 60dB/oct (fully ignore the lows).
+It also has a (badly named) noise strenght parameter: it uses the fidelity parameter from the external pitchtracker to judge if a sound is an S.
+When you turn it up, the deEsser gets disabled when the pitchtracker claims a sound is pitched.
+See the site of the pitchtracker for more info.</li>
+</ul>
+
+<h5>
+<a id="reesser" class="anchor" href="#reesser" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>reEsser</h5>
+
+<p>Disabled by default, but can be enabled in the <a href="lib/constants.lib">configuration file</a>.
+It replaces or augments the reduced highs caused by the </p>
+
+<h5>
+<a id="doubleoscs" class="anchor" href="#doubleoscs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>doubleOscs</h5>
+
+<p>This is a compile option, with two settings:</p>
+
+<ul>
+<li>0 = have one oscillators for each formant frequency</li>
+<li>1 = creates a separate set of oscillators for each output channel, with their <a href="#phase-parameters">phase</a> modulations reversed.</li>
+</ul>
+
+<h5>
+<a id="in-and-output-routing" class="anchor" href="#in-and-output-routing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>in and output routing</h5>
+
+<p>The vocoders can mix their bands together in various ways:<br>
+We can send all the low bands left and the high ones right,<br>
+we can alternate the bands between left and right,<br>
+we can do various mid-side variations<br>
+we can even do a full <a href="https://en.wikipedia.org/wiki/Hadamard_matrix">Hadamard matrix</a>.<br>
+All of these, and more, can be clicklessly cross-faded between.</p>
+
+<p>In the <a href="#classicvocoder">classicVocoder</a>, a similar routing matrix is between the oscillators and the filters.</p>
+
+<h5>
+<a id="phase-parameters" class="anchor" href="#phase-parameters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>phase parameters</h5>
+
+<p>Since all(<em>) formants are made by separate oscillators that are synced to a single master oscillator, you can set their phases, relative to each other.
+(</em>) except for the <a href="#classicvocoder">classicVocoder</a>
+This allows them to sound like one oscillator when they have static phase relationships, and to sound like many detuned oscillators when their phases are moving.</p>
+
+<p>Together with the <a href="#in-and-output-routing">output routing</a>, it can also create interesting cancellation effects.
+For example, with the default settings for the FMvocoder, the formants are one octave up from where you'd expect them to be.
+When you change the phase or the output routing, they drop down.</p>
+
+<p>These settings are available:</p>
+
+<ul>
+<li>static phases</li>
+<li>amount of modulation by low pass filtered noise</li>
+<li>the cutoff frequency of the noise filters</li>
+</ul>
+
+<h4>
+<a id="features-of-individual-vocoders" class="anchor" href="#features-of-individual-vocoders" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>features of individual vocoders</h4>
+
+<h5>
+<a id="classicvocoder" class="anchor" href="#classicvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>classicVocoder</h5>
+
+<p>The classicVocoder has two sections:</p>
+
+<ul>
+<li>oscillators
+Containing the parameters for the carrier oscillators.
+These are regular virtual analog oscillators, with the following parameters:
+
+<ul>
+<li>cross-fade between oscillators and noise</li>
+<li>cross-fade between sawtooth and pulse wave</li>
+<li>width of the pulse wave</li>
+<li>mix between a single oscilators and multiple detuned ones</li>
+<li>detuning amount</li>
+</ul>
+</li>
+<li>filters<br>
+Containing the parameters for the synthesis filters:
+
+<ul>
+<li>bottom, mid and top set the resonant frequencies</li>
+<li>Q for bandwidth</li>
+<li>a feedback matrix. each filter gets fed back a variable amount of:
+
+<ul>
+<li>itself</li>
+<li>it's higher neighbor</li>
+<li>it's lower neighbor</li>
+<li>all other filters</li>
+</ul>
+</li>
+<li>distortion amount</li>
+<li>DC offset</li>
+</ul>
+</li>
+</ul>
+
+<h5>
+<a id="czvocoder" class="anchor" href="#czvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CZvocoder</h5>
+
+<p>This is the simplest of the vocoders made out of formant oscilators.
+You can adjust:</p>
+
+<ul>
+<li>the formant frequencies</li>
+<li>the <a href="#phase-parameters">phase parameters</a>
+</li>
+</ul>
+
+<h5>
+<a id="pafvocoder" class="anchor" href="#pafvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PAFvocoder</h5>
+
+<p>Also has frequencies and phases, but adds index for brightness.</p>
+
+<h5>
+<a id="fmvocoder" class="anchor" href="#fmvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FMvocoder</h5>
+
+<p>Same parameters, different sound.</p>
+
+<h5>
+<a id="fofvocoder" class="anchor" href="#fofvocoder" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FOFvocoder</h5>
+
+<p>Original idea by <a href="http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program">Xavier Rodet</a>.
+Also has frequencies and phases, but adds:</p>
+
+<ul>
+<li>skirt and decay:<br>
+Two settings that influence the brightness of each band</li>
+<li>Octavation index<br>
+Normally zero. If greater than zero, lowers the effective frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.
+Inspired by <a href="https://csound.github.io/docs/manual/fof2.html">Csound</a>.</li>
+</ul>
+
+<h3>
+<a id="other-synthesizers" class="anchor" href="#other-synthesizers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>other synthesizers</h3>
+
+<h4>
+<a id="fmsinger" class="anchor" href="#fmsinger" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FMsinger</h4>
+
+<p>A sine wave that modulates its frequency with the input signal.
+There are five of these, one per octave, and each one has:</p>
+
+<ul>
+<li>volume</li>
+<li>modulation index</li>
+<li>modulation dynamics<br>
+This fades between 3 settings:
+
+<ul>
+<li>no dynamics: the amount of modulation stays constant with varying input signal</li>
+<li>normal dynamics: more input volume equals more modulation</li>
+<li>inverted dynamics: more input equals less modulation.</li>
+</ul>
+</li>
+</ul>
+
+<h4>
+<a id="czringmod" class="anchor" href="#czringmod" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CZringmod</h4>
+
+<p>Ringmodulates the input audio with emulations of Casio CZ oscillators.
+Again five octaves, with each octave containing three different oscillators:</p>
+
+<ul>
+<li>square and pulse, each having volume and index (brightness) controls</li>
+<li>reso, having a volume and a resonance multiplier:<br>
+This is a formant oscillator, and it's resonant frequency is resMult is multiplied by the formant setting top right.
+It is intended to be used with an external formant tracker.</li>
+<li>There is a global width parameter that controls a delay on the oscillators for one output.
+The delay time is relative to the frequency.
+Because this delay is applied to just the oscillators, and before the ringmodulation, the sound of both output channels arrives simultaneously.
+This creates a mono-compatible widening of the stereo image.</li>
+</ul>
+
+<h4>
+<a id="karplus-strongsinger" class="anchor" href="#karplus-strongsinger" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Karplus-StrongSinger</h4>
+
+<p>This takes the idea of a <a href="https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis">Karplus Strong algorithm</a>, but instead of noise, it uses the input signal.
+The feedback is ran trough an allpass filter, modulated with an LFO; adapted from the nonLinearModulator in instrument.lib.
+To keep the level from going out of control, there is a limiter in the feedback path.
+Parallel to the delay is a separate nonLinearModulator.
+Globally you can set:</p>
+
+<ul>
+<li>octave</li>
+<li>output volume</li>
+<li>threshold of the limiter
+For the allpass filters you can set:</li>
+<li>amount of phase shift</li>
+<li>difference in phase shift between left and right (yeah, I lied, there are two of everything)</li>
+<li>amount of modulation by the LFO</li>
+<li>frequency of the LFO, relative to the main pitch</li>
+<li>phase offset between the left and right LFO's.
+To round things off there is a volume for the dry path and a feedback amount for the delayed one.</li>
+</ul>
+
+<h4>
+<a id="karplus-strongsingermaxi" class="anchor" href="#karplus-strongsingermaxi" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Karplus-StrongSingerMaxi</h4>
+
+<p>To have more voice control of the spectrum, this one has a kind of vocoder in the feedback path.
+Since we don't want the average volume of the feedback path changing much, only the volumes relative to the other bands, the vocoder is made out of equalizers, not bandpass filters.
+You can adjust it's</p>
+
+<ul>
+<li>strength: from bypass to 'fully equalized'</li>
+<li>cut/boost; steplessly vary between
+
+<ul>
+<li>-1 = all bands have negative gain, except the strongest, which is at 0</li>
+<li>0  = the average gain of the bands is 0.</li>
+<li>+1 = the all bands have positive gain, except the weakest, which is at 0</li>
+</ul>
+</li>
+<li>top and bottom frequencies</li>
+<li>Q factor</li>
+</ul>
+
+<p>It loses the octave slider, and instead has a separate delay and modulation for each octave.</p>
+
+<h3>
+<a id="master-slave" class="anchor" href="#master-slave" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>master-slave</h3>
+
+<ul>
+<li>This is a workaround for the need for an external pitchtracker, making it possible to use these as plugins.<br>
+It has the nice side effect that your sounds become fully deterministic:<br>
+because a pitchtracker will always output slightly different data, or at least at slightly different moments relative to the audio, the output audio can sometimes change quite a bit from run to run.</li>
+<li>The master is a small program that receives the audio and the OSC messages from the external pitch tracker,<br>
+and outputs:
+
+<ul>
+<li>a copy of the input audio</li>
+<li>a saw wave defining the pitch and phase</li>
+<li>the value of fidelity, from the pitch tracker, as audio.</li>
+</ul>
+</li>
+<li>The slaves are synths and effects that input the above three signals.</li>
+<li>The outputs of the master can be recorded into a looper or DAW,<br>
+and be used as song building blocks, without needing the pitch tracker.<br>
+Now you are 100% free to switch synths, automate parameters, etc.<br>
+</li>
+</ul>
+
+<p>VoiceOfFaust started life as a port of <a href="https://github.com/magnetophon/VocSynth">VocSynth</a>.
+<a href="https://github.com/magnetophon/VocSynth/blob/master/A%20realtime%20synthesizer%20controlled%20by%20singing%20and%20beatboxing.pdf">Here</a> is some in depth documentation fot that project.</p>
+
+<p>Enjoy! And don’t forget to tell me what you think of it and send me music you’ve made with it!</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Voiceoffaust maintained by <a href="https://github.com/magnetophon">magnetophon</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
