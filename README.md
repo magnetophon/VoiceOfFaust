@@ -193,8 +193,7 @@ These settings are available:
 ##### classicVocoder
 
 [Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/classicVocoder-svg/process.svg)
-
-<img src="https://github.com/magnetophon/VoiceOfFaust/blob/gh-pages/images/classicVocoder-svg/process.svg">
+<a href="https://magnetophon.github.io/VoiceOfFaust/images/classicVocoder-svg/process.svg" target="_blank">Open a block diagram in a new window</a>
 
 The gui of the classicVocoder has two sections:
 * oscillators
