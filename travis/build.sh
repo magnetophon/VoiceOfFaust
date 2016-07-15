@@ -34,12 +34,11 @@ function buildPlugins {
     echo "building ladspa $1"
     time faust2ladspa  -t 9999999 -time "$1.dsp"
 }
-BUILD_DEPS=0
+
 if [[ $BUILD_DEPS == 0 ]];
 then
     faust -v
 
-    cd ..
     mkdir -p "$HOME/.lv2"
     for i in "${DSPs[@]}"
     do
