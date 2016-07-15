@@ -1,0 +1,31 @@
+language: generic
+sudo: required
+dist: trusty
+
+cache:
+  directories:
+  - $HOME/local
+
+install:
+  - sudo apt-get -qq update
+  - sudo apt-get build-dep -yy faust
+  - sudo apt-get install -yy  libboost-all-dev ladspa-sdk liblilv-dev lv2-dev libserd-dev libsord-dev libsratom-dev
+  - wget https://github.com/moddevices/caps-lv2/raw/master/.create_lv2_env.sh
+  - bash .create_lv2_env.sh
+  # build either the dependencies (1) and cache them, or build the dsp (0)
+  - export BUILD_DEPS=0
+  - bash travis/install_deps.sh
+
+script:
+  - bash travis/build.sh
+
+after_success:
+  - echo "Success!"
+
+after_failure:
+  - echo "Something went wrong..."
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
