@@ -29,10 +29,10 @@ DSPs=(
 
 function buildPlugins {
     echo "building lv2 $1"
-    time faust2lv2 -osc -vec  -t 9999999 -time "$1.dsp"
+    time faust2lv2 -vec  -t 9999999 -time "$1.dsp"
     cp -r "$1.lv2" "$HOME/.lv2/"
     echo "building ladspa $1"
-    time faust2ladspa  -t 9999999 -time "$1.dsp"
+    time faust2ladspa -vec  -t 9999999 -time "$1.dsp"
 }
 
 if [[ $BUILD_DEPS == 0 ]];
