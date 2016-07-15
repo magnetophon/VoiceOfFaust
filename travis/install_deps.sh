@@ -8,6 +8,10 @@ then
     pushd  /tmp/faust
     make
     sudo make PREFIX=$HOME/local install
+    # travis wants to see output!
+    sed -i 's@-o "\$tmpdir/\$clsname"@@' $HOME/local/bin/faust2lv2
+    sed -i 's@\> /dev/null@@' $HOME/local/bin/faust2ladspa
+
     popd
     echo "install plugin-torture"
     git clone https://github.com/cth103/plugin-torture.git /tmp/plugin-torture
