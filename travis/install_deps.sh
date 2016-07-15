@@ -11,6 +11,8 @@ then
     # travis wants to see output!
     sed -i 's@-o "\$tmpdir/\$clsname"@@' $HOME/local/bin/faust2lv2
     sed -i 's@\> /dev/null@@' $HOME/local/bin/faust2ladspa
+    cat $HOME/local/bin/faust2lv2
+    cat $HOME/local/bin/faust2ladspa
 
     popd
     echo "install plugin-torture"
