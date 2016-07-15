@@ -13,7 +13,7 @@ install:
   - wget https://github.com/moddevices/caps-lv2/raw/master/.create_lv2_env.sh
   - bash .create_lv2_env.sh
   # build either the dependencies (1) and cache them, or build the dsp (0)
-  - export BUILD_DEPS=0
+  - export BUILD_DEPS=1
   - bash travis/install_deps.sh
 
 script:
