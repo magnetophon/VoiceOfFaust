@@ -6,11 +6,11 @@ then
     echo "install faust"
     git clone git://git.code.sf.net/p/faudiostream/code /tmp/faust
     pushd  /tmp/faust
+    sed -i 's@-o "\$tmpdir/\$clsname"@@' tools/faust2appls/faust2lv
+    sed -i 's@> /dev/null@@' tools/faust2appls/faust2ladspa
     make
     sudo make PREFIX="$HOME/local" install
     # travis wants to see output!
-    sudo sed -i 's@-o "\$tmpdir/\$clsname"@@' "$HOME/local/bin/faust2lv2"
-    sudo sed -i 's@\> /dev/null@@' "$HOME/local/bin/faust2ladspa"
 
     popd
     echo "install plugin-torture"
