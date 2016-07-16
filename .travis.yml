@@ -4,7 +4,7 @@ dist: trusty
 
 cache:
   directories:
-  - $HOME/local
+  - "$HOME/local"
 
 install:
   - sudo apt-get -qq update
@@ -15,8 +15,8 @@ install:
   # build either the dependencies (1) and cache them, or build the dsp (0)
   - export BUILD_DEPS=1
   - bash -x travis/install_deps.sh
-  - cat $HOME/local/bin/faust2lv2
-  - cat $HOME/local/bin/faust2ladspa
+  - cat "$HOME/local/bin/faust2lv2"
+  - cat "$HOME/local/bin/faust2ladspa"
 
 script:
   - bash -x travis/build.sh
