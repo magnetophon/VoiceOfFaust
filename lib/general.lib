@@ -46,6 +46,8 @@ centers(freq,group) = group(VocoderFreqsChooser(bottom,mid,band,top,para)):par(i
 
 phases = VocoderLinArrayChooser(phaseBottom,phaseMid,phaseBand,phaseTop,para): dezipBands;
 
+evenOdd(group) =group( VocoderLinArrayChooser(evenOddBottom,evenOddMid,evenOddBand,evenOddTop,para): dezipBands);
+
 // phaseNoises(polarity,freq,enablePhaseNoise,enablePhaseNoiseFilter,group)
 //TODO: make true multichannel version
 phaseNoises(polarity,freq,0,enablePhaseNoiseFilter,group) = group(phases:(par(j, nrBands,_*select2(polarity%2,1,-1))));

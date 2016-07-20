@@ -72,6 +72,10 @@ generalVocoderParamsGroup(x) = ((hgroup("[1]parameters", x)));
     phaseNoiseFreqBand       = bandGroup(    vslider("[94]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
     phaseNoiseFreqTop        = topGroup(     vslider("[94]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
     phaseNoiseAmountScale    = select2(enablePhaseNoiseFilter,80000,800); // scaling factor for the amount of noise modulation, depending on wether we use a smooth, or a filter. tweaked for  noisesFilterN=4
+    evenOddBottom              = bottomGroup(  vslider("[92]evenOddBottom[style:knob][tooltip: even/odd ratio of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+    evenOddMid                 = midGroup(     vslider("[92]evenOddMid[style:knob] [tooltip: the mid even/odd ratio, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
+    evenOddBand                = bandGroup(    vslider("[92]evenOddBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+    evenOddTop                 = topGroup(     vslider("[92]evenOddTop[style:knob][tooltip: even/odd ratio of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
   // width                   = generalVocoderParamsGroup( vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
 //-----------------------------------------------

@@ -48,6 +48,7 @@ with {					// from f0, amp, bandwidth, center freq
   odd 	= oa:*(tbl(sc,(dec(of*ph+m))));	// odd harmonic signal
 };
 
+// as above, but synced to an external phaser
 fuphoSlave(phasor,f0,a,b,c) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
 with {					// from f0, amp, bandwidth, center freq
   cf 	= c/f0;
@@ -60,6 +61,25 @@ with {					// from f0, amp, bandwidth, center freq
   comp	= 1-frac;
   oa 	= if(isEven,frac,comp);		// odd harmonic amplitude
   ea 	= if(isEven,comp,frac);		// even harmonic amplitude
+  // ph 	= pha(f0);			// phasor signal at fundamental
+  m 	= tbl(sm,phasor):*(b);		// modulator sine signal
+  even 	= ea:*(tbl(sc,(dec(ef*phasor+m)))); // even harmonic signal with phase modulation
+  odd 	= oa:*(tbl(sc,(dec(of*phasor+m))));	// odd harmonic signal
+};
+
+// as above, but with the parameter eo to set the proportion of even and odd harmonics.
+fuphoSlaveEvenOdd(phasor,f0,a,b,c,eo) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
+with {					// from f0, amp, bandwidth, center freq
+  cf 	= c/f0;
+  ci	= int(floor(cf));			// integer harmonic below center freq
+  ci1	= ci+1;				// and above
+  isEven= if(((ci%2)<1),1,0);	// below is even?
+  ef 	= if(isEven,ci,ci1);		// then set even harmonic to lowest
+  of 	= if(isEven,ci1,ci);		// and odd harmonic to highest
+  frac	= cf-ci;			// fractional frequency remainder
+  comp	= 1-frac;
+  oa 	= if(isEven,frac,comp)*eo;		// odd harmonic amplitude
+  ea 	= if(isEven,comp,frac)*((eo*-1)+1);		// even harmonic amplitude
   // ph 	= pha(f0);			// phasor signal at fundamental
   m 	= tbl(sm,phasor):*(b);		// modulator sine signal
   even 	= ea:*(tbl(sc,(dec(ef*phasor+m)))); // even harmonic signal with phase modulation
