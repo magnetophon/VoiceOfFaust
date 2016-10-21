@@ -4,7 +4,7 @@ declare author		"Chris Chafe";
 declare license		"BSD";
 declare copyright	"stk";
 
-import("filter.lib");
+import("stdfaust.lib");
 
 // ------ Program A of "Glitch Free FM Vocal Synthesis" (minor corrections from article)
 
@@ -14,10 +14,10 @@ fs 	= float(ts);
 ts1	= ts+1;
 ct 	= (+(1)~_ ) - 1;		// incrementing counter from 0
 fct	= float(ct);
-sc 	= fct*(2*PI)/fs:sin;		// sine table for carrier
-sm	= fct*(2*PI)/fs:sin:/(2*PI);	// sine table for modulator
+sc 	= fct*(2*ma.PI)/fs:sin;		// sine table for carrier
+sm	= fct*(2*ma.PI)/fs:sin:/(2*ma.PI);	// sine table for modulator
 dec(x)	= x-floor(x);			// fractional remainder
-pha(f)	= f/float(SR):(+:dec) ~ _;	// generates a phasor signal
+pha(f)	= f/float(ma.SR):(+:dec) ~ _;	// generates a index signal
 tbl(t,p)= s1
 // tbl(t,p)= s1+dec(f)*(s2-s1)		// looks up linearly interpolated table value
 with {
@@ -35,63 +35,63 @@ with {					// from f0, amp, bandwidth, center freq
   cf 	= c/f0;
   ci	= int(floor(cf));			// integer harmonic below center freq
   ci1	= ci+1;				// and above
-  isEven= if(((ci%2)<1),1,0);	// below is even?
-  ef 	= if(isEven,ci,ci1);		// then set even harmonic to lowest
-  of 	= if(isEven,ci1,ci);		// and odd harmonic to highest
+  isEven= ba.if(((ci%2)<1),1,0);	// below is even?
+  ef 	= ba.if(isEven,ci,ci1);		// then set even harmonic to lowest
+  of 	= ba.if(isEven,ci1,ci);		// and odd harmonic to highest
   frac	= cf-ci;			// fractional frequency remainder
   comp	= 1-frac;
-  oa 	= if(isEven,frac,comp);		// odd harmonic amplitude
-  ea 	= if(isEven,comp,frac);		// even harmonic amplitude
-  ph 	= pha(f0);			// phasor signal at fundamental
+  oa 	= ba.if(isEven,frac,comp);		// odd harmonic amplitude
+  ea 	= ba.if(isEven,comp,frac);		// even harmonic amplitude
+  ph 	= pha(f0);			// index signal at fundamental
   m 	= tbl(sm,ph):*(b);		// modulator sine signal
   even 	= ea:*(tbl(sc,(dec(ef*ph+m)))); // even harmonic signal with phase modulation
   odd 	= oa:*(tbl(sc,(dec(of*ph+m))));	// odd harmonic signal
 };
 
 // as above, but synced to an external phaser
-fuphoSlave(phasor,f0,a,b,c) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
+fuphoSlave(index,f0,a,b,c) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
 with {					// from f0, amp, bandwidth, center freq
   cf 	= c/f0;
   ci	= int(floor(cf));			// integer harmonic below center freq
   ci1	= ci+1;				// and above
-  isEven= if(((ci%2)<1),1,0);	// below is even?
-  ef 	= if(isEven,ci,ci1);		// then set even harmonic to lowest
-  of 	= if(isEven,ci1,ci);		// and odd harmonic to highest
+  isEven= ba.if(((ci%2)<1),1,0);	// below is even?
+  ef 	= ba.if(isEven,ci,ci1);		// then set even harmonic to lowest
+  of 	= ba.if(isEven,ci1,ci);		// and odd harmonic to highest
   frac	= cf-ci;			// fractional frequency remainder
   comp	= 1-frac;
-  oa 	= if(isEven,frac,comp);		// odd harmonic amplitude
-  ea 	= if(isEven,comp,frac);		// even harmonic amplitude
-  // ph 	= pha(f0);			// phasor signal at fundamental
-  m 	= tbl(sm,phasor):*(b);		// modulator sine signal
-  even 	= ea:*(tbl(sc,(dec(ef*phasor+m)))); // even harmonic signal with phase modulation
-  odd 	= oa:*(tbl(sc,(dec(of*phasor+m))));	// odd harmonic signal
+  oa 	= ba.if(isEven,frac,comp);		// odd harmonic amplitude
+  ea 	= ba.if(isEven,comp,frac);		// even harmonic amplitude
+  // ph 	= pha(f0);			// index signal at fundamental
+  m 	= tbl(sm,index):*(b);		// modulator sine signal
+  even 	= ea:*(tbl(sc,(dec(ef*index+m)))); // even harmonic signal with phase modulation
+  odd 	= oa:*(tbl(sc,(dec(of*index+m))));	// odd harmonic signal
 };
 
 // as above, but with the parameter eo to set the proportion of even and odd harmonics.
-fuphoSlaveEvenOdd(phasor,f0,a,b,c,eo) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
+fuphoSlaveEvenOdd(index,f0,a,b,c,eo) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
 with {					// from f0, amp, bandwidth, center freq
 okt = vslider("okt", 0, -2, 2, 1);
   cf 	= c/f0;
   // cf 	= c/(f0*(okt:octaveMultiplier));
   ci	= int(floor(cf));			// integer harmonic below center freq
   ci1	= ci+1;				// and above
-  isEven= if(((ci%2)<1),1,0);	// below is even?
-  ef 	= if(isEven,ci,ci1);		// then set even harmonic to lowest
-  of 	= if(isEven,ci1,ci);		// and odd harmonic to highest
+  isEven= ba.if(((ci%2)<1),1,0);	// below is even?
+  ef 	= ba.if(isEven,ci,ci1);		// then set even harmonic to lowest
+  of 	= ba.if(isEven,ci1,ci);		// and odd harmonic to highest
   frac	= cf-ci;			// fractional frequency remainder
   comp	= 1-frac;
-  oa 	= if(isEven,frac,comp)*eo;		// odd harmonic amplitude
-  ea 	= if(isEven,comp,frac)*((eo*-1)+1);		// even harmonic amplitude
-  // ph 	= pha(f0);			// phasor signal at fundamental
-  m 	= tbl(sm,phasor):*(b);		// modulator sine signal
-  even 	= ea:*(tbl(sc,(dec(ef*phasor+m)))); // even harmonic signal with phase modulation
-  odd 	= oa:*(tbl(sc,(dec(of*phasor+m))));	// odd harmonic signal
+  oa 	= ba.if(isEven,frac,comp)*eo;		// odd harmonic amplitude
+  ea 	= ba.if(isEven,comp,frac)*((eo*-1)+1);		// even harmonic amplitude
+  // ph 	= pha(f0);			// index signal at fundamental
+  m 	= tbl(sm,index):*(b);		// modulator sine signal
+  even 	= ea:*(tbl(sc,(dec(ef*index+m)))); // even harmonic signal with phase modulation
+  odd 	= oa:*(tbl(sc,(dec(of*index+m))));	// odd harmonic signal
 };
 
 // ------ parser functions for stream with interleaved formant parameters -----//
 frame(c) = (w ~ _ )			// detects a new frame and starts counting
 with {
-  rst(y)= if(c,-y,1);
+  rst(y)= ba.if(c,-y,1);
   w(x) 	= x+rst(x);
 };
 
@@ -118,11 +118,10 @@ with {
 nf = 4;					// number of formants
 // process = _<: par(i,nf,formant(i)) :>_;	// run formants in parallel, sum their outputs
 // process = formant(1);
-// freq = vslider("freq", 110, 55, 440, 1):smooth(0.999);
-// amp = vslider("amp", 0, 0, 1, 0.001):smooth(0.999);
-// bandwidth = vslider("bandwidth", 1, 0, 100, 0.001):smooth(0.999);
-// center =vslider("center", 110, 55, 440, 1):smooth(0.999);
+// freq = vslider("freq", 110, 55, 440, 1):si.smooth(0.999);
+// amp = vslider("amp", 0, 0, 1, 0.001):si.smooth(0.999);
+// bandwidth = vslider("bandwidth", 1, 0, 100, 0.001):si.smooth(0.999);
+// center =vslider("center", 110, 55, 440, 1):si.smooth(0.999);
 // process = fupho(freq,amp,bandwidth,center);
-import("oscillator.lib");
-import("effect.lib");
-// process = fuphoSlave(lf_sawpos(freq),freq,amp,bandwidth,center);
+import("stdfaust.lib");
+// process = fuphoSlave(os.lf_sawpos(freq),freq,amp,bandwidth,center);

@@ -3,7 +3,7 @@ declare version   "1.0";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
-declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the Faust library" ;
+declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and os.square oscillators adapted from the Faust library" ;
 
 //-----------------------------------------------
 // imports
@@ -21,7 +21,6 @@ import ("lib/CZvocoder.lib");
 // process
 //-----------------------------------------------
 
-
 process(audio) = czVocoder(audio,masterPitch(audio,index),index,fidelity,doubleOscs);
 
-// process(audio)= CZrestrap(masterIndex(100),(czBottom*100))<:bus2;
+// process(audio)= CZrestrap(masterIndex(100),(czBottom*100))<:(_,_);

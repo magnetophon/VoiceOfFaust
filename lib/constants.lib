@@ -3,7 +3,7 @@
 //-----------------------------------------------
 
 // general:
-nrBands                   = 32:max(4*nrOutChan);// Number of bands for the vocoders
+nrBands                   = 8:max(4*nrOutChan);// Number of bands for the vocoders
 nrOutChan                 = 2; // number of outputs
 ambisonicsOn              = 0; // do we want an ambisonic synth.
 ambisonicsOrder           = 3; // order of the ambisonics
@@ -28,9 +28,9 @@ enablegainedSmootherPitch = 1; // choose between normal smoothing of th pitch (0
 // MinInputPitch             = 25;	// temp for tracking bass
 MinInputPitch             = 48.9994;	// = G1, the lowest frequency that helmholtz~ can track is 51 Hz
 MaxInputPitch             = 2093.00; // = C7, the highest frequency that helmholtz~ can track is 1992 Hz
-maxTimeWithoutPitch       = 2*SR;    // longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
+maxTimeWithoutPitch       = 2*ma.SR;    // longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*ma.SR is 2 seconds)
 maxTimeWithoutFidelity    = 265*4 ;  // is 4*6ms @ 44100. the time between 4 fid messages
-PTsmooth                  = 0.9984; // smooth() factor for simple pitch smoother
+PTsmooth                  = 0.9984; // si.smooth() factor for simple pitch smoother
 // analizer:
 analizerTop               = 128;
 analizerBottom            = (0.5*pow(2,0.5))+0.0;
@@ -41,10 +41,10 @@ enableFeedback            = 1; // feedback around the filters of the classicVoco
 enableFilterAutosat       = 1; // put a saturator in the filter of the classicVocoder
 vocoderN                  = 2; // order of anti aliasing
 // vocoders based on oscilators
-doubleOscs                = 1; // whether a vocoder has nrBands or nrBands * nrOutChan oscilators
-enablePhaseNoise          = 1; // 0 = no noise   and 1 = noise modulates phase
-enablePhaseNoiseFilter    = 1; // 0 = noise:smooth(fixed)   and 1 = noise:lowpass(variable)
-noisesFilterN             = 4; // the order of the noise lowpass
+doubleOscs                = 1; // whether a ve.vocoder has nrBands or nrBands * nrOutChan oscilators
+enablePhaseNoise          = 1; // 0 = no no.noise   and 1 = no.noise modulates phase
+enablePhaseNoiseFilter    = 1; // 0 = no.noise:si.smooth(fixed)   and 1 = no.noise:fi.lowpass(variable)
+noisesFilterN             = 4; // the order of the no.noise fi.lowpass
 defaultTop                = 128:pow(0.5); // using these two values with 16 bands, gives integer formant ratios
 defaultBottom             = ((0.25*pow(2,0.5))+0.5):pow(0.5);
 // FOF

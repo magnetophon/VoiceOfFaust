@@ -20,8 +20,8 @@ CZringMod(audio,freq,index) =
     CZ(fund(freq,index,4),freq*4		,CZsquareHH,CZsquareIxHH,CZpulseHH,CZpulseIxHH,CZresHH,CZresMultHH,formant)
    // fund(2,0,4)
     )
-    :>_<:_*voice(audio,freq),(_:fdelay4(Pmax,P))*voice(audio,freq)
+    :>_<:_*voice(audio,freq),(_:de.fdelay4(Pmax,P))*voice(audio,freq)
     with {
-      P = SR/(freq*0.25)*CZwidth; // fundamental period in samples
-      Pmax = 4096; // maximum P (for delay-line allocation)
+      P = ma.SR/(freq*0.25)*CZwidth; // fundamental ba.period in samples
+      Pmax = 4096; // maximum P (for de.delay-line allocation)
     };

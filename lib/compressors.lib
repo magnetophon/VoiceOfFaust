@@ -2,7 +2,7 @@ declare author "Bart Brouns";
 declare version "0.1.1";
 declare license "GPLv3";
 
-import("effect.lib");
+import("stdfaust.lib");
 
 // A library of compressor building blocks, compressors and some general utilities.
 // The four most interesting examples:
@@ -26,8 +26,7 @@ blockSize = 256; // 161s, 26%
 // binaryBlockDelaySum blows them all out of the water: 7.4%
 // It also compiles quick.
 // Same performance with all compilation options,
-// but needs -double as well, because of lag_ud bug below
-
+// but needs -double as well, because of si.lag_ud bug below
 
 // rmsMaxSize = 1024; // for block diagram of blockDelaySum
 rmsMaxSize = 8; // for block diagram of binaryBlockDelaySum
@@ -40,10 +39,10 @@ rmsMaxSize = 8; // for block diagram of binaryBlockDelaySum
 maxRelTime = rmsMaxSize/sr;
 sr = 44100;
 
-// note: lag_ud has a bug where if you compile with standard precision,
+// note: si.lag_ud has a bug where ba.if you compile with standard precision,
 // down is 0 and prePost is 1, you go into infinite GR and stay there
 my_compression_gain_mono(strength,thresh,att,rel,knee,prePost) =
-  abs:bypass(prePost,lag_ud(att,rel)) : linear2db : gain_computer(strength,thresh,knee):bypass((prePost*-1)+1,lag_ud(rel,att)) : db2linear;
+  abs:bypass(prePost,si.lag_ud(att,rel)) : ba.linear2db : gain_computer(strength,thresh,knee):bypass((prePost*-1)+1,si.lag_ud(rel,att)) : ba.db2linear;
 // my_compression_gain_mono(strength,thresh,att,rel,knee) has a more traditional knee parameter than
 // compression_gain_mono(ratio,thresh,att,rel), which also has an internal parameter called knee,
 // but that is a time-smoothing of the gain-reduction.
@@ -53,7 +52,7 @@ my_compression_gain_mono(strength,thresh,att,rel,knee,prePost) =
 // and in between there is a gradual increase in gain reduction.
 
 // prePost places the level detector either at the input or after the gain computer
-// this turns it from a linear return-to-zero detector into a log  domain return-to-threshold detector
+// this turns it from a linear return-to-fi.zero detector into a log  domain return-to-threshold detector
 
 // source:
 // Digital Dynamic Range Compressor Design
@@ -78,7 +77,7 @@ gain_computer(strength,thresh,knee,level) =
   ) : max(0)*-strength;
 
 RMS_compression_gain_mono(strength,thresh,att,rel,knee,prePost) =
-  RMS(rel): bypass(prePost,lag_ud(att,0)) : linear2db : gain_computer(strength,thresh,knee) : bypass((prePost*-1)+1,lag_ud(0,att)) : db2linear;
+  RMS(rel): bypass(prePost,si.lag_ud(att,0)) : ba.linear2db : gain_computer(strength,thresh,knee) : bypass((prePost*-1)+1,si.lag_ud(0,att)) : ba.db2linear;
 
 // add together the last 'size' values:
 delaySum(size,maxSize) = _ <: par(i,maxSize, @(i)*(i<size)) :> _;
@@ -86,11 +85,11 @@ delaySum(size,maxSize) = _ <: par(i,maxSize, @(i)*(i<size)) :> _;
 // The same as above, but much less CPU hungry:
 // We devide the time we want to look at into blocks,
 // get the sum of the first block, and add it to delayed versions of itself.
-// Each delay is a multiple of the block size.
+// Each de.delay is a multiple of the block size.
 // We switch the blocks on and off depending on the size we want to look at
 // Finaly, we add a variable block that represents the values that are not covered by the whole blocks.
 blockDelaysum(size,block,maxSize) = _ <: variable,par(i,int(maxSize/block), fixedDelaySum(block)@(int(i*block))*(i<floor(size/block))) :> _ with {
-  variable = _ <: par(i,int(maxSize/block), delaySum(int(decimal(size/block)*block),block)@(int(i*block))*(i==floor(size/block))) :> _;
+  variable = _ <: par(i,int(maxSize/block), delaySum(int(ma.decimal(size/block)*block),block)@(int(i*block))*(i==floor(size/block))) :> _;
   fixedDelaySum(N,x) = x <: par(i,N, @(i)) :> _;
 
   // This one is a bit more efficient: 23% vs 33% CPU
@@ -113,31 +112,31 @@ blockDelaysum(size,block,maxSize) = _ <: variable,par(i,int(maxSize/block), fixe
 // This time we don't look at blocks of equal size,
 // but at blocks that are double the size of the previous block.
 // The fixedDelaySum is optimised in a similar way.
-OLDbinaryBlockDelaySum(N,maxN,x) = par(i,int2nrOfBits(maxN),fixedDelaySum(1<<i,x)@sumOfPrevDelays(N,maxN,i) *take(i+1,(int2bin(N,maxN)))):>_ with {
+OLDbinaryBlockDelaySum(N,maxN,x) = par(i,int2nrOfBits(maxN),fixedDelaySum(1<<i,x)@sumOfPrevDelays(N,maxN,i) *ba.take(i+1,(int2bin(N,maxN)))):>_ with {
   fixedDelaySum = case {
     (1,x) => x;
     (N,x) =>  fixedDelaySum(N/2,x) + fixedDelaySum(N/2,x)@(N/2);
   };
-  sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_*(i>0)) with {
+  sumOfPrevDelays(N,maxN,i) = (ba.subseq((allDelays(N,maxN)),0,i):>_*(i>0)) with {
   // this doesn't work:
-  // sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_) with {
-  // bug in subseq?
-    allDelays(N,maxN) = par(j, int2nrOfBits(maxN), (1<<j) *  take(j+1,(int2bin(N,maxN))) );
+  // sumOfPrevDelays(N,maxN,i) = (ba.subseq((allDelays(N,maxN)),0,i):>_) with {
+  // bug in ba.subseq?
+    allDelays(N,maxN) = par(j, int2nrOfBits(maxN), (1<<j) *  ba.take(j+1,(int2bin(N,maxN))) );
   };
 };
 
 //same as above, but with a parameterized operator instead of the hardwired +
 binaryBlockDelayOp(N,maxN,op,x) =
-par(i,int2nrOfBits(maxN),fixedDelayOp(1<<i,x)@sumOfPrevDelays(N,maxN,i) *take(i+1,(int2bin(N,maxN)))):combine(int2nrOfBits(maxN)) with {
+par(i,int2nrOfBits(maxN),fixedDelayOp(1<<i,x)@sumOfPrevDelays(N,maxN,i) *ba.take(i+1,(int2bin(N,maxN)))):combine(int2nrOfBits(maxN)) with {
   fixedDelayOp = case {
     (1,x) => x;
     (N,x) =>  op(fixedDelayOp(N/2,x) , fixedDelayOp(N/2,x)@(N/2));
   };
-  sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_*(i>0)) with {
+  sumOfPrevDelays(N,maxN,i) = (ba.subseq((allDelays(N,maxN)),0,i):>_*(i>0)) with {
   // this doesn't work:
-  // sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_) with {
-  // bug in subseq?
-    allDelays(N,maxN) = par(j, int2nrOfBits(maxN), (1<<j) *  take(j+1,(int2bin(N,maxN))) );
+  // sumOfPrevDelays(N,maxN,i) = (ba.subseq((allDelays(N,maxN)),0,i):>_) with {
+  // bug in ba.subseq?
+    allDelays(N,maxN) = par(j, int2nrOfBits(maxN), (1<<j) *  ba.take(j+1,(int2bin(N,maxN))) );
   };
   combine(0) = 0;
   combine(N) = op(combine(N-1),_);
@@ -174,7 +173,7 @@ compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,1) =
 // to link/unlink channels
 compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N) =
   par(i, N, my_compression_gain_mono(strength,thresh,att,rel,knee,prePost))
-  <:(bus(N),(minimum(N)<:bus(N))):interleave(N,2):par(i,N,(crossfade(link)));
+  <:(si.bus(N),(minimum(N)<:si.bus(N))):ro.interleave(N,2):par(i,N,(crossfade(link)));
 
 // an RMS versions of the above
 RMS_compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,1) =
@@ -182,53 +181,51 @@ RMS_compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,1) =
 
 RMS_compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N) =
   par(i, N, RMS_compression_gain_mono(strength,thresh,att,rel,knee,prePost))
-  <:(bus(N),(minimum(N)<:bus(N))):interleave(N,2):par(i,N,(crossfade(link)));
+  <:(si.bus(N),(minimum(N)<:si.bus(N))):ro.interleave(N,2):par(i,N,(crossfade(link)));
 
 // feed forward compressor
 FFcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,meter,N) =
-  (bus(N) <:
-    (compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N),bus(N))
+  (si.bus(N) <:
+    (compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N),si.bus(N))
   )
-  :(interleave(N,2):par(i,N,meter*_));
+  :(ro.interleave(N,2):par(i,N,meter*_));
 
 // feed back compressor
 FBcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,meter,N) =
   (
-    (compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N),bus(N))
-    :(interleave(N,2):par(i,N,meter*_))
-  )~bus(N);
+    (compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N),si.bus(N))
+    :(ro.interleave(N,2):par(i,N,meter*_))
+  )~si.bus(N);
 
 // feed back and/or forward compressor
 // the feedback part has a much higher strength, so they end up sounding similar
 FBFFcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,FBFF,meter,N) =
-  bus(N) <: bus(N*2):
+  si.bus(N) <: si.bus(N*2):
   (
     ((
-      (par(i, 2, compression_gain_N_chan(strength*(1+((i==0)*2)),thresh,att,rel,knee,prePost,link,N)):interleave(N,2):par(i, N, crossfade(FBFF)))
-      ,bus(N))
-      :(interleave(N,2):par(i,N,meter*_))
-    )~bus(N)
+      (par(i, 2, compression_gain_N_chan(strength*(1+((i==0)*2)),thresh,att,rel,knee,prePost,link,N)):ro.interleave(N,2):par(i, N, crossfade(FBFF)))
+      ,si.bus(N))
+      :(ro.interleave(N,2):par(i,N,meter*_))
+    )~si.bus(N)
   );
 
 // RMS feed back and/or forward compressor
 // to save CPU we cheat a bit, in a similar way as in the original libs:
 // instead of crosfading between two sets of gain calculators as above,
-// we take the abs of the audio from both the FF and FB, and crossfade between those,
+// we ba.take the abs of the audio from both the FF and FB, and crossfade between those,
 // and feed that into one set of gain calculators
 // again the strength is much higher when in FB mode, but implemented differently
 RMS_FBFFcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,FBFF,meter,N) =
-  bus(N) <: bus(N*2):
+  si.bus(N) <: si.bus(N*2):
   (
     (
       (
-        (interleave(N,2):par(i, N*2, abs) :par(i, N, crossfade(FBFF)) : RMS_compression_gain_N_chan(strength*(1+(((FBFF*-1)+1)*1)),thresh,att,rel,knee,prePost,link,N))
-        ,bus(N)
+        (ro.interleave(N,2):par(i, N*2, abs) :par(i, N, crossfade(FBFF)) : RMS_compression_gain_N_chan(strength*(1+(((FBFF*-1)+1)*1)),thresh,att,rel,knee,prePost,link,N))
+        ,si.bus(N)
       )
-    :(interleave(N,2):par(i,N,meter*_))
-    )~bus(N)
+    :(ro.interleave(N,2):par(i,N,meter*_))
+    )~si.bus(N)
   );
-
-
 
 // RMS feed back compressor into peak limiter feeding back into the FB comp.
 // By combining them this way, they complement each other optimally:
@@ -239,10 +236,10 @@ RMS_FBcompressor_peak_limiter_N_chan(strength,thresh,threshLim,att,rel,knee,link
     (
       (
         (RMS_compression_gain_N_chan(strength,thresh,att,rel,knee,0,link,N))
-        ,bus(N)
-      ):(interleave(N,2):par(i,N,meter*_))
+        ,si.bus(N)
+      ):(ro.interleave(N,2):par(i,N,meter*_))
     ):FFcompressor_N_chan(1,threshLim,0,att:min(rel),knee*0.5,0,link,meter,N)
-  )~bus(N);
+  )~si.bus(N);
 
 crossfade(x,a,b) = a*(1-x),b*x : +;
 
@@ -250,17 +247,17 @@ crossfade(x,a,b) = a*(1-x),b*x : +;
 // bp -> the switch
 // e -> the expression you want to bypass
 // NOTE: bypass only makes sense when inputs(e) equals outputs(e)
-bypass(bp,e) = bus(N) <: ((inswitch:e),bus(N)) : outswitch with {
+bypass(bp,e) = si.bus(N) <: ((inswitch:e),si.bus(N)) : outswitch with {
   N = inputs(e);
   inswitch =par(i, N, select2(bp,_,0));
-  outswitch = interleave(N,2) : par(i, N, select2(bp) );
+  outswitch = ro.interleave(N,2) : par(i, N, select2(bp) );
 };
 
 // here bp can be a float between 0 and 1
-crossfade_bypass(bp,e) = bus(N) <: ((inswitch:e),bus(N)) : outswitch with {
+crossfade_bypass(bp,e) = si.bus(N) <: ((inswitch:e),si.bus(N)) : outswitch with {
   N = inputs(e);
   inswitch = par(i, N, crossfade(bp,_,0));
-  outswitch = interleave(N,2) : par(i, N, crossfade(bp) );
+  outswitch = ro.interleave(N,2) : par(i, N, crossfade(bp) );
 };
 
 // get the minimum of N inputs:
@@ -280,7 +277,7 @@ compressor_N_chan_demo(N) =
 
     cbp = checkbox_group(checkbox("[0] Bypass  [tooltip: When this is checked, the compressor has no effect]"));
     maxGR = -100;
-    meter = _<:(_, (linear2db:max(maxGR):meter_group((hbargraph("[1][unit:dB][tooltip: gain reduction in dB]", maxGR, 0))))):attach;
+    meter = _<:(_, (ba.linear2db:max(maxGR):meter_group((hbargraph("[1][unit:dB][tooltip: gain reduction in dB]", maxGR, 0))))):attach;
 
     ctl_group(x)  = knob_group(hgroup("[3] Compression Control", x));
 
@@ -308,14 +305,13 @@ compressor_N_chan_demo(N) =
 
     HPfreq =
         ctl_group(hslider("[3] HP freq [scale:log] [style:knob]
-          [tooltip: cutoff frequency of the sidechain highpass filter]",
+          [tooltip: cutoff frequency of the sidechain fi.highpass filter]",
           20, 20, 10000, 1));
 
     LPfreq =
         ctl_group(hslider("[4] LP freq [scale:log] [style:knob]
-          [tooltip: cutoff frequency of the sidechain lowpass filter]",
+          [tooltip: cutoff frequency of the sidechain fi.lowpass filter]",
           10000, 20, 10000, 1));
-
 
     SClisten = knob_group(checkbox("SC"));
 
@@ -330,10 +326,10 @@ compressor_N_chan_demo(N) =
 
     release = env_group(hslider("[2] Release [unit:ms] [style: knob] [scale:log]
       [tooltip: Time constant in ms (1/e smoothing time) for the compression gain to approach (exponentially) a new higher target level (the compression 'releasing')]",
-      100, 1, maxRelTime*1000, 0.1)) : *(0.001) : max(1/SR);
+      100, 1, maxRelTime*1000, 0.1)) : *(0.001) : max(1/ma.SR);
 
     prePost = env_group(checkbox("[3] slow/fast  [tooltip: Unchecked: log  domain return-to-threshold detector
-      Checked: linear return-to-zero detector]")*-1)+1;
+      Checked: linear return-to-fi.zero detector]")*-1)+1;
 
     link = env_group(hslider("[4] link [style:knob]
       [tooltip: 0 means all channels get individual gain reduction, 1 means they all get the same gain reduction]",
@@ -352,7 +348,7 @@ compressor_N_chan_demo(N) =
 
     makeupgain = comp_group(hslider("[6] Makeup Gain [unit:dB]
       [tooltip: The compressed-signal output level is increased by this amount (in dB) to make up for the level lost due to compression]",
-      0, 0, maxGR*-1, 0.1)) : db2linear;
+      0, 0, maxGR*-1, 0.1)) : ba.db2linear;
 // };
 
 // ******************************************************************************************
@@ -369,11 +365,11 @@ expander_gain_computer(strength,thresh,knee,level) =
     (level-thresh)
   ) :min(0)*strength;
 
-expander(strength,thresh,knee,x) = (expander_gain_computer(strength,thresh,knee,level(att,rel,x)):db2linear)*x;
+expander(strength,thresh,knee,x) = (expander_gain_computer(strength,thresh,knee,level(att,rel,x)):ba.db2linear)*x;
 
-SCexpander(strength,thresh,knee,att,rel,SC,x) = (expander_gain_computer(strength,thresh,knee,level(att,rel,SC)):db2linear):meter*x;
+SCexpander(strength,thresh,knee,att,rel,SC,x) = (expander_gain_computer(strength,thresh,knee,level(att,rel,SC)):ba.db2linear):meter*x;
 
-level(att,rel,x) = x:abs:lag_ud(att,rel):linear2db;
+level(att,rel,x) = x:abs:si.lag_ud(att,rel):ba.linear2db;
 
 // ******************************************************************************************
 // drumDuxpander:
@@ -383,18 +379,18 @@ nrChan = 6;
 
 N = 8;
 
-drumDuxpander =  bus(nrChan)<: (drumDuck, bus(nrChan)):drumExpand;
+drumDuxpander =  si.bus(nrChan)<: (drumDuck, si.bus(nrChan)):drumExpand;
 
-drumDuck =  SCfilters <: ( bus(nrChan), ( duckGainReductions <: par(i, nrChan, meDuckGR(i))) : interleave(nrChan,2)): par(i, nrChan, *);
+drumDuck =  SCfilters <: ( si.bus(nrChan), ( duckGainReductions <: par(i, nrChan, meDuckGR(i))) : ro.interleave(nrChan,2)): par(i, nrChan, *);
 
 duckGainReductions = par(i, nrChan, duckGainReduction(i));
 
 duckGainReduction(i) = chanGroup(i+1, my_compression_gain_mono(duck_strength,threshold,attack,release,knee,prePost));
 
-meDuckGR(i) = chanGroup(i+1, par(j, nrChan, (linear2db*(i!=j))):>db2linear:meter);
+meDuckGR(i) = chanGroup(i+1, par(j, nrChan, (ba.linear2db*(i!=j))):>ba.db2linear:meter);
 
-drumExpand =  interleave(nrChan,2) : par(i, nrChan, chanGroup(i+1, SCexpander(expand_strength,threshold,knee,attack,release)));
+drumExpand =  ro.interleave(nrChan,2) : par(i, nrChan, chanGroup(i+1, SCexpander(expand_strength,threshold,knee,attack,release)));
 
-SCfilters =  par(i, nrChan, chanGroup(i+1, (highpass(N,HPfreq): lowpass(N,LPfreq))));
+SCfilters =  par(i, nrChan, chanGroup(i+1, (fi.highpass(N,HPfreq): fi.lowpass(N,LPfreq))));
 
 chanGroup(i,x) = vgroup("channel %i", x);

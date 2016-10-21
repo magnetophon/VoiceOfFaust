@@ -7,8 +7,7 @@
 // not smoothing it saves quite some cpu, but gives more glitchy sound.
 SH(trig,x) = (*(1 - trig) + x * trig) ~_;
 
-
-Pitch(a,x) = a * SR / max(M,1) - a * SR * (M == 0)
+Pitch(a,x) = a * ma.SR / max(M,1) - a * ma.SR * (M == 0)
 with  {
       U = (x' < 0) & (x >= 0) ;
       V = +(U) ~ %(int(a)) ;
@@ -17,27 +16,27 @@ with  {
       M = SH(N == 0, N' + 1) ;
       };
 
-//PTsmooth = 0.1*(((OSCfidelity*-1)+1):amp_follower(0.026))+0.997:min(0.9996):max(0.9984):vbargraph("[-1]PTsmooth", 0.997, 1);
+//PTsmooth = 0.1*(((OSCfidelity*-1)+1):an.amp_follower(0.026))+0.997:min(0.9996):max(0.9984):vbargraph("[-1]PTsmooth", 0.997, 1);
 pitchQuantise(0) = _;
-pitchQuantise(1) = _<:select2(pitchQuantised, _, (hz2pianokey : rint : pianokey2hz));
+pitchQuantise(1) = _<:select2(pitchQuantised, _, (ba.hz2pianokey : rint : ba.pianokey2hz));
 
 // PitchTracker(audio,enablePitchTracker)
 PitchTracker(audio,0) = OSCpitch : pitchQuantise(enablePitchQuantise) : smoother;
 PitchTracker(audio,1) =
   ((OSCpitchIsBad , goodOSCpitch, internal):select2) : pitchQuantise(enablePitchQuantise)
 with	{
-        internal = (audio:dcblockerat(OSCminPitch) : (lowpass(1) : Pitch(8.0): min(OSCmaxPitch) )  ~ max(OSCminPitch*2)) : max(OSCminPitch):smooth(PTsmooth);
+        internal = (audio:fi.dcblockerat(OSCminPitch) : (fi.lowpass(1) : Pitch(8.0): min(OSCmaxPitch) )  ~ max(OSCminPitch*2)) : max(OSCminPitch):si.smooth(PTsmooth);
         OSCpitchIsBad  =
           ((isSameTooLong(OSCpitch,maxTimeWithoutPitch) & isSameTooLong(OSCfidelity,maxTimeWithoutFidelity)));
         isSameTooLong(x,time) = (x@time)==x;
         hasVolume =
-          (audio:highpassChooser(2,OSCminPitch,stableFilters):lowpass(3,OSCmaxPitch):abs)> db2linear(qThreshold);
-        // only take a new pitch when we have some volume and a new pitch has come in.
+          (audio:highpassChooser(2,OSCminPitch,stableFilters):fi.lowpass(3,OSCmaxPitch):abs)> ba.db2linear(qThreshold);
+        // only ba.take a new pitch when we have some volume and a new pitch has come in.
         // the min and max are needed, otherwise smoother gets upset.
         goodOSCpitch = OSCpitch:sampleAndHold( hasVolume & (_!=OSCpitch~_) ): min(OSCmaxPitch): max(OSCminPitch):smoother;
         same(x,time) =(x@time)==x;
         };
 
-smoother = hz2pianokey<:select2(enablegainedSmootherPitch,smooth(PTsmooth),gainedSmoother(0.00217*(fidelity:pow(42)),110)): pianokey2hz;
+smoother = ba.hz2pianokey<:select2(enablegainedSmootherPitch,si.smooth(PTsmooth),gainedSmoother(0.00217*(fidelity:pow(42)),110)): ba.pianokey2hz;
 // only trust fidelity after a new freq has come in
 fidelity = OSCfidelity:sampleAndHold(_!=OSCpitch~_);

@@ -4,6 +4,5 @@ import ("lib/common.lib");
 import ("lib/FullGUI.lib");
 import ("lib/FMvocoder.lib");
 
-
 process(audio,index,fidelity) =
   FMvocoder(audio, masterPitch(audio,index),index,fidelity,doubleOscs);

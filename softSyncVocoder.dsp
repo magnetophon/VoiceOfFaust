@@ -3,7 +3,7 @@ declare version   "0.1";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
-declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the Faust library" ;
+declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and os.square oscillators adapted from the Faust library" ;
 
 //-----------------------------------------------
 // imports
@@ -20,48 +20,45 @@ import ("lib/classicVocoder.lib");
 // process
 //-----------------------------------------------
 
-SyncFreq = (vslider("[1]SyncFreq[frequency of the syncing oscilator as a Piano Key (PK) number (A440 = key 49)][style:knob]",  1,0,16,0.01) *OscFreq):smooth(0.999);
-OscFreq  = (vslider("[2]OscFreq  [frequency of the synced oscilator as a Piano Key (PK) number (A440 = key 49)][style:knob]",  49,1,88,1) : pianokey2hz):smooth(0.999);
-SyncDuty =  vslider("[2]SyncDuty[duty cycle of the syncing osc][style:knob]",  0.5,0,1,0.001):smooth(0.999);
+SyncFreq = (vslider("[1]SyncFreq[frequency of the syncing oscilator as a Piano Key (PK) number (A440 = key 49)][style:knob]",  1,0,16,0.01) *OscFreq):si.smooth(0.999);
+OscFreq  = (vslider("[2]OscFreq  [frequency of the synced oscilator as a Piano Key (PK) number (A440 = key 49)][style:knob]",  49,1,88,1) : ba.pianokey2hz):si.smooth(0.999);
+SyncDuty =  vslider("[2]SyncDuty[duty cycle of the syncing os.osc][style:knob]",  0.5,0,1,0.001):si.smooth(0.999);
 
-SyncingOsc(freq,duty) = (lf_pulsetrainpos(freq,duty)*2)-1;
+SyncingOsc(freq,duty) = (os.lf_pulsetrainpos(freq,duty)*2)-1;
 
-SyncedOsc(freq,sync) = saw1_sync(freq,sync);//:lowpass(16,SR/2);
-
-
+SyncedOsc(freq,sync) = saw1_sync(freq,sync);//:fi.lowpass(16,ma.SR/2);
 
 // --- lf_sawpos_sync ---
-// simple sawtooth waveform oscillator between 0 and 1
+// simple os.sawtooth waveform oscillator between 0 and 1
 lf_sawpos_sync(freq,sync) = ((_,periodsamps : fmod) ~ +(1.0*sync)) / periodsamps
 with {
-  periodsamps = float(ml.SR)/freq; // period in samples (not nec. integer)
+  periodsamps = float(ma.SR)/freq; // ba.period in samples (not nec. integer)
 };
 
 // --- saw1_sync ---
-// simple sawtooth waveform oscillator between -1 and 1
-saw1_sync(freq,sync) = 2.0 * lf_sawpos_sync(freq,sync) - 1.0; // zero-mean in [-1,1)
+// simple os.sawtooth waveform oscillator between -1 and 1
+saw1_sync(freq,sync) = 2.0 * lf_sawpos_sync(freq,sync) - 1.0; // fi.zero-mean in [-1,1)
 
-lf_triangle(freq) = _~(+(lf_squarewave(freq)/periodsamps))
+lf_triangle(freq) = _~(+(os.lf_squarewave(freq)/periodsamps))
 with {
-  periodsamps = float(ml.SR)/freq; // period in samples (not nec. integer)
+  periodsamps = float(ma.SR)/freq; // ba.period in samples (not nec. integer)
 };
 
-lf_saw_hardsync(freq,sync) = select2(sync==1,_,0)~(+(lf_squarewave(freq)/periodsamps))
+lf_saw_hardsync(freq,sync) = select2(sync==1,_,0)~(+(os.lf_squarewave(freq)/periodsamps))
 with {
-  periodsamps = float(ml.SR)/freq; // period in samples (not nec. integer)
+  periodsamps = float(ma.SR)/freq; // ba.period in samples (not nec. integer)
 };
 
-lf_triangle_softsync(freq) = ((highpass(1,freq):lowpass(16,SR/4))~(+((lf_squarewave(freq)*lf_squarewave(SyncFreq)/periodsamps))))
-/*lf_triangle_softsync(freq) = (highpass(1,freq)~(+((lf_squarewave(freq)*lf_squarewave(SyncFreq)/periodsamps))):lowpass(16,SR/2))*/
-    ,lf_squarewave(freq)
-    ,lf_squarewave(SyncFreq)
+lf_triangle_softsync(freq) = ((fi.highpass(1,freq):fi.lowpass(16,ma.SR/4))~(+((os.lf_squarewave(freq)*os.lf_squarewave(SyncFreq)/periodsamps))))
+/*lf_triangle_softsync(freq) = (fi.highpass(1,freq)~(+((os.lf_squarewave(freq)*os.lf_squarewave(SyncFreq)/periodsamps))):fi.lowpass(16,ma.SR/2))*/
+    ,os.lf_squarewave(freq)
+    ,os.lf_squarewave(SyncFreq)
 with {
-  periodsamps = float(ml.SR)/max(freq,SyncFreq); // period in samples (not nec. integer)
+  periodsamps = float(ma.SR)/max(freq,SyncFreq); // ba.period in samples (not nec. integer)
 };
 
 process =
 lf_triangle_softsync(OscFreq);
 /*saw1_sync(100,1);*/
 /*SyncedOsc(OscFreq,1);*/
-/*SyncedOsc(OscFreq,SyncingOsc(SyncFreq,SyncDuty))*0.1<:bus(2);*/
-
+/*SyncedOsc(OscFreq,SyncingOsc(SyncFreq,SyncDuty))*0.1<:si.bus(2);*/

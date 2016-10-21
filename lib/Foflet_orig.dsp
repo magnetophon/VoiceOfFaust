@@ -1,17 +1,15 @@
 //-------------------------------------
 //   A formant wave function generator
 //-------------------------------------
-import("music.lib");
-import("filter.lib");
-import("oscillator.lib");
+import("stdfaust.lib");
 
-// Sample period
-T = 1.0/ml.SR;
+// Sample ba.period
+T = 1.0/ma.SR;
 
 //****************** user inputs ******************/
 
 // fundmental frequency of tone with vibrato
-f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*osc(vibRate))); // fundamental freq (Hz)
+f0 = hgroup("[1]",nentry("Freq [style:knob]",80,30,350,1) + (vibGain*os.osc(vibRate))); // fundamental freq (Hz)
 // choice of formant structure (vowel a,e,i,o and u)
 vow = hgroup("[1]",nentry("[5:]A_E_I_O_U",1,1,5,1));
 // vibrato rate
@@ -108,29 +106,29 @@ t(3) = 0.000003;
 t(4) = 0.000001;
 
 // constants based on user input
-k1(0) = t(0) * SR; // attack in samples
-k1(1) = t(1) * SR;
-k1(2) = t(2) * SR;
-k1(3) = t(3) * SR;
-k1(4) = t(4) * SR;
-beta(0) = PI / float(k1(0)); // attack value needed for attack(i) function
-beta(1) = PI / float(k1(1));
-beta(2) = PI / float(k1(2));
-beta(3) = PI / float(k1(3));
-beta(4) = PI / float(k1(4));
-f0Period = SR / f0; // fund period length in fractional samples
-sigLen(x) = int(SR * log(0.001) / (-x * PI)) + 1; // foflet T60 in samples
+k1(0) = t(0) * ma.SR; // attack in samples
+k1(1) = t(1) * ma.SR;
+k1(2) = t(2) * ma.SR;
+k1(3) = t(3) * ma.SR;
+k1(4) = t(4) * ma.SR;
+beta(0) = ma.PI / float(k1(0)); // attack value needed for attack(i) function
+beta(1) = ma.PI / float(k1(1));
+beta(2) = ma.PI / float(k1(2));
+beta(3) = ma.PI / float(k1(3));
+beta(4) = ma.PI / float(k1(4));
+f0Period = ma.SR / f0; // fund ba.period length in fractional samples
+sigLen(x) = int(ma.SR * log(0.001) / (-x * ma.PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation
 k = (+(1)~_) - 1;
-expy(x) = exp(-x * PI * T)^k; // exponential env (x = BW)
-envAttack(y) = 0.5 * (1.0 - cos(y * k * SR)); // attack discontinuity smoother (y=beta)
-sinus(z) = sin(2.0 * PI * z * k * T); // sinusoid (z=fc)
+expy(x) = exp(-x * ma.PI * T)^k; // exponential env (x = BW)
+envAttack(y) = 0.5 * (1.0 - cos(y * k * ma.SR)); // attack discontinuity smoother (y=beta)
+sinus(z) = sin(2.0 * ma.PI * z * k * T); // sinusoid (z=fc)
 
 // functions to calculate fof attack and decay sections
 fofStop(x) = k < sigLen(x); // gate
-fofAttack(w,x,y,z) = ml.db2linear(w) * expy(x) * envAttack(y) * sinus(z); // first part of fof calculation
-fofRemainder(w,x,z) = ml.db2linear(w) * expy(x) * sinus(z); // 2nd part of fof calculation
+fofAttack(w,x,y,z) = ba.db2linear(w) * expy(x) * envAttack(y) * sinus(z); // first part of fof calculation
+fofRemainder(w,x,z) = ba.db2linear(w) * expy(x) * sinus(z); // 2nd part of fof calculation
 // function to generate single fof
 fof(v,w,x,y,z) = ((k < int(v)) * fofAttack(w,x,y,z)) + ((k >= int(v)) * fofRemainder(w,x,z)); // v = k1
 // function to play single fof
@@ -138,13 +136,13 @@ playFof(v,w,x,y,z) = (+(fof(v,w,x,y,z) * fofStop(x))~fdelay2(2048,f0Period-1.0))
 // function to play 5 fofs in parallel (5 fofs = 1 vowel
 allFofs(j) = par(i,5,playFof(k1(i),A((j-1)*5+i),BW((j-1)*5+i),beta(i),fc((j-1)*5+i))) :>_;
 
-// adsr variables and controls
+// en.adsr variables and controls
 attack = nentry("[1:]attack [style:knob]",1,0,4,0.1);
 decay = nentry("[2:]decay[style:knob]",0.3,0,1,0.001);
 sustain = nentry("[3:]sustain[style:knob]",0.5,0,1,0.01);
 release = nentry("[4:]release[style:knob]",0.5,0,4,0.1);
 // display group to group ADSR controls together
-volADSR = vgroup("[2]",hgroup("ADSR", 0.75*adsr(attack,decay,sustain,release) : _));
+volADSR = vgroup("[2]",hgroup("ADSR", 0.75*en.adsr(attack,decay,sustain,release) : _));
 
 // final process line: feed play button to volADSR to currently active vowel Fofs and then sum
 process = vgroup("[3]",button("play")) <: (volADSR <: (par(i,5,*(allFofs(i+1)*((i+1)==vow)))) :>_<:_,_);

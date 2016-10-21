@@ -1,38 +1,38 @@
 //-----------------------------------------------
-// Classic vocoder synthesis
+// Classic ve.vocoder synthesis
 //-----------------------------------------------
 
 vocoderFund(freq,index) =
     fund(freq,index,vocoderOctave);
 
 vocoderOsc(freq,index) =
-  ( par(i,2,(noises(2,i)*sqrt((vocoderOscNoise))))
+  ( par(i,2,(no.noises(2,i)*sqrt((vocoderOscNoise))))
   ,(stereosupersawpulse(vocoderN,vocoderFund(freq,index),freq,vocoderDetune,vocoderMix,vocoderSawPulse,vocoderDuty):par(i,2,_*sqrt((1-vocoderOscNoise))))
   ):> inputRouter(inputRoutingEnabled)
   with {
-    inputRouter(0)= bus2<:bus(nrBands);
+    inputRouter(0)= (_,_)<:si.bus(nrBands);
     inputRouter(1) =
-    bus2 <:(
-       (par(i, 2, (xfadeSelector(inputRouting,0):dezip) *_) :butterfly(2): par(i,2,_<:bus(nrBands/2)) )
-      ,(par(i, 2, (xfadeSelector(inputRouting,1):dezip) *_) :butterfly(2)<:interleave(nrBands/2,2))
-      ,(par(i, 2, (xfadeSelector(inputRouting,2):dezip) *_) :butterfly(2)<:bus(nrBands))
-      ,(par(i, 2, (xfadeSelector(inputRouting,3):dezip) *_) <:bus(nrBands))
-      ,(par(i, 2, (xfadeSelector(inputRouting,4):dezip) *_) :( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))
-      ,(par(i, 2, (xfadeSelector(inputRouting,5):dezip) *_) :butterfly(2)<:butterfly(nrBands))
-      /*,(par(i, 2, xfadeSelector(inputRouting,6):dezip) *_) :butterfly(2):( (_<:bus(nrBands/nrOutChan)) ,(_<:bus(nrBands-(nrBands/nrOutChan))) ))*/
-      /*,(par(i, 2, xfadeSelector(inputRouting,7):dezip) *_) :butterfly(2)<:interleave(2,nrBands/2))*/
-      /*,(par(i, 2, (inputRouting==7) *_) <:interleave(2,nrBands/2):hadamard(nrBands))*/
-      /*,(par(i, 2, (inputRouting==8) *_) <:hadamard(nrBands))*/
-      /*,(par(i, 2, (inputRouting==9) *_) <:hadamard(nrBands):interleave(2,nrBands/2))*/
+    (_,_) <:(
+       (par(i, 2, (xfadeSelector(inputRouting,0):dezip) *_) :ro.butterfly(2): par(i,2,_<:si.bus(nrBands/2)) )
+      ,(par(i, 2, (xfadeSelector(inputRouting,1):dezip) *_) :ro.butterfly(2)<:ro.interleave(nrBands/2,2))
+      ,(par(i, 2, (xfadeSelector(inputRouting,2):dezip) *_) :ro.butterfly(2)<:si.bus(nrBands))
+      ,(par(i, 2, (xfadeSelector(inputRouting,3):dezip) *_) <:si.bus(nrBands))
+      ,(par(i, 2, (xfadeSelector(inputRouting,4):dezip) *_) :( (_<:si.bus(nrBands/nrOutChan)) ,(_<:si.bus(nrBands-(nrBands/nrOutChan))) ))
+      ,(par(i, 2, (xfadeSelector(inputRouting,5):dezip) *_) :ro.butterfly(2)<:ro.butterfly(nrBands))
+      /*,(par(i, 2, xfadeSelector(inputRouting,6):dezip) *_) :ro.butterfly(2):( (_<:si.bus(nrBands/nrOutChan)) ,(_<:si.bus(nrBands-(nrBands/nrOutChan))) ))*/
+      /*,(par(i, 2, xfadeSelector(inputRouting,7):dezip) *_) :ro.butterfly(2)<:ro.interleave(2,nrBands/2))*/
+      /*,(par(i, 2, (inputRouting==7) *_) <:ro.interleave(2,nrBands/2):ro.hadamard(nrBands))*/
+      /*,(par(i, 2, (inputRouting==8) *_) <:ro.hadamard(nrBands))*/
+      /*,(par(i, 2, (inputRouting==9) *_) <:ro.hadamard(nrBands):ro.interleave(2,nrBands/2))*/
       // ==3 hademar?
-      ):>bus(nrBands);
+      ):>si.bus(nrBands);
       };
 
 volFilter(f,prevC,c,v,q) =
-    f:chooseResonBP(stableFilters,c:min((SR/2)-10),Q,v):chooseResonBP(stableFilters,c:min((SR/2)-10),Q,compensate)
+    f:chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,v):chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,compensate)
     with {
     //compensate for one filter:
-    //compensate = (tanh((1/(vocoderQ:min(1)))/2));
+    //compensate = (ma.tanh((1/(vocoderQ:min(1)))/2));
     //compensate for two filters:
     //pow(vslider("[-1]comp",	1, 1, 20, 0.001)):
     //compensate = ((1/(((vocoderQ:min(7))/7):pow(hslider("[-1]comp",	1, 0.001, 1, 0))))-1)*(hslider("[-1]comp",	1, 1, 2000, 0.001)):hbargraph("[-1]compensate", 0, 99)+1;
@@ -61,43 +61,39 @@ volFilter(f,prevC,c,v,q) =
 StereoVolFilterBank(nrBands,0) = StereoVolFilterBankNoFeedback(nrBands);
 StereoVolFilterBank(nrBands,1) = StereoVolFilterBankWithFeedback(nrBands);
 
+StereoVolFilterBankNoFeedback(nrBands)= (AutosatArray(enableFilterAutosat),si.bus(nrBands*4)):(ro.interleave(nrBands,5):par(i, nrBands, volFilter));
 
-
-StereoVolFilterBankNoFeedback(nrBands)= (AutosatArray(enableFilterAutosat),bus(nrBands*4)):(interleave(nrBands,5):par(i, nrBands, volFilter));
-
-StereoVolFilterBankWithFeedback(nrBands)= (((interleave(nrBands,2):par(i,nrBands,+):AutosatArray(enableFilterAutosat)),bus(nrBands*4)):interleave(nrBands,5):par(i, nrBands, volFilter))~FBpath with {
-  FBpath = bus(nrBands)<:(lowerFB,selfFB,higherFB,allFB):>bus(nrBands);
+StereoVolFilterBankWithFeedback(nrBands)= (((ro.interleave(nrBands,2):par(i,nrBands,+):AutosatArray(enableFilterAutosat)),si.bus(nrBands*4)):ro.interleave(nrBands,5):par(i, nrBands, volFilter))~FBpath with {
+  FBpath = si.bus(nrBands)<:(lowerFB,selfFB,higherFB,allFB):>si.bus(nrBands);
   lowerFB=
-    bus(nrBands)
-      <:((0,par(i,nrBands,selector(i-1,nrBands)))
-        :((bus(nrBands),(VocoderLinArrayChooser(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));
-  selfFB = ((bus(nrBands),(VocoderLinArrayChooser(selfFBbottom,selfFBmid,selfFBband,selfFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*));
-  higherFB=  bus(nrBands)<:((par(i,nrBands,selector(i+1,nrBands)),0):((bus(nrBands),(VocoderLinArrayChooser(higherFBbottom,higherFBmid,higherFBband,higherFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));
-  allFB   = (bus(nrBands)<:par(i,nrBands,par(j,nrBands,_*(i!=j)):>_):>((bus(nrBands),(VocoderLinArrayChooser(allFBbottom,allFBmid,allFBband,allFBtop,para):par(i,nrBands,pow(3):dezip))):(interleave(nrBands,2)):par(i,nrBands,*)));
+    si.bus(nrBands)
+      <:((0,par(i,nrBands,ba.selector(i-1,nrBands)))
+        :((si.bus(nrBands),(VocoderLinArrayChooser(lowerFBbottom,lowerFBmid,lowerFBband,lowerFBtop,para):par(i,nrBands,pow(3):dezip))):(ro.interleave(nrBands,2)):par(i,nrBands,*)));
+  selfFB = ((si.bus(nrBands),(VocoderLinArrayChooser(selfFBbottom,selfFBmid,selfFBband,selfFBtop,para):par(i,nrBands,pow(3):dezip))):(ro.interleave(nrBands,2)):par(i,nrBands,*));
+  higherFB=  si.bus(nrBands)<:((par(i,nrBands,ba.selector(i+1,nrBands)),0):((si.bus(nrBands),(VocoderLinArrayChooser(higherFBbottom,higherFBmid,higherFBband,higherFBtop,para):par(i,nrBands,pow(3):dezip))):(ro.interleave(nrBands,2)):par(i,nrBands,*)));
+  allFB   = (si.bus(nrBands)<:par(i,nrBands,par(j,nrBands,_*(i!=j)):>_):>((si.bus(nrBands),(VocoderLinArrayChooser(allFBbottom,allFBmid,allFBband,allFBtop,para):par(i,nrBands,pow(3):dezip))):(ro.interleave(nrBands,2)):par(i,nrBands,*)));
     };
 
-AutosatArray(0) = bus(nrBands);
+AutosatArray(0) = si.bus(nrBands);
 AutosatArray(1) =
   (
     (
-       bus(nrBands),
+       si.bus(nrBands),
        (VocoderLinArrayChooser(autoSatBottom,autoSatMid,autoSatBand,autoSatTop,para):dezipBands)
     )
-       :interleave(nrBands,2)
+       :ro.interleave(nrBands,2)
   )
-    :par(i,nrBands,bus(2)<:(((selector(0,2):addDC(i))*(selector(1,2):db2linear)):autoSat)*((selector(1,2)/8):autoSat*-8:db2linear));
-     addDC(band)=_+(VocoderLinArrayChooser(autoSatDCbottom,autoSatDCmid,autoSatDCband,autoSatDCtop,para):selector(band,nrBands):pow(3)*64:dezip);
-
+    :par(i,nrBands,si.bus(2)<:(((ba.selector(0,2):addDC(i))*(ba.selector(1,2):ba.db2linear)):autoSat)*((ba.selector(1,2)/8):autoSat*-8:ba.db2linear));
+     addDC(band)=_+(VocoderLinArrayChooser(autoSatDCbottom,autoSatDCmid,autoSatDCband,autoSatDCtop,para):ba.selector(band,nrBands):pow(3)*64:dezip);
 
 vocoderCenters(freq) =
-    VocoderFreqsChooser(vocoderBottom,vocoderMid,vocoderBand,vocoderTop,para):(par(i,nrBands, _,freq * vocoderOctave:*:min(SR/2):dezip));
+    VocoderFreqsChooser(vocoderBottom,vocoderMid,vocoderBand,vocoderTop,para):(par(i,nrBands, _,freq * vocoderOctave:*:min(ma.SR/2):dezip));
 
-
-endGainCompare(audio,freq) = (bus(nrOutChan),(voice(audio,freq)<:bus(nrOutChan))):interleave(nrOutChan,2):par(i,nrOutChan,gainCompareElement);
+endGainCompare(audio,freq) = (si.bus(nrOutChan),(voice(audio,freq)<:si.bus(nrOutChan))):ro.interleave(nrOutChan,2):par(i,nrOutChan,gainCompareElement);
 
 StereoVocoder(audio,freq,index,fidelity) =
-           ((vocoderOsc(freq,index)<:bus(nrBands))
-           ,(vocoderCenters(freq)<:((bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,selector(i-1,nrBands)))),(bus(nrBands))))
+           ((vocoderOsc(freq,index)<:si.bus(nrBands))
+           ,(vocoderCenters(freq)<:((si.bus(nrBands)<:((50:max(vocoderBottom*freq*vocoderOctave)),par(i,nrBands,ba.selector(i-1,nrBands)))),(si.bus(nrBands))))
            ,analizer(voice(audio,freq),freq,fidelity,enableDeEsser)
            ,(VocoderLinArrayChooser(vocoderQbottom,vocoderQmid,vocoderQband,vocoderQtop,para):dezipBands))
            :StereoVolFilterBank(nrBands,enableFeedback)

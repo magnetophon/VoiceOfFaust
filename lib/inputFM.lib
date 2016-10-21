@@ -1,10 +1,10 @@
 //-----------------------------------------------
 // input->FM synth
 //-----------------------------------------------
-FM(audio,freq) = osc(freq/2+audio* 5000)*subLevel(audio,freq);
+FM(audio,freq) = os.osc(freq/2+audio* 5000)*subLevel(audio,freq);
 
-//compressor_mono(ratio,thresh,att,rel,x)
-extremeLimiter = compressor_mono(100,-54,0.0008,0.002)*70;
+//co.compressor_mono(ratio,thresh,att,rel,x)
+extremeLimiter = co.compressor_mono(100,-54,0.0008,0.002)*70;
 
 equalpower = _<:			//3dB equal power curve
     log(_	 * 5.63875+1)/ 1.89292,
@@ -13,11 +13,11 @@ equalpower = _<:			//3dB equal power curve
 //crossfades from no dynamics to normal dynamics to reversed ones
 dynamics(limited, unlimited,dyn) =
     ((dyn*2:min(1):equalpower),
-    (dyn-0.5:max(0)*2:equalpower:(_,_*-1):cross(2)))
-    :interleave(2,2):(bus2:>_),(bus2:>_)
+    (dyn-0.5:max(0)*2:equalpower:(_,_*-1):ro.cross(2)))
+    :ro.interleave(2,2):((_,_):>_),((_,_):>_)
     :_*limited,_*unlimited:>_;
 
-FMvoc(limited, unlimited,freq,vol,index,dyn) = osc((dynamics(limited, unlimited,dyn)*index)+freq)*vol;
+FMvoc(limited, unlimited,freq,vol,index,dyn) = os.osc((dynamics(limited, unlimited,dyn)*index)+freq)*vol;
 
 FMSynth(limited, unlimited,freq,gain) =
     (
