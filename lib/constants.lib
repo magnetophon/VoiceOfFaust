@@ -9,9 +9,9 @@ ambisonicsOn              = 0; // do we want an ambisonic synth.
 ambisonicsOrder           = 3; // order of the ambisonics
 para                      = 0; // whether we want a parametric mid
 enableGainCompare         = 0; // correct the loudness of the individual bands after they've been created
-enableGainScale           = 0; // expand or compress the spectrum: make it more or less resonant
+enableGainScale           = 1; // expand or compress the spectrum: make it more or less resonant
 autoQ                     = 1; // enable correction of the filter-Q depending on the distance between the bands
-enableDeEsser             = 0+ enableReEsser:min(1); // enable the multi-band deEsser, is needed for reEsser
+enableDeEsser             = 1+ enableReEsser:min(1); // enable the multi-band deEsser, is needed for reEsser
 enableReEsser             = 0; // enable the multi-band reEsser: experimental: not well tested in multichannel and ambisonics
 stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd pass filters
 enableAutosat             = 0; // put a saturator at the output
@@ -25,6 +25,7 @@ SRmax                     = 96000.0;                          // assumed upper l
 enablePitchTracker        = 0; // internal pitch tracker
 enablePitchQuantise       = 0; // a simple 'autotune': only chromatic
 enablegainedSmootherPitch = 1; // choose between normal smoothing of th pitch (0), and a  psuedo Kalman filter that looks at the fidelity
+// MinInputPitch             = 25;	// temp for tracking bass
 MinInputPitch             = 48.9994;	// = G1, the lowest frequency that helmholtz~ can track is 51 Hz
 MaxInputPitch             = 2093.00; // = C7, the highest frequency that helmholtz~ can track is 1992 Hz
 maxTimeWithoutPitch       = 2*SR;    // longest time the OSC pitch tracker can be silent before we switch to the intenal one. (in samples, so 2*SR is 2 seconds)
@@ -41,7 +42,7 @@ enableFilterAutosat       = 1; // put a saturator in the filter of the classicVo
 vocoderN                  = 2; // order of anti aliasing
 // vocoders based on oscilators
 doubleOscs                = 1; // whether a vocoder has nrBands or nrBands * nrOutChan oscilators
-enablePhaseNoise          = 0; // 0 = no noise   and 1 = noise modulates phase
+enablePhaseNoise          = 1; // 0 = no noise   and 1 = noise modulates phase
 enablePhaseNoiseFilter    = 1; // 0 = noise:smooth(fixed)   and 1 = noise:lowpass(variable)
 noisesFilterN             = 4; // the order of the noise lowpass
 defaultTop                = 128:pow(0.5); // using these two values with 16 bands, gives integer formant ratios
@@ -50,6 +51,6 @@ defaultBottom             = ((0.25*pow(2,0.5))+0.5):pow(0.5);
 // the maximum number of octaves of the fof oscilators
 // carefull: the CPU usage will go up with pow(2,maxOctavation) !
 // and be prepared for extremely long compile times.
-maxOctavation             = 1;
+maxOctavation             = 2;
 // Karplus-Strong:
 nlfOrder                  = 16; // order of the non linear modulator
