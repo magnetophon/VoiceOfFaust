@@ -70,7 +70,9 @@ with {					// from f0, amp, bandwidth, center freq
 // as above, but with the parameter eo to set the proportion of even and odd harmonics.
 fuphoSlaveEvenOdd(phasor,f0,a,b,c,eo) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
 with {					// from f0, amp, bandwidth, center freq
+okt = vslider("okt", 0, -2, 2, 1);
   cf 	= c/f0;
+  // cf 	= c/(f0*(okt:octaveMultiplier));
   ci	= int(floor(cf));			// integer harmonic below center freq
   ci1	= ci+1;				// and above
   isEven= if(((ci%2)<1),1,0);	// below is even?
