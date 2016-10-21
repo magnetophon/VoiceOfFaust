@@ -14,8 +14,10 @@ s1 + d * (s2 - s1)
     i = int(phase(freq));
     d = ma.decimal(phase(freq));
     PHi = ma.decimal(i/tablesize +PH)*tablesize;
-    s1 = rdtable(tablesize+1,os.sinwaveform,int(PHi));
-    s2 = rdtable(tablesize+1,os.sinwaveform,int(PHi+1));
+    sineWF = float(ba.time)*(2*ma.PI)/float(tablesize):sin;
+    s1 = rdtable(tablesize+1,sineWF,int(PHi));
+    // s1 = rdtable(tablesize+1,os.sinwaveform,int(PHi));
+    s2 = rdtable(tablesize+1,sineWF,int(PHi+1));
     phase(freq) =
     (freq*pmFXr)/float(ma.SR):
     ((+:ma.decimal)~_)
