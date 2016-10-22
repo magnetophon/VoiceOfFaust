@@ -40,7 +40,7 @@ enableFeedback            = 0; // feedback around the filters of the classicVoco
 enableFilterAutosat       = 0; // put a saturator in the filter of the classicVocoder
 vocoderN                  = 2; // order of anti aliasing
 // vocoders based on oscilators
-doubleOscs                = 0; // whether a ve.vocoder has nrBands or nrBands * nrOutChan oscilators
+doubleOscs                = 0; // whether a vocoder has nrBands or nrBands * nrOutChan oscilators
 enablePhaseNoise          = 0; // 0 = no no.noise   and 1 = no.noise modulates phase
 enablePhaseNoiseFilter    = 1; // 0 = no.noise:si.smooth(fixed)   and 1 = no.noise:fi.lowpass(variable)
 noisesFilterN             = 4; // the order of the no.noise fi.lowpass

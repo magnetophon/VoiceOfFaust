@@ -1,6 +1,6 @@
 
 //-----------------------------------------------
-// FM ve.vocoder synthesis
+// FM vocoder synthesis
 //-----------------------------------------------
 
 FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,para): dezipBands;

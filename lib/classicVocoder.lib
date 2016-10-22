@@ -1,5 +1,5 @@
 //-----------------------------------------------
-// Classic ve.vocoder synthesis
+// Classic vocoder synthesis
 //-----------------------------------------------
 
 vocoderFund(freq,index) =

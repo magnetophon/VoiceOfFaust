@@ -53,7 +53,7 @@ mix=par(i,nrOutChan*nrSends,(si.bus(nrChan):>_));
 // vocoderMixer
 //-----------------------------------------------
 
-// various ways to mix the bands of a ve.vocoder to a certain number of output-channels
+// various ways to mix the bands of a vocoder to a certain number of output-channels
 // so  si.bus(nrBands) to si.bus(nrOutChan)
 
 // vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,doubleOscs)

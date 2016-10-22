@@ -1,6 +1,6 @@
 
 //-----------------------------------------------
-// FOF ve.vocoder synthesis
+// FOF vocoder synthesis
 //-----------------------------------------------
 
 fofCenters(freq) = centers(freq,fofVocoderGroup);

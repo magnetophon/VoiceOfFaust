@@ -1,5 +1,5 @@
 //-----------------------------------------------
-// ve.vocoder analizer
+// vocoder analizer
 //-----------------------------------------------
 import("lib/classicVocoder.lib"); // for StereoVolFilterBankNoFeedback
 

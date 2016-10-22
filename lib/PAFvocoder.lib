@@ -1,6 +1,6 @@
 
 //-----------------------------------------------
-// PAF ve.vocoder synthesis
+// PAF vocoder synthesis
 //-----------------------------------------------
 maxNrInRoutings = 3;
 //pafCenters=     par(i,nrBands,   pow((pow((pafTop/pafBottom),1/15)),i)*pafBottom);

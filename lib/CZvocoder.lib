@@ -1,7 +1,7 @@
 
 //res= 0.5 to 64. this is multiplied by the fundamental pitch
 //-----------------------------------------------
-// CZ ve.vocoder synthesis
+// CZ vocoder synthesis
 //-----------------------------------------------
 
 //czCenters=     par(i,nrBands,   pow((pow((czTop/czBottom),1/15)),i)*czBottom);
