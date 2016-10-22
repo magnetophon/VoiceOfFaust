@@ -2,9 +2,8 @@
 # a NixOS friendly prompt
 
 #////////////////////////////////////////////////////////
-# startup script for the pitchtracker
+# startup script for the FM vocoder plus pitchtracker
 #////////////////////////////////////////////////////////
-# If this script is killed, kill everything.
-trap "kill -- -$$" EXIT
 
-pd -nodac -nomidi -jack ../PureData/OscSendVoc.pd &
+current_synth=FMvocoder
+source synthWrapper

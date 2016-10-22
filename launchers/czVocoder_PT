@@ -2,9 +2,8 @@
 # a NixOS friendly prompt
 
 #////////////////////////////////////////////////////////
-# startup script for the pitchtracker
+# startup script for the CZ osclilator vocoder + pitchtracker
 #////////////////////////////////////////////////////////
-# If this script is killed, kill everything.
-trap "kill -- -$$" EXIT
 
-pd -nodac -nomidi -jack ../PureData/OscSendVoc.pd &
+current_synth=CZringmod
+source synthWrapper
