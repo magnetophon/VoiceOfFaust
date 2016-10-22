@@ -1,5 +1,4 @@
 import("stdfaust.lib");
-import("stdfaust.lib"); // for ma.decimal, which should be in math.lib imho
 
 // import("lib/master.lib");
 import("lib/slave.lib");

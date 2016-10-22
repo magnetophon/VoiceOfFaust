@@ -123,5 +123,4 @@ nf = 4;					// number of formants
 // bandwidth = vslider("bandwidth", 1, 0, 100, 0.001):si.smooth(0.999);
 // center =vslider("center", 110, 55, 440, 1):si.smooth(0.999);
 // process = fupho(freq,amp,bandwidth,center);
-import("stdfaust.lib");
 // process = fuphoSlave(os.lf_sawpos(freq),freq,amp,bandwidth,center);
