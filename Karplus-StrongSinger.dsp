@@ -1,5 +1,5 @@
 declare name      "Karplus-StrongSinger";
-declare version   "1.1";
+declare version   "1.1.1";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
