@@ -51,6 +51,6 @@ defaultBottom             = ((0.25*pow(2,0.5))+0.5):pow(0.5);
 // the maximum number of octaves of the fof oscilators
 // carefull: the CPU usage will go up with pow(2,maxOctavation) !
 // and be prepared for extremely long compile times.
-maxOctavation             = 2;
+maxOctavation             = 1;
 // Karplus-Strong:
 nlfOrder                  = 16; // order of the non linear modulator
