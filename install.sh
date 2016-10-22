@@ -48,7 +48,7 @@ done
 # workaround for a bug in faust2lv2:
 # https://bitbucket.org/agraef/faust-lv2/issues/10/tabs-break-lv2s
 echo "patching tgroup for lv2:"
-sed -i.bak "s|\[ *scale *: *log *\]||g ; s|\btgroup\b|hgroup|g"sed -i.bak "s|\[ *scale *: *log *\]||g ; s|\btgroup\b|hgroup|g"    "lib/FullGUI.lib"
+sed -i.bak "s|\[ *scale *: *log *\]||g ; s|\btgroup\b|hgroup|g"  "lib/FullGUI.lib"
 
 for i in "${slaves[@]}"
 do
