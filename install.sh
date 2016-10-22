@@ -21,6 +21,7 @@ slaves=(
     classicVocoderSlave.dsp
     CZringmodSlave.dsp
     czVocoderSlave.dsp
+    FMsingerslave.dsp
     FMvocoderSlave.dsp
     FOFvocoderSlave.dsp
     Karplus-StrongSingerMaxiSlave.dsp
