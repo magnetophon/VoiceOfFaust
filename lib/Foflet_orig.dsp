@@ -3,7 +3,7 @@
 //-------------------------------------
 import("stdfaust.lib");
 
-// Sample ba.period
+// Sample period
 T = 1.0/ma.SR;
 
 //****************** user inputs ******************/
@@ -116,7 +116,7 @@ beta(1) = ma.PI / float(k1(1));
 beta(2) = ma.PI / float(k1(2));
 beta(3) = ma.PI / float(k1(3));
 beta(4) = ma.PI / float(k1(4));
-f0Period = ma.SR / f0; // fund ba.period length in fractional samples
+f0Period = ma.SR / f0; // fund period length in fractional samples
 sigLen(x) = int(ma.SR * log(0.001) / (-x * ma.PI)) + 1; // foflet T60 in samples
 
 // functions used in foflet calculation

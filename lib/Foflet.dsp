@@ -9,7 +9,7 @@ import("stdfaust.lib");
 
 // modified for dynamic parameters and octavation by Bart Brouns
 
-// Sample ba.period
+// Sample period
 T = 1.0/ma.SR;
 t(4) = 0.000001;
 // functions used in foflet calculation

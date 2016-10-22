@@ -35,7 +35,7 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
       //(( de.fdelay4(Pmax, P-2)))
   (( NLFM : de.fdelay4(Pmax, P-2) : loopfilter))
     with {
-      P = ma.SR/(freq*oct) ; // fundamental ba.period in samples
+      P = ma.SR/(freq*oct) ; // fundamental period in samples
       Pmax = 4096; // maximum P (for de.delay-line allocation)
 
       rho = pow(0.001,1.0/(freq*oct*feedback*8)); // multiplies loop-gain

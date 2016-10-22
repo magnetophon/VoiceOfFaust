@@ -21,9 +21,9 @@ subSine(audio,freq,index) = fund(freq,index,subOctave)*2*ma.PI:sin *
 
 // --- os.sawN for N = 1 to 6 ---
 //ws = waveshaping, so it takes an input saw as index
-sawNws(N,lfsawpos,freq) = os.saw1 : poly(N) : D(N-1) : gate(N-1)
+sawNws(N,lfsawpos,freq) = saw1 : poly(N) : D(N-1) : gate(N-1)
 with {
-  p0n = float(ma.SR)/float(freq); // ba.period in samples
+  p0n = float(ma.SR)/float(freq); // period in samples
   //lfsawpos = (_,1:fmod) ~ +(1.0/p0n); // os.sawtooth waveform in [0,1)
   // To introduce a phase offset here (phase in [0,1]):
   // lfsawpos(phase) = (+(phase*(1-1')), 1 : fmod ) ~ +(1.0/p0n);
@@ -90,9 +90,9 @@ with {
      delmax = DELPWR2-1;                       // arbitrary upper limit on diff de.delay (duty=0.5)
      SRmax = 96000.0;                          // assumed upper limit on sampling rate
      fmin = SRmax / float(2.0*delmax);         // 23.4 Hz (audio freqs only)
-     freqC = max(freq,ma.fmin);                   // clip frequency at lower limit
-     period = (float(ma.SR) / freqC);          // actual ba.period
-     ddel = duty * ba.period;                     // desired de.delay
+     freqC = max(freq,fmin);                   // clip frequency at lower limit
+     period = (float(ma.SR) / freqC);          // actual period
+     ddel = duty * period;                     // desired de.delay
      del = max(0,min(delmax,ddel));
     };
 
@@ -109,9 +109,9 @@ with {
      delmax = DELPWR2-1;                       // arbitrary upper limit on diff de.delay (duty=0.5)
      SRmax = 96000.0;                          // assumed upper limit on sampling rate
      fmin = SRmax / float(2.0*delmax);         // 23.4 Hz (audio freqs only)
-     freqC = max(freq,ma.fmin);                   // clip frequency at lower limit
-     period = (float(ma.SR) / freqC);          // actual ba.period
-     ddel = duty * ba.period;                     // desired de.delay
+     freqC = max(freq,fmin);                   // clip frequency at lower limit
+     period = (float(ma.SR) / freqC);          // actual period
+     ddel = duty * period;                     // desired de.delay
      del = max(0,min(delmax,ddel));
      };
 

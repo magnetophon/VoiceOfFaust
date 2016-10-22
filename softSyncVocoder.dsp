@@ -32,7 +32,7 @@ SyncedOsc(freq,sync) = saw1_sync(freq,sync);//:fi.lowpass(16,ma.SR/2);
 // simple os.sawtooth waveform oscillator between 0 and 1
 lf_sawpos_sync(freq,sync) = ((_,periodsamps : fmod) ~ +(1.0*sync)) / periodsamps
 with {
-  periodsamps = float(ma.SR)/freq; // ba.period in samples (not nec. integer)
+  periodsamps = float(ma.SR)/freq; // period in samples (not nec. integer)
 };
 
 // --- saw1_sync ---
@@ -41,12 +41,12 @@ saw1_sync(freq,sync) = 2.0 * lf_sawpos_sync(freq,sync) - 1.0; // fi.zero-mean in
 
 lf_triangle(freq) = _~(+(os.lf_squarewave(freq)/periodsamps))
 with {
-  periodsamps = float(ma.SR)/freq; // ba.period in samples (not nec. integer)
+  periodsamps = float(ma.SR)/freq; // period in samples (not nec. integer)
 };
 
 lf_saw_hardsync(freq,sync) = select2(sync==1,_,0)~(+(os.lf_squarewave(freq)/periodsamps))
 with {
-  periodsamps = float(ma.SR)/freq; // ba.period in samples (not nec. integer)
+  periodsamps = float(ma.SR)/freq; // period in samples (not nec. integer)
 };
 
 lf_triangle_softsync(freq) = ((fi.highpass(1,freq):fi.lowpass(16,ma.SR/4))~(+((os.lf_squarewave(freq)*os.lf_squarewave(SyncFreq)/periodsamps))))
@@ -54,7 +54,7 @@ lf_triangle_softsync(freq) = ((fi.highpass(1,freq):fi.lowpass(16,ma.SR/4))~(+((o
     ,os.lf_squarewave(freq)
     ,os.lf_squarewave(SyncFreq)
 with {
-  periodsamps = float(ma.SR)/max(freq,SyncFreq); // ba.period in samples (not nec. integer)
+  periodsamps = float(ma.SR)/max(freq,SyncFreq); // period in samples (not nec. integer)
 };
 
 process =

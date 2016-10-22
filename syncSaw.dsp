@@ -45,7 +45,7 @@ with {
   // --- sync_sawN for N = 1 to 6 ---
   sync_sawN(N,freq,sync) = sync_saw1 : poly(N) : D(N-1) : gate(N-1)
   with {
-    p0n = float(ma.SR)/float(freq); // ba.period in samples
+    p0n = float(ma.SR)/float(freq); // period in samples
     lfsawpos = (_,1:fmod) ~ +(1.0/p0n); // os.sawtooth waveform in [0,1)
     // To introduce a phase offset here (phase in [0,1]):
     // lfsawpos(phase) = (+(phase*(1-1')), 1 : fmod ) ~ +(1.0/p0n);
