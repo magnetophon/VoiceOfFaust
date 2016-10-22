@@ -22,7 +22,6 @@ import ("lib/inputFM.lib");
 //-----------------------------------------------
 
 process(audio) = stereoFMSynth(audio:fi.highpass3e(400):extremeLimiter, audio:fi.highpass3e(400),freq,subLevel(audio,freq))
- // :stereoLimiter(freq*0.5)
   with {
     freq = masterPitch(audio,index);
   };
