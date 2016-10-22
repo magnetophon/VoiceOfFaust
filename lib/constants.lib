@@ -3,7 +3,7 @@
 //-----------------------------------------------
 
 // general:
-nrBands                   = 8:max(4*nrOutChan);// Number of bands for the vocoders
+nrBands                   = 16:max(4*nrOutChan);// Number of bands for the vocoders
 nrOutChan                 = 2; // number of outputs
 ambisonicsOn              = 0; // do we want an ambisonic synth.
 ambisonicsOrder           = 3; // order of the ambisonics
