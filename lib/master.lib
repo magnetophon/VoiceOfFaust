@@ -3,11 +3,13 @@ import("lib/pitchtracker.lib");
 OSCminPitch             = OSCgroup(nentry(   "[02]min pitch[tooltip: minimum allowed pitch]", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
 OSCmaxPitch             = OSCgroup(nentry(   "[03]max pitch[tooltip: maximum allowed pitch]", 440, MinInputPitch, MaxInputPitch, 0.001));
 
-masterIndex(freq,index)= lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
+index = 0;
+
+masterIndex(freq,index)= os.lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
 
 // when not using Faust older than git 2016-06-02, commit e42de1291421d6a802df7ccd4469b7e10af68b8d
-// use my_lf_sawpos instead of lf_sawpos
-// my_lf_sawpos(freq) = decimal ~ +(freq/SR);
+// use my_lf_sawpos instead of os.lf_sawpos
+// my_lf_sawpos(freq) = ma.decimal ~ +(freq/ma.SR);
 
 // we want to tell the external pitchtracker the min and max
 // so don't optimize it out

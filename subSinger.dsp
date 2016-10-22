@@ -3,7 +3,7 @@ declare version   "1.0";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
-declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the Faust library" ;
+declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and os.square oscillators adapted from the Faust library" ;
 
 //-----------------------------------------------
 // imports
@@ -20,7 +20,6 @@ import ("lib/pmFX.lib");
 
 VoiceOfFaust(audio,index) =
   (
-  (
     cleanVolume,cleanpmFX, //output volumes. The number of parameters should be nrSends
     (voice(audio,freq)<:_,_)
     ,
@@ -28,7 +27,7 @@ VoiceOfFaust(audio,index) =
     subSine(audio,freq,index)
     ,
     FMvolume,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),freq,subLevel(audio,freq))
+    stereoFMSynth(audio:fi.highpass3e(400):extremeLimiter, audio:fi.highpass3e(400),freq,subLevel(audio,freq))
   )
   : mixerWithSends(nrChan,nrOutChan,nrSends)
 
@@ -37,11 +36,10 @@ VoiceOfFaust(audio,index) =
   ,pmFX(freq,pmFXr,pmFXi,PMphase)
   ,pmFX(freq,pmFXr,pmFXi,0-PMphase)
 
-  :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_)) // mix the clean and FX
+  :ro.interleave(nrOutChan,nrSends):par(i,nrOutChan,(si.bus(nrSends):>_)) // mix the clean and FX
 
   :stereoLimiter(freq * subOctave) //needs the pitch to adjust the decay time.
   :VuMeter(2,enableVUmeter)
-  )
   with {
     nrChan     = 3;
     nrOutChan = 2;
@@ -55,7 +53,6 @@ VoiceOfFaust(audio,index) =
     FMvolLL    = LLFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]", 0, 0, 1, 0.001):volScale);
     freq = masterPitch(audio,index);
     };
-
 
 //-----------------------------------------------
 // process

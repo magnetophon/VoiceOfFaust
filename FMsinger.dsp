@@ -3,7 +3,7 @@ declare version   "1.0";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
-declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the Faust library" ;
+declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and os.square oscillators adapted from the Faust library" ;
 
 //-----------------------------------------------
 // imports
@@ -21,7 +21,7 @@ import ("lib/inputFM.lib");
 // process
 //-----------------------------------------------
 
-process(audio) = stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),freq,subLevel(audio,freq))
+process(audio) = stereoFMSynth(audio:fi.highpass3e(400):extremeLimiter, audio:fi.highpass3e(400),freq,subLevel(audio,freq))
  // :stereoLimiter(freq*0.5)
   with {
     freq = masterPitch(audio,index);

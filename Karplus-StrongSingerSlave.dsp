@@ -3,7 +3,7 @@ declare version   "1.0";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
-declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the Faust library" ;
+declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and os.square oscillators adapted from the Faust library" ;
 
 //-----------------------------------------------
 // imports
@@ -42,7 +42,7 @@ VoiceOfFaust(audio,index) =
 
     // add octave slider:
     KPoctave          = mainKPgroup(vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
-    KPvolume          = mainKPgroup(vslider("[0]wet volume [style:knob][tooltip: the output-level of the delay]",	0.4, 0, 1, 0.001):volScale);
+    KPvolume          = mainKPgroup(vslider("[0]wet volume [style:knob][tooltip: the output-level of the de.delay]",	0.4, 0, 1, 0.001):volScale);
     feedbackAmount    = MKPgroup(    vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
     freq = masterPitch(audio,index);
   };

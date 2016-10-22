@@ -3,7 +3,7 @@ declare version   "1.0";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
-declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the Faust library" ;
+declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and os.square oscillators adapted from the Faust library" ;
 
 //-----------------------------------------------
 // imports
@@ -47,7 +47,7 @@ VoiceOfFaust(audio,index,fidelity) =
     fofvocoder(audio,freq,index,fidelity,doubleOscs),
 
     FMvolume,fmNLKS,FMpmFX,
-    stereoFMSynth(audio:highpass3e(400):extremeLimiter, audio:highpass3e(400),freq,subLevel(audio,freq)),
+    stereoFMSynth(audio:fi.highpass3e(400):extremeLimiter, audio:fi.highpass3e(400),freq,subLevel(audio,freq)),
 
     CZvolume,CZNLKS,CZpmFX,
     CZringMod(audio,freq,index)
@@ -65,7 +65,7 @@ VoiceOfFaust(audio,index,fidelity) =
     ,pmFX(freq,pmFXr,pmFXi,PMphase)
     ,pmFX(freq,pmFXr,pmFXi,0-PMphase)
 
-    :interleave(nrOutChan,nrSends):par(i,nrOutChan,(bus(nrSends):>_))
+    :ro.interleave(nrOutChan,nrSends):par(i,nrOutChan,(si.bus(nrSends):>_))
 
     :stereoLimiter(freq * 0.25) //it needs the lowest pitch to adjust the decay time.
     // :VuMeter
@@ -78,7 +78,6 @@ VoiceOfFaust(audio,index,fidelity) =
           nrSends    = 3;
           freq = masterPitch(audio,index);
           };
-
 
 //-----------------------------------------------
 // process

@@ -2,29 +2,28 @@
 // Karplus-Strong effect
 //-----------------------------------------------
 
-KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(SR/2):dezip));
+KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(ma.SR/2):dezip));
 
 KPanalizer(audio,freq,fidelity) =
     analizer(audio,freq,fidelity,enableDeEsser)
     :par(i,nrBands,((_*KPvocoderStrength,((KPvocoderStrength*-1)+1)):+
-    :linear2db) );//adapt to eq instead of bandpass
-
+    :ba.linear2db) );//adapt to eq instead of fi.bandpass
 
 //serial equaliser, with parameters exposed:
-eqOfN(1) = bus(4)<:(selector(1,4),selector(2,4),selector(3,4),selector(0,4)):peak_eq_cq;
+eqOfN(1) = si.bus(4)<:(ba.selector(1,4),ba.selector(2,4),ba.selector(3,4),ba.selector(0,4)):fi.peak_eq_cq;
 eqOfN(n) = (eqOfN(n-1),_,_,_):eqOfN(1);
 
 EQbank(Oscilator,q) =
-    ((bus(nrBands)<:(bus(nrBands),OffSet)<:(par(i, nrBands, (selector(i,nrBands+1)+selector(nrBands,nrBands+1))))),bus(nrBands))
-    :(bus(2*nrBands),(q<:bus(nrBands)))
-    :((Oscilator,interleave(nrBands,3)):eqOfN(nrBands))
+    ((si.bus(nrBands)<:(si.bus(nrBands),OffSet)<:(par(i, nrBands, (ba.selector(i,nrBands+1)+ba.selector(nrBands,nrBands+1))))),si.bus(nrBands))
+    :(si.bus(2*nrBands),(q<:si.bus(nrBands)))
+    :((Oscilator,ro.interleave(nrBands,3)):eqOfN(nrBands))
     with {
         N = 3; //uneven only: 1,3,5
         AvgVolume = sumOfN(nrBands)/nrBands;
         MinVolume = minOfN(nrBands);
         MaxVolume = maxOfN(nrBands);
         OffSet    =
-           bus(nrBands)<:bus(nrBands*4):
+           si.bus(nrBands)<:si.bus(nrBands*4):
            (KPeqCutBoost>0),
            (((KPeqCutBoost+1)*-AvgVolume)+(KPeqCutBoost*MaxVolume)),
            ((((KPeqCutBoost*-1)+1)*-AvgVolume)+KPeqCutBoost*-MinVolume):
@@ -33,11 +32,11 @@ EQbank(Oscilator,q) =
 KPvocoder(audio,feedback,freq,fidelity)= (feedback,KPvocoderQ,KPanalizer(voice(audio,freq),freq,fidelity),KPcenters(freq,1)):EQbank;
 
 stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
-      //(( fdelay4(Pmax, P-2)))
-  (( NLFM : fdelay4(Pmax, P-2) : loopfilter))
+      //(( de.fdelay4(Pmax, P-2)))
+  (( NLFM : de.fdelay4(Pmax, P-2) : loopfilter))
     with {
-      P = SR/(freq*oct) ; // fundamental period in samples
-      Pmax = 4096; // maximum P (for delay-line allocation)
+      P = ma.SR/(freq*oct) ; // fundamental period in samples
+      Pmax = 4096; // maximum P (for de.delay-line allocation)
 
       rho = pow(0.001,1.0/(freq*oct*feedback*8)); // multiplies loop-gain
 
@@ -54,7 +53,7 @@ stringloopFBpath(freq, oct,feedback,phase,nonLinearity,frequencyMod,DC) =
       NLFM =  MyNonLinearModulator(nonLinearity,frequencyMod*freq*oct,phase,DC);
     };
 
-feedbackADSR(audio,freq) = tanh(voice(audio,freq)*2:amp_follower(KPrelease)):pow(4);
+feedbackADSR(audio,freq) = ma.tanh(voice(audio,freq)*2:an.amp_follower(KPrelease)):pow(4);
 
 stringloopBank(freq,fidelity,audio,index,feedback,phaseLL,phaseL,phase,phaseH,phaseHH,DCnonlinLL,DCnonlinL,DCnonlin,DCnonlinH,DCnonlinHH) =
     (_+feedback
@@ -67,7 +66,7 @@ stringloopBank(freq,fidelity,audio,index,feedback,phaseLL,phaseL,phase,phaseH,ph
     :> KPvocoder(audio,_,freq,fidelity))~ //no damping needed
     // :> KPvocoder(audio,_,freq,fidelity):dampingfilter1)~ //or dampingfilter2
 //  feedback path
-    ( compressor_mono(100,KPtresh,0,(1/(freq * 0.25 ))))
+    ( co.compressor_mono(100,KPtresh,0,(1/(freq * 0.25 ))))
     :_*KPvolume
     with {
 
@@ -85,7 +84,7 @@ stringloop(freq,audio,index,feedbackAmount,feedback,phase,DCnonlin) =
     stringloopFBpath(freq,1,feedbackAmount*feedbackADSR(audio,freq),phase,nonLin,frequencyMod,DCnonlin)
     )~ //or dampingfilter2
       //:KPvocoder(audio,_,freq):dampingfilter1)~ //or dampingfilter2
-           ( compressor_mono(100,KPtresh,0,1/(freq *0.5 ))))
+           ( co.compressor_mono(100,KPtresh,0,1/(freq *0.5 ))))
     *KPvolume
     with {
 
@@ -97,14 +96,13 @@ stringloop(freq,audio,index,feedbackAmount,feedback,phase,DCnonlin) =
     dampingfilter2(x) = (h0 * x' + h1*(x+x''));
     };
 
-
     MyNonLinearModulator(nonlinearity,freq,phase,DC) =
       //theta is modulated by a sine wave
-      allpassnn(nlfOrder,(par(i,nlfOrder,tosc)))
+      fi.allpassnn(nlfOrder,(par(i,nlfOrder,tosc)))
       with{
         //theta is modulated by a sine wave generator
-        tosc = (nonlinearity*PI*PHosci(freq,phase))+DC;
+        tosc = (nonlinearity*ma.PI*PHosci(freq,phase))+DC;
 
         //incoming signal is sent to the nonlinear passive allpass ladder filter
-        //nonLinearFilterOsc = _ <: allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
+        //nonLinearFilterOsc = _ <: fi.allpassnn(nlfOrder,(par(i,nlfOrder,tosc)));
       };

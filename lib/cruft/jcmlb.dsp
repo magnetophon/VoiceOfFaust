@@ -4,44 +4,44 @@ declare author 		"cc";
 declare license 	"BSD";
 declare copyright 	"stk";
 
-import("filter.lib");
+import("stdfaust.lib");
 
 //form(f0,a,b,c) = (even) : *(a) // jc
 form(f0,a,b,c,w) = (even + odd) : *(a) // mlb
 with
 {
 
-  f1cr = if((c<f0),1.0,(c/f0));
+  f1cr = ba.if((c<f0),1.0,(c/f0));
 
-f1ci = if((w==0),float(int(f1cr)),floor(f1cr));
+f1ci = ba.if((w==0),float(int(f1cr)),floor(f1cr));
 //  f1ci = float(int( f1cr )); // jc
 //  f1ci = floor( f1cr ); // mlb
 
   f1cm = fmod(f1ci, 2);
 
-isEven = if((w==0), 1, if ((f1cm < 1.0),1,0) );
+isEven = ba.if((w==0), 1, ba.if ((f1cm < 1.0),1,0) );
 //  isEven = 1; // jc
-//  isEven = if ((f1cm < 1.0),1,0); // mlb
+//  isEven = ba.if ((f1cm < 1.0),1,0); // mlb
 
-  evenfreq = if (isEven, f1ci, (1 + f1ci) );
-  oddfreq = if (isEven, (1 + f1ci), f1ci );
+  evenfreq = ba.if (isEven, f1ci, (1 + f1ci) );
+  oddfreq = ba.if (isEven, (1 + f1ci), f1ci );
   ampfrac = (f1cr - f1ci);
-  oddamp = if (isEven, ampfrac, (1.0 - ampfrac) );
+  oddamp = ba.if (isEven, ampfrac, (1.0 - ampfrac) );
 
-evenamp = if((w==0), 1, if (isEven, (1.0 - ampfrac), ampfrac ) );
+evenamp = ba.if((w==0), 1, ba.if (isEven, (1.0 - ampfrac), ampfrac ) );
 //  evenamp = 1; // jc
-//  evenamp = if (isEven, (1.0 - ampfrac), ampfrac ); // mlb
+//  evenamp = ba.if (isEven, (1.0 - ampfrac), ampfrac ); // mlb
 
-  mod = osc(f0) : *(f0 * b); // jc mlb
+  mod = os.osc(f0) : *(f0 * b); // jc mlb
 
-  even = evenamp :   *(osc((f0 * evenfreq) + mod));
+  even = evenamp :   *(os.osc((f0 * evenfreq) + mod));
 
-odd = if((w==0), 0, oddamp:*(osc((f0 * oddfreq) + mod)) );
-//  odd = oddamp :   *(osc((f0 * oddfreq) + mod));
+odd = ba.if((w==0), 0, oddamp:*(os.osc((f0 * oddfreq) + mod)) );
+//  odd = oddamp :   *(os.osc((f0 * oddfreq) + mod));
 };
 frame(c) = (w ~ _ )
 with {
-  rst(y)= if(c,-y,1);
+  rst(y)= ba.if(c,-y,1);
   w(x) 	= x+rst(x); };
 demux(i,ctr,x) = coef
 with {
@@ -61,12 +61,11 @@ with {
      co(b), co(c), co(which));
  };
 knee	= 48000.0;
-filt = tf2s(0,0,1,sqrt(2),1,PI*knee/2);
-// process = _ <: par(i,nf,formant(i)) :> dcblocker : filt : filt;
+filt = fi.tf2s(0,0,1,sqrt(2),1,ma.PI*knee/2);
+// process = _ <: par(i,nf,formant(i)) :> fi.dcblocker : filt : filt;
 process = form(freq,amp,bandwidth,center);
 
-
-freq = vslider("freq", 110, 55, 440, 1):smooth(0.999);
-amp = vslider("amp", 0, 0, 1, 0.001):smooth(0.999);
-bandwidth = vslider("bandwidth", 1, 0, 100, 0.001):smooth(0.999);
-center =vslider("center", 110, 55, 440, 1):smooth(0.999);
+freq = vslider("freq", 110, 55, 440, 1):si.smooth(0.999);
+amp = vslider("amp", 0, 0, 1, 0.001):si.smooth(0.999);
+bandwidth = vslider("bandwidth", 1, 0, 100, 0.001):si.smooth(0.999);
+center =vslider("center", 110, 55, 440, 1):si.smooth(0.999);

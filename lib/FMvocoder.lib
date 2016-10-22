@@ -1,30 +1,33 @@
 
 //-----------------------------------------------
-// FM vocoder synthesis
+// FM ve.vocoder synthesis
 //-----------------------------------------------
 
 FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,para): dezipBands;
 
 import("lib/myFMvox.dsp");
 
-FMoscs=
-    interleave(nrBands,5):
-    par(i, nrBands, fuphoSlave);
+FMoscs =
+    ro.interleave(nrBands,6):
+    par(i, nrBands, fuphoSlaveEvenOdd);
 
 FMfunds(freq,index,i,group) = phasedFunds(freq,index,i,group);
 
 FMcenters(freq) = centers(freq,FMvocoderGroup);
+FMevenOdd = evenOdd(FMvocoderGroup);
 
 // FMvocoder(audio,freq,index,fidelity,doubleOscs)
 FMvocoder(audio,freq,index,fidelity,0)=
-  ((funds(freq,index,0,FMvocoderGroup)), (freq<:bus(nrBands)),analizer(voice(audio,freq),freq,fidelity,enableDeEsser),FMvocoderGroup(FMindexes),(FMcenters(freq)))
-  :FMoscs:vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,0)
-  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.025,width);
-
+  ((funds(freq,index,0,FMvocoderGroup)), (freq*FMvocoderGroup(octave)<:si.bus(nrBands)),analizer(voice(audio,freq),freq,fidelity,enableDeEsser),FMvocoderGroup(FMindexes),FMcenters(freq),FMevenOdd)
+  :FMoscs
+  :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,0)
+  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.025,width)
+  ;
 
 FMvocoder(audio,freq,index,fidelity,1)=
   par(i,nrOutChan,
-    ((funds(freq,index,i,FMvocoderGroup)), (freq<:bus(nrBands)),analizer(voice(audio,freq),freq,fidelity,enableDeEsser),FMvocoderGroup(FMindexes),(FMcenters(freq))):FMoscs
+    ((funds(freq,index,i,FMvocoderGroup)), (freq*FMvocoderGroup(octave)<:si.bus(nrBands)),analizer(voice(audio,freq),freq,fidelity,enableDeEsser),FMvocoderGroup(FMindexes),FMcenters(freq),FMevenOdd)
+    :FMoscs
   )
   :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,1)
   :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.01,width);

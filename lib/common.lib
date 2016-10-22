@@ -1,7 +1,6 @@
 // Faust standard libs:
-import ("oscillator.lib");
-import ("maxmsp.lib");
-import ("effect.lib");
+import("stdfaust.lib");
+// import ("maxmsp.lib");
 // needed for all synths and FX:
 import ("lib/qompander.lib");
 import ("lib/compressors.lib");
@@ -11,4 +10,3 @@ import ("lib/general.lib");
 import ("lib/analizer.lib");
 import ("lib/slaveOscilators.lib");
 import ("lib/mixer.lib");
-import ("hoa.lib");
