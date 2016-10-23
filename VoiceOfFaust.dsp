@@ -1,5 +1,5 @@
 declare name      "VoiceOfFaust";
-declare version   "1.1.3";
+declare version   "1.1.4";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
 declare copyright "(c) Bart Brouns 2014";
