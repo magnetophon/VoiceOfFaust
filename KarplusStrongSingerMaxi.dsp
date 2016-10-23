@@ -1,4 +1,4 @@
-declare name      "Karplus-StrongSingerMaxi";
+declare name      "KarplusStrongSingerMaxi";
 declare version   "1.1.3";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -12,7 +12,7 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
 import ("lib/common.lib");
-import("lib/slave.lib");
+import("lib/master.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/classicVocoder.lib");
@@ -45,4 +45,4 @@ VoiceOfFaust(audio,index,fidelity) =
 // process
 //-----------------------------------------------
 
-process(audio,index,fidelity) = VoiceOfFaust(audio,index,fidelity);
+process(audio) = VoiceOfFaust(audio,index,fidelity);

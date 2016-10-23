@@ -7,8 +7,8 @@ DSPs=(
     FMsinger
     FMvocoder
     FOFvocoder
-    Karplus-StrongSinger
-    Karplus-StrongSingerMaxi
+    KarplusStrongSinger
+    KarplusStrongSingerMaxi
     master
     PAFvocoder
     # softSyncVocoder
@@ -20,8 +20,8 @@ DSPs=(
     czVocoderSlave
     FMvocoderSlave
     FOFvocoderSlave
-    Karplus-StrongSingerMaxiSlave
-    Karplus-StrongSingerSlave
+    KarplusStrongSingerMaxiSlave
+    KarplusStrongSingerSlave
     PAFvocoderSlave
     stringSingerSlave
     subSingerSlave

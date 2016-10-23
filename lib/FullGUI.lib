@@ -418,7 +418,7 @@ rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo f
 // Karplus Strong as an effect
 //-----------------------------------------------
 
-KPgroup(x)        = FXGroup((vgroup("[4]Karplus-Strong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
+KPgroup(x)        = FXGroup((vgroup("[4]KarplusStrong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
 mainKPgroup(x)    = KPgroup((     hgroup("[1]main", x)));
 KPvolume          = mainKPgroup(    vslider("[0]volume [style:knob][tooltip: the output-level of the delay]",	0.5, 0, 1, 0.001):volScale);
 KPrelease         = mainKPgroup(    vslider("[1]decay time[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*8):si.smooth(0.999);

@@ -1,5 +1,5 @@
 //-----------------------------------------------
-// Karplus-Strong effect
+// KarplusStrong effect
 //-----------------------------------------------
 
 KPcenters(freq,oct) = VocoderFreqs(KPbottom,KPtop):(par(i,nrBands, _,freq * oct:*:min(ma.SR/2):dezip));

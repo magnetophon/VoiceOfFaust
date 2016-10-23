@@ -9,7 +9,7 @@ make limiter modular
 
 fix vu
 
-make Karplus-StrongSingerMaxi slave
+make KarplusStrongSingerMaxi slave
  also StringSinger, VoiceOfFaust, FMsinger and SubSinger
 demo
 txt

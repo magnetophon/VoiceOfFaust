@@ -7,8 +7,8 @@ masters=(
     FMsinger.dsp
     FMvocoder.dsp
     FOFvocoder.dsp
-    Karplus-StrongSinger.dsp
-    Karplus-StrongSingerMaxi.dsp
+    KarplusStrongSinger.dsp
+    KarplusStrongSingerMaxi.dsp
     master.dsp
     PAFvocoder.dsp
     # softSyncVocoder.dsp
@@ -24,8 +24,8 @@ slaves=(
     FMsingerslave.dsp
     FMvocoderSlave.dsp
     FOFvocoderSlave.dsp
-    Karplus-StrongSingerMaxiSlave.dsp
-    Karplus-StrongSingerSlave.dsp
+    KarplusStrongSingerMaxiSlave.dsp
+    KarplusStrongSingerSlave.dsp
     PAFvocoderSlave.dsp
     stringSingerSlave.dsp
     subSingerSlave.dsp

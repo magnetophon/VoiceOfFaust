@@ -1,4 +1,4 @@
-declare name      "Karplus-StrongSinger";
+declare name      "KarplusStrongSinger";
 declare version   "1.1.3";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -12,7 +12,7 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
 import ("lib/common.lib");
-import("lib/slave.lib");
+import("lib/master.lib");
 // specific to this synth:
 import ("lib/FullGUI.lib");
 import ("lib/classicVocoder.lib");
@@ -33,7 +33,7 @@ VoiceOfFaust(audio,index) =
   :
   (
    (_<:(DryPath(phaseDry,DCnonlinDry+DCleftRightDry),stringloop(freq*KPoctave,audio,index,feedbackAmount,_,phaseM,DCnonlin+DCleftRight)):>_)
-  ,(_<:(DryPath(0-phaseDry,DCnonlin-DCleftRight),stringloop(freq*KPoctave,audio,index,feedbackAmount,_,0-phaseM,DCnonlin-DCleftRight)):>_)
+  ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloop(freq*KPoctave,audio,index,feedbackAmount,_,0-phaseM,DCnonlin-DCleftRight)):>_)
   )
   :stereoLimiter(freq * KPoctave) //needs the pitch to adjust the decay time.
   :VuMeter(2,enableVUmeter)
@@ -41,13 +41,14 @@ VoiceOfFaust(audio,index) =
     DryPath(phase,DC) =  MyNonLinearModulator(nonLinDry,frequencyModDry*freq,phase,DC)*KPvolDry;
 
     // add octave slider:
-    KPoctave          = mainKPgroup(vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
-    KPvolume          = mainKPgroup(vslider("[0]wet volume [style:knob][tooltip: the output-level of the de.delay]",	0.4, 0, 1, 0.001):volScale);
-    feedbackAmount    = MKPgroup(    vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
-    freq = masterPitch(audio,index);
+    KPoctave       = mainKPgroup( vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
+    // is used in stringloop. has a different default value than feedbackM
+    // so when we only have one FB loop, turn it on!
+    feedbackAmount  = MKPgroup(    vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+    freq           = masterPitch(audio,index);
   };
 //-----------------------------------------------
 // process
 //-----------------------------------------------
 
-process(audio,index) = VoiceOfFaust(audio,index);
+process(audio) = VoiceOfFaust(audio,index);
