@@ -87,8 +87,12 @@ VoiceOfFaust consists of:
 ## Building and running
 
 
-You need Faust from git, because version 0.9.73 and earlier have a bug in lf_sawpos.
-Otherwise, at least use my_lf_sawpos in lib/master.lib.
+There are two versions of Faust, developed in parallel: Faust 1 and
+Faust 2.
+You need version v0-9-85 or later for Faust 1, or version v2-0-a49 or
+later for Faust 2.
+
+For the pitchtracker you need to install pd-extended.
 
 Then run ``./install.sh`` to compile. (It doesn't actually install anything.)
 
