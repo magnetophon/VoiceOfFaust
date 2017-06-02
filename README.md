@@ -92,15 +92,14 @@ Faust 2.
 You need version v0-9-85 or later for Faust 1, or version v2-0-a49 or
 later for Faust 2.
 
-For the pitchtracker you need to install pd-extended.
+http://faust.grame.fr/download/
 
 Then run ``./install.sh`` to compile. (It doesn't actually install anything.)
 
-It is recommended to run the included puredata pitch tracker.
-Run it with:
-```pd -nodac -nomidi -jack  -nogui /path/to//VoiceOfFaust/PureData/OscSendVoc.pd```
-The built in pitch-tracker is a bit crude, because Faust cannot do FFT (yet).
-Consider it the backup/try-out pitch tracker.
+For the pitchtracker you need to install pd-extended: https://puredata.info/downloads/pd-extended
+Finally you nead jack: http://jackaudio.org/downloads/
+
+To run VoiceOfFaust, it's easiest to use the ..._PT scripts in the launchers directory.
 
 
 ## Features
