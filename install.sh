@@ -46,12 +46,15 @@ do
     echo "compiling standalone from" $i
 	  echo "time faust2jack -t 99999 -time -osc -vec" $i
 	  time faust2jack -t 99999 -time -osc -vec $i
-done &
+done
+
+# Wait for all background processes to finish
+wait
 
 # workaround for a bug in faust2lv2:
 # https://bitbucket.org/agraef/faust-lv2/issues/10/tabs-break-lv2s
-# echo "patching tgroup for lv2:"
-# sed -i.bak "s|\[ *scale *: *log *\]||g ; s|\btgroup\b|hgroup|g"  "lib/FullGUI.lib"
+echo "patching tgroup for lv2:"
+sed -i.bak "s|\[ *scale *: *log *\]||g ; s|\btgroup\b|hgroup|g"  "lib/FullGUI.lib"
 
 for i in "${slaves[@]}"
 do
@@ -60,8 +63,5 @@ do
     time faust2lv2 -gui -t 99999 -time -osc -vec $i
 done
 
-# Wait for all background processes to finish
-# wait
-
-# echo "undo patching for lv2:"
-# mv -f lib/FullGUI.lib.bak lib/FullGUI.lib
+echo "undo patching for lv2:"
+mv -f lib/FullGUI.lib.bak lib/FullGUI.lib
