@@ -60,8 +60,8 @@ do
     time faust2lv2 -gui -t 99999 -time -osc -vec $i
 done
 
-#Wait for all background processes to finish
-wait
+# Wait for all background processes to finish
+# wait
 
 # echo "undo patching for lv2:"
 # mv -f lib/FullGUI.lib.bak lib/FullGUI.lib
