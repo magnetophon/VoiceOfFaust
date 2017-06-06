@@ -94,11 +94,11 @@ later for Faust 2.
 
 http://faust.grame.fr/download/
 
-Then run ``./install.sh`` to compile. (It doesn't actually install anything.)
+Once you've installed the faust compiler, go to the folder where you've downloaded VoiceOfFaust, and run ``./install.sh`` to compile it. (It doesn't actually install anything.)
 
 For the pitchtracker you need to install pd-extended: https://puredata.info/downloads/pd-extended
 
-Finally you nead jack: http://jackaudio.org/downloads/
+Finally you need jack: http://jackaudio.org/downloads/
 
 To run VoiceOfFaust, it's easiest to use the ..._PT scripts in the launchers directory.
 
