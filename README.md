@@ -40,7 +40,7 @@ VoiceOfFaust consists of:
   (though for some of the synths even that one is continuously variable)
 * multi-band [deEsser](#deesser) and [reEsser](#reesser)
 * Optionally use as a [master-slave](#master-slave) pair
-  * This is a workaround for the need for an external pitchtracker, making it possible to use these as plugins.
+  * This is a workaround for the need for an external pitchtracker, making it possible to use the synths and effects as plugins.
     It has the nice side effect that your sounds become fully deterministic:
     because a pitchtracker will always output slightly different data, or at least at slightly different moments relative to the audio, the output audio can sometimes change quite a bit from run to run.
 * [configuration file](lib/constants.lib)
@@ -154,7 +154,7 @@ See the [site](#http://www.katjaas.nl/helmholtz/helmholtz.html) of the pitchtrac
 ##### reEsser
 
 Disabled by default, but can be enabled in the [configuration file](lib/constants.lib).
-It replaces or augments the reduced highs caused by the
+It replaces or augments the reduced highs caused by the deEsser.
 
 ##### doubleOscs
 
@@ -171,12 +171,12 @@ we can do various mid-side variations
 we can even do a full [Hadamard matrix](https://en.wikipedia.org/wiki/Hadamard_matrix).
 All of these, and more, can be clicklessly cross-faded between.
 
-In the [classicVocoder](#classicvocoder), a similar routing matrix is between the oscillators and the filters.
+In the [classicVocoder](#classicvocoder), a similar routing matrix sits between the oscillators and the filters.
 
 
 ##### phase parameters
 
-Since all(*) formants are made by separate oscillators that are synced to a single master oscillator, you can set their phases, relative to each other.
+Since all(*) formants are made by separate oscillators that are synced to a single master oscillator, you can set their phases relative to each other.
 (*) except for the [classicVocoder](#classicvocoder)
 This allows them to sound like one oscillator when they have static phase relationships, and to sound like many detuned oscillators when their phases are moving.
 
@@ -275,7 +275,7 @@ Ringmodulates the input audio with emulations of Casio CZ oscillators.
 Again five octaves, with each octave containing three different oscillators:
 * square and pulse, each having volume and index (brightness) controls
 * reso, having a volume and a resonance multiplier:
-  This is a formant oscillator, and it's resonant frequency is resMult is multiplied by the formant setting top right.
+  This is a formant oscillator, and it's resonant frequency is multiplied by the formant setting top right.
   It is intended to be used with an external formant tracker.
 * There is a global width parameter that controls a delay on the oscillators for one output.
   The delay time is relative to the frequency.
@@ -324,7 +324,7 @@ It loses the octave slider, and instead has a separate delay and modulation for 
 
 [Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/master-svg/process.svg)
 
-  * This is a workaround for the need for an external pitchtracker, making it possible to use these as plugins.
+  * This is a workaround for the need for an external pitchtracker, making it possible to use the synths and effects as plugins.
     It has the nice side effect that your sounds become fully deterministic:
     because a pitchtracker will always output slightly different data, or at least at slightly different moments relative to the audio, the output audio can sometimes change quite a bit from run to run.
   * The master is a small program that receives the audio and the OSC messages from the external pitch tracker,
@@ -339,6 +339,6 @@ It loses the octave slider, and instead has a separate delay and modulation for 
 
 
 VoiceOfFaust started life as a port of [VocSynth](https://github.com/magnetophon/VocSynth).
-[Here](https://github.com/magnetophon/VocSynth/blob/master/A%20realtime%20synthesizer%20controlled%20by%20singing%20and%20beatboxing.pdf) is some in depth documentation fot that project.
+[Here](https://github.com/magnetophon/VocSynth/blob/master/A%20realtime%20synthesizer%20controlled%20by%20singing%20and%20beatboxing.pdf) is some in depth documentation for that project.
 
 Enjoy! And don’t forget to tell me what you think of it and send me music you’ve made with it!
