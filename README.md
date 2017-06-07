@@ -87,16 +87,20 @@ VoiceOfFaust consists of:
 ## Building and running
 
 
-You need Faust from git, because version 0.9.73 and earlier have a bug in lf_sawpos.
-Otherwise, at least use my_lf_sawpos in lib/master.lib.
+There are two versions of Faust, developed in parallel: Faust 1 and
+Faust 2.
+You need version v0-9-85 or later for Faust 1, or version v2-0-a49 or
+later for Faust 2.
 
-Then run ``./install.sh`` to compile. (It doesn't actually install anything.)
+http://faust.grame.fr/download/
 
-It is recommended to run the included puredata pitch tracker.
-Run it with:
-```pd -nodac -nomidi -jack  -nogui /path/to//VoiceOfFaust/PureData/OscSendVoc.pd```
-The built in pitch-tracker is a bit crude, because Faust cannot do FFT (yet).
-Consider it the backup/try-out pitch tracker.
+Once you've installed the faust compiler, go to the folder where you've downloaded VoiceOfFaust, and run ``./install.sh`` to compile it. (It doesn't actually install anything.)
+
+For the pitchtracker you need to install pd-extended: https://puredata.info/downloads/pd-extended
+
+Finally you need jack: http://jackaudio.org/downloads/
+
+To run VoiceOfFaust, it's easiest to use the ..._PT scripts in the launchers directory.
 
 
 ## Features

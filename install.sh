@@ -36,7 +36,10 @@ do
     echo "compiling standalone from" $i
 	  echo "time faust2jack -t 99999 -time -osc -vec" $i
 	  time faust2jack -t 99999 -time -osc -vec $i
-done
+done &
+
+# using "done &" instead of "done" parallelizes the execution,
+# but not so much as a & after the compile command, as that exhausts memmory
 
 for i in "${slaves[@]}"
 do
@@ -44,6 +47,9 @@ do
 	  echo "time faust2jack -t 99999 -time -osc -vec" $i
 	  time faust2jack -t 99999 -time -osc -vec $i
 done
+
+# Wait for all background processes to finish
+wait
 
 # workaround for a bug in faust2lv2:
 # https://bitbucket.org/agraef/faust-lv2/issues/10/tabs-break-lv2s
