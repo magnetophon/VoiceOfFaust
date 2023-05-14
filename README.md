@@ -87,20 +87,33 @@ VoiceOfFaust consists of:
 ## Building and running
 
 
-There are two versions of Faust, developed in parallel: Faust 1 and
-Faust 2.
-You need version v0-9-85 or later for Faust 1, or version v2-0-a49 or
-later for Faust 2.
+Install [Faust](https://faust.grame.fr/).  
+Clone, build and install:
+```bash
+git clone https://github.com/magnetophon/VoiceOfFaust.git
+make -j8
+sudo make install
+```
 
-http://faust.grame.fr/download/
+For the pitchtracker you need to install [pd-extended](https://puredata.info/downloads/pd-extended).
 
-Once you've installed the faust compiler, go to the folder where you've downloaded VoiceOfFaust, and run ``./install.sh`` to compile it. (It doesn't actually install anything.)
+You also need [jack](http://jackaudio.org/downloads/).
 
-For the pitchtracker you need to install pd-extended: https://puredata.info/downloads/pd-extended
+To run VoiceOfFaust, it's easiest to use the ..._PT scripts, since these will launch the pitchtracker automatically:
 
-Finally you need jack: http://jackaudio.org/downloads/
-
-To run VoiceOfFaust, it's easiest to use the ..._PT scripts in the launchers directory.
+``` bash
+ classicVocoder_PT
+ CZringmod_PT
+ czVocoder_PT
+ FMsinger_PT
+ FMvocoder_PT
+ FOFvocoder_PT
+ KarplusStrongSingerMaxi_PT
+ KarplusStrongSinger_PT
+ PAFvocoder_PT
+ stringSinger_PT
+ subSinger_PT
+```
 
 
 ## Features
