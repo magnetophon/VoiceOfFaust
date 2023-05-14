@@ -11,17 +11,16 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
-import ("lib/common.lib");
-import("lib/slave.lib");
+import ("../lib/common.lib");
+import("../lib/guide.lib");
 // specific to this synth:
-import ("lib/FullGUI.lib");
-import ("lib/inputFM.lib");
+import ("../lib/FullGUI.lib");
+import ("../lib/classicVocoder.lib");
 
 //-----------------------------------------------
 // process
 //-----------------------------------------------
+maxNrInRoutings = 5;
 
-process(audio,index,fidelity) = stereoFMSynth(audio:fi.highpass3e(400):extremeLimiter, audio:fi.highpass3e(400),freq,subLevel(audio,freq))
-  with {
-    freq = masterPitch(audio,index);
-  };
+process(audio) =
+StereoVocoder(audio,guidePitch(audio,index),index,fidelity);

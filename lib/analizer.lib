@@ -1,7 +1,7 @@
 //-----------------------------------------------
 // vocoder analizer
 //-----------------------------------------------
-import("lib/classicVocoder.lib"); // for StereoVolFilterBankNoFeedback
+import("../lib/classicVocoder.lib"); // for StereoVolFilterBankNoFeedback
 
 subLevel(audio,freq) = voice(audio,freq):ef.gate_mono(qThreshold-15,0,0.1,0.05):fi.lowpass(3,300):an.amp_follower_ud(0.003,0.005)*4:ma.tanh;
 

@@ -11,13 +11,13 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
-import ("lib/common.lib");
-import("lib/master.lib");
+import ("../lib/common.lib");
+import("../lib/follower.lib");
 // specific to this synth:
-import ("lib/FullGUI.lib");
-import ("lib/classicVocoder.lib");
-import ("lib/chorus.lib");
-import ("lib/pmFX.lib");
+import ("../lib/FullGUI.lib");
+import ("../lib/classicVocoder.lib");
+import ("../lib/chorus.lib");
+import ("../lib/pmFX.lib");
 
 maxNrInRoutings = 5;
 
@@ -65,11 +65,11 @@ VoiceOfFaust(audio,index,fidelity) =
     vocoderVolume = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0.75, 0, 1, 0.001):volScale);
     vocoderChorus = vocoderGroupLevel(vslider("[1]chorus[tooltip: constant detune chorus][style:knob]",	0.5, 0, 1, 0.001):volScale);
     vocoderpmFX   = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0.5, 0, 1, 0.001):volScale); // 0 to 1
-    freq          = masterPitch(audio,index);
+    freq          = guidePitch(audio,index);
     };
 
 //-----------------------------------------------
 // process
 //-----------------------------------------------
 
-process(audio) = VoiceOfFaust(audio,index,fidelity);
+process(audio,index,fidelity) = VoiceOfFaust(audio,index,fidelity);

@@ -7,514 +7,514 @@ VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all os
   //qompander           = [1]
   volume                = VoFgroup(hslider("[2]main output level", 1,0,4,0.001):volScale);
   tabs(x)               = VoFgroup(tgroup("[3]", x));
-    synthsGroup(x)      = tabs(hgroup("[0]synths", x));
-    FXGroup(x)          = tabs(hgroup("[1]effects", x));
+  synthsGroup(x)        = tabs(hgroup("[0]synths", x));
+  FXGroup(x)            = tabs(hgroup("[1]effects", x));
   MeterGroup(x)         = VoFgroup(vgroup("[3]output level", x));
 
-OSCpitch                = OSCgroup(nentry(   "[00]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
-OSCfidelity             = OSCgroup(nentry(   "[01]fidelity[tooltip: the quality of the pitch estimate; determines the si.smoothness of the pitch curve]", 0.98, 0, 1, 0.001));
-// OSCminPitch             = OSCgroup(nentry(   "[02]min pitch[tooltip: minimum allowed pitch]", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
-// OSCmaxPitch             = OSCgroup(nentry(   "[03]max pitch[tooltip: maximum allowed pitch]", 440, MinInputPitch, MaxInputPitch, 0.001));
-pitchQuantised          = OSCgroup(checkbox( "[04]quantise pitch"));
-OSConset                = OSCgroup(nentry(   "[05]onset", 0, 0, 1,0.001 ));
-formant                 = OSCgroup(nentry(   "[06]formant", 440, MinInputPitch, 12000, 0.001)):si.smooth(0.999);
-ManualOnset             = OSCgroup(button(   "[07]trigger")); //button does not seem to recieve osc
+  OSCpitch              = OSCgroup(nentry(   "[00]pitch", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
+  OSCfidelity           = OSCgroup(nentry(   "[01]fidelity[tooltip: the quality of the pitch estimate; determines the si.smoothness of the pitch curve]", 0.98, 0, 1, 0.001));
+  // OSCminPitch           = OSCgroup(nentry(   "[02]min pitch[tooltip: minimum allowed pitch]", MinInputPitch, MinInputPitch, MaxInputPitch, 0.001));
+  // OSCmaxPitch           = OSCgroup(nentry(   "[03]max pitch[tooltip: maximum allowed pitch]", 440, MinInputPitch, MaxInputPitch, 0.001));
+  pitchQuantised        = OSCgroup(checkbox( "[04]quantise pitch"));
+  OSConset              = OSCgroup(nentry(   "[05]onset", 0, 0, 1,0.001 ));
+  formant               = OSCgroup(nentry(   "[06]formant", 440, MinInputPitch, 12000, 0.001)):si.smooth(0.999);
+  ManualOnset           = OSCgroup(button(   "[07]trigger")); //button does not seem to recieve osc
 
-analizerQ               = analizerGroup( vslider("[01]Q [tooltip: filter Q of the analizer] [style:knob]",	7, 0.3, 49, 0.001));
-gainCompEnable          = analizerGroup(checkbox("[02]normalize[tooltip: automatic gain correction]"))*enableGainCompare;
-dbPs                    = analizerGroup(vslider("[03]gain speed[style:knob][tooltip: speed af gain correction]",	100, 0, 1000, 1))/ma.SR;
-gainScaling             = analizerGroup(vslider("[04]formant power[style:knob][tooltip: scale the relative gain of the bands between 0 = all at avg, 1 = normal and 2 = expansion]", 1.15, 0, 2, 0.001));
-weightingKind           = analizerGroup(vslider("[05]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0.6, 0, 2, 0.001));
+  analizerQ             = analizerGroup( vslider("[01]Q [tooltip: filter Q of the analizer] [style:knob]",	7, 0.3, 49, 0.001));
+  gainCompEnable        = analizerGroup(checkbox("[02]normalize[tooltip: automatic gain correction]"))*enableGainCompare;
+  dbPs                  = analizerGroup(vslider("[03]gain speed[style:knob][tooltip: speed af gain correction]",	100, 0, 1000, 1))/ma.SR;
+  gainScaling           = analizerGroup(vslider("[04]formant power[style:knob][tooltip: scale the relative gain of the bands between 0 = all at avg, 1 = normal and 2 = expansion]", 1.15, 0, 2, 0.001));
+  weightingKind         = analizerGroup(vslider("[05]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0.6, 0, 2, 0.001));
 
-cleanGroup(x)           = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
-cleanGroupLevel(x)      = cleanGroup((vgroup("[0]levels", x)));
-cleanVolume             = cleanGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-cleanNLKS               = cleanGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-cleanpmFX               = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+  cleanGroup(x)         = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
+  cleanGroupLevel(x)    = cleanGroup((vgroup("[0]levels", x)));
+  cleanVolume           = cleanGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+  cleanNLKS             = cleanGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+  cleanpmFX             = cleanGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 
-subGroup(x)             = synthsGroup((vgroup("[1]sub[tooltip:a sinewave]", x)));
-subGroupLevel(x)        = subGroup((vgroup("[0]levels", x)));
-subVolume               = subGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-subNLKS                 = subGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-subpmFX                 = subGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
-subOctave               = subGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of sub
+  subGroup(x)           = synthsGroup((vgroup("[1]sub[tooltip:a sinewave]", x)));
+  subGroupLevel(x)      = subGroup((vgroup("[0]levels", x)));
+  subVolume             = subGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+  subNLKS               = subGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+  subpmFX               = subGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+  subOctave             = subGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of sub
 
-//-----------------------------------------------
-// general vocoder parameters
-//-----------------------------------------------
+  //-----------------------------------------------
+  // general vocoder parameters
+  //-----------------------------------------------
 
-generalVocoderGroupLevel(x) = ((vgroup("[0]levels", x)));
+  generalVocoderGroupLevel(x) = ((vgroup("[0]levels", x)));
   dryVolume                 = generalVocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
   nLKSVolume                = generalVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
   pmFXVolume                = generalVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
   octave                    = generalVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of FM
 
-generalVocoderParamsGroup(x) = ((hgroup("[1]parameters", x)));
+  generalVocoderParamsGroup(x) = ((hgroup("[1]parameters", x)));
   bottomGroup(x)             = generalVocoderParamsGroup(vgroup("[0]low frequencies",x));
   midGroup(x)                = generalVocoderParamsGroup(vgroup("[1]mid frequencies",x));
   bandGroup(x)               = generalVocoderParamsGroup(vgroup("[2]mid band",x));
   topGroup(x)                = generalVocoderParamsGroup(vgroup("[3]high frequencies",x));
-    bottom                   = bottomGroup(  vslider("[01]bottom[style:knob][tooltip: the lowest formant frequency of the oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-    mid                      = midGroup(     vslider("[01]mid[style:knob] [tooltip: the mid formant frequency of the of the oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
-    band                     = bandGroup(    vslider("[01]band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    top                      = topGroup(     vslider("[01]top[style:knob][tooltip: the highest formant frequency of the oscillators]",		defaultTop, 1, 64, 0.001):pow(2));
-    phaseBottom              = bottomGroup(  vslider("[92]phaseBottom[style:knob][tooltip: phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-    phaseMid                 = midGroup(     vslider("[92]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
-    phaseBand                = bandGroup(    vslider("[92]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    phaseTop                 = topGroup(     vslider("[92]phaseTop[style:knob][tooltip: phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-    phaseNoiseAmountBottom   = bottomGroup(( vslider("[93]phase noise amount bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
-    phaseNoiseAmountMid      = midGroup((    vslider("[93]phase noise amount mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
-    phaseNoiseAmountBand     = bandGroup(    vslider("[93]phase noise amount band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    phaseNoiseAmountTop      = topGroup((    vslider("[93]phase noise amount top[style:knob][tooltip: phase randomization of the high oscillators]", 0, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
-    phaseNoiseFreqBottom     = bottomGroup(  vslider("[94]noise frequency[style:knob][tooltip: the lowest frequency of the fof noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-    phaseNoiseFreqMid        = midGroup(     vslider("[94]noise frequency             [style:knob] [tooltip: the mid frequency of the fof noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
-    phaseNoiseFreqBand       = bandGroup(    vslider("[94]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    phaseNoiseFreqTop        = topGroup(     vslider("[94]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
-    phaseNoiseAmountScale    = select2(enablePhaseNoiseFilter,80000,800); // scaling factor for the amount of noise modulation, depending on wether we use a si.smooth, or a filter. tweaked for  noisesFilterN=4
-    evenOddBottom              = bottomGroup(  vslider("[92]evenOddBottom[style:knob][tooltip: even/odd ratio of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
-    evenOddMid                 = midGroup(     vslider("[92]evenOddMid[style:knob] [tooltip: the mid even/odd ratio, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
-    evenOddBand                = bandGroup(    vslider("[92]evenOddBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-    evenOddTop                 = topGroup(     vslider("[92]evenOddTop[style:knob][tooltip: even/odd ratio of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+  bottom                   = bottomGroup(  vslider("[01]bottom[style:knob][tooltip: the lowest formant frequency of the oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+  mid                      = midGroup(     vslider("[01]mid[style:knob] [tooltip: the mid formant frequency of the of the oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+  band                     = bandGroup(    vslider("[01]band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  top                      = topGroup(     vslider("[01]top[style:knob][tooltip: the highest formant frequency of the oscillators]",		defaultTop, 1, 64, 0.001):pow(2));
+  phaseBottom              = bottomGroup(  vslider("[92]phaseBottom[style:knob][tooltip: phase of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+  phaseMid                 = midGroup(     vslider("[92]phaseMid[style:knob] [tooltip: the mid phase, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
+  phaseBand                = bandGroup(    vslider("[92]phaseBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  phaseTop                 = topGroup(     vslider("[92]phaseTop[style:knob][tooltip: phase of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+  phaseNoiseAmountBottom   = bottomGroup(( vslider("[93]phase noise amount bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+  phaseNoiseAmountMid      = midGroup((    vslider("[93]phase noise amount mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+  phaseNoiseAmountBand     = bandGroup(    vslider("[93]phase noise amount band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  phaseNoiseAmountTop      = topGroup((    vslider("[93]phase noise amount top[style:knob][tooltip: phase randomization of the high oscillators]", 0, 0, 1, 0.001)):pow(2)*phaseNoiseAmountScale);
+  phaseNoiseFreqBottom     = bottomGroup(  vslider("[94]noise frequency[style:knob][tooltip: the lowest frequency of the fof noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+  phaseNoiseFreqMid        = midGroup(     vslider("[94]noise frequency             [style:knob] [tooltip: the mid frequency of the fof noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
+  phaseNoiseFreqBand       = bandGroup(    vslider("[94]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  phaseNoiseFreqTop        = topGroup(     vslider("[94]noise frequency[style:knob][tooltip: the highest frequency of the fof noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
+  phaseNoiseAmountScale    = select2(enablePhaseNoiseFilter,80000,800); // scaling factor for the amount of noise modulation, depending on wether we use a si.smooth, or a filter. tweaked for  noisesFilterN=4
+  evenOddBottom              = bottomGroup(  vslider("[92]evenOddBottom[style:knob][tooltip: even/odd ratio of the lowest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
+  evenOddMid                 = midGroup(     vslider("[92]evenOddMid[style:knob] [tooltip: the mid even/odd ratio, relative to the top and bottom", 0.5, 0, 1, 0.001))/(1+doubleOscs);
+  evenOddBand                = bandGroup(    vslider("[92]evenOddBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  evenOddTop                 = topGroup(     vslider("[92]evenOddTop[style:knob][tooltip: even/odd ratio of the highest oscillator]",	0.5, 0, 1, 0.001))/(1+doubleOscs);
   // width                   = generalVocoderParamsGroup( vslider("[4]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):si.smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
-//-----------------------------------------------
-// classicVocoder
-//-----------------------------------------------
-vocoderGroup(x)         = synthsGroup((hgroup("[2]vocoder[tooltip: a traditional vocoder, extended]", x)));
-vocoderGroupLevel(x)    = vocoderGroup((vgroup("[0]levels", x)));
-vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-vocoderNLKS             = vocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
-vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
+  //-----------------------------------------------
+  // classicVocoder
+  //-----------------------------------------------
+  vocoderGroup(x)         = synthsGroup((hgroup("[2]vocoder[tooltip: a traditional vocoder, extended]", x)));
+  vocoderGroupLevel(x)    = vocoderGroup((vgroup("[0]levels", x)));
+  vocoderVolume           = vocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+  vocoderNLKS             = vocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+  vocoderpmFX             = vocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+  vocoderOctave           = vocoderGroupLevel(vslider("[3]octave",	0, -2, 2, 1):octaveMultiplier);        // set the octave of vocoder
 
-vocoderParamsGroup(x)   = vocoderGroup(vgroup("[1]parameters", x));
+  vocoderParamsGroup(x)   = vocoderGroup(vgroup("[1]parameters", x));
   vocoderOscGroup(x)    = vocoderGroup(vgroup("[0]oscillators",x));
   vocoderFilterGroup(x) = vocoderGroup(hgroup("[1]filters",x));
-    vocoderFilterBottomGroup(x) = vocoderFilterGroup(vgroup("[0]low frequencies",x));
-    vocoderFilterMidGroup(x)    = vocoderFilterGroup(vgroup("[1]mid frequencies",x));
-    vocoderFilterBandGroup(x)   = vocoderFilterGroup(vgroup("[2]mid band",x));
-    vocoderFilterTopGroup(x)    = vocoderFilterGroup(vgroup("[3]high frequencies",x));
+  vocoderFilterBottomGroup(x) = vocoderFilterGroup(vgroup("[0]low frequencies",x));
+  vocoderFilterMidGroup(x)    = vocoderFilterGroup(vgroup("[1]mid frequencies",x));
+  vocoderFilterBandGroup(x)   = vocoderFilterGroup(vgroup("[2]mid band",x));
+  vocoderFilterTopGroup(x)    = vocoderFilterGroup(vgroup("[3]high frequencies",x));
 
-vocoderOscNoise = vocoderOscGroup(          vslider(" [1]osc-noise             [style:knob] [tooltip: crossfade from osc to noise]", 0, 0, 1, 0.001)):si.smooth(0.999);
-vocoderSawPulse = vocoderOscGroup(          vslider(" [2]saw-pulse             [style:knob] [tooltip: crossfade from saw to pulse]", 0, 0, 1, 0.001)):pow(1.5):si.smooth(0.999);
-vocoderDuty     = vocoderOscGroup(          vslider(" [3]pulse-width           [style:knob] [tooltip: the width of the pulse-oscillator]", 0.5, 0.5, 1, 0.001):min(0.9996):si.smooth(0.999));
-vocoderMix      = vocoderOscGroup(          vslider(" [4]detune mix            [style:knob] [tooltip: amount of man oscillator vs amount of detuned oscillators]",	0.5, 0, 1, 0.001)):volScale;
-vocoderDetune   = vocoderOscGroup(          vslider(" [5]detune                [style:knob] [tooltip: the amount of detune]",	0.5, 0, 1, 0.001):si.smooth(0.999));
-vocoderWidth    = vocoderOscGroup(          vslider(" [6]width                 [style:knob] [tooltip: stereo-width]",	1, 0, 2, 0.001):si.smooth(0.999)); // wide pan, 0 = mono 1 = normal 2 = full-wide
-vocoderBottom   = vocoderFilterBottomGroup( vslider(" [1]frequency             [style:knob] [tooltip: the lowest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2)); // 0.25 to 49 logarithmicly
-vocoderMid      = vocoderFilterMidGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the mid frequency of the band-pass filters, relative to the top and bottom",	0, -1, 1, 0.001));
-vocoderBand     = vocoderFilterBandGroup(   vslider(" [1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-vocoderTop      = vocoderFilterTopGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-vocoderQbottom  = vocoderFilterBottomGroup( vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, low frequencies]",	7, 0.3, 49, 0.001));
-vocoderQmid     = vocoderFilterMidGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, mid frequencies]",	7, 0.3, 49, 0.001));
-vocoderQband    = vocoderFilterBandGroup(   vslider(" [2]Q-band                [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-vocoderQtop     = vocoderFilterTopGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the high band-pass filters, high frequencies]",	7, 0.3, 49, 0.001));
-selfFBbottom    = vocoderFilterBottomGroup( vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, low frequencies]", 0,-1,1,0.001));
-selfFBmid       = vocoderFilterMidGroup(    vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, mid frequencies]", 0,-1,1, 0.001));
-selfFBband      = vocoderFilterBandGroup(   vslider(" [3]self feedback band    [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-selfFBtop       = vocoderFilterTopGroup(    vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, high frequencies]", 0,-1,1,0.001));
-higherFBbottom  = vocoderFilterBottomGroup( vslider(" [4]higher filter FB      [style:knob] [tooltip: filter feedback from its higher neighbour, low frequencies]", 0,-1,1,0.001));
-higherFBmid     = vocoderFilterMidGroup(    vslider(" [4]higher filter FB      [style:knob] [tooltip: filter feedback from its higher neighbour, mid frequencies]",	0,-1,1, 0.001));
-higherFBband    = vocoderFilterBandGroup(   vslider(" [4]higher filter FB band [style:knob] [tooltip: the band that has the value of mid, high frequencies]",	nrBands/2, 1, nrBands, 0.001));
-higherFBtop     = vocoderFilterTopGroup(    vslider(" [4]higher filter FB      [style:knob] [tooltip: filter feedback from its higher neighbour, high frequencies]", 0,-1,1,0.001));
-lowerFBbottom   = vocoderFilterBottomGroup( vslider(" [5]lower filter FB       [style:knob] [tooltip: filter feedback from its lower neighbour, low frequencies]", 0,-1,1,0.001));
-lowerFBmid      = vocoderFilterMidGroup(    vslider(" [5]lower filter FB       [style:knob] [tooltip: filter feedback from its lower neighbour, mid frequencies]",	0,-1,1, 0.001));
-lowerFBband     = vocoderFilterBandGroup(   vslider(" [5]lower filter FB band  [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-lowerFBtop      = vocoderFilterTopGroup(    vslider(" [5]lower filter FB       [style:knob] [tooltip: filter feedback from its lower neighbour, high frequencies]", 0,-1,1,0.001));
-allFBbottom     = vocoderFilterBottomGroup( vslider(" [6]all filter FB         [style:knob] [tooltip: filter feedback from all filters, low frequencies]", 0,-1,1,0.001));
-allFBmid        = vocoderFilterMidGroup(    vslider(" [6]all filter FB         [style:knob] [tooltip: filter feedback from all filters, mid frequencies]",	0,-1,1, 0.001));
-allFBband       = vocoderFilterBandGroup(   vslider(" [6]all filter FB band    [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-allFBtop        = vocoderFilterTopGroup(    vslider(" [6]all filter FB         [style:knob] [tooltip: filter feedback from all filters, high frequencies]", 0,-1,1,0.001));
-autoSatBottom   = vocoderFilterBottomGroup( vslider(" [7]autoSat               [style:knob] [tooltip: autoSat pre and post gain, low frequencies]", 0,-24,24,0.001));
-autoSatMid      = vocoderFilterMidGroup(    vslider(" [7]autoSat               [style:knob] [tooltip: autoSat pre and post gain, mid frequencies]",	0,-24,24, 0.001));
-autoSatBand     = vocoderFilterBandGroup(   vslider(" [7]autoSat band          [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-autoSatTop      = vocoderFilterTopGroup(    vslider(" [7]autoSat               [style:knob] [tooltip: autoSat pre and post gain, high frequencies]", 0,-24,24,0.001));
-autoSatDCbottom = vocoderFilterBottomGroup( vslider(" [7]autoSat DC            [style:knob] [tooltip: autoSat DC, low frequencies]", 0,-1,1,0.001));
-autoSatDCmid    = vocoderFilterMidGroup(    vslider(" [8]autoSat DC            [style:knob] [tooltip: autoSat DC, mid frequencies]",	0,-1,1, 0.001));
-autoSatDCband   = vocoderFilterBandGroup(   vslider(" [8]autoSat DC band       [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-autoSatDCtop    = vocoderFilterTopGroup(    vslider(" [8]autoSat DC            [style:knob] [tooltip: autoSat DC, high frequencies]", 0,-1,1,0.001));
+  vocoderOscNoise = vocoderOscGroup(          vslider(" [1]osc-noise             [style:knob] [tooltip: crossfade from osc to noise]", 0, 0, 1, 0.001)):si.smooth(0.999);
+  vocoderSawPulse = vocoderOscGroup(          vslider(" [2]saw-pulse             [style:knob] [tooltip: crossfade from saw to pulse]", 0, 0, 1, 0.001)):pow(1.5):si.smooth(0.999);
+  vocoderDuty     = vocoderOscGroup(          vslider(" [3]pulse-width           [style:knob] [tooltip: the width of the pulse-oscillator]", 0.5, 0.5, 1, 0.001):min(0.9996):si.smooth(0.999));
+  vocoderMix      = vocoderOscGroup(          vslider(" [4]detune mix            [style:knob] [tooltip: amount of man oscillator vs amount of detuned oscillators]",	0.5, 0, 1, 0.001)):volScale;
+  vocoderDetune   = vocoderOscGroup(          vslider(" [5]detune                [style:knob] [tooltip: the amount of detune]",	0.5, 0, 1, 0.001):si.smooth(0.999));
+  vocoderWidth    = vocoderOscGroup(          vslider(" [6]width                 [style:knob] [tooltip: stereo-width]",	1, 0, 2, 0.001):si.smooth(0.999)); // wide pan, 0 = mono 1 = normal 2 = full-wide
+  vocoderBottom   = vocoderFilterBottomGroup( vslider(" [1]frequency             [style:knob] [tooltip: the lowest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2)); // 0.25 to 49 logarithmicly
+  vocoderMid      = vocoderFilterMidGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the mid frequency of the band-pass filters, relative to the top and bottom",	0, -1, 1, 0.001));
+  vocoderBand     = vocoderFilterBandGroup(   vslider(" [1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  vocoderTop      = vocoderFilterTopGroup(    vslider(" [1]frequency             [style:knob] [tooltip: the highest frequency of the band-pass filters]",	defaultTop, 1, 64, 0.001):pow(2)); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+  vocoderQbottom  = vocoderFilterBottomGroup( vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, low frequencies]",	7, 0.3, 49, 0.001));
+  vocoderQmid     = vocoderFilterMidGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the low band-pass filters, mid frequencies]",	7, 0.3, 49, 0.001));
+  vocoderQband    = vocoderFilterBandGroup(   vslider(" [2]Q-band                [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  vocoderQtop     = vocoderFilterTopGroup(    vslider(" [2]Q                     [style:knob] [tooltip: the bandwidt/resonance of the high band-pass filters, high frequencies]",	7, 0.3, 49, 0.001));
+  selfFBbottom    = vocoderFilterBottomGroup( vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, low frequencies]", 0,-1,1,0.001));
+  selfFBmid       = vocoderFilterMidGroup(    vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, mid frequencies]", 0,-1,1, 0.001));
+  selfFBband      = vocoderFilterBandGroup(   vslider(" [3]self feedback band    [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  selfFBtop       = vocoderFilterTopGroup(    vslider(" [3]self feedback         [style:knob] [tooltip: filter FB into itself, high frequencies]", 0,-1,1,0.001));
+  higherFBbottom  = vocoderFilterBottomGroup( vslider(" [4]higher filter FB      [style:knob] [tooltip: filter feedback from its higher neighbour, low frequencies]", 0,-1,1,0.001));
+  higherFBmid     = vocoderFilterMidGroup(    vslider(" [4]higher filter FB      [style:knob] [tooltip: filter feedback from its higher neighbour, mid frequencies]",	0,-1,1, 0.001));
+  higherFBband    = vocoderFilterBandGroup(   vslider(" [4]higher filter FB band [style:knob] [tooltip: the band that has the value of mid, high frequencies]",	nrBands/2, 1, nrBands, 0.001));
+  higherFBtop     = vocoderFilterTopGroup(    vslider(" [4]higher filter FB      [style:knob] [tooltip: filter feedback from its higher neighbour, high frequencies]", 0,-1,1,0.001));
+  lowerFBbottom   = vocoderFilterBottomGroup( vslider(" [5]lower filter FB       [style:knob] [tooltip: filter feedback from its lower neighbour, low frequencies]", 0,-1,1,0.001));
+  lowerFBmid      = vocoderFilterMidGroup(    vslider(" [5]lower filter FB       [style:knob] [tooltip: filter feedback from its lower neighbour, mid frequencies]",	0,-1,1, 0.001));
+  lowerFBband     = vocoderFilterBandGroup(   vslider(" [5]lower filter FB band  [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  lowerFBtop      = vocoderFilterTopGroup(    vslider(" [5]lower filter FB       [style:knob] [tooltip: filter feedback from its lower neighbour, high frequencies]", 0,-1,1,0.001));
+  allFBbottom     = vocoderFilterBottomGroup( vslider(" [6]all filter FB         [style:knob] [tooltip: filter feedback from all filters, low frequencies]", 0,-1,1,0.001));
+  allFBmid        = vocoderFilterMidGroup(    vslider(" [6]all filter FB         [style:knob] [tooltip: filter feedback from all filters, mid frequencies]",	0,-1,1, 0.001));
+  allFBband       = vocoderFilterBandGroup(   vslider(" [6]all filter FB band    [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  allFBtop        = vocoderFilterTopGroup(    vslider(" [6]all filter FB         [style:knob] [tooltip: filter feedback from all filters, high frequencies]", 0,-1,1,0.001));
+  autoSatBottom   = vocoderFilterBottomGroup( vslider(" [7]autoSat               [style:knob] [tooltip: autoSat pre and post gain, low frequencies]", 0,-24,24,0.001));
+  autoSatMid      = vocoderFilterMidGroup(    vslider(" [7]autoSat               [style:knob] [tooltip: autoSat pre and post gain, mid frequencies]",	0,-24,24, 0.001));
+  autoSatBand     = vocoderFilterBandGroup(   vslider(" [7]autoSat band          [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  autoSatTop      = vocoderFilterTopGroup(    vslider(" [7]autoSat               [style:knob] [tooltip: autoSat pre and post gain, high frequencies]", 0,-24,24,0.001));
+  autoSatDCbottom = vocoderFilterBottomGroup( vslider(" [7]autoSat DC            [style:knob] [tooltip: autoSat DC, low frequencies]", 0,-1,1,0.001));
+  autoSatDCmid    = vocoderFilterMidGroup(    vslider(" [8]autoSat DC            [style:knob] [tooltip: autoSat DC, mid frequencies]",	0,-1,1, 0.001));
+  autoSatDCband   = vocoderFilterBandGroup(   vslider(" [8]autoSat DC band       [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  autoSatDCtop    = vocoderFilterTopGroup(    vslider(" [8]autoSat DC            [style:knob] [tooltip: autoSat DC, high frequencies]", 0,-1,1,0.001));
 
-//-----------------------------------------------
-// PAF
-//-----------------------------------------------
+  //-----------------------------------------------
+  // PAF
+  //-----------------------------------------------
 
-PAFvocoderGroup(x)      = synthsGroup((hgroup("[3]PAFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
-PAFvocoderGroupLevel(x) = PAFvocoderGroup((vgroup("[0]levels", x)));
-pafVolume               = PAFvocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-pafNLKS                 = PAFvocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-pafpmFX                 = PAFvocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
-pafOctave               = PAFvocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of paf
+  PAFvocoderGroup(x)      = synthsGroup((hgroup("[3]PAFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
+  PAFvocoderGroupLevel(x) = PAFvocoderGroup((vgroup("[0]levels", x)));
+  pafVolume               = PAFvocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+  pafNLKS                 = PAFvocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+  pafpmFX                 = PAFvocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+  pafOctave               = PAFvocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);        // set the octave of paf
 
-PAFparamsGroup(x) = PAFvocoderGroup((vgroup("[1]parameters", x)));
-// pafTop         = PAFparamsGroup( vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-// pafBottom      = PAFparamsGroup( vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-pafIndexTop       = topGroup(       vslider("[5]indexTop[style:knob][tooltip: PAF index of the highest oscillator]",	100, 0.001, 100, 0.001));
-pafIndexMid       = midGroup(       vslider("[5]indexMid[style:knob][tooltip PAF index of the mid oscillators]", 50, 0.001, 100, 0.001));
-pafIndexBand      = bandGroup(      vslider("[5]indexBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-pafIndexBottom    = bottomGroup(    vslider("[5]indexBottom[style:knob][tooltip: PAF index of the lowest oscillator]",	0.001, 0.001, 100, 0.001));
-// pafWidth       = PAFparamsGroup( vslider("[5]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):si.smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
+  PAFparamsGroup(x) = PAFvocoderGroup((vgroup("[1]parameters", x)));
+  // pafTop         = PAFparamsGroup( vslider("[1]top[style:knob][tooltip: the lowest frequency of the band-pass filters]",		defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+  // pafBottom      = PAFparamsGroup( vslider("[2]bottom[style:knob][tooltip: the highest frequency of the band-pass filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+  pafIndexTop       = topGroup(       vslider("[5]indexTop[style:knob][tooltip: PAF index of the highest oscillator]",	100, 0.001, 100, 0.001));
+  pafIndexMid       = midGroup(       vslider("[5]indexMid[style:knob][tooltip PAF index of the mid oscillators]", 50, 0.001, 100, 0.001));
+  pafIndexBand      = bandGroup(      vslider("[5]indexBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  pafIndexBottom    = bottomGroup(    vslider("[5]indexBottom[style:knob][tooltip: PAF index of the lowest oscillator]",	0.001, 0.001, 100, 0.001));
+  // pafWidth       = PAFparamsGroup( vslider("[5]width[style:knob][tooltip:stereo-width]",1, 0.001, 2, 0.001):si.smooth(0.999)); // wide pan, 0                                                                         = mono 1 = normal 2 = full-wide
 
-//-----------------------------------------------
-// FM vocoder
-//-----------------------------------------------
+  //-----------------------------------------------
+  // FM vocoder
+  //-----------------------------------------------
 
-FMvocoderGroup(x)      = synthsGroup((hgroup("[3]FMvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
-// FMvocoderGroupLevel(x) = ((vgroup("[0]levels", x)));
-// FMvolume               = (dryVolume);
-// FMnLKS                 = (nLKS);
-// FMpmFX                 = (pmFX);
-// FMoctave               = (octave);        // set the octave of FM
+  FMvocoderGroup(x)      = synthsGroup((hgroup("[3]FMvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
+  // FMvocoderGroupLevel(x) = ((vgroup("[0]levels", x)));
+  // FMvolume               = (dryVolume);
+  // FMnLKS                 = (nLKS);
+  // FMpmFX                 = (pmFX);
+  // FMoctave               = (octave);        // set the octave of FM
 
-// FMvocoderParamsGroup(x)       = ((hgroup("[1]parameters", x)));
-//   FMbottomGroup(x) = FMvocoderParamsGroup(vgroup("[0]low frequencies",x));
-//   FMmidGroup(x)    = FMvocoderParamsGroup(vgroup("[1]mid frequencies",x));
-//   FMbandGroup(x)   = FMvocoderParamsGroup(vgroup("[2]mid band",x));
-//   FMtopGroup(x)    = FMvocoderParamsGroup(vgroup("[3]high frequencies",x));
-// FMbottom      = (bottom);
-// FMmid         = (mid);
-// FMband        = (band);
-// FMtop         = (top);
-FMindexBottom = (bottomGroup(        vslider("[2]indexBottom[style:knob][tooltip: FM index of the lowest oscillator]",	1, 0, 20, 0.001)):max(0.00000001));
-FMindexMid    = (midGroup(           vslider("[2]indexMid[style:knob] [tooltip: the mid FM index, relative to the top and bottom",	0, -1, 1, 0.001)));
-FMindexBand   = (bandGroup(          vslider("[2]indexBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001)));
-FMindexTop    = (topGroup(           vslider("[2]indexTop[style:knob][tooltip: FM index of the highest oscillator]",	100, 0, 1000, 0.001)):max(0.00000001));
-// FMphaseBottom = (phaseBottom);
-// FMphaseMid    = (phaseMid);
-// FMphaseBand   = (phaseBand);
-// FMphaseTop    = (phaseTop);
-// FMwidth       = (width);
+  // FMvocoderParamsGroup(x)       = ((hgroup("[1]parameters", x)));
+  //   FMbottomGroup(x) = FMvocoderParamsGroup(vgroup("[0]low frequencies",x));
+  //   FMmidGroup(x)    = FMvocoderParamsGroup(vgroup("[1]mid frequencies",x));
+  //   FMbandGroup(x)   = FMvocoderParamsGroup(vgroup("[2]mid band",x));
+  //   FMtopGroup(x)    = FMvocoderParamsGroup(vgroup("[3]high frequencies",x));
+  // FMbottom      = (bottom);
+  // FMmid         = (mid);
+  // FMband        = (band);
+  // FMtop         = (top);
+  FMindexBottom = (bottomGroup(        vslider("[2]indexBottom[style:knob][tooltip: FM index of the lowest oscillator]",	1, 0, 20, 0.001)):max(0.00000001));
+  FMindexMid    = (midGroup(           vslider("[2]indexMid[style:knob] [tooltip: the mid FM index, relative to the top and bottom",	0, -1, 1, 0.001)));
+  FMindexBand   = (bandGroup(          vslider("[2]indexBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001)));
+  FMindexTop    = (topGroup(           vslider("[2]indexTop[style:knob][tooltip: FM index of the highest oscillator]",	100, 0, 1000, 0.001)):max(0.00000001));
+  // FMphaseBottom = (phaseBottom);
+  // FMphaseMid    = (phaseMid);
+  // FMphaseBand   = (phaseBand);
+  // FMphaseTop    = (phaseTop);
+  // FMwidth       = (width);
 
-//-----------------------------------------------
-// FOF
-//-----------------------------------------------
-fofVocoderGroup(x)            = synthsGroup((hgroup("[4]FOFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
-fofVocoderGroupLevel(x)       = fofVocoderGroup((vgroup("[0]levels", x)));
-fofVolume                     = fofVocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-fofNLKS                       = fofVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-fofpmFX                       = fofVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
-fofOctave                     = fofVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of fof
+  //-----------------------------------------------
+  // FOF
+  //-----------------------------------------------
+  fofVocoderGroup(x)            = synthsGroup((hgroup("[4]FOFvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
+  fofVocoderGroupLevel(x)       = fofVocoderGroup((vgroup("[0]levels", x)));
+  fofVolume                     = fofVocoderGroupLevel(vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+  fofNLKS                       = fofVocoderGroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+  fofpmFX                       = fofVocoderGroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+  fofOctave                     = fofVocoderGroupLevel(vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of fof
 
-fofParamsGroup(x)   = fofVocoderGroup(hgroup("[1]parameters", x));
+  fofParamsGroup(x)   = fofVocoderGroup(hgroup("[1]parameters", x));
   fofBottomGroup(x) = fofParamsGroup(vgroup("[0]low frequencies",x));
   fofMidGroup(x)    = fofParamsGroup(vgroup("[1]mid frequencies",x));
   fofBandGroup(x)   = fofParamsGroup(vgroup("[2]mid band",x));
   fofTopGroup(x)    = fofParamsGroup(vgroup("[3]high frequencies",x));
 
-// fofBottom          = fofBottomGroup(    vslider("[1]frequency[style:knob][tooltip: the lowest frequency of the fof oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2))*f0;			//0.25 to 49 logarithmicly
-// fofMid             = fofMidGroup(       vslider("[1]frequency             [style:knob] [tooltip: the mid frequency of the fof oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
-// fofBand            = fofBandGroup(      vslider("[1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-// fofTop             = fofTopGroup(       vslider("[1]frequency[style:knob][tooltip: the highest frequency of the fof oscillators]",	defaultTop, 1, 64, 0.001):pow(2))*f0;		//1 to 100 logarithmicly,
-fofSkirtBottom     = fofBottomGroup(    vslider("[2]skirtBottom[style:knob]", 10,0.01,10,0.001));
-fofSkirtMid        = fofMidGroup(       vslider("[2]skirtMid[style:knob] [tooltip: the mid Skirt of the fof oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
-fofSkirtBand       = fofBandGroup(      vslider("[2]skirtBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-fofSkirtTop        = fofTopGroup(       vslider("[2]skirtTop[style:knob]", 2,0.01,10,0.001));
-fofDecayBottom     = fofBottomGroup(    vslider("[3]decayBottom[style:knob]", 150,2,2000,1)*multi);
-fofDecayMid        = fofMidGroup(       vslider("[3]decayMid[style:knob]", 275,2,2000,1)*multi);
-fofDecayBand       = fofBandGroup(      vslider("[3]decayBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-fofDecayTop        = fofTopGroup(       vslider("[3]decayTop[style:knob]", 400,2,2000,1)*multi);
+  // fofBottom          = fofBottomGroup(    vslider("[1]frequency[style:knob][tooltip: the lowest frequency of the fof oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2))*f0;			//0.25 to 49 logarithmicly
+  // fofMid             = fofMidGroup(       vslider("[1]frequency             [style:knob] [tooltip: the mid frequency of the fof oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+  // fofBand            = fofBandGroup(      vslider("[1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  // fofTop             = fofTopGroup(       vslider("[1]frequency[style:knob][tooltip: the highest frequency of the fof oscillators]",	defaultTop, 1, 64, 0.001):pow(2))*f0;		//1 to 100 logarithmicly,
+  fofSkirtBottom     = fofBottomGroup(    vslider("[2]skirtBottom[style:knob]", 10,0.01,10,0.001));
+  fofSkirtMid        = fofMidGroup(       vslider("[2]skirtMid[style:knob] [tooltip: the mid Skirt of the fof oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+  fofSkirtBand       = fofBandGroup(      vslider("[2]skirtBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  fofSkirtTop        = fofTopGroup(       vslider("[2]skirtTop[style:knob]", 2,0.01,10,0.001));
+  fofDecayBottom     = fofBottomGroup(    vslider("[3]decayBottom[style:knob]", 150,2,2000,1)*multi);
+  fofDecayMid        = fofMidGroup(       vslider("[3]decayMid[style:knob]", 275,2,2000,1)*multi);
+  fofDecayBand       = fofBandGroup(      vslider("[3]decayBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  fofDecayTop        = fofTopGroup(       vslider("[3]decayTop[style:knob]", 400,2,2000,1)*multi);
 
-//was used for formant phase:
-//fofPhaseRand       = fofparamsGroup(( vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:si.smooth(0.999));
-// with doubleOscs disabled, phase goes from 0 to 1, otherwise from 0 to 0.5.
-// So in both cases, the max value means "back in phase again", and half means fully out of phase.
-// this is because with doubleOscs enabled, the right channel uses phase*-1
-// fofPhaseBottom       = fofBottomGroup(( vslider("[4]phase bottom[style:knob][tooltip: phase  of the low oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
-// fofPhaseMid          = fofMidGroup((    vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
-// fofPhaseBand         = fofBandGroup(    vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-// fofPhaseTop          = fofTopGroup((    vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
+  //was used for formant phase:
+  //fofPhaseRand       = fofparamsGroup(( vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:si.smooth(0.999));
+  // with doubleOscs disabled, phase goes from 0 to 1, otherwise from 0 to 0.5.
+  // So in both cases, the max value means "back in phase again", and half means fully out of phase.
+  // this is because with doubleOscs enabled, the right channel uses phase*-1
+  // fofPhaseBottom       = fofBottomGroup(( vslider("[4]phase bottom[style:knob][tooltip: phase  of the low oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
+  // fofPhaseMid          = fofMidGroup((    vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
+  // fofPhaseBand         = fofBandGroup(    vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+  // fofPhaseTop          = fofTopGroup((    vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)))/(1+doubleOscs);
 
-fofOctavationBottom = fofBottomGroup(  vslider("[7]octavation[style:knob][tooltip: octaviation index, normally zero. If greater than zero, lowers the effective frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.",	1,0,maxOctavation,0.001));			//0.25 to 49 logarithmicly
-fofOctavationMid    = fofMidGroup(     vslider("[7]octavation             [style:knob] [tooltip:  octavation of the mid band",	1,0,maxOctavation,0.001));
-fofOctavationBand   = fofBandGroup(    vslider("[7]octavation-band        [style:knob] [tooltip:  the band that has the value of mid",	nrBands/2, 1, nrBands, 0.001));
-fofOctavationTop    = fofTopGroup(     vslider("[7]octavation[style:knob][tooltip: octaviation index, normally zero. If greater than zero, lowers the effective frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.",	1,0,maxOctavation,0.001));		//1 to 100 logarithmicly,
- octaviation = hslider("octaviation",0,0,maxOctavation,0.001):dezip;
-PhaseSpeed      = 64;//                 = fofparamsGroup((vslider("[7]phase speed[style:knob][tooltip: phase randomization speed]", 32, 3, 300, 1)):si.smooth(0.999));
+  fofOctavationBottom = fofBottomGroup(  vslider("[7]octavation[style:knob][tooltip: octaviation index, normally zero. If greater than zero, lowers the effective frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.",	1,0,maxOctavation,0.001));			//0.25 to 49 logarithmicly
+  fofOctavationMid    = fofMidGroup(     vslider("[7]octavation             [style:knob] [tooltip:  octavation of the mid band",	1,0,maxOctavation,0.001));
+  fofOctavationBand   = fofBandGroup(    vslider("[7]octavation-band        [style:knob] [tooltip:  the band that has the value of mid",	nrBands/2, 1, nrBands, 0.001));
+  fofOctavationTop    = fofTopGroup(     vslider("[7]octavation[style:knob][tooltip: octaviation index, normally zero. If greater than zero, lowers the effective frequency by attenuating odd-numbered sinebursts. Whole numbers are full octaves, fractions transitional.",	1,0,maxOctavation,0.001));		//1 to 100 logarithmicly,
+  octaviation = hslider("octaviation",0,0,maxOctavation,0.001):dezip;
+  PhaseSpeed      = 64;//                 = fofparamsGroup((vslider("[7]phase speed[style:knob][tooltip: phase randomization speed]", 32, 3, 300, 1)):si.smooth(0.999));
 
-//fofWidth         = fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0.001):si.smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
-//width            = vslider("width", 3, 3, 100, 0.001)*0.001:si.smooth(0.999);
-//decay            = vslider("decay", 0, 0, 10, 0.001):_<:*:si.smooth(0.999);
-//fReso            = vslider("fReso", 60, 0, 1270, 0.001):si.smooth(0.999);
+                    //fofWidth         = fofparamsGroup(vslider("[8]width[style:knob]",2, 0, 2, 0.001):si.smooth(0.999)); //wide pan, 0=mono 1=normal 2=full-wide
+                    //width            = vslider("width", 3, 3, 100, 0.001)*0.001:si.smooth(0.999);
+                    //decay            = vslider("decay", 0, 0, 10, 0.001):_<:*:si.smooth(0.999);
+                    //fReso            = vslider("fReso", 60, 0, 1270, 0.001):si.smooth(0.999);
 
-// -----------------------------------------------
-// FM
-// -----------------------------------------------
+                    // -----------------------------------------------
+                    // FM
+                    // -----------------------------------------------
 
-FMgroup(x)      = synthsGroup((hgroup("[5]FM[tooltip: sinewaves whose frequency is modulated by the input voice]", x)));
-FMgroupLevel(x) = FMgroup((vgroup("[0]levels", x)));
-FMvolume        = FMgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-fmNLKS          = FMgroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-FMpmFX          = FMgroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+                    FMgroup(x)      = synthsGroup((hgroup("[5]FM[tooltip: sinewaves whose frequency is modulated by the input voice]", x)));
+                    FMgroupLevel(x) = FMgroup((vgroup("[0]levels", x)));
+                    FMvolume        = FMgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+                    fmNLKS          = FMgroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+                    FMpmFX          = FMgroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
 
-FMparamsGroup(x)   = FMgroup((vgroup("[1]parameters", x)));
+                    FMparamsGroup(x)   = FMgroup((vgroup("[1]parameters", x)));
 
-HHFMparamsGroup(x) = FMparamsGroup((hgroup("[0]+2 octaves", x)));
-FMvolHH            = HHFMparamsGroup( vslider("[1]vol[tooltip: volume] [style:knob]",	0, 0, 1, 0.001):volScale);
-FMindexHH          = HHFMparamsGroup( vslider("[2]index[tooltip: modulation amount][style:knob]",	0.4, 0, 1, 0.001):volScale:_*15000);
-FMdynHH            = HHFMparamsGroup( vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	1, 0, 1, 0.001):si.smooth(0.999));
+                    HHFMparamsGroup(x) = FMparamsGroup((hgroup("[0]+2 octaves", x)));
+                    FMvolHH            = HHFMparamsGroup( vslider("[1]vol[tooltip: volume] [style:knob]",	0, 0, 1, 0.001):volScale);
+                    FMindexHH          = HHFMparamsGroup( vslider("[2]index[tooltip: modulation amount][style:knob]",	0.4, 0, 1, 0.001):volScale:_*15000);
+                    FMdynHH            = HHFMparamsGroup( vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	1, 0, 1, 0.001):si.smooth(0.999));
 
-HFMparamsGroup(x)  = FMparamsGroup((hgroup("[1]+1 octave", x)));
-FMvolH             = HFMparamsGroup(  vslider("[1]vol[tooltip: volume][style:knob]",	0, 0, 1, 0.001):volScale);
-FMindexH           = HFMparamsGroup(  vslider("[2]index[tooltip: modulation amount][style:knob]",	1, 0, 1, 0.001):volScale:_*15000);
-FMdynH             = HFMparamsGroup(  vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	0.25, 0, 1, 0.001):si.smooth(0.999));
+                    HFMparamsGroup(x)  = FMparamsGroup((hgroup("[1]+1 octave", x)));
+                    FMvolH             = HFMparamsGroup(  vslider("[1]vol[tooltip: volume][style:knob]",	0, 0, 1, 0.001):volScale);
+                    FMindexH           = HFMparamsGroup(  vslider("[2]index[tooltip: modulation amount][style:knob]",	1, 0, 1, 0.001):volScale:_*15000);
+                    FMdynH             = HFMparamsGroup(  vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	0.25, 0, 1, 0.001):si.smooth(0.999));
 
-mFMparamsGroup(x)  = FMparamsGroup((hgroup("[2]0 octave", x)));
-FMvol              = mFMparamsGroup(  vslider("[1]vol[tooltip: volume][style:knob]",	0.5, 0, 1, 0.001):volScale);
-FMindex            = mFMparamsGroup(  vslider("[2]index[tooltip: modulation amount][style:knob]",	0.25, 0, 1, 0.001):volScale:_*15000);
-FMdyn              = mFMparamsGroup(  vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	1, 0, 1, 0.001):si.smooth(0.999));
+                    mFMparamsGroup(x)  = FMparamsGroup((hgroup("[2]0 octave", x)));
+                    FMvol              = mFMparamsGroup(  vslider("[1]vol[tooltip: volume][style:knob]",	0.5, 0, 1, 0.001):volScale);
+                    FMindex            = mFMparamsGroup(  vslider("[2]index[tooltip: modulation amount][style:knob]",	0.25, 0, 1, 0.001):volScale:_*15000);
+                    FMdyn              = mFMparamsGroup(  vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	1, 0, 1, 0.001):si.smooth(0.999));
 
-LFMparamsGroup(x)  = FMparamsGroup((hgroup("[3]-1 octave", x)));
-FMvolL             = LFMparamsGroup(  vslider("[1]vol[tooltip: volume][style:knob]",	1, 0, 1, 0.001):volScale);
-FMindexL           = LFMparamsGroup(  vslider("[2]index[tooltip: modulation amount][style:knob]",	0.25, 0, 1, 0.001):volScale:_*15000);
-FMdynL             = LFMparamsGroup(  vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    LFMparamsGroup(x)  = FMparamsGroup((hgroup("[3]-1 octave", x)));
+                    FMvolL             = LFMparamsGroup(  vslider("[1]vol[tooltip: volume][style:knob]",	1, 0, 1, 0.001):volScale);
+                    FMindexL           = LFMparamsGroup(  vslider("[2]index[tooltip: modulation amount][style:knob]",	0.25, 0, 1, 0.001):volScale:_*15000);
+                    FMdynL             = LFMparamsGroup(  vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
 
-LLFMparamsGroup(x) = FMparamsGroup((hgroup("[4]-2 octaves", x)));
-FMvolLL            = LLFMparamsGroup( vslider("[1]vol[tooltip: volume][style:knob]",	0, 0, 1, 0.001):volScale);
-FMindexLL          = LLFMparamsGroup( vslider("[2]index[tooltip: modulation amount][style:knob]",	0.5, 0, 1, 0.001):volScale:_*15000);
-FMdynLL            = LLFMparamsGroup( vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	0.125, 0, 1, 0.001):si.smooth(0.999));
+                    LLFMparamsGroup(x) = FMparamsGroup((hgroup("[4]-2 octaves", x)));
+                    FMvolLL            = LLFMparamsGroup( vslider("[1]vol[tooltip: volume][style:knob]",	0, 0, 1, 0.001):volScale);
+                    FMindexLL          = LLFMparamsGroup( vslider("[2]index[tooltip: modulation amount][style:knob]",	0.5, 0, 1, 0.001):volScale:_*15000);
+                    FMdynLL            = LLFMparamsGroup( vslider("[3]dyn[tooltip: amount of dynamics in the modulation, from no dynamics to inverted dynamics][style:knob]",	0.125, 0, 1, 0.001):si.smooth(0.999));
 
-//-----------------------------------------------
-// ringmodulation with emulated Casio CZ oscilators
-//-----------------------------------------------
+                    //-----------------------------------------------
+                    // ringmodulation with emulated Casio CZ oscilators
+                    //-----------------------------------------------
 
-CZgroup(x)         = synthsGroup((hgroup("[6]CZ ringmodulator[tooltip: the voice is ringmodulated with oscilators that are in tune with the input pitch]", x)));
-CZgroupLevel(x)    = CZgroup((vgroup("[0]levels", x)));
-CZvolume           = CZgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-CZNLKS             = CZgroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-CZpmFX             = CZgroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
-CZparamsGroup(x)   = CZgroup((vgroup("[1]parameters", x)));
+                    CZgroup(x)         = synthsGroup((hgroup("[6]CZ ringmodulator[tooltip: the voice is ringmodulated with oscilators that are in tune with the input pitch]", x)));
+                    CZgroupLevel(x)    = CZgroup((vgroup("[0]levels", x)));
+                    CZvolume           = CZgroupLevel(vslider("[01]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+                    CZNLKS             = CZgroupLevel(vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+                    CZpmFX             = CZgroupLevel(vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+                    CZparamsGroup(x)   = CZgroup((vgroup("[1]parameters", x)));
 
-HHCZparamsGroup(x) = CZparamsGroup((hgroup("[0]+2 oct", x)));
-CZsquareHH         = HHCZparamsGroup( vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZsquareIxHH       = HHCZparamsGroup( vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseHH          = HHCZparamsGroup( vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseIxHH        = HHCZparamsGroup( vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZresHH            = HHCZparamsGroup( vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
-CZresMultHH        = HHCZparamsGroup( vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    HHCZparamsGroup(x) = CZparamsGroup((hgroup("[0]+2 oct", x)));
+                    CZsquareHH         = HHCZparamsGroup( vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZsquareIxHH       = HHCZparamsGroup( vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseHH          = HHCZparamsGroup( vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseIxHH        = HHCZparamsGroup( vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresHH            = HHCZparamsGroup( vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresMultHH        = HHCZparamsGroup( vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
 
-HCZparamsGroup(x)  = CZparamsGroup((hgroup("[1]+1 oct", x)));
-CZsquareH          = HCZparamsGroup(  vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZsquareIxH        = HCZparamsGroup(  vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseH           = HCZparamsGroup(  vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseIxH         = HCZparamsGroup(  vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZresH             = HCZparamsGroup(  vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
-CZresMultH         = HCZparamsGroup(  vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    HCZparamsGroup(x)  = CZparamsGroup((hgroup("[1]+1 oct", x)));
+                    CZsquareH          = HCZparamsGroup(  vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZsquareIxH        = HCZparamsGroup(  vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseH           = HCZparamsGroup(  vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseIxH         = HCZparamsGroup(  vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresH             = HCZparamsGroup(  vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresMultH         = HCZparamsGroup(  vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
 
-mCZparamsGroup(x)  = CZparamsGroup((hgroup("[2]0 oct", x)));
-CZsquareM          = mCZparamsGroup(  vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZsquareIxM        = mCZparamsGroup(  vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseM           = mCZparamsGroup(  vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseIxM         = mCZparamsGroup(  vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZresM             = mCZparamsGroup(  vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
-CZresMultM         = mCZparamsGroup(  vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    mCZparamsGroup(x)  = CZparamsGroup((hgroup("[2]0 oct", x)));
+                    CZsquareM          = mCZparamsGroup(  vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZsquareIxM        = mCZparamsGroup(  vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseM           = mCZparamsGroup(  vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseIxM         = mCZparamsGroup(  vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresM             = mCZparamsGroup(  vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresMultM         = mCZparamsGroup(  vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
 
-LCZparamsGroup(x)  = CZparamsGroup((hgroup("[3]-1 oct", x)));
-CZsquareL          = LCZparamsGroup(  vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZsquareIxL        = LCZparamsGroup(  vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseL           = LCZparamsGroup(  vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	1, 0, 1, 0.001):si.smooth(0.999));
-CZpulseIxL         = LCZparamsGroup(  vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0.667, 0, 1, 0.001):si.smooth(0.999));
-CZresL             = LCZparamsGroup(  vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
-CZresMultL         = LCZparamsGroup(  vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    LCZparamsGroup(x)  = CZparamsGroup((hgroup("[3]-1 oct", x)));
+                    CZsquareL          = LCZparamsGroup(  vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZsquareIxL        = LCZparamsGroup(  vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseL           = LCZparamsGroup(  vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	1, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseIxL         = LCZparamsGroup(  vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0.667, 0, 1, 0.001):si.smooth(0.999));
+                    CZresL             = LCZparamsGroup(  vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresMultL         = LCZparamsGroup(  vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
 
-LLCZparamsGroup(x) = CZparamsGroup((hgroup("[4]-2 oct", x)));
-CZsquareLL         = LLCZparamsGroup( vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZsquareIxLL       = LLCZparamsGroup( vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseLL          = LLCZparamsGroup( vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZpulseIxLL        = LLCZparamsGroup( vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
-CZresLL            = LLCZparamsGroup( vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
-CZresMultLL        = LLCZparamsGroup( vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    LLCZparamsGroup(x) = CZparamsGroup((hgroup("[4]-2 oct", x)));
+                    CZsquareLL         = LLCZparamsGroup( vslider("[0]square[tooltip: the level of the square oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZsquareIxLL       = LLCZparamsGroup( vslider("[1]squareIx[tooltip: morph from sine to square][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseLL          = LLCZparamsGroup( vslider("[2]pulse[tooltip: the level of the pulse oscillator][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZpulseIxLL        = LLCZparamsGroup( vslider("[3]pulseIx[tooltip: morph from sine to pulse][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresLL            = LLCZparamsGroup( vslider("[4]reso[tooltip: the level of the resonance oscillator][style:knob]",		0, 0, 1, 0.001):si.smooth(0.999));
+                    CZresMultLL        = LLCZparamsGroup( vslider("[5]resMult[tooltip: resonant frequency, as a multiplication factor for the formant][style:knob]",	0, 0, 1, 0.001):si.smooth(0.999));
 
-CZwidth            = CZparamsGroup(   hslider("[5]width[tooltip: stereo width]",	0.25, 0, 1, 0.001):si.smooth(0.999));
+                    CZwidth            = CZparamsGroup(   hslider("[5]width[tooltip: stereo width]",	0.25, 0, 1, 0.001):si.smooth(0.999));
 
-//-----------------------------------------------
-// Vocoder based on Casio CZ resonant oscilators
-//-----------------------------------------------
-czVocoderGroup(x)      = synthsGroup((hgroup("[4]CZvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
-czVocoderGroupLevel(x) = czVocoderGroup((vgroup("[0]levels", x)));
-czVolume               = czVocoderGroupLevel( vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
-czNLKS                 = czVocoderGroupLevel( vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
-czpmFX                 = czVocoderGroupLevel( vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
-czOctave               = czVocoderGroupLevel( vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of cz
+                    //-----------------------------------------------
+                    // Vocoder based on Casio CZ resonant oscilators
+                    //-----------------------------------------------
+                    czVocoderGroup(x)      = synthsGroup((hgroup("[4]CZvocoder[tooltip: a vocoder built from oscilators that sound like they have a bandpass-filter on them]", x)));
+                    czVocoderGroupLevel(x) = czVocoderGroup((vgroup("[0]levels", x)));
+                    czVolume               = czVocoderGroupLevel( vslider("[0]volume[style:knob]",	0, 0, 1, 0.001):volScale);
+                    czNLKS                 = czVocoderGroupLevel( vslider("[1]K-S[tooltip: a variation on Karplus Strong][style:knob]",	0, 0, 1, 0.001):volScale);
+                    czpmFX                 = czVocoderGroupLevel( vslider("[2]PM[tooltip: phase modulation][style:knob]",	0, 0, 1, 0.001):volScale);
+                    czOctave               = czVocoderGroupLevel( vslider("[3]octave",	-1, -2, 2, 1):octaveMultiplier);       // set the octave of cz
 
-czParamsGroup(x)       = czVocoderGroup(hgroup("[1]parameters", x));
-  czBottomGroup(x)     = czParamsGroup(vgroup("[0]low frequencies",x));
-  czMidGroup(x)        = czParamsGroup(vgroup("[1]mid frequencies",x));
-  czBandGroup(x)       = czParamsGroup(vgroup("[2]mid band",x));
-  czTopGroup(x)        = czParamsGroup(vgroup("[3]high frequencies",x));
+                    czParamsGroup(x)       = czVocoderGroup(hgroup("[1]parameters", x));
+                    czBottomGroup(x)     = czParamsGroup(vgroup("[0]low frequencies",x));
+                    czMidGroup(x)        = czParamsGroup(vgroup("[1]mid frequencies",x));
+                    czBandGroup(x)       = czParamsGroup(vgroup("[2]mid band",x));
+                    czTopGroup(x)        = czParamsGroup(vgroup("[3]high frequencies",x));
 
-czBottom               = czBottomGroup(       vslider("[1]frequency[style:knob][tooltip: the lowest frequency of the cz oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-czMid                  = czMidGroup(          vslider("[1]frequency             [style:knob] [tooltip: the mid frequency of the cz oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
-czBand                 = czBandGroup(         vslider("[1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-czTop                  = czTopGroup(          vslider("[1]frequency[style:knob][tooltip: the highest frequency of the cz oscillators]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
-czSkirtBottom          = czBottomGroup(       vslider("[2]skirtBottom[style:knob]", 4, 0.1, 9, 0.001)*-1+9:pow(4)*0.001);
-czSkirtMid             = czMidGroup(          vslider("[2]skirtMid[style:knob] [tooltip: the mid Skirt of the cz oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
-czSkirtBand            = czBandGroup(         vslider("[2]skirtBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-czSkirtTop             = czTopGroup(          vslider("[2]skirtTop[style:knob]", 8, 0.1, 9, 0.001)*-1+8.9:pow(4)*0.001);
-czDecayBottom          = czBottomGroup(       vslider("[3]decayBottom[style:knob]", 3, 0.001, 4, 0.001)*-1+3.999:pow(4));
-czDecayMid             = czMidGroup(          vslider("[3]decayMid[style:knob]", 1.161, 0.001, 4, 0.001)*-1+3.999:pow(4));
-czDecayBand            = czBandGroup(         vslider("[3]decayBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-czDecayTop             = czTopGroup(          vslider("[3]decayTop[style:knob]", 0.5, 0, 4, 0.001)*-1+4:pow(4));
+                    czBottom               = czBottomGroup(       vslider("[1]frequency[style:knob][tooltip: the lowest frequency of the cz oscillators]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+                    czMid                  = czMidGroup(          vslider("[1]frequency             [style:knob] [tooltip: the mid frequency of the cz oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+                    czBand                 = czBandGroup(         vslider("[1]frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+                    czTop                  = czTopGroup(          vslider("[1]frequency[style:knob][tooltip: the highest frequency of the cz oscillators]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
+                    czSkirtBottom          = czBottomGroup(       vslider("[2]skirtBottom[style:knob]", 4, 0.1, 9, 0.001)*-1+9:pow(4)*0.001);
+                    czSkirtMid             = czMidGroup(          vslider("[2]skirtMid[style:knob] [tooltip: the mid Skirt of the cz oscillators, relative to the top and bottom",	0, -1, 1, 0.001));
+                    czSkirtBand            = czBandGroup(         vslider("[2]skirtBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+                    czSkirtTop             = czTopGroup(          vslider("[2]skirtTop[style:knob]", 8, 0.1, 9, 0.001)*-1+8.9:pow(4)*0.001);
+                    czDecayBottom          = czBottomGroup(       vslider("[3]decayBottom[style:knob]", 3, 0.001, 4, 0.001)*-1+3.999:pow(4));
+                    czDecayMid             = czMidGroup(          vslider("[3]decayMid[style:knob]", 1.161, 0.001, 4, 0.001)*-1+3.999:pow(4));
+                    czDecayBand            = czBandGroup(         vslider("[3]decayBand[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+                    czDecayTop             = czTopGroup(          vslider("[3]decayTop[style:knob]", 0.5, 0, 4, 0.001)*-1+4:pow(4));
 
-//was used for formant phase:
-//czPhaseRand          = czparamsGroup((      vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:si.smooth(0.999));
-czPhaseBottom          = czBottomGroup((      vslider("[4]phase bottom[style:knob][tooltip: phase  of the low oscillators]", 0.5, 0, 1, 0.001)));
-czPhaseMid             = czMidGroup((         vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.5, 0, 1, 0.001)));
-czPhaseBand            = czBandGroup(         vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-czPhaseTop             = czTopGroup((         vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)));
-czPhaseRandBottom      = czBottomGroup((      vslider("[5]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
-czPhaseRandMid         = czMidGroup((         vslider("[5]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
-czPhaseRandBand        = czBandGroup(         vslider("[5]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-czPhaseRandTop         = czTopGroup((         vslider("[5]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
-czNoiseFilterBottom    = czBottomGroup(       vslider("[6]noise frequency[style:knob][tooltip: the lowest frequency of the cz noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-czNoiseFilterMid       = czMidGroup(          vslider("[6]noise frequency             [style:knob] [tooltip: the mid frequency of the cz noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
-czNoiseFilterBand      = czBandGroup(         vslider("[6]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
-czNoiseFilterTop       = czTopGroup(          vslider("[6]noise frequency[style:knob][tooltip: the highest frequency of the cz noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
+                    //was used for formant phase:
+                    //czPhaseRand          = czparamsGroup((      vslider("[5]phase rnd[style:knob]", 1, 0, 1, 0.001)*0.014)+0.996:si.smooth(0.999));
+                    czPhaseBottom          = czBottomGroup((      vslider("[4]phase bottom[style:knob][tooltip: phase  of the low oscillators]", 0.5, 0, 1, 0.001)));
+                    czPhaseMid             = czMidGroup((         vslider("[4]phase mid[style:knob][tooltip: phase  of the mid oscillators]", 0.5, 0, 1, 0.001)));
+                    czPhaseBand            = czBandGroup(         vslider("[4]phase band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+                    czPhaseTop             = czTopGroup((         vslider("[4]phase top[style:knob][tooltip: phase  of the high oscillators]", 0.5, 0, 1, 0.001)));
+                    czPhaseRandBottom      = czBottomGroup((      vslider("[5]phase rnd bottom[style:knob][tooltip: phase randomization of the low oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
+                    czPhaseRandMid         = czMidGroup((         vslider("[5]phase rnd mid[style:knob][tooltip: phase randomization of the mid oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
+                    czPhaseRandBand        = czBandGroup(         vslider("[5]phase rnd band[style:knob][tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+                    czPhaseRandTop         = czTopGroup((         vslider("[5]phase rnd top[style:knob][tooltip: phase randomization of the high oscillators]", 0.5, 0, 1, 0.001)):pow(2)*80000);
+                    czNoiseFilterBottom    = czBottomGroup(       vslider("[6]noise frequency[style:knob][tooltip: the lowest frequency of the cz noise filters]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+                    czNoiseFilterMid       = czMidGroup(          vslider("[6]noise frequency             [style:knob] [tooltip: the mid frequency of the cz noise filters, relative to the top and bottom",	0, -1, 1, 0.001));
+                    czNoiseFilterBand      = czBandGroup(         vslider("[6]noise frequency-band        [style:knob] [tooltip: the band that has the value of mid]",	nrBands/2, 1, nrBands, 0.001));
+                    czNoiseFilterTop       = czTopGroup(          vslider("[6]noise frequency[style:knob][tooltip: the highest frequency of the cz noise filters]",	defaultTop, 1, 64, 0.001):pow(2));		//1 to 100 logarithmicly,
 
-//-----------------------------------------------
-// input compression and expansion
-//-----------------------------------------------
+                    //-----------------------------------------------
+                    // input compression and expansion
+                    //-----------------------------------------------
 
-qompanderGroup(x) = FXGroup(vgroup("[0]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
-qfactor            = qompanderGroup(hslider("[0]factor[unit::1][style:knob]",		8, 0.8, 8, 0.01):si.smooth(0.999));
-qThreshold         = qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-42, -96, -20, 0.01):si.smooth(0.999));
-qAttack            = qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1, 1, 20, 0.01):si.smooth(0.999));
-qRelease           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):si.smooth(0.999));
+                    qompanderGroup(x) = FXGroup(vgroup("[0]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
+                    qfactor            = qompanderGroup(hslider("[0]factor[unit::1][style:knob]",		8, 0.8, 8, 0.01):si.smooth(0.999));
+                    qThreshold         = qompanderGroup(hslider("[1]threshold [unit: dB][style:knob]",	-42, -96, -20, 0.01):si.smooth(0.999));
+                    qAttack            = qompanderGroup(hslider("[2]attack[unit: ms][style:knob]",	1, 1, 20, 0.01):si.smooth(0.999));
+                    qRelease           = qompanderGroup(hslider("[3]release[unit: ms][style:knob]",	20, 20, 1000, 0.01):si.smooth(0.999));
 
-//-----------------------------------------------
-// multiband deEsser
-//-----------------------------------------------
+                    //-----------------------------------------------
+                    // multiband deEsser
+                    //-----------------------------------------------
 
-deEsserGroup(x)    = FXGroup(vgroup("[1] multiband deEsser", x));
-  deEssThreshold   = deEsserGroup(vslider("[0] threshold[style:knob][tooltip: how much S is too much]",	-60, -96, 0, 1):si.smooth(0.999));
-  deEssStrenght    = deEsserGroup(vslider("[1] strenght[style:knob][tooltip: how much to reduce the S ]",	defaultStrenghth, 0, 5, 0.001):si.smooth(0.999));
-  deEssDynStrenght = deEsserGroup(vslider("[2] noise strenght[style:knob][tooltip: varies strenght with fidelity ]",	1, 0, 1, 0.001):si.smooth(0.999));
-  deEssCorner      = deEsserGroup(vslider("[3] corner[style:knob][tooltip: from where on is it an S ][unit:Hz]",	3000, 1000, 20000, 1));
-  deEssdBperOctave = deEsserGroup(vslider("[4] dBperOctave[style:knob][tooltip: now much to ignore sounds below corner ]",	30, 0, 60, 1));
-  reEssAmount      = deEsserGroup(vslider("[5] reEss strenght[style:knob][tooltip: amount of noise ess replacement ]",	0.5, 0, 1, 0.001):si.smooth(0.999));
-  reEssWidth       = deEsserGroup(vslider("[6] reEss width[style:knob][tooltip: stereo width of the ess replacement ]",	1, 0, 1, 0.001):si.smooth(0.999));
-  defaultStrenghth = select2(enableReEsser,0.25,1);
+                    deEsserGroup(x)    = FXGroup(vgroup("[1] multiband deEsser", x));
+                    deEssThreshold   = deEsserGroup(vslider("[0] threshold[style:knob][tooltip: how much S is too much]",	-60, -96, 0, 1):si.smooth(0.999));
+                    deEssStrenght    = deEsserGroup(vslider("[1] strenght[style:knob][tooltip: how much to reduce the S ]",	defaultStrenghth, 0, 5, 0.001):si.smooth(0.999));
+                    deEssDynStrenght = deEsserGroup(vslider("[2] noise strenght[style:knob][tooltip: varies strenght with fidelity ]",	1, 0, 1, 0.001):si.smooth(0.999));
+                    deEssCorner      = deEsserGroup(vslider("[3] corner[style:knob][tooltip: from where on is it an S ][unit:Hz]",	3000, 1000, 20000, 1));
+                    deEssdBperOctave = deEsserGroup(vslider("[4] dBperOctave[style:knob][tooltip: now much to ignore sounds below corner ]",	30, 0, 60, 1));
+                    reEssAmount      = deEsserGroup(vslider("[5] reEss strenght[style:knob][tooltip: amount of noise ess replacement ]",	0.5, 0, 1, 0.001):si.smooth(0.999));
+                    reEssWidth       = deEsserGroup(vslider("[6] reEss width[style:knob][tooltip: stereo width of the ess replacement ]",	1, 0, 1, 0.001):si.smooth(0.999));
+                    defaultStrenghth = select2(enableReEsser,0.25,1);
 
-//-----------------------------------------------
-// multiband reEsser
-//-----------------------------------------------
+                    //-----------------------------------------------
+                    // multiband reEsser
+                    //-----------------------------------------------
 
-reEsserGroup(x) = FXGroup(vgroup("[2]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
+                    reEsserGroup(x) = FXGroup(vgroup("[2]input compression and expansion[tooltip: Reference: http://www.katjaas.nl/compander/compander.html]", x));
 
-//-----------------------------------------------
-// routing and panning
-//-----------------------------------------------
-routingGroup(x) = FXGroup(vgroup("[3]routing and panning", x));
-inputRouting    = routingGroup(hslider(
-  "[1] input routing [tooltip: Change the routing between the oscillators and the filters]",
-             4,0,maxNrInRoutings ,0.5));
-outputRouting   = routingGroup(hslider(
-  "[2] output routing [tooltip: Change the routing between the filters and the outputs]",
-           4,0,maxNrOutRoutings,0.5));
-angleTop        = routingGroup(hslider("[3]angle top [tooltip: the angle of the highs]", 2, 0, 6.28318530717959, 0.001) : si.smooth(ba.tau2pole(0.02)));
-angleBottom     = routingGroup(hslider("[4]angle bottom [tooltip: the angle of the lows]", 2, 0, 6.28318530717959, 0.001) : si.smooth(ba.tau2pole(0.02)));
-width           = routingGroup(hslider("[5]width[tooltip: stereo width]", 1, 0, 2-ambisonicsOn, 0.001) : si.smooth(ba.tau2pole(0.02)));
-rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo field]", 0, -6.28318530717959, 6.28318530717959, 0.001) : si.smooth(ba.tau2pole(0.02)));
+                    //-----------------------------------------------
+                    // routing and panning
+                    //-----------------------------------------------
+                    routingGroup(x) = FXGroup(vgroup("[3]routing and panning", x));
+                    inputRouting    = routingGroup(hslider(
+                                                      "[1] input routing [tooltip: Change the routing between the oscillators and the filters]",
+                                                      4,0,maxNrInRoutings ,0.5));
+                    outputRouting   = routingGroup(hslider(
+                                                      "[2] output routing [tooltip: Change the routing between the filters and the outputs]",
+                                                      4,0,maxNrOutRoutings,0.5));
+                    angleTop        = routingGroup(hslider("[3]angle top [tooltip: the angle of the highs]", 2, 0, 6.28318530717959, 0.001) : si.smooth(ba.tau2pole(0.02)));
+                    angleBottom     = routingGroup(hslider("[4]angle bottom [tooltip: the angle of the lows]", 2, 0, 6.28318530717959, 0.001) : si.smooth(ba.tau2pole(0.02)));
+                    width           = routingGroup(hslider("[5]width[tooltip: stereo width]", 1, 0, 2-ambisonicsOn, 0.001) : si.smooth(ba.tau2pole(0.02)));
+                    rotation        = routingGroup(hslider("[6]rotation[tooltip: rotate the stereo field]", 0, -6.28318530717959, 6.28318530717959, 0.001) : si.smooth(ba.tau2pole(0.02)));
 
-//-----------------------------------------------
-// Karplus Strong as an effect
-//-----------------------------------------------
+                    //-----------------------------------------------
+                    // Karplus Strong as an effect
+                    //-----------------------------------------------
 
-KPgroup(x)        = FXGroup((vgroup("[4]KarplusStrong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
-mainKPgroup(x)    = KPgroup((     hgroup("[1]main", x)));
-KPvolume          = mainKPgroup(    vslider("[0]volume [style:knob][tooltip: the output-level of the delay]",	0.5, 0, 1, 0.001):volScale);
-KPrelease         = mainKPgroup(    vslider("[1]decay time[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*8):si.smooth(0.999);
-KPtresh           = mainKPgroup(    vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 18, -33, 33, 0.1)):si.smooth(0.999);
-vocoderKPgroup(x) = mainKPgroup(( hgroup("[3]vocoder[tooltip: an EQ based vocoder in the feedback loop]", x)));
-KPvocoderStrength = vocoderKPgroup( vslider("[0]strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0.25, 0, 1, 0.001):si.smooth(0.999));
-KPeqCutBoost      = vocoderKPgroup( vslider("[1]cut/boost[style:knob][tooltip: -1 means cut only, 1 means boost only, and 0 means the average gain is zero]",	-0.25, -1, 1, 0.001):si.smooth(0.999));
-KPtop             = vocoderKPgroup( vslider("[2]top[style:knob][tooltip: the highest frequency of the EQ's]",	defaultTop, 1, 64, 0.001):volScale); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
-KPbottom          = vocoderKPgroup( vslider("[3]bottom[style:knob][tooltip: the lowest frequency of the EQ's]",	defaultBottom, 0.5, 7, 0.001):volScale);
-KPvocoderQ        = vocoderKPgroup( vslider("[4]Q[style:knob][tooltip: the bandwidt of the EQ's]",	3, 0.3, 49, 0.001)):si.smooth(0.999); // 0.1 to 49 logarithmicly,
+                    KPgroup(x)        = FXGroup((vgroup("[4]KarplusStrong[tooltip: a feedback delay line whose delay-time is tuned to the input pitch]", x)));
+                    mainKPgroup(x)    = KPgroup((     hgroup("[1]main", x)));
+                    KPvolume          = mainKPgroup(    vslider("[0]volume [style:knob][tooltip: the output-level of the delay]",	0.5, 0, 1, 0.001):volScale);
+                    KPrelease         = mainKPgroup(    vslider("[1]decay time[style:knob][tooltip: the decay time of the feedback]",	0.25, 0.001, 1, 0.001):pow(4)*8):si.smooth(0.999);
+                    KPtresh           = mainKPgroup(    vslider("[2] threshold [unit:dB] [tooltip: a limiter in the feedback-loop] [style:knob]", 18, -33, 33, 0.1)):si.smooth(0.999);
+                    vocoderKPgroup(x) = mainKPgroup(( hgroup("[3]vocoder[tooltip: an EQ based vocoder in the feedback loop]", x)));
+                    KPvocoderStrength = vocoderKPgroup( vslider("[0]strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0.25, 0, 1, 0.001):si.smooth(0.999));
+                    KPeqCutBoost      = vocoderKPgroup( vslider("[1]cut/boost[style:knob][tooltip: -1 means cut only, 1 means boost only, and 0 means the average gain is zero]",	-0.25, -1, 1, 0.001):si.smooth(0.999));
+                    KPtop             = vocoderKPgroup( vslider("[2]top[style:knob][tooltip: the highest frequency of the EQ's]",	defaultTop, 1, 64, 0.001):volScale); // 1 to 100 logarithmicly, todo: check why it was 1 to 4000 in pd
+                    KPbottom          = vocoderKPgroup( vslider("[3]bottom[style:knob][tooltip: the lowest frequency of the EQ's]",	defaultBottom, 0.5, 7, 0.001):volScale);
+                    KPvocoderQ        = vocoderKPgroup( vslider("[4]Q[style:knob][tooltip: the bandwidt of the EQ's]",	3, 0.3, 49, 0.001)):si.smooth(0.999); // 0.1 to 49 logarithmicly,
 
-bright            = mainKPgroup(    vslider("[4]damping[style:knob][tooltip: brightness of the feedback]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+                    bright            = mainKPgroup(    vslider("[4]damping[style:knob][tooltip: brightness of the feedback]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
 
-dryKPgroup(x)     = KPgroup((     hgroup("[2]non delayed", x)));
-KPvolDry          = dryKPgroup(     vslider("[0]volume [style:knob]",		0.5, 0, 1, 0.001):volScale);
-feedbackDry       = dryKPgroup(     vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
-DryModGroup(y)    = dryKPgroup((  hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
-DCnonlinDry       = DryModGroup(    vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly,
-DCleftRightDry    = DryModGroup(    vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	-0.25, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly,
-DryOscModGroup(y) = dryKPgroup((  hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
-nonLinDry         = DryOscModGroup( vslider("[1]amount [style:knob][tooltip: modulation amount]",0.333,0,1,0.001) : pow(3) : si.smooth(0.999));
-frequencyModDry   = DryOscModGroup( vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.250,0,8,0.001) : si.smooth(0.999));
-phaseDry          = DryOscModGroup( vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
+                    dryKPgroup(x)     = KPgroup((     hgroup("[2]non delayed", x)));
+                    KPvolDry          = dryKPgroup(     vslider("[0]volume [style:knob]",		0.5, 0, 1, 0.001):volScale);
+                    feedbackDry       = dryKPgroup(     vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+                    DryModGroup(y)    = dryKPgroup((  hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
+                    DCnonlinDry       = DryModGroup(    vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly,
+                    DCleftRightDry    = DryModGroup(    vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	-0.25, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly,
+                    DryOscModGroup(y) = dryKPgroup((  hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
+                    nonLinDry         = DryOscModGroup( vslider("[1]amount [style:knob][tooltip: modulation amount]",0.333,0,1,0.001) : pow(3) : si.smooth(0.999));
+                    frequencyModDry   = DryOscModGroup( vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.250,0,8,0.001) : si.smooth(0.999));
+                    phaseDry          = DryOscModGroup( vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
 
-HHKPgroup(x)      = KPgroup((     hgroup("[3]+2 oct", x)));
-KPvolHH           = HHKPgroup(      vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
-feedbackHH        = HHKPgroup(      vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
-HHmodGroup(y)     = HHKPgroup((   hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
-DCnonlinHH        = HHmodGroup(     vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly,
-DCleftRightHH     = HHmodGroup(     vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly,
-HHoscModGroup(y)  = HHKPgroup((   hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
-nonLinHH          = HHoscModGroup(  vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : si.smooth(0.999));
-frequencyModHH    = HHoscModGroup(  vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : si.smooth(0.999));
-phaseHH           = HHoscModGroup(  vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
+                    HHKPgroup(x)      = KPgroup((     hgroup("[3]+2 oct", x)));
+                    KPvolHH           = HHKPgroup(      vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
+                    feedbackHH        = HHKPgroup(      vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+                    HHmodGroup(y)     = HHKPgroup((   hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
+                    DCnonlinHH        = HHmodGroup(     vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly,
+                    DCleftRightHH     = HHmodGroup(     vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly,
+                    HHoscModGroup(y)  = HHKPgroup((   hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
+                    nonLinHH          = HHoscModGroup(  vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : si.smooth(0.999));
+                    frequencyModHH    = HHoscModGroup(  vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : si.smooth(0.999));
+                    phaseHH           = HHoscModGroup(  vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
 
-HKPgroup(x)       = KPgroup((     hgroup("[4]+1 oct", x)));
-KPvolH            = HKPgroup(       vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
-feedbackH         = HKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
-HmodGroup(y)      = HKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
-DCnonlinH         = HmodGroup(      vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
-DCleftRightH      = HmodGroup(      vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
-HoscModGroup(y)   = HKPgroup((    hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
-nonLinH           = HoscModGroup(   vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : si.smooth(0.999));
-frequencyModH     = HoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : si.smooth(0.999));
-phaseH            = HoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
+                    HKPgroup(x)       = KPgroup((     hgroup("[4]+1 oct", x)));
+                    KPvolH            = HKPgroup(       vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
+                    feedbackH         = HKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+                    HmodGroup(y)      = HKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
+                    DCnonlinH         = HmodGroup(      vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
+                    DCleftRightH      = HmodGroup(      vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
+                    HoscModGroup(y)   = HKPgroup((    hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
+                    nonLinH           = HoscModGroup(   vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : si.smooth(0.999));
+                    frequencyModH     = HoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : si.smooth(0.999));
+                    phaseH            = HoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
 
-MKPgroup(x)       = KPgroup((     hgroup("[5]0 oct"                    , x)));
-KPvol             = MKPgroup(       vslider("[0]volume [style:knob]"     , 1, 0, 1, 0.001):volScale);
-feedbackM         = MKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
-MmodGroup(y)      = MKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]"              , y)));
-DCnonlin          = MmodGroup(      vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]"         , 0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
-DCleftRight       = MmodGroup(      vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]", 0.25, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
-MoscModGroup(y)   = MKPgroup((    hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]"              , y)));
-nonLin            = MoscModGroup(   vslider("[1]amount [style:knob][tooltip: modulation amount]"    , 0.25,0,1,0.001) : pow(3) : si.smooth(0.999));
-frequencyMod      = MoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]" , 1,0,8,0.001) : si.smooth(0.999));
-phaseM            = MoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]"      , 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
+                    MKPgroup(x)       = KPgroup((     hgroup("[5]0 oct"                    , x)));
+                    KPvol             = MKPgroup(       vslider("[0]volume [style:knob]"     , 1, 0, 1, 0.001):volScale);
+                    feedbackM         = MKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+                    MmodGroup(y)      = MKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]"              , y)));
+                    DCnonlin          = MmodGroup(      vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]"         , 0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
+                    DCleftRight       = MmodGroup(      vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]", 0.25, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
+                    MoscModGroup(y)   = MKPgroup((    hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]"              , y)));
+                    nonLin            = MoscModGroup(   vslider("[1]amount [style:knob][tooltip: modulation amount]"    , 0.25,0,1,0.001) : pow(3) : si.smooth(0.999));
+                    frequencyMod      = MoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]" , 1,0,8,0.001) : si.smooth(0.999));
+                    phaseM            = MoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]"      , 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
 
-LKPgroup(x)       = KPgroup((     hgroup("[6]-1 oct", x)));
-KPvolL            = LKPgroup(       vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
-feedbackL         = LKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 1, 0, 1, 0.001)):volScale;  // -60db decay time (sec)
-LmodGroup(y)      = LKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
-DCnonlinL         = LmodGroup(      vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
-DCleftRightL      = LmodGroup(      vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	0.25, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
-LoscModGroup(y)   = LKPgroup((    hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
-nonLinL           = LoscModGroup(   vslider("[1]amount [style:knob][tooltip: modulation amount]",0.25,0,1,0.001) : pow(3) : si.smooth(0.999));
-frequencyModL     = LoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : si.smooth(0.999));
-phaseL            = LoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
+                    LKPgroup(x)       = KPgroup((     hgroup("[6]-1 oct", x)));
+                    KPvolL            = LKPgroup(       vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
+                    feedbackL         = LKPgroup(       vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 1, 0, 1, 0.001)):volScale;  // -60db decay time (sec)
+                    LmodGroup(y)      = LKPgroup((    hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
+                    DCnonlinL         = LmodGroup(      vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
+                    DCleftRightL      = LmodGroup(      vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	0.25, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
+                    LoscModGroup(y)   = LKPgroup((    hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
+                    nonLinL           = LoscModGroup(   vslider("[1]amount [style:knob][tooltip: modulation amount]",0.25,0,1,0.001) : pow(3) : si.smooth(0.999));
+                    frequencyModL     = LoscModGroup(   vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : si.smooth(0.999));
+                    phaseL            = LoscModGroup(   vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
 
-LLKPgroup(x)      = KPgroup((     hgroup("[7]-2 oct", x)));
-KPvolLL           = LLKPgroup(      vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
-feedbackLL        = LLKPgroup(      vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
-LLmodGroup(y)     = LLKPgroup((   hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
-DCnonlinLL        = LLmodGroup(     vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
-DCleftRightLL     = LLmodGroup(     vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
-LLoscModGroup(y)  = LLKPgroup((   hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
-nonLinLL          = LLoscModGroup(  vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : si.smooth(0.999));
-frequencyModLL    = LLoscModGroup(  vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : si.smooth(0.999));
-phaseLL           = LLoscModGroup(  vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
+                    LLKPgroup(x)      = KPgroup((     hgroup("[7]-2 oct", x)));
+                    KPvolLL           = LLKPgroup(      vslider("[0]volume [style:knob]",		0, 0, 1, 0.001):volScale);
+                    feedbackLL        = LLKPgroup(      vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]", 0, 0, 1, 0.001)):volScale; // -60db decay time (sec)
+                    LLmodGroup(y)     = LLKPgroup((   hgroup("[2]all-pass[tooltip: an all-pass filter in the feedback loop]", y)));
+                    DCnonlinLL        = LLmodGroup(     vslider("[1]static[tooltip: the static amount of phase shift by the all-pass filter][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
+                    DCleftRightLL     = LLmodGroup(     vslider("[2]left-right offset[tooltip: the difference in phase shift between left and right][style:knob]",	0, -2, 2, 0.001):pow(3):si.smooth(0.999)); //-9 to 9 logarithmicly
+                    LLoscModGroup(y)  = LLKPgroup((   hgroup("[3]modulated all-pass[tooltip: the same all-pass filter modulated by an oscilator]", y)));
+                    nonLinLL          = LLoscModGroup(  vslider("[1]amount [style:knob][tooltip: modulation amount]",0,0,1,0.001) : pow(3) : si.smooth(0.999));
+                    frequencyModLL    = LLoscModGroup(  vslider("[2]frequency [style:knob][tooltip: modulation frequency]",1,0,8,0.001) : si.smooth(0.999));
+                    phaseLL           = LLoscModGroup(  vslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
 
-//-----------------------------------------------
-// Phase Modulation as an effect
-//-----------------------------------------------
-pmFXgroup(x) = FXGroup(vgroup("[5]Phase Modulation[tooltip: delay lines modulated by an oscilator]",x));
-//pmFXvolume = pmFXgroup( vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):volScale);
-pmFXi        = pmFXgroup( vslider("[1]amount [style:knob][tooltip: modulation amount]",0.5,0,4,0.001):volScale );
-pmFXr        = pmFXgroup( vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.5,0,8,0.001):si.smooth(0.999) );
-PMphase      = pmFXgroup(hslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
+                    //-----------------------------------------------
+                    // Phase Modulation as an effect
+                    //-----------------------------------------------
+                    pmFXgroup(x) = FXGroup(vgroup("[5]Phase Modulation[tooltip: delay lines modulated by an oscilator]",x));
+                    //pmFXvolume = pmFXgroup( vslider("[0]volume [style:knob]",	0, 0, 1, 0.001):volScale);
+                    pmFXi        = pmFXgroup( vslider("[1]amount [style:knob][tooltip: modulation amount]",0.5,0,4,0.001):volScale );
+                    pmFXr        = pmFXgroup( vslider("[2]frequency [style:knob][tooltip: modulation frequency]",0.5,0,8,0.001):si.smooth(0.999) );
+                    PMphase      = pmFXgroup(hslider("[3]phase[style:knob][tooltip: phase difference between the left and the right modulation oscillator]", 0.667, 0, 1, 0.001):pow(3)*0.5:si.smooth(0.999));
 
-//-----------------------------------------------
-// chorus
-//-----------------------------------------------
+                    //-----------------------------------------------
+                    // chorus
+                    //-----------------------------------------------
 
-chorusGroup(x)  =  FXGroup(vgroup("[6]chorus", x));
+                    chorusGroup(x)  =  FXGroup(vgroup("[6]chorus", x));
 
-slowFreq	= chorusGroup(vslider("[0]slow freq [style:knob][tooltip: slow modulation frequency]",	0.5, 0, 5, 0.01):si.smooth(0.999));
-slowDepth	= chorusGroup(vslider("[1]slow depth [style:knob][tooltip: slow modulation amount]",	5, 0, 10, 0.01):volScale);
-fastFreq	= chorusGroup(vslider("[2]fast freq [style:knob][tooltip: fast modulation frequency]",	8, 0, 10, 0.01):si.smooth(0.999));
-fastDepth	= chorusGroup(vslider("[3]fast depth [style:knob][tooltip: fast modulation amount]",	5, 0, 10, 0.01):volScale);
-feedback	= chorusGroup(vslider("[4]feedback [style:knob][tooltip: feedback amount]",	-0.5, -1, 1, 0.01)*0.8:si.smooth(0.999));
+                    slowFreq	= chorusGroup(vslider("[0]slow freq [style:knob][tooltip: slow modulation frequency]",	0.5, 0, 5, 0.01):si.smooth(0.999));
+                    slowDepth	= chorusGroup(vslider("[1]slow depth [style:knob][tooltip: slow modulation amount]",	5, 0, 10, 0.01):volScale);
+                    fastFreq	= chorusGroup(vslider("[2]fast freq [style:knob][tooltip: fast modulation frequency]",	8, 0, 10, 0.01):si.smooth(0.999));
+                    fastDepth	= chorusGroup(vslider("[3]fast depth [style:knob][tooltip: fast modulation amount]",	5, 0, 10, 0.01):volScale);
+                    feedback	= chorusGroup(vslider("[4]feedback [style:knob][tooltip: feedback amount]",	-0.5, -1, 1, 0.01)*0.8:si.smooth(0.999));

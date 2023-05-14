@@ -1,4 +1,4 @@
-declare name      "CZringmod";
+declare name      "classicVocoder";
 declare version   "1.1.4";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -11,15 +11,16 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
-import ("lib/common.lib");
-import("lib/slave.lib");
+import ("../lib/common.lib");
+import("../lib/follower.lib");
 // specific to this synth:
-import ("lib/FullGUI.lib");
-import ("lib/CZringmod.lib");
+import ("../lib/FullGUI.lib");
+import ("../lib/classicVocoder.lib");
 
 //-----------------------------------------------
 // process
 //-----------------------------------------------
+maxNrInRoutings = 5;
 
 process(audio,index,fidelity) =
-CZringMod(audio,masterPitch(audio,index),index);
+  StereoVocoder(audio,guidePitch(audio,index),index,fidelity);

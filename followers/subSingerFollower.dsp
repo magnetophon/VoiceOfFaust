@@ -11,12 +11,12 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
-import ("lib/common.lib");
-import("lib/master.lib");
+import ("../lib/common.lib");
+import("../lib/follower.lib");
 // specific to this synth:
-import ("lib/FullGUI.lib");
-import ("lib/inputFM.lib");
-import ("lib/pmFX.lib");
+import ("../lib/FullGUI.lib");
+import ("../lib/inputFM.lib");
+import ("../lib/pmFX.lib");
 
 VoiceOfFaust(audio,index) =
   (
@@ -51,11 +51,11 @@ VoiceOfFaust(audio,index) =
 
     FMvolM     = HFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]",	1, 0, 1, 0.001):volScale);
     FMvolLL    = LLFMparamsGroup(vslider("[1]vol[tooltip: volume][style:knob]", 0, 0, 1, 0.001):volScale);
-    freq = masterPitch(audio,index);
+    freq = guidePitch(audio,index);
     };
 
 //-----------------------------------------------
 // process
 //-----------------------------------------------
 
-process(audio) = VoiceOfFaust(audio,index);
+process(audio,index) = VoiceOfFaust(audio,index);

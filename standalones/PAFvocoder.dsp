@@ -1,4 +1,4 @@
-declare name      "classicVocoder";
+declare name      "PAFvocoder";
 declare version   "1.1.4";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -11,17 +11,13 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
-import ("lib/common.lib");
-import("lib/master.lib");
+import ("../lib/common.lib");
+import("../lib/guide.lib");
 // specific to this synth:
-import ("lib/FullGUI.lib");
-import ("lib/inputFM.lib");
+import ("../lib/FullGUI.lib");
+import ("../lib/PAFvocoder.lib");
 
 //-----------------------------------------------
 // process
 //-----------------------------------------------
-
-process(audio) = stereoFMSynth(audio:fi.highpass3e(400):extremeLimiter, audio:fi.highpass3e(400),freq,subLevel(audio,freq))
-  with {
-    freq = masterPitch(audio,index);
-  };
+process(audio) = PAFvocoder(audio,guidePitch(audio,index),index,fidelity,doubleOscs);

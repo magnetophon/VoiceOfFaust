@@ -1,4 +1,4 @@
-declare name      "KarplusStrongSinger";
+declare name      "KarplusStrongSingerMaxi";
 declare version   "1.1.4";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -11,19 +11,19 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
-import ("lib/common.lib");
-import("lib/master.lib");
+import ("../lib/common.lib");
+import("../lib/guide.lib");
 // specific to this synth:
-import ("lib/FullGUI.lib");
-import ("lib/classicVocoder.lib");
-import ("lib/KarplusStrongFX.lib");
-import ("lib/pmFX.lib");
+import ("../lib/FullGUI.lib");
+import ("../lib/classicVocoder.lib");
+import ("../lib/KarplusStrongFX.lib");
+import ("../lib/pmFX.lib");
 
 //-----------------------------------------------
 // VoiceOfFaust: Combine all the elements
 //-----------------------------------------------
 
-VoiceOfFaust(audio,index) =
+VoiceOfFaust(audio,index,fidelity) =
   (voice(audio,freq)<:_,_)
   :
   (
@@ -32,23 +32,17 @@ VoiceOfFaust(audio,index) =
   )
   :
   (
-   (_<:(DryPath(phaseDry,DCnonlinDry+DCleftRightDry),stringloop(freq*KPoctave,audio,index,feedbackAmount,_,phaseM,DCnonlin+DCleftRight)):>_)
-  ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloop(freq*KPoctave,audio,index,feedbackAmount,_,0-phaseM,DCnonlin-DCleftRight)):>_)
+   (_<:(DryPath(phaseDry,DCnonlinDry+DCleftRightDry),stringloopBank(freq,fidelity,audio,index,_,phaseLL,phaseL,phaseM,phaseH,phaseHH,DCnonlinLL+DCleftRightLL,DCnonlinL+DCleftRightL,DCnonlin+DCleftRight,DCnonlinH+DCleftRightH,DCnonlinHH+DCleftRightHH)):>_)
+  ,(_<:(DryPath(0-phaseDry,DCnonlinDry-DCleftRightDry),stringloopBank(freq,fidelity,audio,index,_,0-phaseLL,0-phaseL,0-phaseM,0-phaseH,0-phaseHH,DCnonlinLL-DCleftRightLL,DCnonlinL-DCleftRightL,DCnonlin-DCleftRight,DCnonlinH-DCleftRightH,DCnonlinHH-DCleftRightHH)):>_)
   )
-  :stereoLimiter(freq * KPoctave) //needs the pitch to adjust the decay time.
+  :stereoLimiter(freq * 0.25) //needs the pitch to adjust the decay time.
   :VuMeter(2,enableVUmeter)
   with {
     DryPath(phase,DC) =  MyNonLinearModulator(nonLinDry,frequencyModDry*freq,phase,DC)*KPvolDry;
-
-    // add octave slider:
-    KPoctave       = mainKPgroup( vslider("[-2]octave",-1, -2, 2, 1):octaveMultiplier);
-    // is used in stringloop. has a different default value than feedbackM
-    // so when we only have one FB loop, turn it on!
-    feedbackAmount  = MKPgroup(    vslider("[1]feedback[style:knob][tooltip: feedback amount for this octave]"   , 1, 0, 1, 0.001)):volScale; // -60db decay time (sec)
-    freq           = masterPitch(audio,index);
-  };
+    freq = guidePitch(audio,index);
+};
 //-----------------------------------------------
 // process
 //-----------------------------------------------
 
-process(audio) = VoiceOfFaust(audio,index);
+process(audio) = VoiceOfFaust(audio,index,fidelity);

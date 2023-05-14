@@ -1,5 +1,5 @@
 //-----------------------------------------------
-// slave oscilators
+// follower oscilators
 //-----------------------------------------------
 
 //-----------------------------------------------
@@ -217,7 +217,7 @@ FMfund(freq,index,phase) = fundPhase(freq,index,FMoctave,phase);
 // FOF oscilator
 //-----------------------------------------------
 //fof is based on work by Xavier Rodet on his CHANT program at IRCAM
-import ("lib/Foflet.dsp");
+import ("../lib/Foflet.dsp");
 OLDfof(phase,fReso,fund,skirt,decay) =
     select2((PHfund<skirt),
         (0.5*(1-cos((ma.PI/skirt)*PHfund))*exp((-decay/ma.PI)*PHfund)*sinus(fReso)),

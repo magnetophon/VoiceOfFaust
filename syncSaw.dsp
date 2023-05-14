@@ -1,11 +1,11 @@
 import("stdfaust.lib");
 
-// import("lib/master.lib");
-import("lib/slave.lib");
-import ("lib/common.lib");
+// import("../lib/guide.lib");
+import("../lib/follower.lib");
+import ("../lib/common.lib");
 // specific to this synth:
-import ("lib/FullGUI.lib");
-import ("lib/FMvocoder.lib");
+import ("../lib/FullGUI.lib");
+import ("../lib/FMvocoder.lib");
 
 process(audio,index,fidelity) =
   // os.lf_sawpos(fr)

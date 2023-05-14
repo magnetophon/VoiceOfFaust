@@ -3,7 +3,7 @@
 //-----------------------------------------------
 // os = library("miscoscillator.lib");
 
-import("lib/common.lib");
+import("../lib/common.lib");
 
 tablesize = 1 << 16;
 

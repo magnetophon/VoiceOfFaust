@@ -2,11 +2,11 @@
 import("stdfaust.lib");
 // import ("maxmsp.lib");
 // needed for all synths and FX:
-import ("lib/qompander.lib");
-import ("lib/compressors.lib");
-import ("lib/constants.lib");
-import ("lib/general.lib");
-// import ("lib/pitchtracker.lib");
-import ("lib/analizer.lib");
-import ("lib/slaveOscilators.lib");
-import ("lib/mixer.lib");
+import ("../lib/qompander.lib");
+import ("../lib/compressors.lib");
+import ("../lib/constants.lib");
+import ("../lib/general.lib");
+// import ("../lib/pitchtracker.lib");
+import ("../lib/analizer.lib");
+import ("../lib/followerOscillators.lib");
+import ("../lib/mixer.lib");

@@ -49,7 +49,7 @@ with {					// from f0, amp, bandwidth, center freq
 };
 
 // as above, but synced to an external phaser
-fuphoSlave(index,f0,a,b,c) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
+fuphoFollower(index,f0,a,b,c) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
 with {					// from f0, amp, bandwidth, center freq
   cf 	= c/f0;
   ci	= int(floor(cf));			// integer harmonic below center freq
@@ -68,7 +68,7 @@ with {					// from f0, amp, bandwidth, center freq
 };
 
 // as above, but with the parameter eo to set the proportion of even and odd harmonics.
-fuphoSlaveEvenOdd(index,f0,a,b,c,eo) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
+fuphoFollowerEvenOdd(index,f0,a,b,c,eo) = (even+odd):*(a)	// outputs the sum of bracketing harmonics
 with {					// from f0, amp, bandwidth, center freq
 okt = vslider("okt", 0, -2, 2, 1);
   cf 	= c/f0;
@@ -123,4 +123,4 @@ nf = 4;					// number of formants
 // bandwidth = vslider("bandwidth", 1, 0, 100, 0.001):si.smooth(0.999);
 // center =vslider("center", 110, 55, 440, 1):si.smooth(0.999);
 // process = fupho(freq,amp,bandwidth,center);
-// process = fuphoSlave(os.lf_sawpos(freq),freq,amp,bandwidth,center);
+// process = fuphoFollower(os.lf_sawpos(freq),freq,amp,bandwidth,center);

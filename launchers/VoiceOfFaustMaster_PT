@@ -2,8 +2,8 @@
 # a NixOS friendly prompt
 
 #////////////////////////////////////////////////////////
-# startup script for the master + pitchtracker
+# startup script for the guide + pitchtracker
 #////////////////////////////////////////////////////////
 
-current_synth=master
+current_synth=guide
 source synthWrapper

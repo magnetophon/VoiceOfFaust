@@ -1,11 +1,11 @@
 //-----------------------------------------------
-// master index, all slave oscilators 'clock' to this.
+// guide index, all follower oscilators 'clock' to this.
 //-----------------------------------------------
 // simple os.sawtooth waveform oscillator between 0 and 1
-// masterIndex(freq,index)= os.lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
-// defined in master.lib and slave.lib
-fund(freq,index,oct)=             (4 * oct * masterIndex(freq,index)) : ma.decimal; //choose octaves
-fundPhase(freq,index,oct, phase)= (4 * oct * masterIndex(freq,index))+phase : ma.decimal; //choose octaves and set phase
+// guideIndex(freq,index)= os.lf_sawpos(freq/4); // lowest possible pitch, as we can only shift up, using wrap
+// defined in guide.lib and follower.lib
+fund(freq,index,oct)=             (4 * oct * guideIndex(freq,index)) : ma.decimal; //choose octaves
+fundPhase(freq,index,oct, phase)= (4 * oct * guideIndex(freq,index))+phase : ma.decimal; //choose octaves and set phase
 
 //-----------------------------------------------
 // Some general functions

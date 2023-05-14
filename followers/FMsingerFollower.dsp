@@ -1,4 +1,4 @@
-declare name      "FOFvocoder";
+declare name      "classicVocoder";
 declare version   "1.1.4";
 declare author    "Bart Brouns";
 declare license   "GNU 3.0";
@@ -11,22 +11,17 @@ declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,super
 //when cloning from git, checkout the submodules to get qompander
 //howto: http://stackoverflow.com/questions/7813030/how-can-i-have-linked-dependencies-in-a-git-repo
 
-import ("lib/common.lib");
-import("lib/master.lib");
+import ("../lib/common.lib");
+import("../lib/follower.lib");
 // specific to this synth:
-import ("lib/FullGUI.lib");
-import ("lib/FOFvocoder.lib");
+import ("../lib/FullGUI.lib");
+import ("../lib/inputFM.lib");
 
 //-----------------------------------------------
 // process
 //-----------------------------------------------
 
-// compile with Faust 1:
-// time Faust2jack -t 99999 -time -os.osc -vec  FOFvocoder.dsp && timeout 10 ./FOFvocoder & sleep 2 && jack_connect system:capture_1 FOFvocoder:in_0 & jack_connect FOFvocoder:out_0 system:playback_1 & jack_connect FOFvocoder:out_1 system:playback_2
-process(audio) =
-  fofvocoder(audio,freq,index,fidelity,doubleOscs)
-with {
-  freq =
-    masterPitch(audio,index)
-    *((2:pow(((maxOctavation+1)/2):max(1)))/2);
-};
+process(audio,index,fidelity) = stereoFMSynth(audio:fi.highpass3e(400):extremeLimiter, audio:fi.highpass3e(400),freq,subLevel(audio,freq))
+  with {
+    freq = guidePitch(audio,index);
+  };

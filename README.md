@@ -3,7 +3,7 @@
 Turns any monophonic sound into a synthesizer, preserving the pitch and spectral dynamics of the input.
 The name was chosen because I use it mostly to turn my voice into a singing robot, and it's made in [Faust](http://faust.grame.fr).
 
-[These](http://magnetophon.nl/sounds/magnetophon/oldCombo.flac) [are](https://raw.githubusercontent.com/magnetophon/VoiceOfFaust/master/Caribean.mp3) some silly demo songs.
+[These](http://magnetophon.nl/sounds/magnetophon/oldCombo.flac) [are](https://raw.githubusercontent.com/magnetophon/VoiceOfFaust/guide/Caribean.mp3) some silly demo songs.
 And an even sillier [video](https://magnetophon.github.io/VoiceOfFaust/images/VoiceOfFaust.mp4).
 
 ## Overview
@@ -39,7 +39,7 @@ VoiceOfFaust consists of:
 * all parameters, including routing, are step-less, meaning any 'preset' can morph into any other, with the only exception of the octave setting
   (though for some of the synths even that one is continuously variable)
 * multi-band [deEsser](#deesser) and [reEsser](#reesser)
-* Optionally use as a [master-slave](#master-slave) pair
+* Optionally use as a [guide-follower](#guide-follower) pair
   * This is a workaround for the need for an external pitchtracker, making it possible to use the synths and effects as plugins.
     It has the nice side effect that your sounds become fully deterministic:
     because a pitchtracker will always output slightly different data, or at least at slightly different moments relative to the audio, the output audio can sometimes change quite a bit from run to run.
@@ -79,7 +79,7 @@ VoiceOfFaust consists of:
             - [CZringmod](#czringmod)
             - [KarplusStrongSinger](#karplus-strongsinger)
             - [KarplusStrongSingerMaxi](#karplus-strongsingermaxi)
-        - [master-slave](#master-slave)
+        - [guide-follower](#guide-follower)
 
 <!-- markdown-toc end -->
 
@@ -180,7 +180,7 @@ In the [classicVocoder](#classicvocoder), a similar routing matrix sits between 
 
 ##### phase parameters
 
-Since all(*) formants are made by separate oscillators that are synced to a single master oscillator, you can set their phases relative to each other.
+Since all(*) formants are made by separate oscillators that are synced to a single guide oscillator, you can set their phases relative to each other.
 (*) except for the [classicVocoder](#classicvocoder)
 This allows them to sound like one oscillator when they have static phase relationships, and to sound like many detuned oscillators when their phases are moving.
 
@@ -324,25 +324,25 @@ You can adjust it's
 It loses the octave slider, and instead has a separate delay and modulation for each octave.
 
 
-### master-slave
+### guide-follower
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/master-svg/process.svg)
+[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/guide-svg/process.svg)
 
   * This is a workaround for the need for an external pitchtracker, making it possible to use the synths and effects as plugins.
     It has the nice side effect that your sounds become fully deterministic:
     because a pitchtracker will always output slightly different data, or at least at slightly different moments relative to the audio, the output audio can sometimes change quite a bit from run to run.
-  * The master is a small program that receives the audio and the OSC messages from the external pitch tracker,
+  * The guide is a small program that receives the audio and the OSC messages from the external pitch tracker,
     and outputs:
     * a copy of the input audio
     * a saw wave defining the pitch and phase
     * the value of fidelity, from the pitch tracker, as audio.
-  * The slaves are synths and effects that input the above three signals.
-  * The outputs of the master can be recorded into a looper or DAW,
+  * The followers are synths and effects that input the above three signals.
+  * The outputs of the guide can be recorded into a looper or DAW,
     and be used as song building blocks, without needing the pitch tracker.
     Now you are 100% free to switch synths, automate parameters, etc.
 
 
 VoiceOfFaust started life as a port of [VocSynth](https://github.com/magnetophon/VocSynth).
-[Here](https://github.com/magnetophon/VocSynth/blob/master/A%20realtime%20synthesizer%20controlled%20by%20singing%20and%20beatboxing.pdf) is some in depth documentation for that project.
+[Here](https://github.com/magnetophon/VocSynth/blob/guide/A%20realtime%20synthesizer%20controlled%20by%20singing%20and%20beatboxing.pdf) is some in depth documentation for that project.
 
 Enjoy! And don’t forget to tell me what you think of it and send me music you’ve made with it!

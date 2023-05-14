@@ -9,22 +9,22 @@ DSPs=(
     FOFvocoder
     KarplusStrongSinger
     KarplusStrongSingerMaxi
-    master
+    guide
     PAFvocoder
     # softSyncVocoder
     stringSinger
     subSinger
-    # slaves:
-    classicVocoderSlave
-    CZringmodSlave
-    czVocoderSlave
-    FMvocoderSlave
-    FOFvocoderSlave
-    KarplusStrongSingerMaxiSlave
-    KarplusStrongSingerSlave
-    PAFvocoderSlave
-    stringSingerSlave
-    subSingerSlave
+    # followers:
+    classicVocoderFollower
+    CZringmodFollower
+    czVocoderFollower
+    FMvocoderFollower
+    FOFvocoderFollower
+    KarplusStrongSingerMaxiFollower
+    KarplusStrongSingerFollower
+    PAFvocoderFollower
+    stringSingerFollower
+    subSingerFollower
 )
 
 function buildPlugins {

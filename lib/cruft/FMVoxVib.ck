@@ -1,7 +1,7 @@
 // FMVoxVib.ck
 // Program B of "Glitch Free FM Vocal Synthesis"
 
-/* This example defines a master shred which executes for 4 seconds. It sets up a DSP graph in which one FMVox instance receives a sample-synchronous control stream and sends its output to the dac. The master shred sporks child shreds for vibrato and the multiplex control stream. The data float array holds "aaa" vowel coefficients for four formants described by their center frequency and dB amplitude. For this test code formant bandwidths are set the same globally. */
+/* This example defines a guide shred which executes for 4 seconds. It sets up a DSP graph in which one FMVox instance receives a sample-synchronous control stream and sends its output to the dac. The guide shred sporks child shreds for vibrato and the multiplex control stream. The data float array holds "aaa" vowel coefficients for four formants described by their center frequency and dB amplitude. For this test code formant bandwidths are set the same globally. */
 
 Step stream => FMVox fmv => dac;		// set dsp graph with FMVox
 4 => int nFormants;				// FMVox generates 4 formants

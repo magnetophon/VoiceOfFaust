@@ -5,11 +5,11 @@
 
 FMindexes = VocoderFreqsChooser(FMindexBottom,FMindexMid,FMindexBand,FMindexTop,para): dezipBands;
 
-import("lib/myFMvox.dsp");
+import("../lib/myFMvox.dsp");
 
 FMoscs =
     ro.interleave(nrBands,6):
-    par(i, nrBands, fuphoSlaveEvenOdd);
+    par(i, nrBands, fuphoFollowerEvenOdd);
 
 FMfunds(freq,index,i,group) = phasedFunds(freq,index,i,group);
 
