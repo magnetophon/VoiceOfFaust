@@ -237,7 +237,7 @@ The gui of the classicVocoder has two sections:
 
 ##### CZvocoder
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/czVocoder-svg/process.svg)
+<img src="images/czVocoder-svg/process.svg">
 
 This is the simplest of the vocoders made out of formant oscilators.
 You can adjust:
@@ -247,19 +247,19 @@ You can adjust:
 
 ##### PAFvocoder
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/PAFvocoder-svg/process.svg)
+<img src="images/PAFvocoder-svg/process.svg">
 
 Also has frequencies and phases, but adds index for brightness.
 
 ##### FMvocoder
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/FMvocoder-svg/process.svg)
+<img src="images/FMvocoder-svg/process.svg">
 
 Same parameters, different sound.
 
 ##### FOFvocoder
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/FOFvocoder-svg/process.svg)
+<img src="images/FOFvocoder-svg/process.svg">
 
 Original idea by [Xavier Rodet](http://anasynth.ircam.fr/home/english/media/singing-synthesis-chant-program).
 Also has frequencies and phases, but adds:
@@ -273,7 +273,7 @@ Also has frequencies and phases, but adds:
 
 #### FMsinger
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/FMsinger-svg/process.svg)
+<img src="images/FMsinger-svg/process.svg">
 
 A sine wave that modulates its frequency with the input signal.
 There are five of these, one per octave, and each one has:
@@ -288,7 +288,7 @@ There are five of these, one per octave, and each one has:
 
 #### CZringmod
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/CZringmod-svg/process.svg)
+<img src="images/CZringmod-svg/process.svg">
 
 Ringmodulates the input audio with emulations of Casio CZ oscillators.
 Again five octaves, with each octave containing three different oscillators:
@@ -303,7 +303,7 @@ Again five octaves, with each octave containing three different oscillators:
 
 #### KarplusStrongSinger
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/KarplusStrongSinger-svg/process.svg)
+<img src="images/KarplusStrongSinger-svg/process.svg">
 
 This takes the idea of a [Karplus Strong algorithm](https://en.wikipedia.org/wiki/Karplus%E2%80%93Strong_string_synthesis), but instead of noise, it uses the input signal.
 The feedback is ran trough an allpass filter, modulated with an LFO; adapted from the nonLinearModulator in instrument.lib.
@@ -323,7 +323,7 @@ To round things off there is a volume for the dry path and a feedback amount for
 
 #### KarplusStrongSingerMaxi
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/KarplusStrongSingerMaxi-svg/process.svg)
+<img src="images/KarplusStrongSingerMaxi-svg/process.svg">
 
 To have more voice control of the spectrum, this one has a kind of vocoder in the feedback path.
 Since we don't want the average volume of the feedback path changing much, only the volumes relative to the other bands, the vocoder is made out of equalizers, not bandpass filters.
@@ -341,7 +341,7 @@ It loses the octave slider, and instead has a separate delay and modulation for 
 
 ### guide-follower
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/guide-svg/process.svg)
+<img src="images/guide-svg/process.svg">
 
   * This is a workaround for the need for an external pitchtracker, making it possible to use the synths and effects as plugins.
     It has the nice side effect that your sounds become fully deterministic:
