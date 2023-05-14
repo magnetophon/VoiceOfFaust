@@ -4,7 +4,9 @@ Turns any monophonic sound into a synthesizer, preserving the pitch and spectral
 The name was chosen because I use it mostly to turn my voice into a singing robot, and it's made in [Faust](http://faust.grame.fr).
 
 [These](http://magnetophon.nl/sounds/magnetophon/oldCombo.flac) [are](https://raw.githubusercontent.com/magnetophon/VoiceOfFaust/master/Caribean.mp3) some silly demo songs.
-And an even sillier [video](https://magnetophon.github.io/VoiceOfFaust/images/VoiceOfFaust.mp4).
+And an even sillier video: 
+
+https://github.com/magnetophon/VoiceOfFaust/raw/master/images/VoiceOfFaust.mp4
 
 ## Overview
 
