@@ -6,7 +6,7 @@ The name was chosen because I use it mostly to turn my voice into a singing robo
 [These](http://magnetophon.nl/sounds/magnetophon/oldCombo.flac) [are](https://raw.githubusercontent.com/magnetophon/VoiceOfFaust/master/Caribean.mp3) some silly demo songs.
 And an even sillier video: 
 
-https://github.com/magnetophon/VoiceOfFaust/raw/master/images/VoiceOfFaust.mp4
+https://github.com/magnetophon/VoiceOfFaust/assets/7645711/d7c57e94-4d83-4fe2-b1d9-f2fd55cb7e11
 
 ## Overview
 
