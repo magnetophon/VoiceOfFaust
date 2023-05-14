@@ -212,7 +212,7 @@ These settings are available:
 
 ##### classicVocoder
 
-[Block diagram](https://magnetophon.github.io/VoiceOfFaust/images/classicVocoder-svg/process.svg)
+<img src="images/classicVocoder-svg/process.svg">
 
 The gui of the classicVocoder has two sections:
 * oscillators
