@@ -1,8 +1,8 @@
 declare name 		"qompander";
 declare version 	"1.3";
 declare author 		"Bart Brouns";
-declare license 	"GNU 3.0";
-declare copyright 	"(c) Bart Brouns 2014";
+declare license 	"AGPL-3.0-only";
+declare copyright 	"(c) Bart Brouns 2023";
 declare credits		"ported from qompander in pd by Katja Vetter";
 declare see		"http://www.katjaas.nl/compander/compander.html";
 declare additional	"filter coefficients by Olli Niemitalo";
