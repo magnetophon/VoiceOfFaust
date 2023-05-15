@@ -93,6 +93,7 @@ Install [Faust](https://faust.grame.fr/).
 Clone, build and install:
 ```bash
 git clone https://github.com/magnetophon/VoiceOfFaust.git
+cd VoiceOfFaust
 make -j8
 sudo make install
 ```
