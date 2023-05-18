@@ -3,7 +3,7 @@
 //-----------------------------------------------
 
 declare name      "guide";
-declare version   "1.1.5";
+declare version   "1.1.6";
 declare author    "Bart Brouns";
 declare license   "AGPL-3.0-only";
 declare copyright "(c) Bart Brouns 2023";
