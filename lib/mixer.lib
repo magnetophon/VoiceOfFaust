@@ -4,7 +4,7 @@ declare name 		"Mixer";
 declare version 	"0.2";
 declare author 		"Bart Brouns";
 declare license 	"AGPL-3.0-only";
-declare copyright 	"(c) Bart Brouns 2023";
+declare copyright 	"2014 - 2023, Bart Brouns";
 
 //-----------------------------------------------
 // mixerWithSends

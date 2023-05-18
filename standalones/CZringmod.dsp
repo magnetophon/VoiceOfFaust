@@ -1,8 +1,8 @@
 declare name      "CZringmod";
-declare version   "1.1.5";
+declare version   "1.1.6";
 declare author    "Bart Brouns";
 declare license   "AGPL-3.0-only";
-declare copyright "(c) Bart Brouns 2023";
+declare copyright "2014 - 2023, Bart Brouns";
 declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and os.square oscillators adapted from the Faust library" ;
 
 //-----------------------------------------------
