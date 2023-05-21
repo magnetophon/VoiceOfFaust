@@ -21,13 +21,13 @@ standalones: $(STANDALONES:%.dsp=%.standalone)
 
 %.standalone: %.dsp
 	echo "compiling jack standalone from $<"
-	faust2jack -t -1 -time -osc -vec $<
+	faust2jack -preset auto -t -1 -time -osc -vec $<
 
 followers: $(FOLLOWERS:%.dsp=%.follower)
 
 %.follower: %.dsp
 	echo "compiling jack follower from $<"
-	faust2jack -t -1 -time -osc -vec $<
+	faust2jack -preset auto -t -1 -time -osc -vec $<
 
 lv2: $(FOLLOWERS_LV2)
 
