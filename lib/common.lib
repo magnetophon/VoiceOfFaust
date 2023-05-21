@@ -4,7 +4,7 @@ import("stdfaust.lib");
 // needed for all synths and FX:
 import ("../lib/qompander.lib");
 import ("../lib/compressors.lib");
-import ("../lib/constants.lib");
+import ("../lib/bigConstants.lib");
 import ("../lib/general.lib");
 // import ("../lib/pitchtracker.lib");
 import ("../lib/analizer.lib");
