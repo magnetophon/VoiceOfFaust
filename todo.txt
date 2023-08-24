@@ -1,3 +1,17 @@
+
+* spectrum compensate:
+compensate the gain and spectrum with a "multiband shelve eq"
+steps:
+1) add an analiser for the output, using the output freqs
+2) average the individual gain outputs of respectively the in and out analisers, in the dB domain
+3) compare the two averages and use that to compensate the overall output gain (with a strength knob)
+4) add a "multiband shelve eq" to the output
+5) calculate the gain of each band using the averages and the individual outputs
+   - input_spectrum = dif between avg and band gain
+   - output_spectrum = dif between avg and band gain
+   - output_gains = dif between input_spectrum and output_spectrum
+6) use the "multiband shelve eq" and the output_gains to compensate the spectrum (with a strength knob)
+
 ////////////////////////////////////////////////////////
 // now
 ////////////////////////////////////////////////////////
@@ -9,7 +23,7 @@ make limiter modular
 
 fix vu
 
-make KarplusStrongSingerMaxi follower
+make KarplusStrongSingerMaxi slave
  also StringSinger, VoiceOfFaust, FMsinger and SubSinger
 demo
 txt
