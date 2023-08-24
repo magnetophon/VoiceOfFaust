@@ -78,6 +78,9 @@ phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,
       // make a log array of values, from bottom to top
 LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
 
+// logarithmic middle between two values
+LogMiddle(bottom,top) = pow(top/bottom,0.5)*bottom;
+
 VocoderFreqsChooser(bottom,mid,band,top,0) = VocoderFreqs(bottom,top);
 VocoderFreqsChooser(bottom,mid,band,top,1) = VocoderFreqsParametricMid(bottom,mid,band,top);
 
