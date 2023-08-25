@@ -525,4 +525,4 @@ VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all os
 
                     compensationGroup(x)  =  FXGroup(vgroup("[7]compensation", x));
                     volStrength = compensationGroup( vslider("[0]volume strength[style:knob][tooltip: 0 means no gain change, and 1 means the output gain follow the input gain]",	0, 0, 1, 0.001):si.smooth(0.999));
-                    eqStrength = compensationGroup( vslider("[1]eq strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0.25, -1, 1, 0.001):si.smooth(0.999));
+                    eqStrength = compensationGroup( vslider("[1]eq strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains fully match the input spectrum]",	1, -1, 1, 0.001):si.smooth(0.999));

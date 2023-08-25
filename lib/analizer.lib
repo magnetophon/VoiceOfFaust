@@ -9,9 +9,7 @@ subLevel(audio,freq) = voice(audio,freq):ef.gate_mono(qThreshold-15,0,0.1,0.05):
 
 //analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,nrBands, _,freq:*:min(ma.SR/2)));
 
-analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands, _,freq:*:min(ma.SR/2):dezip_sel));
-
-dezip_sel(x) = select2(checkbox("dezip"),x,x:dezip);
+analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands, dezip*freq:min(ma.SR/2)));
 
 //an.amp_follower_ud params set for minimal distortion
 //also sounds cool to vary between this and 0
@@ -104,7 +102,7 @@ eqGains(freq, group, strength, inAudio,outAudio) =
     : par(i, nrBands,
           ((_-_) * strength)
           : max(-48): min(48)
-          : hbargraph("eq %i", -48, 48)
+                      // : hbargraph("eq %i", -48, 48)
          )
 ;
 
@@ -114,9 +112,7 @@ eqCompensate(freq, group, strength, inAudio,outAudio) =
     , eqGains(freq, group, strength, inAudio,outAudio)
     )
     : shelfcascade;
-_xOverFreqs(freq,group) =
-    par(i, nrBands-1, hslider("freq", 100, 10, 1000, 1)*(i+1))
-;
+
 xOverFreqs(freq,group) =
     ( (centers(freq,group)
        : (si.bus(nrBands-1),!))
@@ -124,8 +120,12 @@ xOverFreqs(freq,group) =
        : (!,si.bus(nrBands-1)))
     )
     : ro.interleave(nrBands-1,2)
-    : par(i, nrBands-1, LogMiddle: max(20):min(20000):hbargraph("freq %i[log]", 20, 20000))
-;
+    : par(i, nrBands-1, LogMiddle
+                        : max(1)
+                          // : max(20)
+                          // : min(20000)
+                          // :hbargraph("freq %i[log]", 20, 20000)
+         );
 
 
 /* Cascade of shelving filters to apply gain per band.

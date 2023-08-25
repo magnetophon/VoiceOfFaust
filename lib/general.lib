@@ -42,7 +42,11 @@ octaveMultiplier	=
         (_==2) * 4
     ):>_;
 
-centers(freq,group) = group(VocoderFreqsChooser(bottom,mid,band,top,para)):par(i, nrBands, _*freq): dezipBands;
+centers(freq,group) =
+  group(VocoderFreqsChooser(bottom,mid,band,top,para))
+  : dezipBands
+  :par(i, nrBands, _*freq:min(ma.SR/2))
+;
 
 phases = VocoderLinArrayChooser(phaseBottom,phaseMid,phaseBand,phaseTop,para): dezipBands;
 
@@ -53,8 +57,8 @@ evenOdd(group) =group( VocoderLinArrayChooser(evenOddBottom,evenOddMid,evenOddBa
 phaseNoises(polarity,freq,0,enablePhaseNoiseFilter,group) = group(phases:(par(j, nrBands,_*select2(polarity%2,1,-1))));
 phaseNoises(polarity,freq,1,0,group) = group(phases),(group(phaseNoiseAmounts):par(j,nrBands,(_*no.noises(nrBands,j):si.smooth(ba.tau2pole(PhaseSpeed))))):>(par(j, nrBands,_*select2(polarity%2,1,-1)));
 phaseNoises(polarity,freq,1,1,group) =
-(group(phases),filteredNoise):>par(j, nrBands,_*select2(polarity%2,1,-1))
-// ((group(phases),(group(phaseNoiseAmounts):par(j,nrBands,_*no.noises(nrBands,j):LP(j)))):>(par(j, nrBands,_*select2(polarity%2,1,-1))))
+  (group(phases),filteredNoise):>par(j, nrBands,_*select2(polarity%2,1,-1))
+                                 // ((group(phases),(group(phaseNoiseAmounts):par(j,nrBands,_*no.noises(nrBands,j):LP(j)))):>(par(j, nrBands,_*select2(polarity%2,1,-1))))
 with {
   filteredNoise = ((group(phaseNoiseAmounts):par(j,nrBands,_*no.noises(nrBands,j))):LPblock);
   LPblock = (freqs, si.bus(nrBands)) : ro.interleave(nrBands,2) : par(i, nrBands, LP);
@@ -75,7 +79,7 @@ with {
 phaseNoiseAmounts = VocoderLinArrayChooser(phaseNoiseAmountBottom,phaseNoiseAmountMid,phaseNoiseAmountBand,phaseNoiseAmountTop,para): dezipBands;
 phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,phaseNoiseFreqBand,phaseNoiseFreqTop,para): dezipBands;
 
-      // make a log array of values, from bottom to top
+// make a log array of values, from bottom to top
 LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
 
 // logarithmic middle between two values
@@ -94,32 +98,32 @@ VocoderFreqs(bottom,top) = LogArray(bottom,top,nrBands);
 OLDVocoderFreqsParametricMid(bottom,mid,band,top) =
   (
     (
-    (LogArray(midVal(1),top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
-    ,((bottom,LogArray(midVal(2),top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
+      (LogArray(midVal(1),top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
+     ,((bottom,LogArray(midVal(2),top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
     )
-    ,par(j,nrBands-4,
+   ,par(j,nrBands-4,
         (
-            (LogArray(bottom,midVal(midBand),midBand):(si.bus(midBand-1),!))
-            ,LogArray(midVal(midBand),top,nrBands-midBand+1)
+          (LogArray(bottom,midVal(midBand),midBand):(si.bus(midBand-1),!))
+         ,LogArray(midVal(midBand),top,nrBands-midBand+1)
         ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
-    )
-    ,
-    (
-      ((LogArray(bottom,midVal(nrBands-1),nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
-      ,(LogArray(bottom,midVal(nrBands),nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
-    )
+       )
+   ,
+   (
+     ((LogArray(bottom,midVal(nrBands-1),nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
+    ,(LogArray(bottom,midVal(nrBands),nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
+   )
   )
   :>si.bus(nrBands)
-  with {
+with {
   midVal(band)=
-  ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
-  + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
+    ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
+    + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
   // todo: maybe dezip ?
   origMid(band) = (VocoderFreqs(bottom,top):ba.selector(band-1,nrBands)):>_;
-  };
+};
 
-      // make a lin array of values, from bottom to top
-      //VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/(nrBands-1)))+bottom);
+// make a lin array of values, from bottom to top
+//VocoderLinArray(bottom,top) =     par(i,nrBands,   ((top-bottom)*(i/(nrBands-1)))+bottom);
 
 LinArray(bottom,top,0) =   0:! ;
 LinArray(bottom,top,nrElements) =     par(i,nrElements,   ((top-bottom)*(i/(nrElements-1)))+bottom);
@@ -128,93 +132,93 @@ VocoderLinArrayChooser(bottom,mid,band,top,0) = VocoderLinArray(bottom,top);
 VocoderLinArrayChooser(bottom,mid,band,top,1) = VocoderLinArrayParametricMid(bottom,mid,band,top);
 
 VocoderLinArray(bottom,top) =     LinArray(bottom,top,nrBands);
-      // doesn't compile:
+// doesn't compile:
 /*VocoderLinArrayParametricMid(bottom,mid,band,top) = ArrayPart(floor(band+1)):par(i,nrBands,_*(xfadeSelector(band,floor(band+1))))*/
-           /*with {*/
+/*with {*/
 /*ArrayPart(1)         = LinArray(mid,top,nrBands);*/
 /*ArrayPart(2)         = bottom,LinArray(mid,top,nrBands-1);*/
 /*ArrayPart(midBand)         =*/
-  /*(LinArray(bottom,mid,midBand):(si.bus(midBand-1),!))*/
-  /*,LinArray(mid,top,nrBands-midBand+1);*/
-           /*};*/
+/*(LinArray(bottom,mid,midBand):(si.bus(midBand-1),!))*/
+/*,LinArray(mid,top,nrBands-midBand+1);*/
+/*};*/
 /*ArrayPart(nrBands-1) = LinArray(bottom,mid,nrBands-1),top;*/
 /*ArrayPart(nrBands)   = LinArray(bottom,mid,nrBands);*/
 
 VocoderLinArrayParametricMid(bottom,mid,band,top) =
   par(i, nrBands, select2(band<=i+1,midToBottomVal(i),midToTopVal(i)))
-  with {
-    midToBottomVal(i) = (midToBottom(i)*bottom) + (((midToBottom(i)*-1)+1)*mid);
-    midToBottom(i) = (band-(i+1))/(band-1);
+with {
+  midToBottomVal(i) = (midToBottom(i)*bottom) + (((midToBottom(i)*-1)+1)*mid);
+  midToBottom(i) = (band-(i+1))/(band-1);
 
-    midToTopVal(i) = (midToTop(i)*top) + (((midToTop(i)*-1)+1)*mid);
-    midToTop(i) = (i+1-band)/(nrBands-band);
-  };
+  midToTopVal(i) = (midToTop(i)*top) + (((midToTop(i)*-1)+1)*mid);
+  midToTop(i) = (i+1-band)/(nrBands-band);
+};
 
 VocoderFreqsParametricMid(bottom,mid,band,top) =
   VocoderLinArrayParametricMid(ba.hz2pianokey(bottom),midVal,band,ba.hz2pianokey(top))
   : par(i, nrBands, ba.pianokey2hz)
-  with {
-    // midVal(band) = (ma.decimal(band)*val(floor(band+1))) + ((1-ma.decimal(band))*val(floor(band)));
-    // val(band) = VocoderFreqs(bottom,top):ba.selector(2,nrBands):ba.hz2pianokey;
-    // val(b) = VocoderFreqs(bottom,top):ba.selector(int(b:max(2):min(2)),nrBands):ba.hz2pianokey;
-    origMid = VocoderFreqs(bottom,top): par(i, nrBands, ba.hz2pianokey*xfadeSelector(band,i+1)):>_;
-//  origMid =
+with {
+  // midVal(band) = (ma.decimal(band)*val(floor(band+1))) + ((1-ma.decimal(band))*val(floor(band)));
+  // val(band) = VocoderFreqs(bottom,top):ba.selector(2,nrBands):ba.hz2pianokey;
+  // val(b) = VocoderFreqs(bottom,top):ba.selector(int(b:max(2):min(2)),nrBands):ba.hz2pianokey;
+  origMid = VocoderFreqs(bottom,top): par(i, nrBands, ba.hz2pianokey*xfadeSelector(band,i+1)):>_;
+  //  origMid =
   //   case {
   //     (1) => bottom;
   //     (nrBands) => top;
   //     (band) => 100;
   // };
 
-    // VocoderFreqs(bottom,top): par(i, nrBands, ba.hz2pianokey*xfadeSelector(band,i+1)):>_;
+  // VocoderFreqs(bottom,top): par(i, nrBands, ba.hz2pianokey*xfadeSelector(band,i+1)):>_;
 
-    // origMid(band) = VocoderFreqs(bottom,top): par(i, nrBands, ba.hz2pianokey*xfadeSelector(band,i+1)):>_;
-    midVal =
-      (origMid * (1-abs(mid))) + (mid:max(0)*ba.hz2pianokey(top)) + (mid:min(0)*-1*ba.hz2pianokey(bottom)) ;
-    // midVal(band)=
-    //   ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
-    //   + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
-    // todo: maybe dezip ?
-    // origMid(band) = (VocoderFreqs(bottom,top):par(i, nrBands, ba.hz2pianokey*xfadeSelector(band-1,i))):>ba.pianokey2hz;
-  };
+  // origMid(band) = VocoderFreqs(bottom,top): par(i, nrBands, ba.hz2pianokey*xfadeSelector(band,i+1)):>_;
+  midVal =
+    (origMid * (1-abs(mid))) + (mid:max(0)*ba.hz2pianokey(top)) + (mid:min(0)*-1*ba.hz2pianokey(bottom)) ;
+  // midVal(band)=
+  //   ((mid>0)*((pow(((top/origMid(band))),mid)*origMid(band))))
+  //   + ((mid<=0)*((pow(((bottom/origMid(band))),abs(mid))*origMid(band))));
+  // todo: maybe dezip ?
+  // origMid(band) = (VocoderFreqs(bottom,top):par(i, nrBands, ba.hz2pianokey*xfadeSelector(band-1,i))):>ba.pianokey2hz;
+};
 
 OLDVocoderLinArrayParametricMid(bottom,mid,band,top) =
-(
   (
-  (LinArray(mid,top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
-  ,((bottom,LinArray(mid,top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
-  )
-  ,par(j,nrBands-4,
-      (
-         (LinArray(bottom,mid,midBand):(si.bus(midBand-1),!))
+    (
+      (LinArray(mid,top,nrBands):par(i,nrBands,_*(xfadeSelector(band,1))))
+     ,((bottom,LinArray(mid,top,nrBands-1)):par(i,nrBands,_*(xfadeSelector(band,2))))
+    )
+   ,par(j,nrBands-4,
+        (
+          (LinArray(bottom,mid,midBand):(si.bus(midBand-1),!))
          ,LinArray(mid,top,nrBands-midBand+1)
-      ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
-  )
-  ,
-  (
-    ((LinArray(bottom,mid,nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
+        ):par(i,nrBands,_*(xfadeSelector(band,midBand)))with {midBand=j+3;}
+       )
+   ,
+   (
+     ((LinArray(bottom,mid,nrBands-1),top):par(i,nrBands,_*(xfadeSelector(band,nrBands-1))))
     ,(LinArray(bottom,mid,nrBands):par(i,nrBands,_*(xfadeSelector(band,nrBands))))
+   )
   )
-)
-:>si.bus(nrBands);
+  :>si.bus(nrBands);
 
 bt=hslider("[0]bottom", 0, 0, 1, 0.001);
 md=hslider("[1]mid", 0, 0, 1, 0.001);
 bd=hslider("[2]band", nrBands/2, 1, nrBands, 0.001);
 tp=hslider("[3]top", 0, 0, 1, 0.001);
 
-  GRmeter_group(x)  = vgroup("[3] GR [tooltip: gain reduction in dB]", x);
-    GRmeter(nr)           = GRmeter_group(  _<:(_,(_:min(1):max(0):( (hbargraph("%nr", 0, 1))))):attach);
+GRmeter_group(x)  = vgroup("[3] GR [tooltip: gain reduction in dB]", x);
+GRmeter(nr)           = GRmeter_group(  _<:(_,(_:min(1):max(0):( (hbargraph("%nr", 0, 1))))):attach);
 
 gainCompareElement(x,compGain) = (_<:(_,((_)*x)))~compare:(!,_) with {
   compare(gain,gainedX) =
     select2((gainCompEnable ),
-      1,
-        ((((gain:max(0.001):ba.linear2db)+select2((gainedX:an.amp_follower_ud(0.002,0.004))>compGain,up,down)):min(maxGain):ba.db2linear))
-    );
+            1,
+            ((((gain:max(0.001):ba.linear2db)+select2((gainedX:an.amp_follower_ud(0.002,0.004))>compGain,up,down)):min(maxGain):ba.db2linear))
+           );
   up = dbPs;
   down = dbPs*-2;
   maxGain = (compGain:max(0.001):ba.linear2db) - (x:abs:max(0.001):ba.linear2db);
-  };
+};
 
 // gainCompare(audio,freq,fidelity,enableGainCompare)
 gainCompare(audio,index,fidelity,freq,0) = si.bus(nrBands);
@@ -231,17 +235,17 @@ gainScale(0,scale,f) = si.bus(nrBands);
 gainScale(1,scale,f) = si.bus(nrBands)<:par(i, nrBands, gain(i))
 with {
   gain(i) = par(i, nrBands, max(0.00000001):ba.linear2db+freqWeighting(freq(i),weightingKind))<:
-    (
-       (xfadeSelector(scale,0)*(par(j, nrBands, _) : AvgVolume)+freqWeighting(freq(i),weightingKind)+  compresVolCompensate )
-       // we use scale inside expander, so from scale=1 to 2 we don't want xfadeSelector
-      ,(xfadeSelector(scale,1)*(scale<1)*ba.selector(i,nrBands))
-      ,((scale>=1)*expander(i))
-    ):>_-freqWeighting(freq(i),weightingKind):ba.db2linear;
+            (
+              (xfadeSelector(scale,0)*(par(j, nrBands, _) : AvgVolume)+freqWeighting(freq(i),weightingKind)+  compresVolCompensate )
+              // we use scale inside expander, so from scale=1 to 2 we don't want xfadeSelector
+             ,(xfadeSelector(scale,1)*(scale<1)*ba.selector(i,nrBands))
+             ,((scale>=1)*expander(i))
+            ):>_-freqWeighting(freq(i),weightingKind):ba.db2linear;
   freq(i) = analizerCenters(f):ba.selector(i,nrBands);
   expander(i) = si.bus(nrBands)<:
-    (
-      (scaledVolume(i) + MaxVolume) + expandVolCompensate
-    ):>_;
+                (
+                  (scaledVolume(i) + MaxVolume) + expandVolCompensate
+                ):>_;
   scaledVolume(i) =  si.bus(nrBands)<:( ((MaxVolume*-1)+ba.selector(i,nrBands)) * (scale:pow(3)) );
   AvgVolume = sumOfN(nrBands)/nrBands;
   MaxVolume = maxOfN(nrBands);
@@ -250,8 +254,8 @@ with {
 };
 
 freqWeighting(f,weightingKind) =
-// Atable(f);
-// ITUtable(f);
+  // Atable(f);
+  // ITUtable(f);
   (
     (xfadeSelector(weightingKind,0)*-8),
     (xfadeSelector(weightingKind,1)*Atable(f)),
@@ -282,14 +286,14 @@ h2(f) =   ( 1.306612257412824*(10:pow(-19))*(f:pow(5)))+(2.118150887518656*(10:p
 myTable(f) = rdtable(int(SRmax/2)+1,my(ba.time),int(f:max(1):int(min(SRmax/2))));
 my(f) =
   (pow((pow((top/bottom),1/(nrElements-1))),(f:min(nrElements)))*bottom)
-  with {
-    top = 0;
-    bottom = -144;//vslider("basscut", -100, -200, 0, 1);
-    nrElements = 2000;
-    top2 = 24;
-    bottom2 = 0;
-    nrElements2 = int(SRmax/2)-nrElements;
-  };
+with {
+  top = 0;
+  bottom = -144;//vslider("basscut", -100, -200, 0, 1);
+           nrElements = 2000;
+           top2 = 24;
+           bottom2 = 0;
+           nrElements2 = int(SRmax/2)-nrElements;
+};
 
 // ===A===
 // :<math>R_A(f)= {12200^2\cdot f^4\over (f^2+20.6^2)\quad\sqrt{(f^2+107.7^2)\,(f^2+737.9^2)}
@@ -297,7 +301,7 @@ my(f) =
 // :<math>A(f)=2.0+20\log_{10}\left(R_A(f)\right)</math>
 
 rA(freq) = ((12200:pow(2)) * (f:pow(4))) / ( ((f:pow(2)) + (20.6:pow(2))) * sqrt(((f:pow(2)) + (107.7:pow(2))) * ((f:pow(2)) + (737.9:pow(2)))) * ((f:pow(2)) + (12200:pow(2))))
-  with { f = (freq:max(20)(min(SRmax/4))); };
+with { f = (freq:max(20)(min(SRmax/4))); };
 A(f) = 2 + ba.linear2db(rA(f));
 Atable(f) = rdtable(int(SRmax/2)+1,A(ba.time),int(f:max(20):int(min(SRmax/4))));
 
@@ -308,12 +312,12 @@ with {
 // stable fi.resonbp = 2nd-order fi.bandpass
 resonbpStable(fc,Q,gain) = fi.tf2snp(b2,b1,b0,a1,a0,wc)
 with {
-     wc = 2*ma.PI*fc;
-     a1 = 2/Q;
-     a0 = 1;
-     b2 = 0;
-     b1 = gain;
-     b0 = 0;
+  wc = 2*ma.PI*fc;
+  a1 = 2/Q;
+  a0 = 1;
+  b2 = 0;
+  b1 = gain;
+  b0 = 0;
 };
 
 // WIP stable fi.highpass
@@ -355,13 +359,13 @@ KalmanFilter(errorMeasurement,initialMeasurement,initialError,measurement) = Kal
   KalmanFilterCalc(measurement,prevEstimate,prevErrorEstimate) =
     estimate(prevErrorEstimateT,prevEstimateT,measurement),
     errorEstimate(prevErrorEstimateT) with {
-      KalmanGain(prevErrorEstimateT) = prevErrorEstimateT/(prevErrorEstimateT + errorMeasurement);
-      estimate(prevErrorEstimateT,prevEstimateT,measurement) = prevEstimateT +(KalmanGain( prevErrorEstimateT)*( measurement - prevEstimateT));
-      errorEstimate(prevErrorEstimateT) = (1- KalmanGain(prevErrorEstimateT))*prevErrorEstimateT;
-      // time = 1+_~_;
-      prevEstimateT = select2((ba.time==1),prevEstimate,initialMeasurement);
-      prevErrorEstimateT = select2((ba.time==1),prevErrorEstimate,initialError);
-  };
+  KalmanGain(prevErrorEstimateT) = prevErrorEstimateT/(prevErrorEstimateT + errorMeasurement);
+  estimate(prevErrorEstimateT,prevEstimateT,measurement) = prevEstimateT +(KalmanGain( prevErrorEstimateT)*( measurement - prevEstimateT));
+  errorEstimate(prevErrorEstimateT) = (1- KalmanGain(prevErrorEstimateT))*prevErrorEstimateT;
+  // time = 1+_~_;
+  prevEstimateT = select2((ba.time==1),prevEstimate,initialMeasurement);
+  prevErrorEstimateT = select2((ba.time==1),prevErrorEstimate,initialError);
+};
 };
 
 gainedSmoother(gain,initialMeasurement,measurement) = gainedSmootherCalc(measurement)~(_) with {
@@ -370,7 +374,7 @@ gainedSmoother(gain,initialMeasurement,measurement) = gainedSmootherCalc(measure
 
 // crossfade between multiple inputs (just the gain)
 xfadeSelector(sel,nr) =
-((sel<=nr)*((sel-nr)+1):max(0)) + ((sel>nr)*((nr-sel)+1):max(0));
+  ((sel<=nr)*((sel-nr)+1):max(0)) + ((sel>nr)*((nr-sel)+1):max(0));
 
 // select at run-time how many instances of 'expression' you want in series.
 // expression can have any number of inputs, but obviously must have the same number of outputs
@@ -393,17 +397,20 @@ autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 
 // postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume,width)
 // no ambisonics
-postProc(audio,freq,nrOutChan,0,enableAutosat,volume,width) =
+postProc(audio,freq,nrOutChan,0,enableAutosat,enableEqCompensate,group,strength,voice,volume,width) =
   ( par(i, nrOutChan, _*(volume:dezip)):WidePanner(width,nrOutChan)
-  :par(i,nrOutChan,fi.dcblocker <:select2(enableAutosat,_,autoSat)) )
+    :par(i,nrOutChan,
+         fi.dcblocker <:select2(enableAutosat,_,autoSat)
+         <: select2(enableEqCompensate,_,eqCompensate(freq, group, strength, voice))
+        ) )
   // <:select2(enableLimiter,
   //   si.bus(nrOutChan)
   //   ,limiter(freq * 0.25,nrOutChan)) //needs the pitch to adjust the decay time.
-    :limiter(freq * 0.25,nrOutChan,enableLimiter) //needs the pitch to adjust the decay time.
-    :VuMeter(nrOutChan,enableVUmeter)
+  :limiter(freq * 0.25,nrOutChan,enableLimiter) //needs the pitch to adjust the decay time.
+  :VuMeter(nrOutChan,enableVUmeter)
 ;
 // ambisonic
-postProc(audio,freq,nrOutChan,1,enableAutosat,volume,width) =
+postProc(audio,freq,nrOutChan,1,enableAutosat,enableEqCompensate,group,strength,voice,volume,width) =
   ho.wider(ambisonicsOrder,width)
   :ho.rotate(ambisonicsOrder, rotation)
   :ho.optimInPhase(ambisonicsOrder)
@@ -414,10 +421,18 @@ postProc(audio,freq,nrOutChan,1,enableAutosat,volume,width) =
   <:select2(enableVUmeter,
     si.bus(nrAmbisonicsChan)
     ,VuMeter(nrAmbisonicsChan))
-  <:((ho.decoderStereo(ambisonicsOrder):par(i,2,(_*volume):fi.dcblocker<: select2(enableAutosat,_,autoSat))), si.bus(nrAmbisonicsChan))
-  with {
-    nrAmbisonicsChan = 2*ambisonicsOrder+1;
-  };
+  <:
+  (
+    (ho.decoderStereo(ambisonicsOrder)
+     :par(i,2,
+          (_*volume):fi.dcblocker<: select2(enableAutosat,_,autoSat)
+          : select2(enableEqCompensate,_,eqCompensate(freq, group, strength, voice))
+         )
+    ), si.bus(nrAmbisonicsChan)
+  )
+with {
+  nrAmbisonicsChan = 2*ambisonicsOrder+1;
+};
 
 //to make it stereo
 //todo: implement http://music.columbia.edu/pipermail/music-dsp/2012-February/070328.html
@@ -439,16 +454,16 @@ oldstereoLimiter(pitch)=
   (fi.dcblocker*0.5:co.compressor_mono(100,-12,release*0.5,release)):
   (co.compressor_mono(100,-6,0.001,release*0.5)),
   (co.compressor_mono(100,-6,0.001,release*0.5))
-  with {
-    release = (1/pitch);
-    };
+with {
+  release = (1/pitch);
+};
 
 monoLimiter(pitch)=
   (fi.dcblocker:co.compressor_mono(100,-6,release*0.5,release)):
   (co.compressor_mono(100,-3,0,release*0.5))
-  with {
-    release = (1/pitch);
-    };
+with {
+  release = (1/pitch);
+};
 
 // limiter(freq,N,enableLimiter) =
 //is actually multi mono. on purpose; to try and keep the image in the center.

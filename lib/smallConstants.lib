@@ -15,6 +15,7 @@ enableDeEsser             = 0+ enableReEsser:min(1); // enable the multi-band de
 enableReEsser             = 0; // enable the multi-band reEsser: experimental: not well tested in multichannel and ambisonics
 stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd pass filters
 enableAutosat             = 0; // put a saturator at the output
+enableEqCompensate        = 0; // compare the in with the out spectrum and compensate
 enableLimiter             = 0; // put a limiter at the output
 enableVUmeter             = 0; // put a VU meter at the output
 outputRoutingEnabled      = 0; // have flexible routing between the bands and the outputs

@@ -3,7 +3,7 @@
 //-----------------------------------------------
 
 // general:
-nrBands                   = 16:max(4*nrOutChan);// Number of bands for the vocoders
+nrBands                   = 16:max(4*nrOutChan); // Number of bands for the vocoders
 nrOutChan                 = 2; // number of outputs
 ambisonicsOn              = 0; // do we want an ambisonic synth.
 ambisonicsOrder           = 3; // order of the ambisonics
@@ -15,6 +15,7 @@ enableDeEsser             = 1+ enableReEsser:min(1); // enable the multi-band de
 enableReEsser             = 0; // enable the multi-band reEsser: experimental: not well tested in multichannel and ambisonics
 stableFilters             = 1; // 0=unstable band pass filters, 1 = stable bamd pass filters
 enableAutosat             = 0; // put a saturator at the output
+enableEqCompensate        = 1; // compare the in with the out spectrum and compensate
 enableLimiter             = 0; // put a limiter at the output
 enableVUmeter             = 0; // put a VU meter at the output
 outputRoutingEnabled      = 1; // have flexible routing between the bands and the outputs
@@ -32,7 +33,7 @@ maxTimeWithoutPitch       = 2*ma.SR;    // longest time the OSC pitch tracker ca
 maxTimeWithoutFidelity    = 265*4 ;  // is 4*6ms @ 44100. the time between 4 fid messages
 PTsmooth                  = 0.9984; // si.smooth() factor for simple pitch smoother
 // analizer:
-analizerTop               = 128;
+analizerTop               = 64;
 analizerBottom            = (0.5*pow(2,0.5))+0.0;
 // analizerTop               = defaultTop;
 // analizerBottom            = defaultBottom;
