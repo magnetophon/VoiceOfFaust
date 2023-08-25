@@ -97,12 +97,16 @@ outputSpectrum(freq, group, audio) =
 
 eqGains(freq, group, strength, inAudio,outAudio) =
     (
-      outputSpectrum(freq, group, outAudio)
-    , inputSpectrum(freq, inAudio)
+      inputSpectrum(freq, inAudio)
+    , outputSpectrum(freq, group, outAudio)
     )
     : ro.interleave(nrBands,2)
-    : par(i, nrBands, (_-_) * strength)
-    : ro.cross(nrBands);
+    : par(i, nrBands,
+          ((_-_) * strength)
+          : max(-48): min(48)
+          : hbargraph("eq %i", -48, 48)
+         )
+;
 
 eqCompensate(freq, group, strength, inAudio,outAudio) =
     ( outAudio
@@ -110,33 +114,18 @@ eqCompensate(freq, group, strength, inAudio,outAudio) =
     , eqGains(freq, group, strength, inAudio,outAudio)
     )
     : shelfcascade;
-
-test_xOverFreqs(freq,group) =
-    (
-      (
-        par(i, 15, (i+1)*99)
-        // , par(i, 8, (i+1)*999)
-        // ba.subseq((LogArray(bottom,top,nrBands)), 0, nrBands-1)
-        // ,
-        // ba.subseq((LogArray(bottom,top,nrBands)), 1, nrBands-1)
-      )
-      // : ro.interleave(2,nrBands-1)
-      // : par(i, nrBands-1, LogMiddle)
-
-      // (centers(freq,group))
-        // : (si.bus(nrBands-1),!)
-        // par(i, nrBands-1, freq*(i+1))
-        // : (si.bus(nrBands))
-    );
-
+_xOverFreqs(freq,group) =
+    par(i, nrBands-1, hslider("freq", 100, 10, 1000, 1)*(i+1))
+;
 xOverFreqs(freq,group) =
     ( (centers(freq,group)
        : (si.bus(nrBands-1),!))
     , (centers(freq,group)
        : (!,si.bus(nrBands-1)))
     )
-    : ro.interleave(2,nrBands-1)
-    : par(i, nrBands-1, LogMiddle);
+    : ro.interleave(nrBands-1,2)
+    : par(i, nrBands-1, LogMiddle: max(20):min(20000):hbargraph("freq %i[log]", 20, 20000))
+;
 
 
 /* Cascade of shelving filters to apply gain per band.
@@ -168,8 +157,8 @@ with {
   ;
   bsBlock(i,x,f1,f2,g) =
       (x:bs3(f1,f2,g))
-   , f2
-   , si.bus((nrBands-2-i)*2-1);
+    , f2
+    , si.bus((nrBands-2-i)*2-1);
   hsBlock(x,f,g) =
       hs3(f,g,x);
   /* higher order low, band and hi shelf filter primitives */
