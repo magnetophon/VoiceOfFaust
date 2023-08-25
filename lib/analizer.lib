@@ -9,7 +9,9 @@ subLevel(audio,freq) = voice(audio,freq):ef.gate_mono(qThreshold-15,0,0.1,0.05):
 
 //analizerCenters(freq) = VocoderFreqs(0.853553,128):(par(i,nrBands, _,freq:*:min(ma.SR/2)));
 
-analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands, _,freq:*:min(ma.SR/2):dezip));
+analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands, _,freq:*:min(ma.SR/2):dezip_sel));
+
+dezip_sel(x) = select2(checkbox("dezip"),x,x:dezip);
 
 //an.amp_follower_ud params set for minimal distortion
 //also sounds cool to vary between this and 0
@@ -99,19 +101,37 @@ eqGains(freq, group, strength, inAudio,outAudio) =
     , inputSpectrum(freq, audio)
     )
     : ro.interleave(nrBands,2)
-    : par(i, nrBands, _-_: * strength)
-      ro.cross(nrBands);
+    : par(i, nrBands, (_-_) * strength)
+    : ro.cross(nrBands);
 
 eqCompensate(freq, group, strength, inAudio,outAudio) =
     (eqGains(freq, group, strength, inAudio,outAudio)
     , outAudio)
     : shelfcascade ((xOverFreqs(freq,group)));
 
+test_xOverFreqs(freq,group) =
+    (
+      (
+        par(i, 15, (i+1)*99)
+        // , par(i, 8, (i+1)*999)
+        // ba.subseq((LogArray(bottom,top,nrBands)), 0, nrBands-1)
+        // ,
+        // ba.subseq((LogArray(bottom,top,nrBands)), 1, nrBands-1)
+      )
+      // : ro.interleave(2,nrBands-1)
+      // : par(i, nrBands-1, LogMiddle)
+
+      // (centers(freq,group))
+        // : (si.bus(nrBands-1),!)
+        // par(i, nrBands-1, freq*(i+1))
+        // : (si.bus(nrBands))
+    );
+
 xOverFreqs(freq,group) =
-    ( centers(freq,group)
-      : (si.bus(nrBands-1),!)
-    , centers(freq,group)
-      : (!,si.bus(nrBands-1))
+    ( (centers(freq,group)
+       : (si.bus(nrBands-1),!))
+    , (centers(freq,group)
+       : (!,si.bus(nrBands-1)))
     )
     : ro.interleave(2,nrBands-1)
     : par(i, nrBands-1, LogMiddle);
@@ -122,7 +142,41 @@ xOverFreqs(freq,group) =
    * `lf` : list of frequencies
    * followed by (count(lf) +1) gain parameters
    */
-shelfcascade(lf) = fbus(lf), ls3(first(lf)) : sc(lf)
+shelfcascade(lf) =
+    // lf:par(i, outputs(lf), _*666)
+    lsBlock
+    :
+    // bsBlock(0)
+    // :
+    seq(i, nrBands-2, bsBlock(i))
+    :hsBlock
+     // bsBlock(3):
+     // bsBlock(4):
+     // bsBlock(5)
+     // fbus(lf), ls3(first(lf)) : sc(lf)
+with {
+  sc((f1, f2, lf)) = fbus((f2,lf)), bs3(f1,f2) : sc((f2,lf)); // recursive pattern
+  sc((f1, f2))     = _, bs3(f1,f2) : hs3(f2);                // halting pattern
+  fbus(l)          = par(i, outputs(l), _);                  // a bus of the size of a list
+  first((x,xs))    = x;                                      // first element of a list
+
+  lsBlock(f,g,x) =
+      si.bus((nrBands-1)*2-1)
+    , ls3(f,g,x)
+    , f;
+  bsBlock(i,f1,f2,g,x) =
+      si.bus((nrBands-2-i)*2-1)
+    , (x:bs3(f1,f2,g))
+    , f2;
+  hsBlock(f,g,x) =
+      hs3(f,g,x);
+  /* higher order low, band and hi shelf filter primitives */
+  ls3(f,g) = fi.svf.ls (f, .5, g3) : fi.svf.ls (f, .707, g3) : fi.svf.ls (f, 2, g3) with {g3 = g/3;};
+  bs3(f1,f2,g) = ls3(f1,-g) : ls3(f2,g);
+  hs3(f,g) = fi.svf.hs (f, .5, g3) : fi.svf.hs (f, .707, g3) : fi.svf.hs (f, 2, g3) with {g3 = g/3;};
+};
+
+OLDshelfcascade(lf) = fbus(lf), ls3(first(lf)) : sc(lf)
 with {
   sc((f1, f2, lf)) = fbus((f2,lf)), bs3(f1,f2) : sc((f2,lf)); // recursive pattern
   sc((f1, f2))     = _, bs3(f1,f2) : hs3(f2);                // halting pattern
@@ -134,14 +188,9 @@ with {
   hs3(f,g) = fi.svf.hs (f, .5, g3) : fi.svf.hs (f, .707, g3) : fi.svf.hs (f, 2, g3) with {g3 = g/3;};
 };
 
-apply_gain =
-    (ro.interleave(N, B+1))
-    : par(i, N, ro.cross(B),_)
-    : par(i, N, shelfcascade ((xOverFreqs(freq,group))))
-;
 
 deEssedAnalizer(audio,freq,fidelity) =
-  (simpleAnalizer(audio,freq), deEssGains(audio,freq,deEssStrenght*dynAmount)) : ro.interleave(nrBands,2) : par(i, nrBands, (ba.linear2db+_):ba.db2linear)
+    (simpleAnalizer(audio,freq), deEssGains(audio,freq,deEssStrenght*dynAmount)) : ro.interleave(nrBands,2) : par(i, nrBands, (ba.linear2db+_):ba.db2linear)
 with {
   dynAmount = 1-(deEssDynStrenght*(fidelity:pow(42):si.lag_ud(0.002,0.004)));
 };
@@ -155,16 +204,16 @@ with {
 // reEsser(audio,freq,doubleOscs,enableReEsser)
 reEsser(audio,freq,doubleOscs,0) = si.bus(nrBands*(doubleOscs+1));
 reEsser(audio,freq,doubleOscs,1) =
-// si.bus(nrOuts)
+    // si.bus(nrOuts)
     (
       si.bus(nrOuts),
       (
         (
           (no.noise<:si.bus(nrBands))
           // (no.multinoise(nrBands))
-          ,(analizerCenters(freq)<:((si.bus(nrBands)<:(freq/2,par(i,nrBands,ba.selector(i-1,nrBands)))),(si.bus(nrBands))))
-          ,reEssgains(audio,freq)
-          ,(analizerQ<:si.bus(nrBands))
+         ,(analizerCenters(freq)<:((si.bus(nrBands)<:(freq/2,par(i,nrBands,ba.selector(i-1,nrBands)))),(si.bus(nrBands))))
+         ,reEssgains(audio,freq)
+         ,(analizerQ<:si.bus(nrBands))
         )
         :(ro.interleave(nrBands,5):par(i, nrBands, volFilter))<:si.bus(nrOuts)
       )
