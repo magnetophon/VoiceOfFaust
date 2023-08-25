@@ -97,17 +97,19 @@ outputSpectrum(freq, group, audio) =
 
 eqGains(freq, group, strength, inAudio,outAudio) =
     (
-      outputSpectrum(freq, group, audio)
-    , inputSpectrum(freq, audio)
+      outputSpectrum(freq, group, outAudio)
+    , inputSpectrum(freq, inAudio)
     )
     : ro.interleave(nrBands,2)
     : par(i, nrBands, (_-_) * strength)
     : ro.cross(nrBands);
 
 eqCompensate(freq, group, strength, inAudio,outAudio) =
-    (eqGains(freq, group, strength, inAudio,outAudio)
-    , outAudio)
-    : shelfcascade ((xOverFreqs(freq,group)));
+    ( outAudio
+    , xOverFreqs(freq,group)
+    , eqGains(freq, group, strength, inAudio,outAudio)
+    )
+    : shelfcascade;
 
 test_xOverFreqs(freq,group) =
     (
@@ -142,33 +144,33 @@ xOverFreqs(freq,group) =
    * `lf` : list of frequencies
    * followed by (count(lf) +1) gain parameters
    */
-shelfcascade(lf) =
-    // lf:par(i, outputs(lf), _*666)
-    lsBlock
-    :
-    // bsBlock(0)
-    // :
-    seq(i, nrBands-2, bsBlock(i))
-    :hsBlock
-     // bsBlock(3):
-     // bsBlock(4):
-     // bsBlock(5)
-     // fbus(lf), ls3(first(lf)) : sc(lf)
+shelfcascade =
+    routing
+    : lsBlock
+    : seq(i, nrBands-2, bsBlock(i))
+    : hsBlock
+      // fbus(lf), ls3(first(lf)) : sc(lf)
 with {
   sc((f1, f2, lf)) = fbus((f2,lf)), bs3(f1,f2) : sc((f2,lf)); // recursive pattern
   sc((f1, f2))     = _, bs3(f1,f2) : hs3(f2);                // halting pattern
   fbus(l)          = par(i, outputs(l), _);                  // a bus of the size of a list
   first((x,xs))    = x;                                      // first element of a list
 
-  lsBlock(f,g,x) =
-      si.bus((nrBands-1)*2-1)
-    , ls3(f,g,x)
-    , f;
-  bsBlock(i,f1,f2,g,x) =
-      si.bus((nrBands-2-i)*2-1)
-    , (x:bs3(f1,f2,g))
-    , f2;
-  hsBlock(f,g,x) =
+  routing =
+      _
+    , ro.interleave(nrBands-1,2)
+    , _
+  ;
+  lsBlock(x,f,g) =
+      ls3(f,g,x)
+    , f
+    , si.bus((nrBands-1)*2-1)
+  ;
+  bsBlock(i,x,f1,f2,g) =
+      (x:bs3(f1,f2,g))
+   , f2
+   , si.bus((nrBands-2-i)*2-1);
+  hsBlock(x,f,g) =
       hs3(f,g,x);
   /* higher order low, band and hi shelf filter primitives */
   ls3(f,g) = fi.svf.ls (f, .5, g3) : fi.svf.ls (f, .707, g3) : fi.svf.ls (f, 2, g3) with {g3 = g/3;};

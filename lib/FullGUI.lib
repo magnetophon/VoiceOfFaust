@@ -518,3 +518,11 @@ VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all os
                     fastFreq	= chorusGroup(vslider("[2]fast freq [style:knob][tooltip: fast modulation frequency]",	8, 0, 10, 0.01):si.smooth(0.999));
                     fastDepth	= chorusGroup(vslider("[3]fast depth [style:knob][tooltip: fast modulation amount]",	5, 0, 10, 0.01):volScale);
                     feedback	= chorusGroup(vslider("[4]feedback [style:knob][tooltip: feedback amount]",	-0.5, -1, 1, 0.01)*0.8:si.smooth(0.999));
+
+                    //-----------------------------------------------
+                    // gain and eq compensation
+                    //-----------------------------------------------
+
+                    compensationGroup(x)  =  FXGroup(vgroup("[7]compensation", x));
+                    volStrength = compensationGroup( vslider("[0]volume strength[style:knob][tooltip: 0 means no gain change, and 1 means the output gain follow the input gain]",	0, 0, 1, 0.001):si.smooth(0.999));
+                    eqStrength = compensationGroup( vslider("[1]eq strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains follow the input spectrum]",	0.25, 0, 1, 0.001):si.smooth(0.999));
