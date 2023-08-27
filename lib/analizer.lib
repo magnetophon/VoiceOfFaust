@@ -102,11 +102,28 @@ eqGains(freq, group, strength, inAudio,outAudio) =
     : par(i, nrBands,
           ((_-_) * strength)
           : max(-48): min(48)
+                      // : si.smoo
                       // : hbargraph("eq %i", -48, 48)
          )
 ;
 
 eqCompensate(freq, group, strength, inAudio,outAudio) =
+    (
+      outAudio
+    , centers(freq,group)
+    , LogArray(hslider("Q bottom", 0.7, 0.1, 13, 0.1),hslider("Q top", 0.7, 0.1, 13, 0.1),nrBands)
+    , eqGains(freq, group, strength, inAudio,outAudio)
+    )
+    :
+    eqBank;
+eqBank =
+    (_,ro.interleave(nrBands,3))
+    : seq(i, nrBands,
+          (ro.crossNM(1,3):fi.svf.bell)
+          ,si.bus((nrBands-i-1)*3)
+         );
+
+eqCompensateShelve(freq, group, strength, inAudio,outAudio) =
     ( outAudio
     , xOverFreqs(freq,group)
     , eqGains(freq, group, strength, inAudio,outAudio)
@@ -124,6 +141,7 @@ xOverFreqs(freq,group) =
                         : max(1)
                           // : max(20)
                           // : min(20000)
+                          // : si.smoo
                           // :hbargraph("freq %i[log]", 20, 20000)
          );
 
@@ -140,45 +158,53 @@ shelfcascade =
     : hsBlock
       // fbus(lf), ls3(first(lf)) : sc(lf)
 with {
-  sc((f1, f2, lf)) = fbus((f2,lf)), bs3(f1,f2) : sc((f2,lf)); // recursive pattern
-  sc((f1, f2))     = _, bs3(f1,f2) : hs3(f2);                // halting pattern
-  fbus(l)          = par(i, outputs(l), _);                  // a bus of the size of a list
-  first((x,xs))    = x;                                      // first element of a list
-
   routing =
       _
     , ro.interleave(nrBands-1,2)
     , _
   ;
   lsBlock(x,f,g) =
-      ls3(f,g,x)
+      ls(f,g,x)
     , f
     , si.bus((nrBands-1)*2-1)
   ;
   bsBlock(i,x,f1,f2,g) =
-      (x:bs3(f1,f2,g))
+      (x:bs(f1,f2,g))
     , f2
     , si.bus((nrBands-2-i)*2-1);
   hsBlock(x,f,g) =
-      hs3(f,g,x);
+      hs(f,g,x);
+
   /* higher order low, band and hi shelf filter primitives */
   ls3(f,g) = fi.svf.ls (f, .5, g3) : fi.svf.ls (f, .707, g3) : fi.svf.ls (f, 2, g3) with {g3 = g/3;};
   bs3(f1,f2,g) = ls3(f1,-g) : ls3(f2,g);
   hs3(f,g) = fi.svf.hs (f, .5, g3) : fi.svf.hs (f, .707, g3) : fi.svf.hs (f, 2, g3) with {g3 = g/3;};
-};
 
-OLDshelfcascade(lf) = fbus(lf), ls3(first(lf)) : sc(lf)
-with {
-  sc((f1, f2, lf)) = fbus((f2,lf)), bs3(f1,f2) : sc((f2,lf)); // recursive pattern
-  sc((f1, f2))     = _, bs3(f1,f2) : hs3(f2);                // halting pattern
-  fbus(l)          = par(i, outputs(l), _);                  // a bus of the size of a list
-  first((x,xs))    = x;                                      // first element of a list
-  /* higher order low, band and hi shelf filter primitives */
-  ls3(f,g) = fi.svf.ls (f, .5, g3) : fi.svf.ls (f, .707, g3) : fi.svf.ls (f, 2, g3) with {g3 = g/3;};
-  bs3(f1,f2,g) = ls3(f1,-g) : ls3(f2,g);
-  hs3(f,g) = fi.svf.hs (f, .5, g3) : fi.svf.hs (f, .707, g3) : fi.svf.hs (f, 2, g3) with {g3 = g/3;};
-};
+  ls7(f,g) =
+      fi.svf.ls (f, 5.02, g7) : fi.svf.ls (f, 1.52, g7) : fi.svf.ls (f, 0.89, g7)
+      : fi.svf.ls (f, 0.7, g7) : fi.svf.ls (f, .66, g7) : fi.svf.ls (f, .58, g7)
+      : fi.svf.ls (f, .5, g7)
+  with {g7 = g/7;};
+  bs7(f1,f2,g) = ls7(f1,-g) : ls7(f2,g);
+  hs7(f,g) =
+      fi.svf.hs (f, .5, g7) : fi.svf.hs (f, .707, g7) : fi.svf.hs (f, 2, g7)
+      : fi.svf.hs (f, .5, g7) : fi.svf.hs (f, .707, g7) : fi.svf.hs (f, 2, g7)
+  with {g7 = g/7;};
 
+  threeOrSix = checkbox("three or six");
+
+  bsN(N,f1,f2,g,x) = fi.lowshelf(N,-g,f1,x) : fi.lowshelf(N,g,f2);
+
+  ls(f,g,x) =
+      fi.lowshelf(27,g,f,x);
+  bs(f1,f2,g,x) =
+      bsN(27,f1,f2,g,x);
+  hs(f,g,x) =
+      fi.highshelf(27,g,f,x);
+  // ls(f,g,x) = select2(threeOrSix, ls3(f,g,x), ls7(f,g,x));
+  // bs(f1,f2,g,x) = select2(threeOrSix, bs3(f1,f2,g,x), bs7(f1,f2,g,x));
+  // hs(f,g,x) = select2(threeOrSix, hs3(f,g,x), hs7(f,g,x));
+};
 
 deEssedAnalizer(audio,freq,fidelity) =
     (simpleAnalizer(audio,freq), deEssGains(audio,freq,deEssStrenght*dynAmount)) : ro.interleave(nrBands,2) : par(i, nrBands, (ba.linear2db+_):ba.db2linear)
