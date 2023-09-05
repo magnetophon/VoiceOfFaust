@@ -80,7 +80,16 @@ phaseNoiseAmounts = VocoderLinArrayChooser(phaseNoiseAmountBottom,phaseNoiseAmou
 phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,phaseNoiseFreqBand,phaseNoiseFreqTop,para): dezipBands;
 
 // make a log array of values, from bottom to top
-LogArray(bottom,top,nrElements) =     par(i,nrElements,   pow((pow((top/bottom),1/(nrElements-1))),i)*bottom);
+LogArray(bottom,top,nrElements) =     par(i,nrElements,
+                                          pow(
+
+                                            pow
+                                            (
+                                              (top/bottom)
+                                            , 1/(nrElements-1)
+                                            )
+                                            ,i)
+                                          *bottom);
 
 // logarithmic middle between two values
 LogMiddle(bottom,top) = pow(top/bottom,0.5)*bottom;

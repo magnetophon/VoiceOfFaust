@@ -12,6 +12,15 @@ steps:
    - output_gains = dif between input_spectrum and output_spectrum
 6) use the "multiband shelve eq" and the output_gains to compensate the spectrum (with a strength knob)
 
+
+//////////////// FM
+
+make multi octave crossfade for both the modulator and the carier
+
+////// general
+
+adjust the ranges of top and bottom, possibly make them a multiplier of the analiser freqs
+
 ////////////////////////////////////////////////////////
 // now
 ////////////////////////////////////////////////////////

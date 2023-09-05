@@ -25,6 +25,8 @@ VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all os
   dbPs                  = analizerGroup(vslider("[03]gain speed[style:knob][tooltip: speed af gain correction]",	100, 0, 1000, 1))/ma.SR;
   gainScaling           = analizerGroup(vslider("[04]formant power[style:knob][tooltip: scale the relative gain of the bands between 0 = all at avg, 1 = normal and 2 = expansion]", 1.15, 0, 2, 0.001));
   weightingKind         = analizerGroup(vslider("[05]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0.6, 0, 2, 0.001));
+  analizerBottom                = analizerGroup(  vslider("[06]bottom[style:knob][tooltip: the lowest frequency of the analizer]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+  analizerTop                   = analizerGroup(  vslider("[07]top[style:knob][tooltip: the highest frequency of the analizer]", defaultTop, 1, 64, 0.001):pow(2));
 
   cleanGroup(x)         = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
   cleanGroupLevel(x)    = cleanGroup((vgroup("[0]levels", x)));
