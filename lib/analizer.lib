@@ -47,7 +47,9 @@ simpleAnalizer(audio,freq)=
     : ro.interleave(nrBands,2)
     : par(i, nrBands, (_*(1-LpHp),_*LpHp) :>_ ) ;
 
-LpHp = checkbox("LpHp");
+LpHp =
+    1;
+// checkbox("LpHp");
 
 OLDsimpleAnalizer(audio,freq)=
     (
@@ -71,11 +73,20 @@ LpHpAnalizer(audio,freq) =
            (_,ro.cross(2))
           ),!,_)
     : par(i, nrBands, XOblock(LpHpSelector(i))
-                      :an.amp_follower_ud(0.002 ,0.004)
+                      // :an.amp_follower_ud(0.002 ,0.004)
          )
-      // analizerCenters(freq)
+    :(
+      (analizerCenters(freq) :par(i, nrBands, freq2samples) )
+    , si.bus(nrBands)
+    )
+    : ro.interleave(nrBands,2)
+    : par(i, nrBands, RMS)
     : gainScale(enableGainScale,gainScaling,freq)
 with {
+  // RMS(n,x) = x:ba.slidingRMSp(n,192000);
+  RMS(n,x) = abs(x):ba.slidingMax(n*hslider("hold", 0.1, 0, 10, 0.01):int:max(1):min(192000),192000)
+             :ba.slidingRMSp(n*hslider("rms", 10, 1, 200, 0.1):int:max(1):min(192000),192000);
+  freq2samples(f) = (ma.SR/abs(f));
   XOblock(0) = lp;
   XOblock(1) = (_,lp):hp;
   XOblock(2) = hp;
@@ -111,9 +122,20 @@ LpHpoutputAnalizer(freq, group, audio)=
            :
            (_,ro.cross(2))
           ),!,_)
-    : par(i, nrBands, XOblock(LpHpSelector(i)):an.amp_follower_ud(0.002 ,0.004))
+    : par(i, nrBands, XOblock(LpHpSelector(i))
+                      // :an.amp_follower_ud(0.002 ,0.004)
+         )
+    :(
+      (centers(freq,group) :par(i, nrBands, freq2samples) )
+    , si.bus(nrBands)
+    )
+    : ro.interleave(nrBands,2)
+    : par(i, nrBands, RMS)
     : gainScale(enableGainScale,gainScaling,freq)
 with {
+  RMS(n,x) = abs(x):ba.slidingMax(n*hslider("hold", 0.1, 0, 10, 0.01):int:max(1):min(192000),192000)
+             :ba.slidingRMSp(n*hslider("rms", 10, 1, 200, 0.1):int:max(1):min(192000),192000);
+  freq2samples(f) = (ma.SR/abs(f));
   XOblock(0) = lp;
   XOblock(1) = (_,lp):hp;
   XOblock(2) = hp;
@@ -127,44 +149,46 @@ with {
              , fi.highpass(17,f,x)):>_ ;
   LpHpSelector(i) = (i > 0) + (i == (nrBands-1));
 };
-  eliptic = checkbox("eliptic");
+eliptic =
+    1;
+// checkbox("eliptic");
 
-  OLDoutputAnalizer(freq, group, audio)=
-      (
-        (audio<:si.bus(nrBands))
-       ,(centers(freq,group) <:(
-          (si.bus(nrBands)<:(freq/2,par(i,nrBands,ba.selector(i-1,nrBands)))
-          )
-         ,(si.bus(nrBands))))
-       ,(analizerQ<:si.bus(nrBands))
-      ):analizers;
+OLDoutputAnalizer(freq, group, audio)=
+    (
+      (audio<:si.bus(nrBands))
+     ,(centers(freq,group) <:(
+        (si.bus(nrBands)<:(freq/2,par(i,nrBands,ba.selector(i-1,nrBands)))
+        )
+       ,(si.bus(nrBands))))
+     ,(analizerQ<:si.bus(nrBands))
+    ):analizers;
 
-  avgOutVol(freq, group, audio) =
-      outputAnalizer(freq, group, audio)
-      :par(i, nrBands, ba.linear2db)
-       :>_/nrBands;
+avgOutVol(freq, group, audio) =
+    outputAnalizer(freq, group, audio)
+    :par(i, nrBands, ba.linear2db)
+     :>_/nrBands;
 
-  avgInVol(freq, audio) =
-      simpleAnalizer(audio,freq)
-      :par(i, nrBands, ba.linear2db)
-       :>_/nrBands;
+avgInVol(freq, audio) =
+    simpleAnalizer(audio,freq)
+    :par(i, nrBands, ba.linear2db)
+     :>_/nrBands;
 
-  inOutVolCompensate(freq, group, strength, inAudio,outAudio) =
-      (avgInVol(freq, inAudio) - avgOutVol(freq, group, outAudio))
-      * strength
-      : ba.db2linear
-        *outAudio;
+inOutVolCompensate(freq, group, strength, inAudio,outAudio) =
+    (avgInVol(freq, inAudio) - avgOutVol(freq, group, outAudio))
+    * strength
+    : ba.db2linear
+      *outAudio;
 
-  inputSpectrum(freq, audio) =
-      simpleAnalizer(audio,freq)
-      :par(i, nrBands, ba.linear2db)
-       // : difWithAvgSel
+inputSpectrum(freq, audio) =
+    simpleAnalizer(audio,freq)
+    :par(i, nrBands, ba.linear2db)
+     // : difWithAvgSel
   ;
 
-  outputSpectrum(freq, group, audio) =
-      outputAnalizer(freq, group, audio)
-      :par(i, nrBands, ba.linear2db)
-       // : difWithAvgSel
+outputSpectrum(freq, group, audio) =
+    outputAnalizer(freq, group, audio)
+    :par(i, nrBands, ba.linear2db)
+     // : difWithAvgSel
   ;
 
   eqGains(freq, group, strength, inAudio,outAudio) =
