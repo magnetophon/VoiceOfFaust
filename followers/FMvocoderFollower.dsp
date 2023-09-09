@@ -7,8 +7,8 @@ import ("../lib/FMvocoder.lib");
 process(audio,index,fidelity) =
   FMvocoder(audio, guidePitch(audio,index),index,fidelity,doubleOscs);
 
-// simpleAnalizer(audio,69)
-// outputAnalizer(69, FMvocoderGroup, audio)
+// simpleAnalizer(audio,69);
+// outputAnalizer(69, FMvocoderGroup, audio);
 // ,
 // LpHpAnalizer(audio,69)
 // ;

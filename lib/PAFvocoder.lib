@@ -18,12 +18,14 @@ PAFvocoder(audio,freq,index,fidelity,0)=
   (pafCenters,(funds(freq,index,0,PAFvocoderGroup)),pafIndexes,analizer(voice(audio,freq),freq,fidelity,enableDeEsser))
   :pafOscs
   :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,0)
-  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.03,width);
+   // :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.03,width);
+  :postProc(audio,freq,nrOutChan,0,enableAutosat,enableEqCompensate,PAFvocoderGroup,eqStrength,voice(audio,freq),volume*0.03,width);
 
 PAFvocoder(audio,freq,index,fidelity,1)=
   par(i,nrOutChan,
-    (pafCenters,(funds(freq,index,i,PAFvocoderGroup)),pafIndexes,analizer(voice(audio,freq),freq,fidelity,enableDeEsser))
-    :pafOscs
-  )
+      (pafCenters,(funds(freq,index,i,PAFvocoderGroup)),pafIndexes,analizer(voice(audio,freq),freq,fidelity,enableDeEsser))
+      :pafOscs
+     )
   :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,1)
-  :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.03,width);
+   // :postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume*0.03,width);
+  :postProc(audio,freq,nrOutChan,0,enableAutosat,enableEqCompensate,PAFvocoderGroup,eqStrength,voice(audio,freq),volume*0.03,width);
