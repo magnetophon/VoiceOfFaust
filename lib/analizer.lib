@@ -88,12 +88,12 @@ with {
   lp(f,x) =
       select2(eliptic
              , fi.lowpass(17,f,x)
-             , (x:seq(i, 2, fi.lowpass6e(f)))
+             , (x:seq(i, 3, fi.lowpass6e(f)))
              ):>_ ;
   hp(f,x) =
       select2(eliptic
              , fi.highpass(17,f,x)
-             , (x:seq(i, 2, fi.highpass6e(f)))
+             , (x:seq(i, 3, fi.highpass6e(f)))
              ):>_ ;
 };
 
