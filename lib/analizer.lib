@@ -15,25 +15,25 @@ analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands
 //also sounds cool to vary between this and 0
 
 analizers=
-ro.interleave(nrBands,4):par(i, nrBands,(autoQresonBP:an.amp_follower_ud(0.002 ,0.004)));
+    ro.interleave(nrBands,4):par(i, nrBands,(autoQresonBP:an.amp_follower_ud(0.002 ,0.004)));
 
 autoQresonBP(f,prevC,c,q) =
     // f:fi.resonbp(c:min((ma.SR/2)-10),Q,1):fi.resonbp(c:min((ma.SR/2)-10),Q,compensate*0.2)
     f:chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,1):chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,compensate*0.2)
-    with {
-      Q = ((((c-(prevC*autoQ)):max(20))*q)/(c:max(20)))*(1+(2*autoQ));
-      BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0.001); //1.766
-      BP2 =9.43;//1/hslider("[-1]bp2",	0, 0, 1, 0.001); //9.43
-      FAC1 = 1;//hslider("[-1]fac1",	1, 1, 30, 0.001);//1
-      FAC2 = 1.7;//hslider("[-1]fac2",	1, 1, 30, 0.001);//1.7
-      FAC3 = 4;//hslider("[-1]fac3",	1, 1, 30, 0.001);//4
-      com = 1/(Q/49);
-      compensate =
-          (((com*FAC1),(com<BP1)):*),
-          ((((com-BP1)*FAC2+FAC1*BP1),((com>=BP1)&(com<=BP2))):*),
-          ((((com-BP2)*FAC3+((BP2-BP1)*FAC2)+FAC1*BP1),(com>BP2)):*)
-          :>_+1;
-    };
+with {
+  Q = ((((c-(prevC*autoQ)):max(20))*q)/(c:max(20)))*(1+(2*autoQ));
+  BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0.001); //1.766
+       BP2 =9.43;//1/hslider("[-1]bp2",	0, 0, 1, 0.001); //9.43
+            FAC1 = 1;//hslider("[-1]fac1",	1, 1, 30, 0.001);//1
+                   FAC2 = 1.7;//hslider("[-1]fac2",	1, 1, 30, 0.001);//1.7
+                          FAC3 = 4;//hslider("[-1]fac3",	1, 1, 30, 0.001);//4
+                                 com = 1/(Q/49);
+                                 compensate =
+                                     (((com*FAC1),(com<BP1)):*),
+                                     ((((com-BP1)*FAC2+FAC1*BP1),((com>=BP1)&(com<=BP2))):*),
+                                     ((((com-BP2)*FAC3+((BP2-BP1)*FAC2)+FAC1*BP1),(com>BP2)):*)
+                                     :>_+1;
+};
 
 // analizer(audio,freq,fidelity,enableDeEsser)
 analizer(audio,freq,fidelity,0)=simpleAnalizer(audio,freq);
@@ -41,7 +41,7 @@ analizer(audio,freq,fidelity,1)=deEssedAnalizer(audio,freq,fidelity);
 
 simpleAnalizer(audio,freq)=
     (
-      OLDsimpleAnalizer(audio,freq)
+      resoBpAnalizer(analizerCenters(freq), audio)
     , LpHpAnalizer(audio,analizerCenters(freq))
     )
     : ro.interleave(nrBands,2)
@@ -52,16 +52,6 @@ simpleAnalizer(audio,freq)=
 LpHp =
     // 1;
     checkbox("LpHp");
-
-OLDsimpleAnalizer(audio,freq)=
-    (
-      (audio<:si.bus(nrBands))
-     ,(analizerCenters(freq)<:(
-        (si.bus(nrBands)<:(freq/2,par(i,nrBands,ba.selector(i-1,nrBands)))
-        )
-       ,(si.bus(nrBands))))
-     ,(analizerQ<:si.bus(nrBands))
-    ):analizers ;
 
 LpHpAnalizer(audio,freqs) =
     (
@@ -106,61 +96,24 @@ with {
 
 outputAnalizer(freq, group, audio)=
     (
-      OLDoutputAnalizer(freq, group, audio)
-      // , LpHpoutputAnalizer(freq, group, audio)
+      resoBpAnalizer(centers(freq,group), audio)
     , LpHpAnalizer(audio,centers(freq,group))
     )
     : ro.interleave(nrBands,2)
     : par(i, nrBands, (_*(1-LpHp),_*LpHp) :>_ ) ;
 
-LpHpoutputAnalizer(freq, group, audio)=
-    (
-      (xOverFreqs((centers(freq,group))),0)
-    , (audio<:si.bus(nrBands))
-    )
-    : ro.interleave(nrBands,2)
-    : (par(i, nrBands-1,
-           ((_<:(_,_)),_)
-           :
-           (_,ro.cross(2))
-          ),!,_)
-    : par(i, nrBands, XOblock(LpHpSelector(i))
-                      // :an.amp_follower_ud(0.002 ,0.004)
-         )
-    :(
-      (centers(freq,group) :par(i, nrBands, freq2samples) )
-    , si.bus(nrBands)
-    )
-    : ro.interleave(nrBands,2)
-    : par(i, nrBands, RMS)
-      // TODO: check if needed:
-      // : gainScale(enableGainScale,gainScaling,freq)
-with {
-  RMS(n,x) = abs(x):ba.slidingMax(n*hslider("hold", 0.1, 0, 10, 0.01):int:max(1):min(192000),192000)
-             :ba.slidingRMSp(n*hslider("rms", 10, 1, 200, 0.1):int:max(1):min(192000),192000);
-  freq2samples(f) = (ma.SR/abs(f));
-  XOblock(0) = lp;
-  XOblock(1) = (_,lp):hp;
-  XOblock(2) = hp;
-  lp(f,x) =
-      select2(eliptic
-             , fi.lowpass6e(f,x)
-             , fi.lowpass(17,f,x)):>_ ;
-  hp(f,x) =
-      select2(eliptic
-             , (x:seq(i, 3, fi.highpass6e(f)))
-             , fi.highpass(17,f,x)):>_ ;
-  LpHpSelector(i) = (i > 0) + (i == (nrBands-1));
-};
 eliptic =
     1;
 // checkbox("eliptic");
 
-OLDoutputAnalizer(freq, group, audio)=
+resoBpAnalizer(freqs, audio)=
     (
       (audio<:si.bus(nrBands))
-     ,(centers(freq,group) <:(
-        (si.bus(nrBands)<:(freq/2,par(i,nrBands,ba.selector(i-1,nrBands)))
+     ,(freqs <:(
+        ( (_<:(_/2,_))
+          // ,par(i,nrBands,ba.selector(i-1,nrBands))
+        , si.bus(nrBands-2)
+        , !
         )
        ,(si.bus(nrBands))))
      ,(analizerQ<:si.bus(nrBands))
