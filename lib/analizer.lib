@@ -19,20 +19,20 @@ analizers=
 
 autoQresonBP(f,prevC,c,q) =
     // f:fi.resonbp(c:min((ma.SR/2)-10),Q,1):fi.resonbp(c:min((ma.SR/2)-10),Q,compensate*0.2)
-    f:chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,1):chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,compensate*0.2)
+    f:chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,1):chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,compensate*0.008)
 with {
   Q = ((((c-(prevC*autoQ)):max(20))*q)/(c:max(20)))*(1+(2*autoQ));
   BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0.001); //1.766
-       BP2 =9.43;//1/hslider("[-1]bp2",	0, 0, 1, 0.001); //9.43
-            FAC1 = 1;//hslider("[-1]fac1",	1, 1, 30, 0.001);//1
-                   FAC2 = 1.7;//hslider("[-1]fac2",	1, 1, 30, 0.001);//1.7
-                          FAC3 = 4;//hslider("[-1]fac3",	1, 1, 30, 0.001);//4
-                                 com = 1/(Q/49);
-                                 compensate =
-                                     (((com*FAC1),(com<BP1)):*),
-                                     ((((com-BP1)*FAC2+FAC1*BP1),((com>=BP1)&(com<=BP2))):*),
-                                     ((((com-BP2)*FAC3+((BP2-BP1)*FAC2)+FAC1*BP1),(com>BP2)):*)
-                                     :>_+1;
+  BP2 =9.43;//1/hslider("[-1]bp2",	0, 0, 1, 0.001); //9.43
+       FAC1 = 1;//hslider("[-1]fac1",	1, 1, 30, 0.001);//1
+              FAC2 = 1.7;//hslider("[-1]fac2",	1, 1, 30, 0.001);//1.7
+                     FAC3 = 4;//hslider("[-1]fac3",	1, 1, 30, 0.001);//4
+                            com = 1/(Q/49);
+                            compensate =
+                                (((com*FAC1),(com<BP1)):*),
+                                ((((com-BP1)*FAC2+FAC1*BP1),((com>=BP1)&(com<=BP2))):*),
+                                ((((com-BP2)*FAC3+((BP2-BP1)*FAC2)+FAC1*BP1),(com>BP2)):*)
+                                :>_+1;
 };
 
 // analizer(audio,freq,fidelity,enableDeEsser)
