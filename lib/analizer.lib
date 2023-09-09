@@ -64,8 +64,8 @@ LpHp =
 // checkbox("LpHp");
 
 eliptic =
-    // 1;
-    checkbox("eliptic");
+    1;
+// checkbox("eliptic");
 
 Xover(audio,freqs) =
     (
@@ -107,7 +107,7 @@ smoothBands(freqs) =
 with {
   env(f,x) =
       x:si.smooth(ba.tau2pole(
-                     1/abs(f)*hslider("smooth eq", 2, 0, 20, 0.1)));
+                     1/abs(f)*eqSmooth));
 };
 
 envFolowers(freqs) =
@@ -123,16 +123,12 @@ with {
       :ba.slidingMax(holdS(f),maxHoldS)
        // :ba.slidingRMSp(rmsS(f),maxRmsS)
       :an.amp_follower_ud(
-        freq2time(f)*hslider("attack", 0.5, 0, 100, 0.1)
-      , freq2time(f)*hslider("release", 2, 0, 600, 0.1));
+        freq2time(f)*analizerAttack
+      , freq2time(f)*analizerRelease);
   freq2time(f) = 1/abs(f);
   freq2samples(f) = freq2time(f)*ma.SR;
-  holdS(f) = freq2samples(f)*hslider("hold", 1, 0, maxHoldMult, 0.1):int:max(1):min(maxHoldS);
+  holdS(f) = freq2samples(f)*analizerHold:int:max(1):min(maxHoldS);
   rmsS(f) =  freq2samples(f)*hslider("rms", 8, 0, maxRmsMult, 0.1)  :int:max(1):min(maxRmsS);
-  maxHoldMult = 2.5;
-  maxRmsMult = 20;
-  minFreq =  20;
-  maxSR = 192000;
   maxHoldS = (maxSR/minFreq)*maxHoldMult;
   maxRmsS = (maxSR/minFreq)*maxRmsMult;
 };
@@ -174,9 +170,9 @@ eqGains(freq, group, strength, inAudio,outAudio) =
           // : si.smoo
           // : hbargraph("eq %i", -48, 48)
          )
-    : ba.bypass_fade(ma.SR/100,checkbox("bp avg diff"),difWithAvg)
-    : par(i, nrBands, _+hslider("offSet", 0, -48, 48, 1))
-    : ba.bypass_fade(ma.SR/100,checkbox("bp max diff"),difWithMax)
+      // : ba.bypass_fade(ma.SR/100,checkbox("bp avg diff"),difWithAvg)
+    : par(i, nrBands, _+(eqOffset))
+      // : ba.bypass_fade(ma.SR/100,checkbox("bp max diff"),difWithMax)
     : smoothBands(centers(freq,group))
     : par(i, nrBands, max(-96): min(48))
 ;
@@ -203,7 +199,7 @@ eqCompensate(freq, group, strength, inAudio,outAudio) =
     (
       outAudio
     , centers(freq,group)
-    , LogArray(hslider("Q bottom", 3, 0.1, 13, 0.1),hslider("Q top", 9, 0.1, 13, 0.1),nrBands)
+    , LogArray(eqQbottom,eqQtop,nrBands)
     , eqGains(freq, group, strength, inAudio,outAudio)
     )
     :

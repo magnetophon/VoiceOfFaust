@@ -484,7 +484,7 @@ with {
 stereoLimiter(freq) = limiter(freq,2,enableLimiter);
 //monoLimiter(pitch),monoLimiter(pitch);
 
-bypass(b,e) =
+bypassE(b,e) =
   par(i, ins, _)
   <: (par(i, ins, *(1-b)) : e : par(i, outs, *(1-b))), par(i, ins, *(b))
                                                        :> par(i, outs, _)

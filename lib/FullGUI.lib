@@ -5,7 +5,7 @@ VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all os
   OSCgroup(x)           = VoFgroup(hgroup("[0]OSC", x)); // To recieve OSC pitch and other messages
   analizerGroup(x)      = VoFgroup(hgroup("[1]analizer", x)); // To recieve OSC pitch and other messages
   //qompander           = [1]
-  volume                = VoFgroup(hslider("[2]main output level", 1,0,4,0.001):volScale);
+  volume                = VoFgroup(hslider("[2]main output level[unit:dB]", 0,-96,12,0.1))-eqOffset:ba.db2linear;
   tabs(x)               = VoFgroup(tgroup("[3]", x));
   synthsGroup(x)        = tabs(hgroup("[0]synths", x));
   FXGroup(x)            = tabs(hgroup("[1]effects", x));
@@ -25,8 +25,11 @@ VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all os
   dbPs                  = analizerGroup(vslider("[03]gain speed[style:knob][tooltip: speed af gain correction]",	100, 0, 1000, 1))/ma.SR;
   gainScaling           = analizerGroup(vslider("[04]formant power[style:knob][tooltip: scale the relative gain of the bands between 0 = all at avg, 1 = normal and 2 = expansion]", 1.15, 0, 2, 0.001));
   weightingKind         = analizerGroup(vslider("[05]weighting kind[style:knob][tooltip: 0 = no weighting, 1 = A-weighting, 2 = ITU-R 468 weighting]", 0.6, 0, 2, 0.001));
-  analizerBottom                = analizerGroup(  vslider("[06]bottom[style:knob][tooltip: the lowest frequency of the analizer]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
-  analizerTop                   = analizerGroup(  vslider("[07]top[style:knob][tooltip: the highest frequency of the analizer]", defaultTop, 1, 64, 0.001):pow(2));
+  analizerBottom        = analizerGroup(  vslider("[06]bottom[style:knob][tooltip: the lowest frequency of the analizer]",	defaultBottom, 0.5, 7, 0.001):pow(2));			//0.25 to 49 logarithmicly
+  analizerTop           = analizerGroup(  vslider("[07]top[style:knob][tooltip: the highest frequency of the analizer]", defaultTop, 1, 64, 0.001):pow(2));
+  analizerAttack        = analizerGroup(  vslider("[08]attack[style:knob][tooltip: attack speed of the analizer]", 1, 0, 200, 0.1));
+  analizerHold          = analizerGroup(  vslider("[09]hold[style:knob][tooltip: hold time of the analizer]", 1, 0, maxHoldMult, 0.1));
+  analizerRelease       = analizerGroup(  vslider("[10]release[style:knob][tooltip: release speed of the analizer]", 2, 0, 600, 0.1));
 
   cleanGroup(x)         = synthsGroup((vgroup("[0]clean[tooltip: the input signal, qompanded ]", x)));
   cleanGroupLevel(x)    = cleanGroup((vgroup("[0]levels", x)));
@@ -525,6 +528,11 @@ VoFgroup(x)             = (vgroup("VoiceOfFaust", x)); // root adress for all os
                     // gain and eq compensation
                     //-----------------------------------------------
 
-                    compensationGroup(x)  =  FXGroup(vgroup("[7]compensation", x));
+                    compensationGroup(x)  =  FXGroup(vgroup("[7]eq compensation", x));
                     volStrength = compensationGroup( vslider("[0]volume strength[style:knob][tooltip: 0 means no gain change, and 1 means the output gain follow the input gain]",	0, 0, 1, 0.001):si.smooth(0.999));
-                    eqStrength = compensationGroup( vslider("[1]eq strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains fully match the input spectrum]",	1, -1, 1, 0.001):si.smooth(0.999));
+                    eqStrength = compensationGroup( vslider("[1]eq strength[style:knob][tooltip: 0 means all EQ's are at zero gain, and 1 means the EQ gains fully match the input spectrum]",	1, 0, 2, 0.001):si.smooth(0.999));
+                    eqOffsetFader = compensationGroup( vslider("[2]eq offset[style:knob][tooltip: offset to the eq gains]",	12, -30, 30, 0.1):si.smooth(0.999));
+                    eqOffset = eqOffsetFader * eqStrength;
+                    eqSmooth = compensationGroup( vslider("[3]eq smooth[style:knob][tooltip: amount of smoothing for the EQ gains]",	3, 0, 20, 0.1):si.smooth(0.999));
+                    eqQbottom = compensationGroup( vslider("[4]eq Q bottom[style:knob][tooltip: bottom Q of the EQ]", 4.2, 0.1, 13, 0.1):si.smooth(0.999));
+                    eqQtop = compensationGroup( vslider("[5]eq Q top[style:knob][tooltip: top Q of the EQ]", 4.2, 0.1, 13, 0.1):si.smooth(0.999));

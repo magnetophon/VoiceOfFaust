@@ -34,6 +34,10 @@ maxTimeWithoutPitch       = 2*ma.SR;    // longest time the OSC pitch tracker ca
 maxTimeWithoutFidelity    = 265*4 ;  // is 4*6ms @ 44100. the time between 4 fid messages
 PTsmooth                  = 0.9984; // si.smooth() factor for simple pitch smoother
 // analizer:
+maxHoldMult = 2.5;
+maxRmsMult  = 20;
+minFreq     = 20;
+maxSR       = 192000;
 // analizerTop               = 64;
 // analizerBottom            = (0.5*pow(2,0.5))+0.0;
 // analizerTop               = defaultTop;
