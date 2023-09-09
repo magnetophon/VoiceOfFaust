@@ -14,12 +14,13 @@ analizerCenters(freq) = VocoderFreqs(analizerBottom ,analizerTop):(par(i,nrBands
 //an.amp_follower_ud params set for minimal distortion
 //also sounds cool to vary between this and 0
 
-analizers=
-    ro.interleave(nrBands,4):par(i, nrBands,(autoQresonBP:an.amp_follower_ud(0.002 ,0.004)));
+BPfilters =
+    ro.interleave(nrBands,4):par(i, nrBands,(autoQresonBP));
+
 
 autoQresonBP(f,prevC,c,q) =
     // f:fi.resonbp(c:min((ma.SR/2)-10),Q,1):fi.resonbp(c:min((ma.SR/2)-10),Q,compensate*0.2)
-    f:chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,1):chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,compensate*0.008)
+    f:chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,1):chooseResonBP(stableFilters,c:min((ma.SR/2)-10),Q,compensate*0.010)
 with {
   Q = ((((c-(prevC*autoQ)):max(20))*q)/(c:max(20)))*(1+(2*autoQ));
   BP1= 1.766;//1/hslider("[-1]bp1",	0, 0, 1, 0.001); //1.766
@@ -41,19 +42,32 @@ analizer(audio,freq,fidelity,1)=deEssedAnalizer(audio,freq,fidelity);
 
 simpleAnalizer(audio,freq)=
     (
-      resoBpAnalizer(analizerCenters(freq), audio)
-    , LpHpAnalizer(audio,analizerCenters(freq))
+      resoBpXover(analizerCenters(freq), audio)
+    , Xover(audio,analizerCenters(freq))
     )
     : ro.interleave(nrBands,2)
     : par(i, nrBands, (_*(1-LpHp),_*LpHp) :>_ )
+    : envFolowers(analizerCenters(freq))
     : gainScale(enableGainScale,gainScaling,freq)
 ;
 
+outputAnalizer(freq, group, audio)=
+    (
+      resoBpXover(centers(freq,group), audio)
+    , Xover(audio,centers(freq,group))
+    )
+    : ro.interleave(nrBands,2)
+    : par(i, nrBands, (_*(1-LpHp),_*LpHp) :>_ )
+    : envFolowers(centers(freq,group));
 LpHp =
-    // 1;
-    checkbox("LpHp");
+    1;
+// checkbox("LpHp");
 
-LpHpAnalizer(audio,freqs) =
+eliptic =
+    // 1;
+    checkbox("eliptic");
+
+Xover(audio,freqs) =
     (
       (xOverFreqs((freqs)),0)
     , (audio<:si.bus(nrBands))
@@ -65,48 +79,66 @@ LpHpAnalizer(audio,freqs) =
            (_,ro.cross(2))
           ),!,_)
     : par(i, nrBands, XOblock(LpHpSelector(i))
-                      // :an.amp_follower_ud(0.002 ,0.004)
          )
-    :(
-      (freqs :par(i, nrBands, freq2samples) )
-    , si.bus(nrBands)
-    )
-    : ro.interleave(nrBands,2)
-    : par(i, nrBands, RMS)
 with {
-  // RMS(n,x) = x:ba.slidingRMSp(n,192000);
-  RMS(n,x) = abs(x):ba.slidingMax(n*hslider("hold", 0.1, 0, 10, 0.01):int:max(1):min(192000),192000)
-             :ba.slidingRMSp(n*hslider("rms", 10, 1, 200, 0.1):int:max(1):min(192000),192000);
-  freq2samples(f) = (ma.SR/abs(f));
+  LpHpSelector(i) = (i > 0) + (i == (nrBands-1));
   XOblock(0) = lp;
   XOblock(1) = (_,lp):hp;
   XOblock(2) = hp;
-  // lp = fi.lowpass(17);
-  // hp = fi.highpass(17);
   lp(f,x) =
       select2(eliptic
-             , fi.lowpass6e(f,x)
-             , fi.lowpass(17,f,x)):>_ ;
+             , fi.lowpass(17,f,x)
+             , (x:seq(i, 2, fi.lowpass6e(f)))
+             ):>_ ;
   hp(f,x) =
       select2(eliptic
-             , (x:seq(i, 3, fi.highpass6e(f)))
-             , fi.highpass(17,f,x)):>_ ;
-  LpHpSelector(i) = (i > 0) + (i == (nrBands-1));
+             , fi.highpass(17,f,x)
+             , (x:seq(i, 2, fi.highpass6e(f)))
+             ):>_ ;
 };
 
-outputAnalizer(freq, group, audio)=
+smoothBands(freqs) =
     (
-      resoBpAnalizer(centers(freq,group), audio)
-    , LpHpAnalizer(audio,centers(freq,group))
+      freqs
+    , si.bus(nrBands)
     )
     : ro.interleave(nrBands,2)
-    : par(i, nrBands, (_*(1-LpHp),_*LpHp) :>_ ) ;
+    : par(i, nrBands, env)
+with {
+  env(f,x) =
+      x:si.smooth(ba.tau2pole(
+                     1/abs(f)*hslider("smooth eq", 2, 0, 20, 0.1)));
+};
 
-eliptic =
-    1;
-// checkbox("eliptic");
+envFolowers(freqs) =
+    (
+      freqs
+    , si.bus(nrBands)
+    )
+    : ro.interleave(nrBands,2)
+    : par(i, nrBands, env)
+with {
+  env(f,x) =
+      abs(x)
+      :ba.slidingMax(holdS(f),maxHoldS)
+       // :ba.slidingRMSp(rmsS(f),maxRmsS)
+      :an.amp_follower_ud(
+        freq2time(f)*hslider("attack", 0.5, 0, 100, 0.1)
+      , freq2time(f)*hslider("release", 2, 0, 600, 0.1));
+  freq2time(f) = 1/abs(f);
+  freq2samples(f) = freq2time(f)*ma.SR;
+  holdS(f) = freq2samples(f)*hslider("hold", 1, 0, maxHoldMult, 0.1):int:max(1):min(maxHoldS);
+  rmsS(f) =  freq2samples(f)*hslider("rms", 8, 0, maxRmsMult, 0.1)  :int:max(1):min(maxRmsS);
+  maxHoldMult = 2.5;
+  maxRmsMult = 20;
+  minFreq =  20;
+  maxSR = 192000;
+  maxHoldS = (maxSR/minFreq)*maxHoldMult;
+  maxRmsS = (maxSR/minFreq)*maxRmsMult;
+};
 
-resoBpAnalizer(freqs, audio)=
+
+resoBpXover(freqs, audio)=
     (
       (audio<:si.bus(nrBands))
      ,(freqs <:(
@@ -117,7 +149,9 @@ resoBpAnalizer(freqs, audio)=
         )
        ,(si.bus(nrBands))))
      ,(analizerQ<:si.bus(nrBands))
-    ):analizers;
+    )
+    :BPfilters
+;
 
 inputSpectrum(freq, audio) =
     simpleAnalizer(audio,freq)
@@ -140,9 +174,11 @@ eqGains(freq, group, strength, inAudio,outAudio) =
           // : si.smoo
           // : hbargraph("eq %i", -48, 48)
          )
-      // : difWithAvg
-    : difWithMax
-      // : par(i, nrBands, max(-48): min(48))
+    : ba.bypass_fade(ma.SR/100,checkbox("bp avg diff"),difWithAvg)
+    : par(i, nrBands, _+hslider("offSet", 0, -48, 48, 1))
+    : ba.bypass_fade(ma.SR/100,checkbox("bp max diff"),difWithMax)
+    : smoothBands(centers(freq,group))
+    : par(i, nrBands, max(-96): min(48))
 ;
 difWithAvg =
     si.bus(nrBands)<:
