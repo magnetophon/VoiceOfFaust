@@ -407,14 +407,12 @@ autoSat(x) = x:min(1):max(-1)<:2.0*_ * (1.0-abs(_)*0.5);
 // postProc(audio,freq,nrOutChan,ambisonicsOn,enableAutosat,volume,width)
 // no ambisonics
 postProc(audio,freq,nrOutChan,0,enableAutosat,enableEqCompensate,group,strength,voice,volume,width) =
-  ( par(i, nrOutChan, _*(volume:dezip)):WidePanner(width,nrOutChan)
+  ( WidePanner(width,nrOutChan)
     :par(i,nrOutChan,
          fi.dcblocker <:select2(enableAutosat,_,autoSat)
          <: select2(enableEqCompensate,_,eqCompensate(freq, group, strength, voice))
         ) )
-  // <:select2(enableLimiter,
-  //   si.bus(nrOutChan)
-  //   ,limiter(freq * 0.25,nrOutChan)) //needs the pitch to adjust the decay time.
+  : par(i, nrOutChan, _*(volume:dezip))
   :limiter(freq * 0.25,nrOutChan,enableLimiter) //needs the pitch to adjust the decay time.
   :VuMeter(nrOutChan,enableVUmeter)
 ;
@@ -434,8 +432,8 @@ postProc(audio,freq,nrOutChan,1,enableAutosat,enableEqCompensate,group,strength,
   (
     (ho.decoderStereo(ambisonicsOrder)
      :par(i,2,
-          (_*volume):fi.dcblocker<: select2(enableAutosat,_,autoSat)
-          : select2(enableEqCompensate,_,eqCompensate(freq, group, strength, voice))
+          fi.dcblocker<: select2(enableAutosat,_,autoSat)
+          <: select2(enableEqCompensate,_,eqCompensate(freq, group, strength, voice))*volume
          )
     ), si.bus(nrAmbisonicsChan)
   )
@@ -485,3 +483,21 @@ with {
 
 stereoLimiter(freq) = limiter(freq,2,enableLimiter);
 //monoLimiter(pitch),monoLimiter(pitch);
+
+bypass(b,e) =
+  par(i, ins, _)
+  <: (par(i, ins, *(1-b)) : e : par(i, outs, *(1-b))), par(i, ins, *(b))
+                                                       :> par(i, outs, _)
+with {
+  ins = inputs(e);
+  outs = outputs(e);
+};
+
+bypass_fade(n, b, e) = par(i, ins, _)
+                       <: (par(i, ins, *(1-xb)) : e : par(i, outs, *(1-xb))), par(i, ins, *(xb))
+                                                                              :> par(i, outs, _)
+with {
+  ins = inputs(e);
+  outs = outputs(e);
+  xb = ramp(n, b);
+};
