@@ -36,3 +36,6 @@ followers/*.lv2
 /followers/FMsingerFollower
 /standalones/softSyncVocoder
 /standalones/stringSinger.lv2/
+/faust.*/
+*/faust-graphs.html
+*/.*-wrapped
