@@ -6,22 +6,64 @@ import ("../lib/FMvocoder.lib");
 
 process(audio,indexx,fidelity) =
   // FMvocoder(audio, guidePitch(audio,index),index,fidelity,doubleOscs);
-  myindex
-, detuneOsc(myindex);
+  myindex:saw2sine
+,
+  detuneOsc(myindex);
 
-detuneOsc(index) = index+offset(index):ma.decimal
+saw2sine(x) = 2*x*ma.PI:sin;
+
+detuneOsc(index) =
+  // (index+offset(index):ma.decimal)
+  (index+simpOff(0):ma.decimal:saw2sine)
+, (index+simpOff(phase):ma.decimal:saw2sine)
+, asym_lf_triangle_phase(asym,lf_freq,phase)
+  // , (os.lf_sawpos(lf_freq)+amount*lf_triangle_phase(lf_freq,phase):ma.decimal)
+  // , (os.lf_sawpos(lf_freq)+phase:ma.decimal)
 with {
-  offset(index) = FB(index)~_*amount;
+  simpOff(phase) =
+    asym_lf_triangle_phase(asym,lf_freq,phase)
+    * amount
+    * dif(index)
+    * ma.SR
+    / lf_freq
+  ;
+  offset(index) = (FB(index)~_*(1-(amount==0)))
+                  *amount
+  ;
   FB(index,prevOffset) =
-    (dif(index)/(amount:max(ma.EPSILON))*
+    (dif(index)
+     // *amount
      // select2(os.lf_squarewavepos(hslider("freq", 0.1, 0, 10, 0.001)),1,-1)
-     os.lf_triangle(hslider("freq", 0.1, 0, 10, 0.001))
-    )+
-    (prevOffset
-
-    );
+     *lf_triangle_phase(lf_freq,phase)
+     // *os.lf_triangle(lf_freq)
+    )+ prevOffset
+  ;
   dif(index) = index-index':ma.decimal;
-  amount = hslider("amount", 0, 0, 0.1, 0.001);
+  amount = hslider("amount", 0, 0, 0.5, 0.001):si.smoo;
+  lf_freq = hslider("lf freq", 0.1, 0, 10, 0.001):si.smoo;
+  phase = hslider("phase", 0, 0, 1, 0.001):si.smoo;
+  asym = hslider("asym", 1/3, 0, 1, 0.001);
+  lf_triangle_phase(freq,phase) = pos2plusMinus(1.0-abs(pos2plusMinus(lf_sawpos_phase(freq, phase)))); // saw1 defined below
+  lf_sawpos_phase(freq,phase) = os.lf_sawpos(lf_freq)+phase:ma.decimal;
+  pos2plusMinus(x) = 2 * x -1;
+
+// input: 1 -> mult
+// output 1 -> 0
+  // in-1 => 0 -> (mult-1)
+  // / (mult-1) =>  0 - 1
+
+  asym_lf_triangle_phase(asym,freq,phase) =
+    select2(bigSaw > 1
+           , bigSaw
+           , 1-((bigSaw-1)/(mult-1))
+           )
+    : pos2plusMinus
+  with {
+    saw = lf_sawpos_phase(freq,phase);
+    bigSaw = saw*mult;
+    mult = 1/max(asym,ma.EPSILON);
+  };
+
 };
 
 
@@ -36,4 +78,4 @@ with {
 
 
 // eqCompensate(69, FMvocoderGroup, 1, 2,3);
-myindex = os.lf_sawpos(69*0.25);
+myindex = os.lf_sawpos(hslider("osc freq", 69, 20, 1000, 1));
