@@ -39,16 +39,20 @@ with {
     )+ prevOffset
   ;
   dif(index) = index-index':ma.decimal;
-  amount = hslider("amount", 0, 0, 0.5, 0.001):si.smoo;
+  amount = (course * fine):si.smoo;
+  course = hslider("course", 0, 0, 12, 1)/12/6;
+  fine = hslider("fine", 0, 0, 1, 0.001);
   lf_freq = hslider("lf freq", 0.1, 0, 10, 0.001):si.smoo;
   phase = hslider("phase", 0, 0, 1, 0.001):si.smoo;
-  asym = hslider("asym", 1/3, 0, 1, 0.001);
+  asym =
+    1/3;
+  // hslider("asym", 1/3, 0, 1, 0.001);
   lf_triangle_phase(freq,phase) = pos2plusMinus(1.0-abs(pos2plusMinus(lf_sawpos_phase(freq, phase)))); // saw1 defined below
   lf_sawpos_phase(freq,phase) = os.lf_sawpos(lf_freq)+phase:ma.decimal;
   pos2plusMinus(x) = 2 * x -1;
 
-// input: 1 -> mult
-// output 1 -> 0
+  // input: 1 -> mult
+  // output 1 -> 0
   // in-1 => 0 -> (mult-1)
   // / (mult-1) =>  0 - 1
 
