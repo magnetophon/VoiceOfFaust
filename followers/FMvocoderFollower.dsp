@@ -4,90 +4,82 @@ import ("../lib/common.lib");
 import ("../lib/FullGUI.lib");
 import ("../lib/FMvocoder.lib");
 
-process(audio,indexx,fidelity) =
+process(audio,index,fidelity) =
   // FMvocoder(audio, guidePitch(audio,index),index,fidelity,doubleOscs);
   // myindex:saw2sine
   // ,
-  detuneOsc(myindex);
+  detuneOsc(myindex,my_amount);
+
+// do not smooth amount, it breaks the algo
+my_amount = (course + fine);
+course = hslider("note", 0, 0, 12, 1)/12;
+fine = hslider("cents", 0, 0, 100, 0.1)/1200;
 
 saw2sine(x) = 2*x*ma.PI:sin;
 
-detuneOsc(index) =
-  (index+detune(trueDelta(delta))
+detuneOsc(index,amount) =
+  (index+offset(amount)
    :ma.decimal
    :saw2sine)
 ,
-  (index+detune(trueDelta(delta*-0.5))
+  (index+offset(amount*-1)
    :ma.decimal
    :saw2sine)
-, detune(trueDelta(delta))
-, detune(trueDelta(delta*-0.5))
-  // , (abs(detune(trueDelta(delta)) - detune(trueDelta(delta*-0.5))):ma.decimal<(3*delta):hbargraph("same", 0, 1))
-  // , (index+detune(trueDelta(delta))
-  // :ma.decimal)
-  // , index
 with {
-
-  detune(x) =
-    (x~_)
-  ;
-  trueDelta(d,prev) =
-    (prev+(d:postProc))
-    // * ((abs(amount)>0)
-    // :seq(i, 2, si.smoo)
+  offset(amount) =
+    (FB(delta(amount))~_) ;
+  FB(d,prev) =
+    (prev+ba.sAndH(dontHold,d))
     :ma.decimal
-
-
   with {
-    postProc(x) =
-      ba.sAndH(sample(x),x);
-    sample(x) =
-      (
-        hasAmount
-        |
-        (testDelta >=1)'
-        |
-        (testDelta <0)
-      ) ;
+    // TODO:
+    // - when offset < .5, and amount is small: fade down instead of up
+    // - implement minimum speed?
+    dontHold =
+      // don't hold when:
+      // we are actively detuning
+      hasAmount
+      // or the offset wraps around
+      | (nextOffset >=1)'
+      | (nextOffset <0)
+    ;
     hasAmount = abs(amount)>0;
-    testDelta = d':ba.sAndH(hasAmount)
-                   +prev;
+    nextOffset =
+      d':ba.sAndH(hasAmount)+prev;
   };
-
-  delta =
-    amount * dif(index);
+  delta(amount) =
+    amount * dif(index)
+    * select2(amount>0 , 0.5 , 1)
+  ;
   dif(index) = index-index':ma.decimal;
-  amount = (course + fine);
-  course = hslider("note", 0, 0, 12, 1)/12;
-  fine = hslider("cents", 0, 0, 100, 0.1)/1200;
-  lf_freq = hslider("lf freq", 0.1, 0, 10, 0.001):si.smoo;
-  phase = hslider("phase", 0, 0, 1, 0.001):si.smoo;
-  asym =
-    1/3;
-  // hslider("asym", 1/3, 0, 1, 0.001);
-  lf_triangle_phase(freq,phase) = pos2plusMinus(1.0-abs(pos2plusMinus(lf_sawpos_phase(freq, phase)))); // saw1 defined below
-  lf_sawpos_phase(freq,phase) = os.lf_sawpos(lf_freq)+phase:ma.decimal;
-  pos2plusMinus(x) = 2 * x -1;
-
-  // input: 1 -> mult
-  // output 1 -> 0
-  // in-1 => 0 -> (mult-1)
-  // / (mult-1) =>  0 - 1
-
-  asym_lf_triangle_phase(asym,freq,phase) =
-    select2(bigSaw > 1
-           , bigSaw
-           , 1-((bigSaw-1)/(mult-1))
-           )
-    : pos2plusMinus
-  with {
-    saw = lf_sawpos_phase(freq,phase);
-    bigSaw = saw*mult;
-    mult = 1/max(asym,ma.EPSILON);
-  };
-
 };
 
+
+lf_freq = hslider("lf freq", 0.1, 0, 10, 0.001):si.smoo;
+phase = hslider("phase", 0, 0, 1, 0.001):si.smoo;
+asym =
+  1/3;
+// hslider("asym", 1/3, 0, 1, 0.001);
+lf_triangle_phase(freq,phase) = pos2plusMinus(1.0-abs(pos2plusMinus(lf_sawpos_phase(freq, phase)))); // saw1 defined below
+lf_sawpos_phase(freq,phase) = os.lf_sawpos(lf_freq)+phase:ma.decimal;
+pos2plusMinus(x) = 2 * x -1;
+
+// input: 1 -> mult
+// output 1 -> 0
+// in-1 => 0 -> (mult-1)
+// / (mult-1) =>  0 - 1
+
+asym_lf_triangle_phase(asym,freq,phase) =
+  select2(bigSaw > 1
+         , bigSaw
+         , 1-((bigSaw-1)/(mult-1))
+         )
+  : pos2plusMinus
+with {
+  saw = lf_sawpos_phase(freq,phase);
+  bigSaw = saw*mult;
+  mult = 1/max(asym,ma.EPSILON);
+};
 
 // phaseNoises(7,69,1,1,FMvocoderGroup);
 // funds(69,myindex,0,FMvocoderGroup);
