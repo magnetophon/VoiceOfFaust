@@ -6,42 +6,42 @@ import ("../lib/FMvocoder.lib");
 
 process(audio,indexx,fidelity) =
   // FMvocoder(audio, guidePitch(audio,index),index,fidelity,doubleOscs);
-  myindex:saw2sine
-,
+  // myindex:saw2sine
+  // ,
   detuneOsc(myindex);
 
 saw2sine(x) = 2*x*ma.PI:sin;
 
 detuneOsc(index) =
-  // (index+offset(index):ma.decimal)
-  (index+simpOff(0):ma.decimal:saw2sine)
-, (index+simpOff(phase):ma.decimal:saw2sine)
-, asym_lf_triangle_phase(asym,lf_freq,phase)
-  // , (os.lf_sawpos(lf_freq)+amount*lf_triangle_phase(lf_freq,phase):ma.decimal)
-  // , (os.lf_sawpos(lf_freq)+phase:ma.decimal)
+  (index+detune(trueDelta(delta))
+   :ma.decimal
+   :saw2sine)
+, (index+detune(trueDelta(delta*-0.5))
+   :ma.decimal
+   :saw2sine)
 with {
-  simpOff(phase) =
-    asym_lf_triangle_phase(asym,lf_freq,phase)
-    * amount
-    * dif(index)
-    * ma.SR
-    / lf_freq
+
+  detune(x) =
+    (x~_)
   ;
-  offset(index) = (FB(index)~_*(1-(amount==0)))
-                  *amount
+  trueDelta(d,prev) =
+    (
+      index+
+      (
+        (prev +d)
+
+      )
+      // * ((amount>0):seq(i, 4, si.smooth(0.9999)))
+      :ma.decimal
+       -index
+    ): hbargraph("true delta", -2, 2)
   ;
-  FB(index,prevOffset) =
-    (dif(index)
-     // *amount
-     // select2(os.lf_squarewavepos(hslider("freq", 0.1, 0, 10, 0.001)),1,-1)
-     *lf_triangle_phase(lf_freq,phase)
-     // *os.lf_triangle(lf_freq)
-    )+ prevOffset
-  ;
+  delta =
+    amount * dif(index);
   dif(index) = index-index':ma.decimal;
-  amount = (course * fine):si.smoo;
-  course = hslider("course", 0, 0, 12, 1)/12/6;
-  fine = hslider("fine", 0, 0, 1, 0.001);
+  amount = (course + fine);
+  course = hslider("note", 0, 0, 12, 1)/12;
+  fine = hslider("cents", 0, 0, 100, 0.1)/1200;
   lf_freq = hslider("lf freq", 0.1, 0, 10, 0.001):si.smoo;
   phase = hslider("phase", 0, 0, 1, 0.001):si.smoo;
   asym =
