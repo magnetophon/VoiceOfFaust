@@ -16,25 +16,22 @@ detuneOsc(index) =
   (index+detune(trueDelta(delta))
    :ma.decimal
    :saw2sine)
-, (index+detune(trueDelta(delta*-0.5))
-   :ma.decimal
-   :saw2sine)
+  // , (index+detune(trueDelta(delta*-0.5))
+  // :ma.decimal
+  // :saw2sine)
+, detune(trueDelta(delta))
+, (index+detune(trueDelta(delta))
+   :ma.decimal)
+, index
 with {
 
   detune(x) =
     (x~_)
   ;
   trueDelta(d,prev) =
-    (
-      index+
-      (
-        (prev +d)
-
-      )
-      // * ((amount>0):seq(i, 4, si.smooth(0.9999)))
-      :ma.decimal
-       -index
-    ): hbargraph("true delta", -2, 2)
+    (prev+d)
+    * ((amount>0):seq(i, 2, si.smoo))
+    :ma.decimal
   ;
   delta =
     amount * dif(index);
