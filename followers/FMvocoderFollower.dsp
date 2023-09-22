@@ -12,8 +12,8 @@ process(audio,index,fidelity) =
 
 // do not smooth amount, it breaks the algo
 my_amount = (course + fine);
-course = hslider("note", 0, 0, 12, 1)/12;
-fine = hslider("cents", 0, 0, 100, 0.1)/1200;
+course = hslider("note", 0, 0, 12, 1);
+fine = hslider("cents", 0, 0, 100, 0.1)/100;
 
 saw2sine(x) = 2*x*ma.PI:sin;
 
@@ -48,8 +48,11 @@ with {
       d':ba.sAndH(hasAmount)+prev;
   };
   delta(amount) =
+    // if we add the diff for each sample, we go an octave up
     amount * dif(index)
-    * select2(amount>0 , 0.5 , 1)
+    // to get the detune in notes, devide by 12
+    // when amount is negative, halve the delta
+    * select2(amount>0 , 1/24 , 1/12)
   ;
   dif(index) = index-index':ma.decimal;
 };
