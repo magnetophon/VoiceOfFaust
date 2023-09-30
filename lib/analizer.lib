@@ -139,7 +139,6 @@ resoBpXover(freqs, audio)=
       (audio<:si.bus(nrBands))
      ,(freqs <:(
         ( (_<:(_/2,_))
-          // ,par(i,nrBands,ba.selector(i-1,nrBands))
         , si.bus(nrBands-2)
         , !
         )
@@ -172,7 +171,7 @@ eqGains(freq, group, strength, inAudio,outAudio) =
          )
       // : ba.bypass_fade(ma.SR/100,checkbox("bp avg diff"),difWithAvg)
     : par(i, nrBands, _+(eqOffset))
-      // : ba.bypass_fade(ma.SR/100,checkbox("bp max diff"),difWithMax)
+    : ba.bypass_fade(ma.SR/100,checkbox("bp max diff"),difWithMax)
     : smoothBands(centers(freq,group))
     : par(i, nrBands, max(-96): min(48))
 ;
@@ -198,12 +197,20 @@ difWithMax =
 eqCompensate(freq, group, strength, inAudio,outAudio) =
     (
       outAudio
-    , centers(freq,group)
+      // , centers(freq,group)
+    , (centers(freq,group) <:(
+        ( (_<:(_/2,_))
+        , si.bus(nrBands-2)
+        , !
+        )
+       ,(si.bus(nrBands))))
     , LogArray(eqQbottom,eqQtop,nrBands)
     , eqGains(freq, group, strength, inAudio,outAudio)
     )
     :
-    eqBank;
+    // eqBank;
+    eqBankAutoQ ;
+
 
 eqBank =
     (_,ro.interleave(nrBands,3))
@@ -211,6 +218,22 @@ eqBank =
           (ro.crossNM(1,3):fi.svf.bell)
           ,si.bus((nrBands-i-1)*3)
          );
+
+eqBankAutoQ =
+    (_,ro.interleave(nrBands,4))
+    : seq(i, nrBands,
+          (ro.crossNM(1,4):autoQeq)
+          ,si.bus((nrBands-i-1)*4)
+         )
+with {
+  autoQeq(prevF,f,q,g) = fi.svf.bell(f,Q,g)
+  with {
+  Q = ((((f-(prevF*autoQch)):max(20))*q)/(f:max(20)))*(1+(2*autoQch)):max(0.01):min(50);
+  autoQch = checkbox("auto Q");
+};
+
+};
+
 
 eqCompensateShelve(freq, group, strength, inAudio,outAudio) =
     ( outAudio
