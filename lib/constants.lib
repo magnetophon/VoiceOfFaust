@@ -48,7 +48,7 @@ enableFilterAutosat       = 1; // put a saturator in the filter of the classicVo
 vocoderN                  = 2; // order of anti aliasing
 // vocoders based on oscilators
 doubleOscs                = 1; // whether a vocoder has nrBands or nrBands * nrOutChan oscilators
-enablePhaseNoise          = 1; // 0 = no no.noise   and 1 = no.noise modulates phase
+enablePhaseNoise          = 0; // 0 = no no.noise   and 1 = no.noise modulates phase
 enablePhaseNoiseFilter    = 1; // 0 = no.noise:si.smooth(fixed)   and 1 = no.noise:fi.lowpass(variable)
 noisesFilterN             = 4; // the order of the no.noise fi.lowpass
 defaultTop                = 128:pow(0.5); // using these two values with 16 bands, gives integer formant ratios

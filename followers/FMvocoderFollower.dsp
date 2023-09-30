@@ -5,57 +5,13 @@ import ("../lib/FullGUI.lib");
 import ("../lib/FMvocoder.lib");
 
 process(audio,index,fidelity) =
-  // FMvocoder(audio, guidePitch(audio,index),index,fidelity,doubleOscs);
-  // myindex:saw2sine
-  // ,
-  detuneOsc(myindex,my_amount);
+  FMvocoder(audio, guidePitch(audio,index),index,fidelity,doubleOscs);
 
 // do not smooth amount, it breaks the algo
 my_amount = (course + fine);
 course = hslider("note", 0, 0, 12, 1);
 fine = hslider("cents", 0, 0, 100, 0.1)/100;
 
-saw2sine(x) = 2*x*ma.PI:sin;
-
-detuneOsc(index,amount) =
-  (index+offset(amount)
-   :ma.decimal
-   :saw2sine)
-,
-  (index+offset(amount*-1)
-   :ma.decimal
-   :saw2sine)
-with {
-  offset(amount) =
-    (FB(delta(amount))~_) ;
-  FB(d,prev) =
-    (prev+ba.sAndH(dontHold,d))
-    :ma.decimal
-  with {
-    // TODO:
-    // - when offset < .5, and amount is small: fade down instead of up
-    // - implement minimum speed?
-    dontHold =
-      // don't hold when:
-      // we are actively detuning
-      hasAmount
-      // or the offset wraps around
-      | (nextOffset >=1)'
-      | (nextOffset <0)
-    ;
-    hasAmount = abs(amount)>0;
-    nextOffset =
-      d':ba.sAndH(hasAmount)+prev;
-  };
-  delta(amount) =
-    // if we add the diff for each sample, we go an octave up
-    amount * dif(index)
-    // to get the detune in notes, devide by 12
-    // when amount is negative, halve the delta
-    * select2(amount>0 , 1/24 , 1/12)
-  ;
-  dif(index) = index-index':ma.decimal;
-};
 
 
 lf_freq = hslider("lf freq", 0.1, 0, 10, 0.001):si.smoo;

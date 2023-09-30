@@ -55,12 +55,27 @@ evenOdd(group) =group( VocoderLinArrayChooser(evenOddBottom,evenOddMid,evenOddBa
 // phaseNoises(polarity,freq,enablePhaseNoise,enablePhaseNoiseFilter,group)
 //TODO: make true multichannel version
 phaseNoises(polarity,freq,0,enablePhaseNoiseFilter,group) = group(phases:(par(j, nrBands,_*select2(polarity%2,1,-1))));
-phaseNoises(polarity,freq,1,0,group) = group(phases),(group(phaseNoiseAmounts):par(j,nrBands,(_*no.noises(nrBands,j):si.smooth(ba.tau2pole(PhaseSpeed))))):>(par(j, nrBands,_*select2(polarity%2,1,-1)));
+phaseNoises(polarity,freq,1,0,group) =
+  group(phases)
+ ,(group(phaseNoiseAmounts)
+   :par(j,nrBands,(_*no.noises(nrBands,j):si.smooth(ba.tau2pole(PhaseSpeed))))
+                )
+  :>(par(j, nrBands,_*select2(polarity%2,1,-1)));
 phaseNoises(polarity,freq,1,1,group) =
-  (group(phases),filteredNoise):>par(j, nrBands,_*select2(polarity%2,1,-1))
-                                 // ((group(phases),(group(phaseNoiseAmounts):par(j,nrBands,_*no.noises(nrBands,j):LP(j)))):>(par(j, nrBands,_*select2(polarity%2,1,-1))))
+  (group(phases),lfNoises )
+  :>par(j, nrBands,_*select2(polarity%2,1,-1))
+    // ((group(phases),(group(phaseNoiseAmounts):par(j,nrBands,_*no.noises(nrBands,j):LP(j)))):>(par(j, nrBands,_*select2(polarity%2,1,-1))))
 with {
   filteredNoise = ((group(phaseNoiseAmounts):par(j,nrBands,_*no.noises(nrBands,j))):LPblock);
+  lfNoises =
+    (    group(phaseNoiseAmounts)
+       , (freqs:par(i, nrBands, no.lfnoise))
+    ): ro.interleave(nrBands,2)
+    : par(i, nrBands, *);
+
+  // ((group(phaseNoiseAmounts):par(j,nrBands,_*no.noises(nrBands,j))):LPblock);
+
+
   LPblock = (freqs, si.bus(nrBands)) : ro.interleave(nrBands,2) : par(i, nrBands, LP);
   LP(LPfreq) = seq(i, noisesFilterN, fi.lowpass(1,LPfreq)) ;
   freqs = (group(phaseNoiseFreqs)   :par(i, nrBands, _*(freq*0.025)) );
@@ -70,14 +85,31 @@ with {
 
 funds(freq,index,polarity,group) =
   phase(polarity)
-  :par(i, nrBands, fundPhase(freq,index,group(octave),_) )
+  :par(i, nrBands, fundPhase(freq,index,group(octave)) )
+  :group(detunes)
 with {
   // phase(i) = group(phases:ba.selector(i,nrBands)*select2(polarity%2,1,-1));
   phase(polarity) = phaseNoises(polarity,freq,enablePhaseNoise,enablePhaseNoiseFilter,group);
+  detunes =
+    (  si.bus(nrBands)
+     , detuneAmounts(polarity))
+    : ro.interleave(nrBands,2)
+    : par(i, nrBands, detuneIndex);
 };
 
-phaseNoiseAmounts = VocoderLinArrayChooser(phaseNoiseAmountBottom,phaseNoiseAmountMid,phaseNoiseAmountBand,phaseNoiseAmountTop,para): dezipBands;
+phaseNoiseAmounts =
+  (( VocoderLinArrayChooser(phaseNoiseAmountBottom*0.03,phaseNoiseAmountMid*0.03,phaseNoiseAmountBand,phaseNoiseAmountTop*0.03,para)
+     : dezipBands
+   )
+  , phaseNoiseFreqs)
+  : ro.interleave(nrBands,2)
+  : par(i, nrBands, /);
+
 phaseNoiseFreqs    = VocoderFreqsChooser(phaseNoiseFreqBottom,phaseNoiseFreqMid,phaseNoiseFreqBand,phaseNoiseFreqTop,para): dezipBands;
+
+detuneAmounts(polarity) =
+  VocoderLinArrayChooser(detuneAmountBottom,detuneAmountMid,detuneAmountBand,detuneAmountTop,para)
+  : par(j, nrBands,_*select2(polarity%2,1,-1));
 
 // make a log array of values, from bottom to top
 LogArray(bottom,top,nrElements) =     par(i,nrElements,
@@ -88,7 +120,7 @@ LogArray(bottom,top,nrElements) =     par(i,nrElements,
                                               (top/bottom)
                                             , 1/(nrElements-1)
                                             )
-                                            ,i)
+                                           ,i)
                                           *bottom);
 
 // logarithmic middle between two values
@@ -421,22 +453,22 @@ postProc(audio,freq,nrOutChan,1,enableAutosat,enableEqCompensate,group,strength,
   ho.wider(ambisonicsOrder,width)
   :ho.rotate(ambisonicsOrder, rotation)
   :ho.optimInPhase(ambisonicsOrder)
-  // :limiter(freq*0.25 , 2*ambisonicsOrder+1) //needs the pitch to adjust the decay time.
-  <:select2(enableLimiter,
-    si.bus(nrAmbisonicsChan)
-    ,limiter(freq * 0.25,nrAmbisonicsChan)) //needs the pitch to adjust the decay time.
-  <:select2(enableVUmeter,
-    si.bus(nrAmbisonicsChan)
-    ,VuMeter(nrAmbisonicsChan))
-  <:
-  (
-    (ho.decoderStereo(ambisonicsOrder)
-     :par(i,2,
-          fi.dcblocker<: select2(enableAutosat,_,autoSat)
-          <: select2(enableEqCompensate,_,eqCompensate(freq, group, strength, voice))*volume
-         )
-    ), si.bus(nrAmbisonicsChan)
-  )
+   // :limiter(freq*0.25 , 2*ambisonicsOrder+1) //needs the pitch to adjust the decay time.
+   <:select2(enableLimiter,
+             si.bus(nrAmbisonicsChan)
+             ,limiter(freq * 0.25,nrAmbisonicsChan)) //needs the pitch to adjust the decay time.
+   <:select2(enableVUmeter,
+             si.bus(nrAmbisonicsChan)
+             ,VuMeter(nrAmbisonicsChan))
+   <:
+   (
+     (ho.decoderStereo(ambisonicsOrder)
+      :par(i,2,
+           fi.dcblocker<: select2(enableAutosat,_,autoSat)
+           <: select2(enableEqCompensate,_,eqCompensate(freq, group, strength, voice))*volume
+          )
+     ), si.bus(nrAmbisonicsChan)
+   )
 with {
   nrAmbisonicsChan = 2*ambisonicsOrder+1;
 };

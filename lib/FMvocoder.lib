@@ -27,7 +27,12 @@ FMvocoder(audio,freq,index,fidelity,0)=
 
 FMvocoder(audio,freq,index,fidelity,1)=
   par(i,nrOutChan,
-      ((funds(freq,index,i,FMvocoderGroup)), (freq*FMvocoderGroup(octave)<:si.bus(nrBands)),analizer(voice(audio,freq),freq,fidelity,enableDeEsser),FMvocoderGroup(FMindexes),FMcenters(freq),FMevenOdd)
+      ( funds(freq,index,i,FMvocoderGroup)
+      , (freq*FMvocoderGroup(octave)<:si.bus(nrBands))
+      , analizer(voice(audio,freq),freq,fidelity,enableDeEsser)
+      , FMvocoderGroup(FMindexes)
+      , FMcenters(freq)
+      , FMevenOdd )
       :FMoscs
      )
   :vocoderMixer(audio,freq,ambisonicsOn,outputRoutingEnabled,1)

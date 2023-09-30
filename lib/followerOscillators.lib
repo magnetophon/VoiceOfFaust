@@ -51,18 +51,18 @@ with {
 supersaw(N,fund,freq,detune,mix) = saws(fund,freq,detuner(detune)):mixer(mix)
 with {
     detuner (detune) =
-      (((detune*0.2),(detune<0.6)):*),
-      ((((detune-0.6)*0.8+0.12),((detune>=0.6)&(detune<=0.95))):*),
-      ((((detune-0.95)*12+0.4),(detune>0.95)):*)
-      :>_;
+        ((detune*0.2) * (detune<0.6))
+      , (((detune-0.6)*0.8+0.12) * ((detune>=0.6)&(detune<=0.95)))
+      , (((detune-0.95)*12+0.4) * (detune>0.95))
+        :>_;
     saws(fund,freq,det) =
-      sawNws(N,fund,freq),
-      os.sawN(N,(det * -0.110023+1)*freq),
-      os.sawN(N,(det * -0.0628844+1)*freq),
-      os.sawN(N,(det * -0.0195236+1)*freq),
-      os.sawN(N,(det * 0.0199122+1)*freq),
-      os.sawN(N,(det * 0.0621654+1)*freq),
-      os.sawN(N,(det * 0.107452+1)*freq);
+        sawNws(N,fund,freq),
+        os.sawN(N,(det * -0.110023+1)*freq),
+        os.sawN(N,(det * -0.0628844+1)*freq),
+        os.sawN(N,(det * -0.0195236+1)*freq),
+        os.sawN(N,(det * 0.0199122+1)*freq),
+        os.sawN(N,(det * 0.0621654+1)*freq),
+        os.sawN(N,(det * 0.107452+1)*freq);
 
     mainmix = mix * -1 + 1.6:si.smooth(0.999);
     //mainmix = mix * -0.55366 + 0.99785:si.smooth(0.999);
@@ -245,3 +245,46 @@ OLDfof(phase,fReso,fund,skirt,decay) =
 //             //sounds cool, but glithes when either the phase or one of the other params is moved, so:
 //             PH = 0;
 //            };
+
+//---------------------------------------------------------------------------------------------
+// detune index
+//---------------------------------------------------------------------------------------------
+
+// detunes an incoming index a certain amount
+// when the detune amount goes to 0, it keeps the previous amount,
+// until the phase has drifted back to 0, relative to the input index
+
+detuneIndex(index,amount) =
+  index+offset(amount)
+  :ma.decimal
+with {
+  offset(amount) =
+    (FB(delta(amount))~_) ;
+  FB(d,prev) =
+    (prev+ba.sAndH(dontHold,d))
+    :ma.decimal
+  with {
+    // TODO:
+    // - when offset < .5, and amount is small: fade down instead of up
+    // - implement minimum speed?
+    dontHold =
+      // don't hold when:
+      // we are actively detuning
+      hasAmount
+      // or the offset wraps around
+      | (nextOffset >=1)'
+      | (nextOffset <0)
+    ;
+    hasAmount = abs(amount)>0;
+    nextOffset =
+      d':ba.sAndH(hasAmount)+prev;
+  };
+  delta(amount) =
+    // if we add the diff for each sample, we go an octave up
+    amount * dif(index)
+    // to get the detune in notes, devide by 12
+    // when amount is negative, halve the delta
+    * select2(amount>0 , 1/24 , 1/12)
+  ;
+  dif(index) = index-index':ma.decimal;
+};
