@@ -4,7 +4,5 @@
 #////////////////////////////////////////////////////////
 # startup script for the pitchtracker
 #////////////////////////////////////////////////////////
-# If this script is killed, kill everything.
-trap "kill -- -$$" EXIT
 
-pd -nodac -nomidi -jack ../PureData/OscSendVoc.pd &
+exec pd -nodac -nomidi -jack ../PureData/OscSendVoc.pd
