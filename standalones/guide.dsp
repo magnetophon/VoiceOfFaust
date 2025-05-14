@@ -3,10 +3,10 @@
 //-----------------------------------------------
 
 declare name      "guide";
-declare version   "1.1.6";
+declare version   "1.1.7";
 declare author    "Bart Brouns";
 declare license   "AGPL-3.0-only";
-declare copyright "2014 - 2023, Bart Brouns";
+declare copyright "2014 - 2025, Bart Brouns";
 declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and square oscillators adapted from the Faust library" ;
 
 import ("../lib/common.lib");

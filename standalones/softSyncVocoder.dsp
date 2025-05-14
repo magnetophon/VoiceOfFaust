@@ -2,7 +2,7 @@ declare name      "softSyncVocoder";
 declare version   "0.1";
 declare author    "Bart Brouns";
 declare license   "AGPL-3.0-only";
-declare copyright "2014 - 2023, Bart Brouns";
+declare copyright "2014 - 2025, Bart Brouns";
 declare credits   "PitchTracker by Tiziano Bole, qompander by Katja Vetter,supersaw by ADAM SZABO,CZ oscillators by Mike Moser-Booth, saw and os.square oscillators adapted from the Faust library" ;
 
 //-----------------------------------------------

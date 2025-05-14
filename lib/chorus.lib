@@ -2,7 +2,7 @@ declare name 		"Chorus";
 declare version 	"0.1";
 declare author 		"Bart Brouns";
 declare license 	"AGPL-3.0-only";
-declare copyright 	"2014 - 2023, Bart Brouns";
+declare copyright 	"2014 - 2025, Bart Brouns";
 declare coauthors	"ported from a pd patch by Scott Nordlund, 2011";
 
 /*
