@@ -366,8 +366,7 @@ gainedSmoother(gain,initialMeasurement,measurement) = gainedSmootherCalc(measure
 };
 
 // crossfade between multiple inputs (just the gain)
-xfadeSelector(sel,nr) =
-((sel<=nr)*((sel-nr)+1):max(0)) + ((sel>nr)*((nr-sel)+1):max(0));
+xfadeSelector(sel, nr) = (1 - abs(sel - nr)) : max(0);
 
 // select at run-time how many instances of 'expression' you want in series.
 // expression can have any number of inputs, but obviously must have the same number of outputs
